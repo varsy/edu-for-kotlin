@@ -65,6 +65,10 @@ abstract class Course : LessonContainer() {
   override fun init(parentItem: ItemContainer, isRestarted: Boolean) {
     require(parentItem is Course)
     super.init(parentItem, isRestarted)
+
+    for (additionalFile in additionalFiles) {
+      additionalFile.course = this
+    }
   }
 
   val languageID: String

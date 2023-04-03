@@ -1,5 +1,6 @@
 package com.jetbrains.edu.python.courseGeneration
 
+import com.jetbrains.edu.learning.authorContentsStorage.zip.COURSE_AUTHOR_CONTENTS_FILE
 import com.jetbrains.edu.learning.courseFormat.CourseMode
 import com.jetbrains.edu.learning.courseGeneration.CourseGenerationTestBase
 import com.jetbrains.edu.learning.fileTree
@@ -34,6 +35,7 @@ class PyCourseBuilderTest : CourseGenerationTestBase<PyProjectSettings>() {
         }
       }
       file("test_helper.py")
+      file(COURSE_AUTHOR_CONTENTS_FILE)
     }
 
     expectedFileTree.assertEquals(rootDir)

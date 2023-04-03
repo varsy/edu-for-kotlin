@@ -26,17 +26,32 @@ import com.intellij.openapi.util.Key
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.util.ui.JBUI
-import com.jetbrains.edu.learning.*
 import com.jetbrains.edu.learning.EduUtilsKt.isStudentProject
+import com.jetbrains.edu.learning.StudyTaskManager
 import com.jetbrains.edu.learning.checkio.courseFormat.CheckiOMission
 import com.jetbrains.edu.learning.checkio.courseFormat.CheckiOStation
 import com.jetbrains.edu.learning.codeforces.courseFormat.CodeforcesCourse
 import com.jetbrains.edu.learning.codeforces.courseFormat.CodeforcesTask
 import com.jetbrains.edu.learning.codeforces.courseFormat.CodeforcesTaskWithFileIO
-import com.jetbrains.edu.learning.courseFormat.*
+import com.jetbrains.edu.learning.courseDir
+import com.jetbrains.edu.learning.courseFormat.AnswerPlaceholder
+import com.jetbrains.edu.learning.courseFormat.AnswerPlaceholderDependency
+import com.jetbrains.edu.learning.courseFormat.CheckFeedback
+import com.jetbrains.edu.learning.courseFormat.Course
+import com.jetbrains.edu.learning.courseFormat.EduCourse
+import com.jetbrains.edu.learning.courseFormat.FrameworkLesson
+import com.jetbrains.edu.learning.courseFormat.ItemContainer
+import com.jetbrains.edu.learning.courseFormat.Lesson
+import com.jetbrains.edu.learning.courseFormat.Section
+import com.jetbrains.edu.learning.courseFormat.StudyItem
+import com.jetbrains.edu.learning.courseFormat.TaskFile
 import com.jetbrains.edu.learning.courseFormat.ext.getDir
 import com.jetbrains.edu.learning.courseFormat.ext.project
-import com.jetbrains.edu.learning.courseFormat.tasks.*
+import com.jetbrains.edu.learning.courseFormat.tasks.CodeTask
+import com.jetbrains.edu.learning.courseFormat.tasks.Task
+import com.jetbrains.edu.learning.courseFormat.tasks.TheoryTask
+import com.jetbrains.edu.learning.courseFormat.tasks.VideoSource
+import com.jetbrains.edu.learning.courseFormat.tasks.VideoTask
 import com.jetbrains.edu.learning.courseFormat.tasks.choice.ChoiceOption
 import com.jetbrains.edu.learning.courseFormat.tasks.choice.ChoiceTask
 import com.jetbrains.edu.learning.courseFormat.tasks.data.DataTask
@@ -44,6 +59,8 @@ import com.jetbrains.edu.learning.courseFormat.tasks.data.DataTaskAttempt
 import com.jetbrains.edu.learning.courseFormat.tasks.matching.MatchingTask
 import com.jetbrains.edu.learning.courseFormat.tasks.matching.SortingTask
 import com.jetbrains.edu.learning.coursera.CourseraCourse
+import com.jetbrains.edu.learning.getEditor
+import com.jetbrains.edu.learning.isUnitTestMode
 import com.jetbrains.edu.learning.json.encrypt.EncryptionModule
 import com.jetbrains.edu.learning.json.encrypt.TEST_AES_KEY
 import com.jetbrains.edu.learning.json.encrypt.getAesKey
@@ -62,8 +79,51 @@ import com.jetbrains.edu.learning.yaml.YamlFormatSettings.REMOTE_SECTION_CONFIG
 import com.jetbrains.edu.learning.yaml.YamlFormatSettings.REMOTE_TASK_CONFIG
 import com.jetbrains.edu.learning.yaml.YamlFormatSettings.SECTION_CONFIG
 import com.jetbrains.edu.learning.yaml.YamlFormatSettings.TASK_CONFIG
-import com.jetbrains.edu.learning.yaml.format.*
-import com.jetbrains.edu.learning.yaml.format.student.*
+import com.jetbrains.edu.learning.yaml.format.AnswerPlaceholderDependencyYamlMixin
+import com.jetbrains.edu.learning.yaml.format.AnswerPlaceholderYamlMixin
+import com.jetbrains.edu.learning.yaml.format.ChoiceOptionYamlMixin
+import com.jetbrains.edu.learning.yaml.format.ChoiceTaskYamlMixin
+import com.jetbrains.edu.learning.yaml.format.CodeTaskYamlMixin
+import com.jetbrains.edu.learning.yaml.format.CodeforcesCourseRemoteInfoYamlMixin
+import com.jetbrains.edu.learning.yaml.format.CodeforcesCourseYamlMixin
+import com.jetbrains.edu.learning.yaml.format.CourseYamlMixin
+import com.jetbrains.edu.learning.yaml.format.CourseraCourseYamlMixin
+import com.jetbrains.edu.learning.yaml.format.DataTaskAttemptYamlMixin
+import com.jetbrains.edu.learning.yaml.format.EduCourseRemoteInfoYamlMixin
+import com.jetbrains.edu.learning.yaml.format.FrameworkLessonYamlMixin
+import com.jetbrains.edu.learning.yaml.format.HyperskillCourseMixin
+import com.jetbrains.edu.learning.yaml.format.HyperskillProjectMixin
+import com.jetbrains.edu.learning.yaml.format.HyperskillStageMixin
+import com.jetbrains.edu.learning.yaml.format.HyperskillTopicMixin
+import com.jetbrains.edu.learning.yaml.format.LessonYamlMixin
+import com.jetbrains.edu.learning.yaml.format.RemoteDataTaskYamlMixin
+import com.jetbrains.edu.learning.yaml.format.RemoteEduTaskYamlMixin
+import com.jetbrains.edu.learning.yaml.format.RemoteStudyItemYamlMixin
+import com.jetbrains.edu.learning.yaml.format.SectionYamlMixin
+import com.jetbrains.edu.learning.yaml.format.StepikLessonRemoteYamlMixin
+import com.jetbrains.edu.learning.yaml.format.StepikLessonYamlMixin
+import com.jetbrains.edu.learning.yaml.format.TaskFileYamlMixin
+import com.jetbrains.edu.learning.yaml.format.TaskYamlMixin
+import com.jetbrains.edu.learning.yaml.format.TheoryTaskYamlUtil
+import com.jetbrains.edu.learning.yaml.format.VideoSourceYamlMixin
+import com.jetbrains.edu.learning.yaml.format.VideoTaskYamlMixin
+import com.jetbrains.edu.learning.yaml.format.student.CheckiOMissionYamlMixin
+import com.jetbrains.edu.learning.yaml.format.student.CheckiOStationYamlMixin
+import com.jetbrains.edu.learning.yaml.format.student.CodeforcesTaskWithFileIOYamlMixin
+import com.jetbrains.edu.learning.yaml.format.student.CodeforcesTaskYamlMixin
+import com.jetbrains.edu.learning.yaml.format.student.FeedbackYamlMixin
+import com.jetbrains.edu.learning.yaml.format.student.InitialStateMixin
+import com.jetbrains.edu.learning.yaml.format.student.MatchingTaskYamlMixin
+import com.jetbrains.edu.learning.yaml.format.student.SortingTaskYamlMixin
+import com.jetbrains.edu.learning.yaml.format.student.StudentAnswerPlaceholderYamlMixin
+import com.jetbrains.edu.learning.yaml.format.student.StudentChoiceTaskYamlMixin
+import com.jetbrains.edu.learning.yaml.format.student.StudentCourseYamlMixin
+import com.jetbrains.edu.learning.yaml.format.student.StudentEncryptedAnswerPlaceholderYamlMixin
+import com.jetbrains.edu.learning.yaml.format.student.StudentEncryptedTaskFileYamlMixin
+import com.jetbrains.edu.learning.yaml.format.student.StudentFrameworkLessonYamlMixin
+import com.jetbrains.edu.learning.yaml.format.student.StudentTaskFileYamlMixin
+import com.jetbrains.edu.learning.yaml.format.student.StudentTaskFileYamlMixinWithText
+import com.jetbrains.edu.learning.yaml.format.student.StudentTaskYamlMixin
 import org.jetbrains.annotations.NonNls
 import java.awt.BorderLayout
 import java.util.*
@@ -106,9 +166,11 @@ object YamlFormatSynchronizer {
   val STUDENT_MAPPER_WITH_ENCRYPTION: ObjectMapper by lazy {
     val mapper = createMapper()
     addMixIns(mapper)
+
     val aesKey = if (!isUnitTestMode) getAesKey() else TEST_AES_KEY
     mapper.registerModule(EncryptionModule(aesKey))
-    mapper.addMixIn(TaskFile::class.java, StudentEncryptedTaskFileYamlMixin::class.java)
+
+    mapper.addMixIn(TaskFile::class.java, StudentTaskFileYamlMixin::class.java)
     mapper.addMixIn(AnswerPlaceholder::class.java, StudentEncryptedAnswerPlaceholderYamlMixin::class.java)
     mapper.addStudentMixIns()
 
@@ -191,11 +253,13 @@ object YamlFormatSynchronizer {
   }
 
   @JvmStatic
-  fun saveAll(project: Project) {
+  fun saveAll(project: Project, saveTexts: Boolean = false) {
     @NonNls
     val errorMessageToLog = "Attempt to create config files for project without course"
     val course = StudyTaskManager.getInstance(project).course ?: error(errorMessageToLog)
-    val mapper = course.mapper
+    var mapper = course.mapper
+    if (saveTexts)
+      mapper = mapper.serializeAlsoTextInTaskFiles(course)
     saveItem(course, mapper)
     course.visitSections { section -> saveItem(section, mapper) }
     course.visitLessons { lesson ->
@@ -333,6 +397,30 @@ object YamlFormatSynchronizer {
     else {
       MAPPER
     }
+
+  private fun ObjectMapper.serializeAlsoTextInTaskFiles(courseToTestForEncryption: Course): ObjectMapper {
+    if (courseToTestForEncryption.isStudy) {
+      return if (courseToTestForEncryption.isMarketplace) {
+        serializeAlsoTextInTaskFilesEncrypted()
+      } else {
+        serializeAlsoTextInTaskFilesNotEncrypted()
+      }
+    }
+
+    return this
+  }
+
+  fun ObjectMapper.serializeAlsoTextInTaskFilesNotEncrypted(): ObjectMapper {
+    val copy = copy()
+    copy.addMixIn(TaskFile::class.java, StudentTaskFileYamlMixinWithText::class.java)
+    return copy
+  }
+
+  fun ObjectMapper.serializeAlsoTextInTaskFilesEncrypted(): ObjectMapper {
+    val copy = copy()
+    copy.addMixIn(TaskFile::class.java, StudentEncryptedTaskFileYamlMixin::class.java)
+    return copy
+  }
 }
 
 val StudyItem.configFileName: String

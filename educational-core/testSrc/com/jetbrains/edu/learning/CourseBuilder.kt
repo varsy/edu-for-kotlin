@@ -166,10 +166,13 @@ class CourseBuilder(course: Course) : LessonOwnerBuilder(course) {
     sectionBuilder.buildSection()
   }
 
-  fun additionalFile(name: String, text: String = "", buildTaskFile: EduFileBuilder.() -> Unit = {}) {
+  fun additionalFile(name: String, text: String, buildTaskFile: EduFileBuilder.() -> Unit = {}) =
+    additionalFile(name, InMemoryUndeterminedContents(text), buildTaskFile)
+
+  fun additionalFile(name: String, contents: FileContents = UndeterminedContents.EMPTY, buildTaskFile: EduFileBuilder.() -> Unit = {}) {
     val builder = EduFileBuilder()
     builder.withName(name)
-    builder.withText(text)
+    builder.withContents(contents)
     builder.buildTaskFile()
 
     course.additionalFiles = course.additionalFiles + builder.eduFile
@@ -503,17 +506,31 @@ class TaskBuilder(val lesson: Lesson, val task: Task) {
    * it creates task file with `fun foo() = TODO()` text and placeholder with `TODO()` as placeholder text.
    */
   fun taskFile(
-    name: String, text: String = "",
+    name: String, text: String,
+    visible: Boolean? = null,
+    editable: Boolean? = true,
+    buildTaskFile: TaskFileBuilder.() -> Unit = {}
+  ) = taskFile(name, InMemoryUndeterminedContents(text), visible, editable, buildTaskFile)
+
+  fun taskFile(
+    name: String, contents: FileContents = UndeterminedContents.EMPTY,
     visible: Boolean? = null,
     editable: Boolean? = true,
     buildTaskFile: TaskFileBuilder.() -> Unit = {}
   ) {
     val taskFileBuilder = TaskFileBuilder(task)
     taskFileBuilder.withName(name)
-    val textBuilder = StringBuilder(text.trimIndent())
-    val placeholders = extractPlaceholdersFromText(textBuilder)
-    taskFileBuilder.withText(textBuilder.toString())
-    taskFileBuilder.withPlaceholders(placeholders)
+
+    if (contents.isBinary != true) {
+      val textBuilder = StringBuilder(contents.textualRepresentation.trimIndent())
+      val placeholders = extractPlaceholdersFromText(textBuilder)
+      taskFileBuilder.withContents(InMemoryTextualContents(textBuilder.toString()))
+      taskFileBuilder.withPlaceholders(placeholders)
+    }
+    else {
+      taskFileBuilder.withContents(contents)
+    }
+
     taskFileBuilder.buildTaskFile()
     val taskFile = taskFileBuilder.taskFile
     if (visible != null) {
@@ -675,6 +692,10 @@ class TaskFileBuilder(val task: Task? = null) {
     taskFile.text = text
   }
 
+  fun withContents(contents: FileContents) {
+    taskFile.contents = contents
+  }
+
   fun withPlaceholders(placeholders: List<AnswerPlaceholder>) {
     for (placeholder in placeholders) {
       placeholder.taskFile = taskFile
@@ -709,7 +730,12 @@ class EduFileBuilder {
     eduFile.name = name
   }
 
+  @Deprecated("Use withContents to specify type", replaceWith = ReplaceWith("withContents()"))
   fun withText(text: String) {
     eduFile.text = text
+  }
+
+  fun withContents(contents: FileContents) {
+    eduFile.contents = contents
   }
 }

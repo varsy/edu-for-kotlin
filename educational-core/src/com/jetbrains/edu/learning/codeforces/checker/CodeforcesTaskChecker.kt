@@ -38,6 +38,6 @@ class CodeforcesTaskChecker(
   }
 
   override fun createLatestOutputFile(testFolder: VirtualFile, actualOutput: String) {
-    GeneratorUtils.createChildFile(project, testFolder, task.latestOutputFileName, actualOutput)
+    GeneratorUtils.createTextChildFile(project, testFolder, task.latestOutputFileName, actualOutput)
   }
 }

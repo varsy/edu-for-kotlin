@@ -1,6 +1,7 @@
 package com.jetbrains.edu.python.courseGeneration
 
 import com.jetbrains.edu.learning.CourseBuilder
+import com.jetbrains.edu.learning.authorContentsStorage.zip.COURSE_AUTHOR_CONTENTS_FILE
 import com.jetbrains.edu.learning.course
 import com.jetbrains.edu.learning.courseFormat.Course
 import com.jetbrains.edu.learning.courseFormat.CourseMode
@@ -96,6 +97,7 @@ class PyNewCourseBuilderTest : CourseGenerationTestBase<PyProjectSettings>() {
           }
         }
       }
+      file(COURSE_AUTHOR_CONTENTS_FILE)
     }.assertEquals(rootDir)
   }
 

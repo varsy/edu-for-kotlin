@@ -24,6 +24,7 @@ import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.newvfs.events.VFileCopyEvent
 import com.intellij.openapi.vfs.newvfs.events.VFileCreateEvent
 import com.intellij.openapi.vfs.newvfs.events.VFileContentChangeEvent
+import com.jetbrains.edu.learning.yaml.YamlFormatSettings.YAML_TEST_THROW_EXCEPTION
 
 abstract class VirtualFileListenerTestBase : EduTestCase() {
   protected abstract val courseMode: CourseMode
@@ -34,6 +35,7 @@ abstract class VirtualFileListenerTestBase : EduTestCase() {
     ApplicationManager.getApplication().messageBus
       .connect(testRootDisposable)
       .subscribe(VirtualFileManager.VFS_CHANGES, createListener(project))
+    project.putUserData(YAML_TEST_THROW_EXCEPTION, false)
   }
   
   protected fun doAddFileTest(filePathInTask: String, text: String = "", checksProducer: (Task) -> List<FileCheck>) {

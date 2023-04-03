@@ -25,6 +25,7 @@ import com.jetbrains.edu.learning.courseFormat.tasks.matching.SortingTask
 import com.jetbrains.edu.learning.stepik.hyperskill.api.HyperskillProject
 import com.jetbrains.edu.learning.stepik.hyperskill.courseFormat.HyperskillCourse
 import com.jetbrains.edu.learning.yaml.YamlFormatSynchronizer
+import com.jetbrains.edu.learning.yaml.YamlFormatSynchronizer.serializeAlsoTextInTaskFilesNotEncrypted
 import org.intellij.lang.annotations.Language
 import java.time.ZonedDateTime
 import java.util.*
@@ -503,7 +504,7 @@ class StudentYamlSerializationTest : EduTestCase() {
   }
 
   fun `test learner created`() {
-    val task = courseWithFiles {
+    val task = courseWithFiles(writeTextsInYaml = true) {
       lesson {
         eduTask {
           taskFile("task.txt", "text")
@@ -528,7 +529,7 @@ class StudentYamlSerializationTest : EduTestCase() {
     val task = courseWithFiles {
       lesson {
         eduTask {
-          taskFile("task.png", "")
+          taskFile("task.png", BinaryContents.EMPTY)
         }
       }
     }.findTask("lesson1", "task1")
@@ -594,7 +595,7 @@ class StudentYamlSerializationTest : EduTestCase() {
       frameworkLesson {
         eduTask {
           taskFile("task.txt", "task text")
-          taskFile(gitObjectFilePath, base64Text, false)
+          taskFile(gitObjectFilePath, inMemoryFileContentsFromText(base64Text, true), false)
         }
       }
     }.findTask("lesson1", "task1")
@@ -616,7 +617,8 @@ class StudentYamlSerializationTest : EduTestCase() {
   }
 
   fun `test huge binary file text is not saved in framework lesson`() {
-    var base64Text = "eAErKUpNVTA3ZjA0MDAzMVHITczM08suYTh0o+NNPdt26bgThdosKRdPVXHN/wNVUpSamJKbqldSUcKwosqLb/75qC5OmZAJs9O9Di0I/PoCAJ5FH4E="
+    // We are going to repeat base64text several times, so its length should be a multiple of 3 to get a correct Base64 encoding.
+    var base64Text = "eAErKUpNVTA3ZjA0MDAzMVHITczM08suYTh0o+NNPdt26bgThdosKRdPVXHN/wNVUpSamJKbqldSUcKwosqLb/75qC5OmZAJs9O9Di0I/PoCAJ5FH4"
 
     //create huge fileText
     while (!exceedsBase64ContentLimit(base64Text)) {
@@ -628,7 +630,7 @@ class StudentYamlSerializationTest : EduTestCase() {
       frameworkLesson {
         eduTask {
           taskFile("task.txt", "task text")
-          taskFile(gitObjectFilePath, base64Text, false)
+          taskFile(gitObjectFilePath, inMemoryFileContentsFromText(base64Text, true), false)
         }
       }
     }.findTask("lesson1", "task1")
@@ -693,7 +695,8 @@ class StudentYamlSerializationTest : EduTestCase() {
   }
 
   private fun doTest(item: StudyItem, expected: String) {
-    val actual = YamlFormatSynchronizer.STUDENT_MAPPER.writeValueAsString(item)
+    val studentMapper = YamlFormatSynchronizer.STUDENT_MAPPER.serializeAlsoTextInTaskFilesNotEncrypted()
+    val actual = studentMapper.writeValueAsString(item)
     assertEquals(expected, actual)
   }
 }

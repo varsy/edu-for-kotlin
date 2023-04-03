@@ -11,14 +11,14 @@ import com.jetbrains.edu.learning.yaml.format.YamlMixinNames.NAME
 import com.jetbrains.edu.learning.yaml.format.YamlMixinNames.PLACEHOLDERS
 import com.jetbrains.edu.learning.yaml.format.YamlMixinNames.VISIBLE
 
-@Suppress("UNUSED_PARAMETER", "unused") // used for yaml serialization
 @JsonDeserialize(builder = StudentTaskFileBuilder::class)
 @JsonPropertyOrder(NAME, VISIBLE, PLACEHOLDERS, EDITABLE, ENCRYPTED_TEXT, LEARNER_CREATED)
 abstract class StudentEncryptedTaskFileYamlMixin : StudentTaskFileYamlMixin() {
 
   @JsonProperty(ENCRYPTED_TEXT)
   @Encrypt
-  override fun getTextToSerialize(): String {
+  fun getTextToSerialize(): String {
     throw NotImplementedError()
   }
 }
+

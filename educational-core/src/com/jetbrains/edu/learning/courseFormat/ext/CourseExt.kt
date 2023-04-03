@@ -23,10 +23,11 @@ import com.jetbrains.edu.learning.courseFormat.tasks.Task
 import com.jetbrains.edu.learning.messages.EduCoreBundle
 import com.jetbrains.edu.learning.newproject.JetBrainsAcademyCourse
 
-val Course.configurator: EduConfigurator<*>? get() {
-  val language = languageById ?: return null
-  return EduConfiguratorManager.findConfigurator(itemType, environment, language)
-}
+val Course.configurator: EduConfigurator<*>?
+  get() {
+    val language = languageById ?: return null
+    return EduConfiguratorManager.findConfigurator(itemType, environment, language)
+  }
 
 val Course.compatibilityProvider: CourseCompatibilityProvider?
   get() {
@@ -36,24 +37,26 @@ val Course.compatibilityProvider: CourseCompatibilityProvider?
 val Course.sourceDir: String? get() = configurator?.sourceDir
 val Course.testDirs: List<String> get() = configurator?.testDirs.orEmpty()
 
-val Course.project: Project? get() {
-  for (project in ProjectManager.getInstance().openProjects) {
-    if (this == StudyTaskManager.getInstance(project).course) {
-      return project
+val Course.project: Project?
+  get() {
+    for (project in ProjectManager.getInstance().openProjects) {
+      if (this == StudyTaskManager.getInstance(project).course) {
+        return project
+      }
     }
+    return null
   }
-  return null
-}
 
 val Course.hasSections: Boolean get() = sections.isNotEmpty()
 
 val Course.hasTopLevelLessons: Boolean get() = lessons.isNotEmpty()
 
-val Course.allTasks: List<Task> get() {
-  val allTasks = mutableListOf<Task>()
-  course.visitTasks { allTasks += it }
-  return allTasks
-}
+val Course.allTasks: List<Task>
+  get() {
+    val allTasks = mutableListOf<Task>()
+    course.visitTasks { allTasks += it }
+    return allTasks
+  }
 
 val Course.languageDisplayName: String get() = languageById?.displayName ?: languageID
 
@@ -138,8 +141,10 @@ fun Course.validateLanguage(projectLanguage: String = programmingLanguage): Resu
   }
 
   if (configurator == null) {
-    val message = EduCoreBundle.message("rest.service.language.not.supported", ApplicationNamesInfo.getInstance().productName,
-                                        projectLanguage.capitalize())
+    val message = EduCoreBundle.message(
+      "rest.service.language.not.supported", ApplicationNamesInfo.getInstance().productName,
+      projectLanguage.capitalize()
+    )
     return Err(ValidationErrorMessage(message))
   }
   return Ok(Unit)

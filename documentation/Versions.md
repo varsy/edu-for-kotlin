@@ -924,3 +924,9 @@
             }
           },
        ```
+17. Task files now specify if their contents are binary or not. The field "is_binary" is introduced, and
+    it can be either `true`, `false` or `null`. `true` means that the contents are binary, so the `text` field is encoded in Base64.
+    `false` means that the contents are textual, in this case the `text` field is not encoded anyhow. `null` means that the contents
+    type is undefined, and the plugin should determine it somehow by itself. Usually it detects the type by the file name.
+
+    The `null` value is the default value, if the `is_binary` field is absent.  

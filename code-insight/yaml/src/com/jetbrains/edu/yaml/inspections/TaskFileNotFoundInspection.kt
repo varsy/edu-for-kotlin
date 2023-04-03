@@ -64,7 +64,7 @@ class TaskFileNotFoundInspection : UnresolvedFileReferenceInspection() {
       // We have to add task file first to keep order
       task.addTaskFile(taskFile, index)
       try {
-        GeneratorUtils.createChildFile(project, taskDir, path, "")
+        GeneratorUtils.createTextChildFile(project, taskDir, path, "")
         val virtualFile = file.originalFile.virtualFile
         if (virtualFile != null) {
           updateEditorNotifications(project, virtualFile)
