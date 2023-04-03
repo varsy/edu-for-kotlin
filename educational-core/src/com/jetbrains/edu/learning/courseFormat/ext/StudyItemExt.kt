@@ -1,6 +1,5 @@
 package com.jetbrains.edu.learning.courseFormat.ext
 
-import com.intellij.openapi.vfs.VfsUtilCore
 import com.intellij.openapi.vfs.VirtualFile
 import com.jetbrains.edu.coursecreator.StudyItemType
 import com.jetbrains.edu.coursecreator.StudyItemType.*
@@ -29,17 +28,4 @@ fun StudyItem.getDir(courseDir: VirtualFile): VirtualFile? {
     is Task -> findDir(lesson.getDir(courseDir))
     else -> error("Can't find directory for the item $itemType")
   }
-}
-
-fun StudyItem.getPathInCourse(): String {
-  val parents = mutableListOf<String>()
-  var currentParent = parent
-  while (currentParent !is Course) {
-    parents.add(currentParent.name)
-    currentParent = currentParent.parent
-  }
-  parents.reverse()
-  if (parents.isEmpty()) return name
-  parents.add(name)
-  return parents.joinToString(VfsUtilCore.VFS_SEPARATOR)
 }

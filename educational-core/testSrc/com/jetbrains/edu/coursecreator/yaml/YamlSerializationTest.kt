@@ -41,6 +41,7 @@ class YamlSerializationTest : YamlTestCase() {
     |    placeholder_text: |-
     |      type here
     |      and here
+    |  is_binary: false
     |""".trimMargin())
   }
 
@@ -57,6 +58,7 @@ class YamlSerializationTest : YamlTestCase() {
     |files:
     |- name: Test.java
     |  visible: true
+    |  is_binary: false
     |  learner_created: false
     |status: Unchecked
     |record: -1
@@ -77,6 +79,7 @@ class YamlSerializationTest : YamlTestCase() {
     |files:
     |- name: Main.go
     |  visible: true
+    |  is_binary: false
     |  learner_created: false
     |check_profile: $checkProfile
     |status: Unchecked
@@ -143,6 +146,7 @@ class YamlSerializationTest : YamlTestCase() {
     |    placeholder_text: |-
     |      type here
     |      and here
+    |  is_binary: false
     |tags:
     |- kotlin
     |- cycles
@@ -168,6 +172,7 @@ class YamlSerializationTest : YamlTestCase() {
     |  - offset: 0
     |    length: 16
     |    placeholder_text: ""
+    |  is_binary: false
     |""".trimMargin())
   }
 
@@ -190,6 +195,7 @@ class YamlSerializationTest : YamlTestCase() {
     |  - offset: 0
     |    length: 16
     |    placeholder_text: '   type here'
+    |  is_binary: false
     |""".trimMargin())
   }
 
@@ -212,6 +218,7 @@ class YamlSerializationTest : YamlTestCase() {
     |  - offset: 0
     |    length: 16
     |    placeholder_text: 'type here   '
+    |  is_binary: false
     |""".trimMargin())
   }
 
@@ -237,8 +244,10 @@ class YamlSerializationTest : YamlTestCase() {
     |    placeholder_text: |-
     |      type here
     |      and here
+    |  is_binary: false
     |- name: Test.java
     |  visible: false
+    |  is_binary: false
     |""".trimMargin())
   }
 
@@ -264,8 +273,10 @@ class YamlSerializationTest : YamlTestCase() {
     |    placeholder_text: |-
     |      type here
     |      and here
+    |  is_binary: false
     |- name: Additional.java
     |  visible: false
+    |  is_binary: false
     |""".trimMargin())
   }
 
@@ -301,6 +312,7 @@ class YamlSerializationTest : YamlTestCase() {
     |      file: Test.java
     |      placeholder: 1
     |      is_visible: true
+    |  is_binary: false
     |""".trimMargin())
   }
 
@@ -317,6 +329,7 @@ class YamlSerializationTest : YamlTestCase() {
     |files:
     |- name: Test.java
     |  visible: true
+    |  is_binary: false
     |""".trimMargin())
   }
 
@@ -339,6 +352,7 @@ class YamlSerializationTest : YamlTestCase() {
       |files:
       |- name: Test.java
       |  visible: true
+      |  is_binary: false
       |local_check: true
       |""".trimMargin())
   }
@@ -360,6 +374,7 @@ class YamlSerializationTest : YamlTestCase() {
       |files:
       |- name: Test.java
       |  visible: true
+      |  is_binary: false
       |local_check: true
       |""".trimMargin())
   }
@@ -977,6 +992,7 @@ class YamlSerializationTest : YamlTestCase() {
       |files:
       |- name: task.txt
       |  visible: true
+      |  is_binary: false
       |local_check: true
       |""".trimMargin())
   }

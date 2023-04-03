@@ -3,6 +3,7 @@ package com.jetbrains.edu.go.courseGeneration
 import com.goide.GoLanguage
 import com.goide.sdk.GoSdk
 import com.jetbrains.edu.go.GoProjectSettings
+import com.jetbrains.edu.learning.authorContentsStorage.zip.COURSE_AUTHOR_CONTENTS_FILE
 import com.jetbrains.edu.learning.course
 import com.jetbrains.edu.learning.courseGeneration.CourseGenerationTestBase
 import com.jetbrains.edu.learning.fileTree
@@ -96,6 +97,7 @@ class GoCourseBuilderTest : CourseGenerationTestBase<GoProjectSettings>() {
         file("task.go")
         file("task.md")
       }
+      file(COURSE_AUTHOR_CONTENTS_FILE)
     }.assertEquals(rootDir)
   }
 }

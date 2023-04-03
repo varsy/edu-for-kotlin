@@ -6,19 +6,20 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.jetbrains.edu.learning.json.encrypt.Encrypt
 import com.jetbrains.edu.learning.yaml.format.YamlMixinNames.EDITABLE
 import com.jetbrains.edu.learning.yaml.format.YamlMixinNames.ENCRYPTED_TEXT
+import com.jetbrains.edu.learning.yaml.format.YamlMixinNames.IS_BINARY
 import com.jetbrains.edu.learning.yaml.format.YamlMixinNames.LEARNER_CREATED
 import com.jetbrains.edu.learning.yaml.format.YamlMixinNames.NAME
 import com.jetbrains.edu.learning.yaml.format.YamlMixinNames.PLACEHOLDERS
 import com.jetbrains.edu.learning.yaml.format.YamlMixinNames.VISIBLE
 
-@Suppress("UNUSED_PARAMETER", "unused") // used for yaml serialization
 @JsonDeserialize(builder = StudentTaskFileBuilder::class)
-@JsonPropertyOrder(NAME, VISIBLE, PLACEHOLDERS, EDITABLE, ENCRYPTED_TEXT, LEARNER_CREATED)
+@JsonPropertyOrder(NAME, VISIBLE, PLACEHOLDERS, EDITABLE, ENCRYPTED_TEXT, IS_BINARY, LEARNER_CREATED)
 abstract class StudentEncryptedTaskFileYamlMixin : StudentTaskFileYamlMixin() {
 
   @JsonProperty(ENCRYPTED_TEXT)
   @Encrypt
-  override fun getTextToSerialize(): String {
+  fun getTextToSerialize(): String {
     throw NotImplementedError()
   }
 }
+

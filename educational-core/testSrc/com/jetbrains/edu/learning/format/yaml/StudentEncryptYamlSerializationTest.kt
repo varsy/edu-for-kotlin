@@ -8,6 +8,7 @@ import com.jetbrains.edu.learning.findTask
 import com.jetbrains.edu.learning.json.encrypt.AES256
 import com.jetbrains.edu.learning.json.encrypt.TEST_AES_KEY
 import com.jetbrains.edu.learning.yaml.YamlFormatSynchronizer
+import com.jetbrains.edu.learning.yaml.YamlFormatSynchronizer.serializeAlsoTextInTaskFilesEncrypted
 
 class StudentEncryptYamlSerializationTest : EduTestCase() {
 
@@ -26,6 +27,7 @@ class StudentEncryptYamlSerializationTest : EduTestCase() {
     |- name: task.txt
     |  visible: true
     |  encrypted_text: fgnGdWA8h6P1G1byNm3P3g==
+    |  is_binary: false
     |  learner_created: false
     |status: Unchecked
     |record: -1
@@ -58,6 +60,7 @@ class StudentEncryptYamlSerializationTest : EduTestCase() {
     |    status: Unchecked
     |    encrypted_possible_answer: 6zkm3NpDQQaIQ+CAebF//w==
     |  encrypted_text: lrKTY22nc3exEO7HQjXPxaXf97REIR5R1llqKFTGca0=
+    |  is_binary: false
     |  learner_created: false
     |status: Unchecked
     |record: -1
@@ -96,6 +99,7 @@ class StudentEncryptYamlSerializationTest : EduTestCase() {
     |    status: Unchecked
     |    encrypted_possible_answer: $encryptedPossibleAnswer
     |  encrypted_text: $taskSolutionEncrypted
+    |  is_binary: false
     |  learner_created: false
     |status: Unchecked
     |record: -1
@@ -118,6 +122,7 @@ class StudentEncryptYamlSerializationTest : EduTestCase() {
     |- name: task.txt
     |  visible: true
     |  encrypted_text: fgnGdWA8h6P1G1byNm3P3g==
+    |  is_binary: false
     |  learner_created: true
     |status: Unchecked
     |record: -1
@@ -139,6 +144,7 @@ class StudentEncryptYamlSerializationTest : EduTestCase() {
     |- name: task.txt
     |  visible: false
     |  encrypted_text: Bb6BVFFg7T7oP1LtfAFuEg==
+    |  is_binary: false
     |  learner_created: false
     |status: Unchecked
     |record: -1
@@ -146,7 +152,8 @@ class StudentEncryptYamlSerializationTest : EduTestCase() {
   }
 
   private fun doTest(item: StudyItem, expected: String) {
-    val actual = YamlFormatSynchronizer.STUDENT_MAPPER_WITH_ENCRYPTION.writeValueAsString(item)
+    val studentMapperWithEncryption = YamlFormatSynchronizer.STUDENT_MAPPER_WITH_ENCRYPTION.serializeAlsoTextInTaskFilesEncrypted()
+    val actual = studentMapperWithEncryption.writeValueAsString(item)
     assertEquals(expected, actual)
   }
 }

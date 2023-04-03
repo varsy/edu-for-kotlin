@@ -13,7 +13,9 @@ import com.intellij.openapi.ui.popup.Balloon
 import com.intellij.openapi.ui.popup.JBPopupFactory
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.util.ui.UIUtil
+import com.jetbrains.edu.learning.authorContentsStorage.zip.ZipAuthorContentStorageFactory
 import com.jetbrains.edu.learning.courseFormat.Course
+import com.jetbrains.edu.learning.courseFormat.authorContentsStorage.AuthorContentStorageFactory
 import com.jetbrains.edu.learning.coursera.CourseraCourse
 import com.jetbrains.edu.learning.json.configureCourseMapper
 import com.jetbrains.edu.learning.json.getCourseMapper
@@ -39,7 +41,8 @@ object EduUtilsKt {
         htmlContent,
         null,
         UIUtil.getToolTipActionBackground(),
-        EduBrowserHyperlinkListener.INSTANCE)
+        EduBrowserHyperlinkListener.INSTANCE
+      )
       .createBalloon()
 
     val tooltipRelativePoint = JBPopupFactory.getInstance().guessBestPopupLocation(this)
@@ -64,14 +67,17 @@ object EduUtilsKt {
     return getLocalCourse(zipFilePath, ::readCourseraCourseJson)
   }
 
-  fun getLocalCourse(zipFilePath: String, readCourseJson: (String) -> Course? = ::readCourseJson): Course? {
+  fun getLocalCourse(zipFilePath: String, readCourseJson: (String, AuthorContentStorageFactory<*>) -> Course? = ::readCourseJson): Course? {
     try {
       val zipFile = ZipFile(zipFilePath)
-      return zipFile.use {
+      val authorContentStorageFactory = ZipAuthorContentStorageFactory()
+      val course = zipFile.use {
         val entry = it.getEntry(EduNames.COURSE_META_FILE) ?: return null
         val jsonText = String(it.getInputStream(entry).readAllBytes(), StandardCharsets.UTF_8)
-        readCourseJson(jsonText)
+        readCourseJson(jsonText, authorContentStorageFactory)
       }
+      authorContentStorageFactory.build()
+      return course
     }
     catch (e: IOException) {
       LOG.error("Failed to unzip course archive", e)
@@ -82,9 +88,9 @@ object EduUtilsKt {
   private val LOG = logger<EduUtilsKt>()
 }
 
-private fun readCourseraCourseJson(jsonText: String): Course? {
+private fun readCourseraCourseJson(jsonText: String, authorContentStorageFactory: AuthorContentStorageFactory<*>): Course? {
   return try {
-    val courseMapper = getCourseMapper()
+    val courseMapper = getCourseMapper(authorContentStorageFactory)
     courseMapper.addMixIn(CourseraCourse::class.java, CourseraCourseMixin::class.java)
     courseMapper.configureCourseMapper(false)
     var courseNode = courseMapper.readTree(jsonText) as ObjectNode
@@ -132,6 +138,7 @@ object Executor {
         ProgressManager.getInstance().progressIndicator.isIndeterminate = true
         EduUtils.execCancelable(callable)
       },
-      message, true, null)
+      message, true, null
+    )
 }
 

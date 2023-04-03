@@ -3,14 +3,19 @@
 package com.jetbrains.edu.learning.courseFormat
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect
+import com.fasterxml.jackson.annotation.JsonInclude
+import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.PropertyAccessor
 import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.core.JsonProcessingException
 import com.fasterxml.jackson.databind.*
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder
 import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.databind.ser.BeanSerializerFactory
 import com.intellij.openapi.diagnostic.logger
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
+import com.jetbrains.edu.learning.json.mixins.JsonMixinNames
 import com.jetbrains.edu.learning.json.mixins.StudyItemDeserializer
 import com.jetbrains.edu.learning.serialization.SerializationUtils
 
@@ -27,7 +32,34 @@ private val MAPPER: ObjectMapper by lazy {
   module.addSerializer(StudyItem::class.java, StudyItemCopySerializer())
   module.addDeserializer(StudyItem::class.java, StudyItemDeserializer())
   mapper.registerModule(module)
+  mapper.addMixIn(FileContents::class.java, FileContentsMixin::class.java)
   mapper
+}
+
+@Suppress("unused") // used for serialization
+@JsonDeserialize(builder = FileContentsBuilder::class)
+private abstract class FileContentsMixin {
+  lateinit var textualRepresentation: String
+    @JsonProperty(JsonMixinNames.TEXT)
+    @JsonInclude(JsonInclude.Include.ALWAYS)
+    get
+
+  var isBinary: Boolean? = null
+    @JsonProperty(JsonMixinNames.IS_BINARY)
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    get
+}
+
+@JsonPOJOBuilder(withPrefix = "")
+private class FileContentsBuilder {
+
+  @JsonProperty(JsonMixinNames.TEXT)
+  lateinit var text: String
+  @JsonProperty(JsonMixinNames.IS_BINARY)
+  val isBinary: Boolean? = null
+
+  @Suppress("unused") // used by json serializer
+  private fun build(): FileContents = inMemoryFileContentsFromText(text, isBinary)
 }
 
 fun <T : StudyItem> T.copy(): T {

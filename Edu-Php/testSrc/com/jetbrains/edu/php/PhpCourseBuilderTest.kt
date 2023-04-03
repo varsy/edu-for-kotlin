@@ -1,5 +1,6 @@
 package com.jetbrains.edu.php
 
+import com.jetbrains.edu.learning.authorContentsStorage.zip.COURSE_AUTHOR_CONTENTS_FILE
 import com.jetbrains.edu.learning.course
 import com.jetbrains.edu.learning.courseGeneration.CourseGenerationTestBase
 import com.jetbrains.edu.learning.fileTree
@@ -73,6 +74,7 @@ class PhpCourseBuilderTest : CourseGenerationTestBase<PhpProjectSettings>() {
         file("task.md")
       }
       file(ComposerUtils.CONFIG_DEFAULT_FILENAME)
+      file(COURSE_AUTHOR_CONTENTS_FILE)
     }.assertEquals(rootDir)
   }
 }

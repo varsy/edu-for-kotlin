@@ -209,6 +209,9 @@ object YamlMixinNames {
   const val TEXT = "text"
 
   @NlsSafe
+  const val IS_BINARY = "is_binary"
+
+  @NlsSafe
   const val ENCRYPTED_TEXT = "encrypted_text"
 
   @NlsSafe

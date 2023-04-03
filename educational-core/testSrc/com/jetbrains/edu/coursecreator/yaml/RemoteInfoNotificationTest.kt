@@ -16,7 +16,7 @@ class RemoteInfoNotificationTest : NotificationsTestBase() {
     val yamlText = createRemoteYamlConfigText()
 
     withYamlFileTypeRegistered {
-      val configFile = GeneratorUtils.createChildFile(project, LightPlatformTestCase.getSourceRoot(), YamlFormatSettings.REMOTE_COURSE_CONFIG, yamlText)
+      val configFile = GeneratorUtils.createTextChildFile(project, LightPlatformTestCase.getSourceRoot(), YamlFormatSettings.REMOTE_COURSE_CONFIG, yamlText)
       checkEditorNotification<GeneratedRemoteInfoNotificationProvider>(configFile!!)
     }
   }
@@ -29,7 +29,7 @@ class RemoteInfoNotificationTest : NotificationsTestBase() {
 
     val sectionDir = LightPlatformTestCase.getSourceRoot().findChild(course.sections[0].name)!!
     withYamlFileTypeRegistered {
-      val configFile = GeneratorUtils.createChildFile(project, sectionDir, YamlFormatSettings.REMOTE_SECTION_CONFIG, yamlText)
+      val configFile = GeneratorUtils.createTextChildFile(project, sectionDir, YamlFormatSettings.REMOTE_SECTION_CONFIG, yamlText)
       checkEditorNotification<GeneratedRemoteInfoNotificationProvider>(configFile!!)
     }
   }
@@ -42,7 +42,7 @@ class RemoteInfoNotificationTest : NotificationsTestBase() {
 
     val lessonDir = course.lessons[0].getDir(project.courseDir)!!
     withYamlFileTypeRegistered {
-      val configFile = GeneratorUtils.createChildFile(project, lessonDir, YamlFormatSettings.REMOTE_LESSON_CONFIG, yamlText)
+      val configFile = GeneratorUtils.createTextChildFile(project, lessonDir, YamlFormatSettings.REMOTE_LESSON_CONFIG, yamlText)
       checkEditorNotification<GeneratedRemoteInfoNotificationProvider>(configFile!!)
     }
   }
@@ -57,7 +57,7 @@ class RemoteInfoNotificationTest : NotificationsTestBase() {
 
     val taskDir = course.lessons[0].taskList[0].getDir(project.courseDir)!!
     withYamlFileTypeRegistered {
-      val configFile = GeneratorUtils.createChildFile(project, taskDir, YamlFormatSettings.REMOTE_TASK_CONFIG, yamlText)
+      val configFile = GeneratorUtils.createTextChildFile(project, taskDir, YamlFormatSettings.REMOTE_TASK_CONFIG, yamlText)
       checkEditorNotification<GeneratedRemoteInfoNotificationProvider>(configFile!!)
     }
   }
@@ -86,7 +86,7 @@ class RemoteInfoNotificationTest : NotificationsTestBase() {
 
     val taskDir = course.lessons[0].taskList[0].getDir(project.courseDir)!!
     withYamlFileTypeRegistered {
-      val configFile = GeneratorUtils.createChildFile(project, taskDir, YamlFormatSettings.TASK_CONFIG, yamlText)
+      val configFile = GeneratorUtils.createTextChildFile(project, taskDir, YamlFormatSettings.TASK_CONFIG, yamlText)
       checkNoEditorNotification<GeneratedRemoteInfoNotificationProvider>(configFile!!)
     }
   }

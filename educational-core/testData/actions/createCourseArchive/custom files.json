@@ -18,25 +18,29 @@
                   "name" : "taskFile1.txt",
                   "placeholders" : [ ],
                   "is_visible" : true,
-                  "text" : "6zkm3NpDQQaIQ+CAebF//w=="
+                  "text" : "6zkm3NpDQQaIQ+CAebF//w==",
+                  "is_binary" : false
                 },
                 "test.py" : {
                   "name" : "test.py",
                   "placeholders" : [ ],
                   "is_visible" : true,
-                  "text" : "0fgzeC1aVg9usclTUtE3LA=="
+                  "text" : "0fgzeC1aVg9usclTUtE3LA==",
+                  "is_binary" : false
                 },
                 "additional.py" : {
                   "name" : "additional.py",
                   "placeholders" : [ ],
                   "is_visible" : false,
-                  "text" : "pL6D6cpSudLyZn+johMJ/g=="
+                  "text" : "pL6D6cpSudLyZn+johMJ/g==",
+                  "is_binary" : false
                 },
                 "visibleAdditional.py" : {
                   "name" : "visibleAdditional.py",
                   "placeholders" : [ ],
                   "is_visible" : true,
-                  "text" : "pL6D6cpSudLyZn+johMJ/g=="
+                  "text" : "pL6D6cpSudLyZn+johMJ/g==",
+                  "is_binary" : false
                 }
               },
               "description_text" : "solve task",

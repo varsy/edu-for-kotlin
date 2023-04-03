@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder
 import com.jetbrains.edu.learning.courseFormat.AnswerPlaceholder
 import com.jetbrains.edu.learning.courseFormat.TaskFile
+import com.jetbrains.edu.learning.json.mixins.JsonMixinNames
 import com.jetbrains.edu.learning.json.mixins.TrueValueFilter
 import com.jetbrains.edu.learning.messages.EduCoreBundle
 import com.jetbrains.edu.learning.yaml.errorHandling.formatError
@@ -24,6 +25,11 @@ abstract class TaskFileYamlMixin {
   @JsonProperty(NAME)
   private lateinit var name: String
 
+  var isBinary: Boolean? = null
+    @JsonProperty(JsonMixinNames.IS_BINARY)
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    get
+
   @JsonProperty(PLACEHOLDERS)
   private lateinit var _answerPlaceholders: List<AnswerPlaceholder>
 
@@ -36,11 +42,13 @@ abstract class TaskFileYamlMixin {
 }
 
 @JsonPOJOBuilder(withPrefix = "")
-open class TaskFileBuilder(@JsonProperty(NAME) val name: String?,
-                           @JsonSetter(contentNulls = Nulls.SKIP)
-                           @JsonProperty(PLACEHOLDERS) val placeholders: List<AnswerPlaceholder> = mutableListOf(),
-                           @JsonProperty(VISIBLE) val visible: Boolean = true,
-                           @JsonProperty(EDITABLE) val editable: Boolean = true) {
+open class TaskFileBuilder(
+  @JsonProperty(NAME) val name: String?,
+  @JsonSetter(contentNulls = Nulls.SKIP)
+  @JsonProperty(PLACEHOLDERS) val placeholders: List<AnswerPlaceholder> = mutableListOf(),
+  @JsonProperty(VISIBLE) val visible: Boolean = true,
+  @JsonProperty(EDITABLE) val editable: Boolean = true
+) {
   @Suppress("unused") //used for deserialization
   private fun build(): TaskFile {
     if (name == null) {

@@ -15,7 +15,8 @@
               "name" : "123.png",
               "placeholders" : [ ],
               "is_visible" : true,
-              "text" : "6zkm3NpDQQaIQ+CAebF//w=="
+              "text" : "6zkm3NpDQQaIQ+CAebF//w==",
+              "is_binary" : true
             }
           },
           "description_text" : "solve task",

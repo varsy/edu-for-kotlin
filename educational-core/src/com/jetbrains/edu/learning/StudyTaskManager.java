@@ -9,13 +9,17 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Computable;
 import com.intellij.util.messages.Topic;
 import com.intellij.util.xmlb.annotations.Transient;
+import com.jetbrains.edu.learning.authorContentsStorage.zip.ZipAuthorContentsStorage;
 import com.jetbrains.edu.learning.courseFormat.Course;
+import com.jetbrains.edu.learning.courseFormat.authorContentsStorage.AuthorContentsStorage;
 import com.jetbrains.edu.learning.yaml.YamlDeepLoader;
 import com.jetbrains.edu.learning.yaml.YamlFormatSettings;
 import com.jetbrains.edu.learning.yaml.YamlFormatSynchronizer;
 import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import static com.jetbrains.edu.learning.OpenApiExtKt.getCourseDir;
 
 /**
  * Implementation of class which contains all the information
@@ -31,6 +35,9 @@ public class StudyTaskManager implements PersistentStateComponent<Element>, Dumb
 
   @Transient @Nullable private final Project myProject;
 
+  @Transient @Nullable
+  private AuthorContentsStorage myAuthorContentsStorage;
+
   public StudyTaskManager(@Nullable Project project) {
     myProject = project;
   }
@@ -43,6 +50,7 @@ public class StudyTaskManager implements PersistentStateComponent<Element>, Dumb
   public void setCourse(Course course) {
     myCourse = course;
     if (myProject != null) {
+      myAuthorContentsStorage = ZipAuthorContentsStorage.initAuthorContentsStorage(course, getCourseDir(myProject));
       myProject.getMessageBus().syncPublisher(COURSE_SET).courseSet(course);
     }
   }
@@ -59,12 +67,18 @@ public class StudyTaskManager implements PersistentStateComponent<Element>, Dumb
     return null;
   }
 
+  @Nullable
+  @Transient
+  public AuthorContentsStorage getAuthorContentsStorage() {
+    return myAuthorContentsStorage;
+  }
+
   @Override
   public void loadState(@NotNull Element state) {
   }
 
   @Override
-  public void dispose() {}
+  public void dispose() { }
 
   public static StudyTaskManager getInstance(@NotNull final Project project) {
     StudyTaskManager manager = ServiceManager.getService(project, StudyTaskManager.class);

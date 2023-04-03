@@ -18,7 +18,8 @@
                   "name" : "taskFile1.txt",
                   "placeholders" : [ ],
                   "is_visible" : true,
-                  "text" : "6zkm3NpDQQaIQ+CAebF//w=="
+                  "text" : "6zkm3NpDQQaIQ+CAebF//w==",
+                  "is_binary" : false
                 }
               },
               "description_text" : "solve task",

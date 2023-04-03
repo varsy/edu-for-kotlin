@@ -104,9 +104,11 @@ abstract class CourseProjectGenerator<S : EduProjectSettings>(
     baseDir.putUserData(COURSE_MODE_TO_CREATE, course.courseMode)
     baseDir.putUserData(COURSE_LANGUAGE_ID_TO_CREATE, course.languageID)
 
+    val locationPath = location.toPath()
+
     if (isCourseTrusted(course, isNewCourseCreatorCourse)) {
       @Suppress("UnstableApiUsage")
-      TrustedPaths.getInstance().setProjectPathTrusted(location.toPath(), true)
+      TrustedPaths.getInstance().setProjectPathTrusted(locationPath, true)
     }
 
     val holder = CourseInfoHolder.fromCourse(course, baseDir)
@@ -116,7 +118,7 @@ abstract class CourseProjectGenerator<S : EduProjectSettings>(
     }, EduCoreBundle.message("generate.project.generate.course.structure.progress.text"), false, null)
     // @formatter:on
 
-    val newProject = openNewCourseProject(course, location.toPath(), this::prepareToOpen) ?: return null
+    val newProject = openNewCourseProject(course, locationPath, this::prepareToOpen) ?: return null
 
     // @formatter:off
     ProgressManager.getInstance().runProcessWithProgressSynchronously<Unit, IOException>({

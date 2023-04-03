@@ -3,6 +3,7 @@
 
 package com.jetbrains.edu.learning.json.mixins
 
+import com.fasterxml.jackson.annotation.JacksonInject
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonPropertyOrder
@@ -10,16 +11,19 @@ import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.core.ObjectCodec
 import com.fasterxml.jackson.databind.DeserializationContext
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.databind.util.StdConverter
 import com.jetbrains.edu.learning.courseFormat.*
 import com.jetbrains.edu.learning.courseFormat.EduFormatNames.MARKETPLACE
+import com.jetbrains.edu.learning.courseFormat.authorContentsStorage.*
 import com.jetbrains.edu.learning.courseFormat.tasks.*
 import com.jetbrains.edu.learning.courseFormat.tasks.choice.ChoiceOption
 import com.jetbrains.edu.learning.courseFormat.tasks.choice.ChoiceOptionStatus
 import com.jetbrains.edu.learning.courseFormat.tasks.choice.ChoiceTask
+import com.jetbrains.edu.learning.json.AUTHOR_CONTENTS_STORAGE_FACTORY_INJECTION_KEY
 import com.jetbrains.edu.learning.json.encrypt.Encrypt
 import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.ADDITIONAL_FILES
 import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.AUTHORS
@@ -35,6 +39,7 @@ import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.FEEDBACK_LINK
 import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.FILE
 import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.FILES
 import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.FRAMEWORK_TYPE
+import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.IS_BINARY
 import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.IS_EDITABLE
 import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.IS_MULTIPLE_CHOICE
 import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.IS_VISIBLE
@@ -70,11 +75,15 @@ import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.TEXT
 import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.TITLE
 import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.TYPE
 import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.VERSION
+import java.util.*
+import kotlin.collections.ArrayList
 
 private val LOG = logger<LocalEduCourseMixin>()
 
-@JsonPropertyOrder(ENVIRONMENT, SUMMARY, TITLE, PROGRAMMING_LANGUAGE, LANGUAGE, COURSE_TYPE, SOLUTIONS_HIDDEN, PLUGINS,
-                   ITEMS, AUTHORS, TAGS, ADDITIONAL_FILES, VERSION)
+@JsonPropertyOrder(
+  ENVIRONMENT, SUMMARY, TITLE, PROGRAMMING_LANGUAGE, LANGUAGE, COURSE_TYPE, SOLUTIONS_HIDDEN, PLUGINS,
+  ITEMS, AUTHORS, TAGS, ADDITIONAL_FILES, VERSION
+)
 abstract class LocalEduCourseMixin {
   @JsonProperty(TITLE)
   private lateinit var name: String
@@ -201,8 +210,10 @@ abstract class LocalLessonMixin {
   private lateinit var contentTags: List<String>
 }
 
-@JsonPropertyOrder(NAME, CUSTOM_NAME, TAGS, FILES, DESCRIPTION_TEXT, DESCRIPTION_FORMAT, FEEDBACK_LINK, SOLUTION_HIDDEN,
-                   TASK_TYPE)
+@JsonPropertyOrder(
+  NAME, CUSTOM_NAME, TAGS, FILES, DESCRIPTION_TEXT, DESCRIPTION_FORMAT, FEEDBACK_LINK, SOLUTION_HIDDEN,
+  TASK_TYPE
+)
 abstract class LocalTaskMixin {
   @JsonProperty(NAME)
   private lateinit var name: String
@@ -237,8 +248,10 @@ abstract class LocalTaskMixin {
   private lateinit var contentTags: List<String>
 }
 
-@JsonPropertyOrder(CHOICE_OPTIONS, IS_MULTIPLE_CHOICE, MESSAGE_CORRECT, MESSAGE_INCORRECT, QUIZ_HEADER,
-                   NAME, CUSTOM_NAME, TAGS, FILES, DESCRIPTION_TEXT, DESCRIPTION_FORMAT, FEEDBACK_LINK, SOLUTION_HIDDEN, TASK_TYPE)
+@JsonPropertyOrder(
+  CHOICE_OPTIONS, IS_MULTIPLE_CHOICE, MESSAGE_CORRECT, MESSAGE_INCORRECT, QUIZ_HEADER,
+  NAME, CUSTOM_NAME, TAGS, FILES, DESCRIPTION_TEXT, DESCRIPTION_FORMAT, FEEDBACK_LINK, SOLUTION_HIDDEN, TASK_TYPE
+)
 abstract class ChoiceTaskLocalMixin : LocalTaskMixin() {
 
   @JsonProperty
@@ -268,7 +281,8 @@ abstract class ChoiceOptionLocalMixin {
   private var status: ChoiceOptionStatus = ChoiceOptionStatus.UNKNOWN
 }
 
-@JsonPropertyOrder(NAME, IS_VISIBLE, TEXT, IS_EDITABLE)
+@JsonPropertyOrder(NAME, IS_VISIBLE, TEXT, IS_BINARY, IS_EDITABLE)
+@JsonDeserialize(builder = EduFileBuilder::class)
 abstract class EduFileMixin {
   @JsonProperty(NAME)
   private lateinit var name: String
@@ -276,19 +290,92 @@ abstract class EduFileMixin {
   @JsonProperty(IS_VISIBLE)
   var isVisible: Boolean = true
 
-  @JsonProperty(TEXT)
-  @Encrypt
-  private lateinit var text: String
+  lateinit var text: String
+    @JsonProperty(TEXT)
+    @Encrypt
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
+    get
+    @JsonProperty(TEXT)
+    @Encrypt
+    set
+
+  var isBinary: Boolean? = null
+    @JsonProperty(IS_BINARY)
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    get
+    @JsonProperty(IS_BINARY)
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    set
 
   @JsonInclude(JsonInclude.Include.CUSTOM, valueFilter = TrueValueFilter::class)
   @JsonProperty(IS_EDITABLE)
   var isEditable: Boolean = true
 }
 
-@JsonPropertyOrder(NAME, PLACEHOLDERS, IS_VISIBLE, TEXT, IS_EDITABLE)
+@JsonPOJOBuilder(withPrefix = "")
+private open class EduFileBuilder {
+
+  private var _name: String = ""
+  var name: String
+    @JsonProperty(NAME)
+    set(value) {
+      _name = value
+    }
+    @JsonProperty(NAME)
+    get() = _name
+
+  @JsonProperty(IS_VISIBLE)
+  var isVisible: Boolean = true
+  @JsonProperty(TEXT)
+  @Encrypt
+  lateinit var text: String
+  @JsonProperty(IS_BINARY)
+  var isBinary: Boolean? = null
+  @JsonProperty(IS_EDITABLE)
+  var isEditable: Boolean = true
+  @JacksonInject(AUTHOR_CONTENTS_STORAGE_FACTORY_INJECTION_KEY)
+  var authorContentStorageFactory: AuthorContentStorageFactory<*>? = null
+
+  private fun build(): EduFile {
+    val result = EduFile()
+    updateFile(result)
+
+    return result
+  }
+
+  protected fun updateFile(result: EduFile) {
+    result.name = name
+    result.isVisible = isVisible
+    result.isEditable = isEditable
+
+    val randomPath = UUID.randomUUID().toString() + "/" + name
+    authorContentStorageFactory?.put(randomPath, inMemoryFileContentsFromText(text, isBinary))
+    result.contents = fileContentsFromAuthorContentsStorage({ randomPath }, isBinary) {
+      authorContentStorageFactory?.builtStorage
+    }
+  }
+}
+
+@JsonPropertyOrder(NAME, PLACEHOLDERS, IS_VISIBLE, TEXT, IS_BINARY, IS_EDITABLE)
+@JsonDeserialize(builder = TaskFileBuilder::class)
 abstract class TaskFileMixin : EduFileMixin() {
   @JsonProperty(PLACEHOLDERS)
   private lateinit var _answerPlaceholders: List<AnswerPlaceholder>
+}
+
+@JsonPOJOBuilder(withPrefix = "")
+private class TaskFileBuilder : EduFileBuilder() {
+
+  @JsonProperty(PLACEHOLDERS)
+  var answerPlaceholders: List<AnswerPlaceholder> = mutableListOf()
+
+  private fun build(): TaskFile {
+    val result = TaskFile()
+    updateFile(result)
+
+    result.answerPlaceholders = answerPlaceholders
+    return result
+  }
 }
 
 @JsonPropertyOrder(OFFSET, LENGTH, DEPENDENCY, PLACEHOLDER_TEXT)
@@ -392,6 +479,7 @@ fun deserializeTask(node: ObjectNode, taskType: String, objectMapper: ObjectCode
     EduTask.EDU_TASK_TYPE, EduTask.PYCHARM_TASK_TYPE -> {
       objectMapper.treeToValue(node, EduTask::class.java)
     }
+
     OutputTask.OUTPUT_TASK_TYPE -> objectMapper.treeToValue(node, OutputTask::class.java)
     else -> {
       LOG.warning("Unsupported task type $taskType")

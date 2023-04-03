@@ -75,7 +75,7 @@ class RefreshTaskTest : EduTestCase() {
 
   @Throws(IOException::class)
   override fun createCourse() {
-    StudyTaskManager.getInstance(myFixture.project).course = courseWithFiles(createYamlConfigs = true) {
+    StudyTaskManager.getInstance(myFixture.project).course = courseWithFiles(createYamlConfigs = true, writeTextsInYaml = true) {
       lesson {
         eduTask {
           taskFile("taskFile1.txt", """

@@ -20,7 +20,7 @@ class YamlChangedAfterEventTest : YamlTestCase() {
     val task1 = course.findTask("lesson1", "task1")
 
     withVirtualFileListener(course) {
-      GeneratorUtils.createChildFile(project, project.courseDir, "lesson1/task/userFile.txt", "user file")
+      GeneratorUtils.createTextChildFile(project, project.courseDir, "lesson1/task/userFile.txt", "user file")
       task1.openTaskFileInEditor("file1.txt")
       testAction(NextTaskAction.ACTION_ID)
     }
@@ -30,17 +30,18 @@ class YamlChangedAfterEventTest : YamlTestCase() {
       |files:
       |- name: file1.txt
       |  visible: true
-      |  text: task 1
       |  learner_created: true
       |- name: userFile.txt
       |  visible: true
-      |  text: user file
       |  learner_created: true
       |status: Unchecked
       |record: -1
       |""".trimMargin()
 
-    checkConfig(course.findTask("lesson1", "task2"), expectedConfig)
+    val lesson1task2 = course.findTask("lesson1", "task2")
+    checkConfig(lesson1task2, expectedConfig)
+    assertEquals("task 1", lesson1task2.taskFiles["file1.txt"]?.contents?.textualRepresentation)
+    assertEquals("user file", lesson1task2.taskFiles["userFile.txt"]?.contents?.textualRepresentation)
   }
 
   private fun checkConfig(item: StudyItem, expectedConfig: String) {

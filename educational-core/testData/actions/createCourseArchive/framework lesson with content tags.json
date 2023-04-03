@@ -26,7 +26,8 @@
                 }
               ],
               "is_visible" : true,
-              "text" : "pXi8uFG5Sc6Y0oMCwTrI4js+awtjCwgP1pHDEycaVsk="
+              "text" : "pXi8uFG5Sc6Y0oMCwTrI4js+awtjCwgP1pHDEycaVsk=",
+              "is_binary" : false
             }
           },
           "description_text" : "solve task",

@@ -275,7 +275,7 @@ class NonTemplateBasedFrameworkLessonNavigationTest : NavigationTestBase() {
     val task2 = course.findTask("lesson1", "task2")
 
     withVirtualFileListener(course) {
-      GeneratorUtils.createChildFile(project, rootDir, "lesson1/task/src/Bar.kt", "fun bar() {}")
+      GeneratorUtils.createTextChildFile(project, rootDir, "lesson1/task/src/Bar.kt", "fun bar() {}")
       task1.openTaskFileInEditor("src/Task.kt")
       testAction(NextTaskAction.ACTION_ID)
     }
@@ -571,7 +571,7 @@ class NonTemplateBasedFrameworkLessonNavigationTest : NavigationTestBase() {
       for ((i, task) in tasks.withIndex()) {
         task.openTaskFileInEditor("src/Task.kt")
         myFixture.type("$i\n")
-        GeneratorUtils.createChildFile(project, rootDir, "lesson/task/src/tmp$i.kt", "fun f$i() = $i")
+        GeneratorUtils.createTextChildFile(project, rootDir, "lesson/task/src/tmp$i.kt", "fun f$i() = $i")
         task.openTaskFileInEditor("test/tests.kt")
         myFixture.type("$i$i\n")
         if (i < tasks.size - 1) {

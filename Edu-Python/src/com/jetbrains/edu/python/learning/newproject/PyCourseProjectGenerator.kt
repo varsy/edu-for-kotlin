@@ -10,7 +10,7 @@ import com.intellij.openapi.projectRoots.Sdk
 import com.intellij.openapi.projectRoots.impl.SdkConfigurationUtil
 import com.jetbrains.edu.learning.*
 import com.jetbrains.edu.learning.courseFormat.Course
-import com.jetbrains.edu.learning.courseGeneration.GeneratorUtils.createChildFile
+import com.jetbrains.edu.learning.courseGeneration.GeneratorUtils.createTextChildFile
 import com.jetbrains.edu.learning.courseGeneration.GeneratorUtils.getInternalTemplateText
 import com.jetbrains.edu.learning.newproject.CourseProjectGenerator
 import com.jetbrains.edu.python.learning.installRequiredPackages
@@ -34,7 +34,7 @@ open class PyCourseProjectGenerator(
     val testHelper = EduNames.TEST_HELPER
     if (holder.courseDir.findChild(testHelper) != null) return
     val templateText = getInternalTemplateText("test_helper")
-    createChildFile(holder, holder.courseDir, testHelper, templateText, true)
+    createTextChildFile(holder, holder.courseDir, testHelper, templateText, true)
   }
 
   override fun afterProjectGenerated(project: Project, projectSettings: PyProjectSettings) {

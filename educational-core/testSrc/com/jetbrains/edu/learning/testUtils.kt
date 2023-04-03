@@ -1,5 +1,3 @@
-@file:Suppress("DEPRECATION")
-
 package com.jetbrains.edu.learning
 
 import com.intellij.notification.Notification
@@ -16,7 +14,7 @@ import com.intellij.openapi.ui.TestDialog
 import com.intellij.openapi.ui.TestDialogManager
 import com.intellij.openapi.ui.TestInputDialog
 import com.intellij.openapi.vfs.VirtualFileManager
-import com.intellij.testFramework.TestActionEvent
+import com.intellij.testFramework.TestActionEvent.createTestEvent
 import com.intellij.util.ui.UIUtil
 import com.jetbrains.edu.coursecreator.handlers.CCVirtualFileListener
 import com.jetbrains.edu.learning.courseFormat.Course
@@ -86,7 +84,7 @@ fun testAction(
   shouldBeVisible: Boolean = shouldBeEnabled,
   runAction: Boolean = shouldBeEnabled
 ): Presentation {
-  val e = if (context != null) TestActionEvent(context, action) else TestActionEvent(action)
+  val e = if (context != null) createTestEvent(action, context) else createTestEvent(action)
   action.beforeActionPerformedUpdate(e)
   val presentation = e.presentation
 

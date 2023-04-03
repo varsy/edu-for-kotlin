@@ -15,7 +15,8 @@
               "name" : "8abe7b618ddf9c55adbea359ce891775794a61",
               "placeholders" : [ ],
               "is_visible" : true,
-              "text" : "6zkm3NpDQQaIQ+CAebF//w=="
+              "text" : "6zkm3NpDQQaIQ+CAebF//w==",
+              "is_binary" : true
             }
           },
           "description_text" : "solve task",
