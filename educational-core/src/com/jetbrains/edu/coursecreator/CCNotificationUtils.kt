@@ -9,7 +9,6 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.NlsContexts.NotificationContent
 import com.intellij.openapi.util.NlsContexts.NotificationTitle
 import com.jetbrains.edu.learning.courseFormat.StudyItem
-import com.jetbrains.edu.learning.courseFormat.ext.getPathInCourse
 import com.jetbrains.edu.learning.messages.EduCoreBundle
 
 @Suppress("UnstableApiUsage")

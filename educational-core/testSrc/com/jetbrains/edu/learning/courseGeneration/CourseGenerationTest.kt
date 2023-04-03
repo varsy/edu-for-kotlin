@@ -5,6 +5,7 @@ import com.intellij.openapi.fileEditor.ex.FileEditorManagerEx
 import com.intellij.openapi.project.ProjectManager
 import com.intellij.openapi.vfs.VfsUtil
 import com.jetbrains.edu.learning.EduStartupActivity
+import com.jetbrains.edu.learning.authorContentsStorage.zip.COURSE_AUTHOR_CONTENTS_FILE
 import com.jetbrains.edu.learning.course
 import com.jetbrains.edu.learning.courseDir
 import com.jetbrains.edu.learning.courseFormat.CourseMode
@@ -72,6 +73,7 @@ class CourseGenerationTest : CourseGenerationTestBase<EmptyProjectSettings>() {
         """)
         file("task.md")
       }
+      file(COURSE_AUTHOR_CONTENTS_FILE)
     }.assertEquals(rootDir)
   }
 
@@ -102,6 +104,7 @@ class CourseGenerationTest : CourseGenerationTestBase<EmptyProjectSettings>() {
         """)
         file("task.md")
       }
+      file(COURSE_AUTHOR_CONTENTS_FILE)
     }.assertEquals(rootDir)
 
     val task = course.lessons[0].taskList[0]

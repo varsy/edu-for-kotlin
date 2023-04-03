@@ -162,7 +162,8 @@ class MarketplaceSubmissionsTest : SubmissionsTestBase() {
           taskFile("src/Task.kt", "fun foo() {}")
           taskFile("test/Tests1.kt", "fun tests1() {}")
         }
-        eduTask("task1", stepId = 2) {
+        //is it possible in real life to have two tasks with the same name but with different stepIds?
+        eduTask("task2", stepId = 2) {
           taskFile("src/Task.kt", "fun foo() {}")
           taskFile("test/Tests1.kt", "fun tests1() {}")
         }

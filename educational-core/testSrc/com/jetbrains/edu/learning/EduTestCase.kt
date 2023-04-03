@@ -10,6 +10,9 @@ import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.editor.Document
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.fileEditor.FileEditorManager
+import com.intellij.openapi.fileTypes.ExtensionFileNameMatcher
+import com.intellij.openapi.fileTypes.FileType
+import com.intellij.openapi.fileTypes.FileTypeManager
 import com.intellij.openapi.fileTypes.PlainTextLanguage
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.TextRange
@@ -21,6 +24,7 @@ import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import com.jetbrains.edu.coursecreator.settings.CCSettings
 import com.jetbrains.edu.coursecreator.yaml.createConfigFiles
 import com.jetbrains.edu.learning.actions.EduActionUtils.getCurrentTask
+import com.jetbrains.edu.learning.authorContentsStorage.zip.UpdatableZipAuthorContentsStorage
 import com.jetbrains.edu.learning.checker.CheckActionListener
 import com.jetbrains.edu.learning.checkio.utils.CheckiONames
 import com.jetbrains.edu.learning.codeforces.CodeforcesNames
@@ -55,6 +59,7 @@ import org.apache.http.HttpStatus
 import java.io.File
 import java.io.IOException
 import java.util.regex.Pattern
+import javax.swing.Icon
 import kotlin.reflect.KMutableProperty0
 
 abstract class EduTestCase : BasePlatformTestCase() {
@@ -73,18 +78,32 @@ abstract class EduTestCase : BasePlatformTestCase() {
     // for course with no files. This flag is checked in this method and it does nothing if the flag is false
     project.putUserData(YamlFormatSettings.YAML_TEST_PROJECT_READY, false)
     registerConfigurator(myFixture.testRootDisposable, PlainTextConfigurator::class.java, PlainTextLanguage.INSTANCE, HYPERSKILL)
-    registerConfigurator(myFixture.testRootDisposable, PlainTextConfigurator::class.java, PlainTextLanguage.INSTANCE,
-                         CheckiONames.CHECKIO_TYPE)
-    registerConfigurator(myFixture.testRootDisposable, PlainTextConfigurator::class.java, PlainTextLanguage.INSTANCE,
-                         StepikNames.STEPIK_TYPE)
-    registerConfigurator(myFixture.testRootDisposable, PlainTextConfigurator::class.java, PlainTextLanguage.INSTANCE,
-                         environment = EduNames.ANDROID)
-    registerConfigurator(myFixture.testRootDisposable, PlainTextConfigurator::class.java, PlainTextLanguage.INSTANCE,
-                         CourseraNames.COURSE_TYPE)
-    registerConfigurator(myFixture.testRootDisposable, PlainTextConfigurator::class.java, PlainTextLanguage.INSTANCE,
-                         CodeforcesNames.CODEFORCES_COURSE_TYPE)
+    registerConfigurator(
+      myFixture.testRootDisposable, PlainTextConfigurator::class.java, PlainTextLanguage.INSTANCE,
+      CheckiONames.CHECKIO_TYPE
+    )
+    registerConfigurator(
+      myFixture.testRootDisposable, PlainTextConfigurator::class.java, PlainTextLanguage.INSTANCE,
+      StepikNames.STEPIK_TYPE
+    )
+    registerConfigurator(
+      myFixture.testRootDisposable, PlainTextConfigurator::class.java, PlainTextLanguage.INSTANCE,
+      environment = EduNames.ANDROID
+    )
+    registerConfigurator(
+      myFixture.testRootDisposable, PlainTextConfigurator::class.java, PlainTextLanguage.INSTANCE,
+      CourseraNames.COURSE_TYPE
+    )
+    registerConfigurator(
+      myFixture.testRootDisposable, PlainTextConfigurator::class.java, PlainTextLanguage.INSTANCE,
+      CodeforcesNames.CODEFORCES_COURSE_TYPE
+    )
     registerConfigurator(myFixture.testRootDisposable, FakeGradleConfigurator::class.java, FakeGradleBasedLanguage)
     registerConfigurator(myFixture.testRootDisposable, FakeGradleHyperskillConfigurator::class.java, FakeGradleBasedLanguage, HYPERSKILL)
+
+    // File types are used to detect, whether files are binary or textual.
+    // In tests, much less plugins are installed, and thus much less file types are known
+    setupFileTypes()
 
     CheckActionListener.reset()
     val connection = project.messageBus.connect(testRootDisposable)
@@ -100,6 +119,23 @@ abstract class EduTestCase : BasePlatformTestCase() {
     frameworkLessonManagerImpl.storage = FrameworkLessonManagerImpl.createStorage(project)
     createCourse()
     project.putUserData(CourseProjectGenerator.EDU_PROJECT_CREATED, true)
+  }
+
+  private fun setupFileTypes() {
+    runWriteAction {
+      associateFileType("SVG", false)
+      associateFileType("PNG", true)
+    }
+  }
+
+  private fun associateFileType(extension: String, isBinary: Boolean) {
+    FileTypeManager.getInstance().associate(object : FileType {
+      override fun getName(): String = extension
+      override fun getDescription(): String = extension
+      override fun getDefaultExtension(): String = extension
+      override fun getIcon(): Icon = TODO("Not expected to be called")
+      override fun isBinary(): Boolean = isBinary
+    }, ExtensionFileNameMatcher(extension))
   }
 
   override fun tearDown() {
@@ -199,22 +235,31 @@ abstract class EduTestCase : BasePlatformTestCase() {
     courseVendor: Vendor? = null,
     courseProducer: () -> Course = ::EduCourse,
     createYamlConfigs: Boolean = false,
+    writeTextsInYaml: Boolean = false,
+    createAuthorContentsStorage: Boolean = true,
     buildCourse: CourseBuilder.() -> Unit
   ): Course {
     val course = course(name, language, description, environment, courseMode, courseProducer, buildCourse).apply {
       vendor = courseVendor
 
       initializeCourse(project, course)
+
+      if (createAuthorContentsStorage) {
+        val storage = UpdatableZipAuthorContentsStorage(project.courseDir)
+        storage.update(course)
+      }
+
       createCourseFiles(project)
       if (createYamlConfigs) {
-        createConfigFiles(project)
+        createConfigFiles(project, writeTextsInYaml)
       }
     }
     if (id != null) {
       course.id = id
     }
 
-    SubmissionsManager.getInstance(project).course = course
+    val manager = SubmissionsManager.getInstance(project)
+    manager.course = course
     return course
   }
 
@@ -228,9 +273,11 @@ abstract class EduTestCase : BasePlatformTestCase() {
 
   protected fun findTask(lessonIndex: Int, taskIndex: Int): Task = findLesson(lessonIndex).taskList[taskIndex]
 
-  protected fun findTask(sectionIndex: Int,
-                         lessonIndex: Int,
-                         taskIndex: Int): Task = getCourse().sections[sectionIndex].lessons[lessonIndex].taskList[taskIndex]
+  protected fun findTask(
+    sectionIndex: Int,
+    lessonIndex: Int,
+    taskIndex: Int
+  ): Task = getCourse().sections[sectionIndex].lessons[lessonIndex].taskList[taskIndex]
 
   protected fun findLesson(lessonIndex: Int): Lesson = getCourse().lessons[lessonIndex]
 
@@ -254,7 +301,8 @@ abstract class EduTestCase : BasePlatformTestCase() {
 
   protected fun Task.createTaskFileAndOpenInEditor(taskFilePath: String, text: String = "") {
     val taskDir = getDir(project.courseDir) ?: error("Can't find task dir")
-    val file = GeneratorUtils.createChildFile(project, taskDir, taskFilePath, text) ?: error("Failed to create `$taskFilePath` in $taskDir")
+    val file = GeneratorUtils.createTextChildFile(project, taskDir, taskFilePath, text)
+               ?: error("Failed to create `$taskFilePath` in $taskDir")
     myFixture.openFileInEditor(file)
   }
 

@@ -15,13 +15,15 @@
               "name" : "Cargo.toml",
               "placeholders" : [ ],
               "is_visible" : true,
-              "text" : "oG3vTeIqM9WhB00q9QzkokX0jPsLGRHoPwpg76b5dbSfOGVNY9Cz9MXNtVKATydSrtuqtsoNMJp2KS3PNYjeqOuZ8gGb8ydvAq1DdfNEDcw="
+              "text" : "oG3vTeIqM9WhB00q9QzkokX0jPsLGRHoPwpg76b5dbSfOGVNY9Cz9MXNtVKATydSrtuqtsoNMJp2KS3PNYjeqOuZ8gGb8ydvAq1DdfNEDcw=",
+              "is_binary" : false
             },
             "src/lib.rs" : {
               "name" : "src/lib.rs",
               "placeholders" : [ ],
               "is_visible" : true,
-              "text" : "sCz6Nc9zjDCQ3xbe01/z5eM8wf+C6d3y9J9EdjYZWas7agPf0rKNrbnZLm4QkybDAOTPNNIDob08R7ZQvzlAVmXXv7qR+SbeaHpMrqF/TZJ3RhYioYt/51t8fJZixll1"
+              "text" : "sCz6Nc9zjDCQ3xbe01/z5eM8wf+C6d3y9J9EdjYZWas7agPf0rKNrbnZLm4QkybDAOTPNNIDob08R7ZQvzlAVmXXv7qR+SbeaHpMrqF/TZJ3RhYioYt/51t8fJZixll1",
+              "is_binary" : false
             }
           },
           "description_text" : "solve task",
@@ -44,6 +46,6 @@
       "text" : "C6+mlEohbB8Ms8hXmzsP9Ru1DZ7nufbHiB4ublpouV68hXeGrjS5EUGW23iWeLgJxN5cd696/079qzw8mgtB5A=="
     }
   ],
-  "version" : 16,
+  "version" : 17,
   "edu_plugin_version" : "yyyy.2-yyyy.1-TEST"
 }

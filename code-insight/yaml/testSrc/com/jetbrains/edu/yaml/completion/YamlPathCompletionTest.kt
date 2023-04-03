@@ -19,7 +19,7 @@ class YamlPathCompletionTest : YamlCompletionTestBase() {
     }
     val task = course.findTask("lesson1", "task1")
     val taskDir = task.getDir(project.courseDir)!!
-    GeneratorUtils.createChildFile(project, taskDir, "src/foo.txt", "")
+    GeneratorUtils.createTextChildFile(project, taskDir, "src/foo.txt", "")
 
     doSingleCompletion(task, """
       |type: edu
@@ -76,7 +76,7 @@ class YamlPathCompletionTest : YamlCompletionTestBase() {
     }
     val task = course.findTask("lesson1", "task1")
     val taskDir = task.getDir(project.courseDir)!!
-    GeneratorUtils.createChildFile(project, taskDir, "src/taskfile2.txt", "")
+    GeneratorUtils.createTextChildFile(project, taskDir, "src/taskfile2.txt", "")
 
     doSingleCompletion(task, """
       |type: edu
@@ -105,7 +105,7 @@ class YamlPathCompletionTest : YamlCompletionTestBase() {
     }
     val task = course.findTask("lesson1", "task1")
     val taskDir = task.getDir(project.courseDir)!!
-    GeneratorUtils.createChildFile(project, taskDir, "taskfile2.txt", "")
+    GeneratorUtils.createTextChildFile(project, taskDir, "taskfile2.txt", "")
 
     doSingleCompletion(task, """
       |type: edu
@@ -134,7 +134,7 @@ class YamlPathCompletionTest : YamlCompletionTestBase() {
     }
     val task = course.findTask("lesson1", "task1")
     val taskDir = task.getDir(project.courseDir)!!
-    GeneratorUtils.createChildFile(project, taskDir, ".hidden_dir/hidden_file", "")
+    GeneratorUtils.createTextChildFile(project, taskDir, ".hidden_dir/hidden_file", "")
 
     checkNoCompletion(task, """
       |type: edu
@@ -156,7 +156,7 @@ class YamlPathCompletionTest : YamlCompletionTestBase() {
     }
     val task = course.findTask("lesson1", "task1")
     val taskDir = task.getDir(project.courseDir)!!
-    GeneratorUtils.createChildFile(project, taskDir, "src/task.txt", "")
+    GeneratorUtils.createTextChildFile(project, taskDir, "src/task.txt", "")
 
     doSingleCompletion(task, """
       |type: edu
@@ -183,7 +183,7 @@ class YamlPathCompletionTest : YamlCompletionTestBase() {
     }
     val task = course.findTask("lesson1", "task1")
     val taskDir = task.getDir(project.courseDir)!!
-    GeneratorUtils.createChildFile(project, taskDir, "src/task.txt", "")
+    GeneratorUtils.createTextChildFile(project, taskDir, "src/task.txt", "")
 
     doSingleCompletion(task, """
       |type: edu

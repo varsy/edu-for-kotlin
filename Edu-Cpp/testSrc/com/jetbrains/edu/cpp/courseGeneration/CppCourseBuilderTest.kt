@@ -3,11 +3,11 @@ package com.jetbrains.edu.cpp.courseGeneration
 import com.jetbrains.cidr.lang.OCLanguage
 import com.jetbrains.edu.cpp.CppProjectSettings
 import com.jetbrains.edu.cpp.getExpectedTaskCMakeText
+import com.jetbrains.edu.learning.authorContentsStorage.zip.COURSE_AUTHOR_CONTENTS_FILE
 import com.jetbrains.edu.learning.course
 import com.jetbrains.edu.learning.courseFormat.CourseMode
 import com.jetbrains.edu.learning.courseGeneration.CourseGenerationTestBase
 import com.jetbrains.edu.learning.fileTree
-import com.jetbrains.edu.learning.stepik.course.StepikCourse
 
 class CppCourseBuilderTest : CourseGenerationTestBase<CppProjectSettings>() {
 
@@ -39,6 +39,7 @@ class CppCourseBuilderTest : CourseGenerationTestBase<CppProjectSettings>() {
         file("googletest-download.cmake")
       }
       file("CMakeLists.txt")
+      file(COURSE_AUTHOR_CONTENTS_FILE)
     }.assertEquals(rootDir)
 
   }
@@ -68,6 +69,7 @@ class CppCourseBuilderTest : CourseGenerationTestBase<CppProjectSettings>() {
         file("catch.cmake")
       }
       file("CMakeLists.txt")
+      file(COURSE_AUTHOR_CONTENTS_FILE)
     }.assertEquals(rootDir)
 
   }
@@ -101,6 +103,7 @@ class CppCourseBuilderTest : CourseGenerationTestBase<CppProjectSettings>() {
       }
       file("CMakeLists.txt.in")
       file("CMakeLists.txt")
+      file(COURSE_AUTHOR_CONTENTS_FILE)
     }.assertEquals(rootDir)
 
   }
@@ -136,6 +139,7 @@ class CppCourseBuilderTest : CourseGenerationTestBase<CppProjectSettings>() {
       }
       file("CMakeLists.txt.in")
       file("CMakeLists.txt")
+      file(COURSE_AUTHOR_CONTENTS_FILE)
     }.assertEquals(rootDir)
 
   }
@@ -188,6 +192,7 @@ class CppCourseBuilderTest : CourseGenerationTestBase<CppProjectSettings>() {
       }
       file("CMakeLists.txt.in")
       file("CMakeLists.txt")
+      file(COURSE_AUTHOR_CONTENTS_FILE)
     }.assertEquals(rootDir)
 
   }
@@ -248,6 +253,7 @@ class CppCourseBuilderTest : CourseGenerationTestBase<CppProjectSettings>() {
       }
       file("CMakeLists.txt.in")
       file("CMakeLists.txt")
+      file(COURSE_AUTHOR_CONTENTS_FILE)
     }.assertEquals(rootDir)
   }
 }

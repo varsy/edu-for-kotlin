@@ -9,7 +9,10 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Computable
 import com.intellij.util.messages.Topic
 import com.intellij.util.xmlb.annotations.Transient
+import com.jetbrains.edu.learning.authorContentsStorage.fileContentsFromProjectAuthorContentsStorage
+import com.jetbrains.edu.learning.authorContentsStorage.zip.UpdatableZipAuthorContentsStorage
 import com.jetbrains.edu.learning.courseFormat.Course
+import com.jetbrains.edu.learning.courseFormat.ext.visitEduFiles
 import com.jetbrains.edu.learning.yaml.YamlDeepLoader.loadCourse
 import com.jetbrains.edu.learning.yaml.YamlFormatSettings.isEduYamlProject
 import com.jetbrains.edu.learning.yaml.YamlFormatSynchronizer.startSynchronization
@@ -25,6 +28,32 @@ class StudyTaskManager(private val project: Project) : DumbAware, Disposable {
 
   @Transient
   private var _course: Course? = null
+
+  /**
+   * This is the author contents storage used to store all the edu files contents for the current course.
+   * It is updatable, that is, if the course is updated by the student, this storage also updates.
+   * This storage is needed only in the student mode.
+   * It should not be used in the course creation mode.
+   */
+  @Transient
+  val authorContentsStorage = UpdatableZipAuthorContentsStorage(project.courseDir)
+
+  /**
+   * This method saves all current edu file contents to the author contents storage,
+   * and reassigns edu file contents to point to this storage.
+   * We may not reassign edu file contents to point on the storage, but we do it to free up some resources,
+   * for example, if some file contents are pointing into memory.
+   */
+  @Transient
+  fun updateAuthorContentsStorageAndTaskFileContents() {
+    val course = course
+    course ?: return
+
+    authorContentsStorage.update(course)
+    course.visitEduFiles { eduFile ->
+      eduFile.contents = fileContentsFromProjectAuthorContentsStorage(eduFile)
+    }
+  }
 
   @get:Transient
   @set:Transient

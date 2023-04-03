@@ -29,7 +29,8 @@
               "name" : "task.txt",
               "placeholders" : [ ],
               "is_visible" : true,
-              "text" : "6zkm3NpDQQaIQ+CAebF//w=="
+              "text" : "6zkm3NpDQQaIQ+CAebF//w==",
+              "is_binary" : false
             }
           },
           "description_text" : "solve task",
@@ -40,6 +41,6 @@
       "type" : "lesson"
     }
   ],
-  "version" : 16,
+  "version" : 17,
   "edu_plugin_version" : "yyyy.2-yyyy.1-TEST"
 }

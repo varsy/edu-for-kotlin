@@ -23,8 +23,10 @@ import com.intellij.openapi.vfs.VirtualFileManager
 import com.intellij.util.PlatformUtils
 import com.intellij.util.TimeoutUtil
 import com.intellij.util.ui.UIUtil
+import com.jetbrains.edu.learning.authorContentsStorage.zip.ZipAuthorContentsStorageFactory
 import com.jetbrains.edu.learning.courseFormat.AnswerPlaceholder
 import com.jetbrains.edu.learning.courseFormat.Course
+import com.jetbrains.edu.learning.courseFormat.authorContentsStorage.AuthorContentsStorageFactory
 import com.jetbrains.edu.learning.courseFormat.CourseMode
 import com.jetbrains.edu.learning.courseFormat.EduFormatNames.TASK_HTML
 import com.jetbrains.edu.learning.courseFormat.EduFormatNames.TASK_MD
@@ -106,14 +108,17 @@ object EduUtilsKt {
     return getLocalCourse(zipFilePath, ::readCourseraCourseJson)
   }
 
-  fun getLocalCourse(zipFilePath: String, readCourseJson: (String) -> Course? = ::readCourseJson): Course? {
+  fun getLocalCourse(zipFilePath: String, readCourseJson: (String, AuthorContentsStorageFactory<*>) -> Course? = ::readCourseJson): Course? {
     try {
       val zipFile = ZipFile(zipFilePath)
-      return zipFile.use {
+      val authorContentStorageFactory = ZipAuthorContentsStorageFactory()
+      val course = zipFile.use {
         val entry = it.getEntry(EduNames.COURSE_META_FILE) ?: return null
         val jsonText = String(it.getInputStream(entry).readAllBytes(), StandardCharsets.UTF_8)
-        readCourseJson(jsonText)
+        readCourseJson(jsonText, authorContentStorageFactory)
       }
+      authorContentStorageFactory.build()
+      return course
     }
     catch (e: IOException) {
       LOG.error("Failed to unzip course archive", e)
@@ -179,9 +184,9 @@ object EduUtilsKt {
   private val LOG = logger<EduUtilsKt>()
 }
 
-private fun readCourseraCourseJson(jsonText: String): Course? {
+private fun readCourseraCourseJson(jsonText: String, authorContentsStorageFactory: AuthorContentsStorageFactory<*>): Course? {
   return try {
-    val courseMapper = getCourseMapper()
+    val courseMapper = getCourseMapper(authorContentsStorageFactory)
     courseMapper.addMixIn(CourseraCourse::class.java, CourseraCourseMixin::class.java)
     courseMapper.configureCourseMapper(false)
     var courseNode = courseMapper.readTree(jsonText) as ObjectNode

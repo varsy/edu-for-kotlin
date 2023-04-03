@@ -49,7 +49,7 @@ class DataTask : Task {
       taskDir.findFileByRelativePath(datasetFilePath)
     }
     if (dataset == null) {
-      return GeneratorUtils.createChildFile(project, taskDir, datasetFilePath, input)
+      return GeneratorUtils.createTextChildFile(project, taskDir, datasetFilePath, input)
              ?: error("File $datasetFilePath can't be created")
     }
 
