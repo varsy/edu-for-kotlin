@@ -38,6 +38,7 @@ class PhpCourseBuilderTest : CourseGenerationTestBase<PhpProjectSettings>() {
         file("task.md")
       }
       file(ComposerUtils.CONFIG_DEFAULT_FILENAME)
+      file(COURSE_AUTHOR_CONTENTS_FILE)
     }.assertEquals(rootDir)
   }
 

@@ -34,6 +34,7 @@ class JsCourseBuilderTest : CourseGenerationTestBase<JsNewProjectSettings>() {
         file("task.md")
       }
       file("package.json")
+      file(COURSE_AUTHOR_CONTENTS_FILE)
     }.assertEquals(rootDir)
   }
 

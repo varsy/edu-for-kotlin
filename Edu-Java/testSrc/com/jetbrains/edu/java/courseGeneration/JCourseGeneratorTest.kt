@@ -68,6 +68,7 @@ class JCourseGeneratorTest : JvmCourseGenerationTestBase() {
       }
       file("build.gradle")
       file("settings.gradle")
+      file(COURSE_AUTHOR_CONTENTS_FILE)
     }
 
     expectedFileTree.assertEquals(rootDir)
@@ -109,6 +110,7 @@ class JCourseGeneratorTest : JvmCourseGenerationTestBase() {
       }
       file("build.gradle")
       file("settings.gradle")
+      file(COURSE_AUTHOR_CONTENTS_FILE)
     }
     expectedFileTree.assertEquals(rootDir)
   }

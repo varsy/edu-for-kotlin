@@ -3,11 +3,8 @@ package com.jetbrains.edu.learning.yaml.format.student
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonPropertyOrder
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
-import com.jetbrains.edu.learning.StudyTaskManager
+import com.jetbrains.edu.learning.authorContentsStorage.fileContentsFromProjectAuthorContentsStorage
 import com.jetbrains.edu.learning.courseFormat.*
-import com.jetbrains.edu.learning.courseFormat.authorContentsStorage.LazyFileContents
-import com.jetbrains.edu.learning.courseFormat.authorContentsStorage.pathInAuthorContentsStorageForEduFile
-import com.jetbrains.edu.learning.courseFormat.ext.project
 import com.jetbrains.edu.learning.json.encrypt.Encrypt
 import com.jetbrains.edu.learning.yaml.format.TaskFileBuilder
 import com.jetbrains.edu.learning.yaml.format.TaskFileYamlMixin
@@ -64,13 +61,7 @@ class StudentTaskFileBuilder(
       InMemoryTextualContents(textFromConfig)
     }
     else {
-      LazyFileContents {
-        val project = taskFile.course?.project
-        val manager = project?.let { StudyTaskManager.getInstance(it) }
-        val storage = manager?.authorContentsStorage
-        val path = pathInAuthorContentsStorageForEduFile(taskFile)
-        storage?.get(path)
-      }
+      fileContentsFromProjectAuthorContentsStorage(taskFile)
     }
 
     taskFile.isLearnerCreated = learnerCreated

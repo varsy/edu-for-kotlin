@@ -41,6 +41,7 @@ class RsCourseBuilderTest : CourseGenerationTestBase<RsProjectSettings>() {
           ]
 
       """)
+      file(COURSE_AUTHOR_CONTENTS_FILE)
     }.assertEquals(rootDir)
   }
 
@@ -67,6 +68,7 @@ class RsCourseBuilderTest : CourseGenerationTestBase<RsProjectSettings>() {
         file("Cargo.toml")
         file("task.md")
       }
+      file(COURSE_AUTHOR_CONTENTS_FILE)
     }.assertEquals(rootDir)
   }
 

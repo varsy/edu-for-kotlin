@@ -30,6 +30,12 @@ class ZipAuthorContentStorageFactory @Throws(IOException::class) constructor(
 
   private val initThread: Thread = Thread.currentThread()
 
+  init {
+    LOG.info("Created ZipAuthorContentStorageFactory to write in $temporaryZipFilePath, thread: $initThread")
+  }
+
+  private val startTime: Long = System.nanoTime()
+
   private val addedPaths = mutableSetOf<String>()
 
   private val zipOutputStream: ZipOutputStream = ZipOutputStream(BufferedOutputStream(FileOutputStream(temporaryZipFilePath.toFile())))
@@ -75,6 +81,10 @@ class ZipAuthorContentStorageFactory @Throws(IOException::class) constructor(
     }
     val builtStorage = ZipAuthorContentsStorage(temporaryZipFilePath)
     this.builtStorage = builtStorage
+
+    val nanoTime = System.nanoTime() - startTime
+    LOG.info("Finished building ZipAuthorContentsStorage in $temporaryZipFilePath, thread $initThread. Elapsed nano time: $nanoTime")
+
     return builtStorage
   }
 
@@ -131,8 +141,7 @@ private class FakeVirtualFile(private val fakePath: String) : VirtualFile() {
    * That's why we want to act as if we really get the parent folder
    */
   override fun getParent(): VirtualFile? {
-    if (this == ROOT)
-      return null
+    if (this == ROOT) return null
 
     val i = fakePath.lastIndexOf('/')
     return if (i <= 0) ROOT else FakeVirtualFile(fakePath.substring(0, i))
@@ -140,7 +149,7 @@ private class FakeVirtualFile(private val fakePath: String) : VirtualFile() {
 
   override fun getChildren(): Array<VirtualFile> = TODO("This method is not expected to be called")
 
-  override fun getOutputStream(requestor: Any?, newModificationStamp: Long, newTimeStamp: Long): OutputStream = TODO("Not yet implemented")
+  override fun getOutputStream(requestor: Any?, newModificationStamp: Long, newTimeStamp: Long): OutputStream = TODO("This method is not expected to be called")
 
   override fun contentsToByteArray(): ByteArray = byteArrayOf()
 

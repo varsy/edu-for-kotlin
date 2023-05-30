@@ -53,6 +53,7 @@ class PyCourseBuilderTest : CourseGenerationTestBase<PyProjectSettings>() {
           file("task.md")
         }
       }
+      file(COURSE_AUTHOR_CONTENTS_FILE)
     }
 
     expectedFileTree.assertEquals(rootDir)
@@ -81,6 +82,7 @@ class PyCourseBuilderTest : CourseGenerationTestBase<PyProjectSettings>() {
         }
       }
       file("test_helper.py")
+      file(COURSE_AUTHOR_CONTENTS_FILE)
     }
 
     expectedFileTree.assertEquals(rootDir)

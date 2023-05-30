@@ -53,6 +53,7 @@ class ScalaSbtCourseBuilderTest : JvmCourseGenerationTestBase() {
         file("build.properties")
       }
       file("build.sbt")
+      file(COURSE_AUTHOR_CONTENTS_FILE)
     }
 
     expectedFileTree.assertEquals(rootDir)

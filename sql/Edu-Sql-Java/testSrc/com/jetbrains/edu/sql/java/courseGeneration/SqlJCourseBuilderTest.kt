@@ -27,6 +27,7 @@ class SqlJCourseBuilderTest : JvmCourseGenerationTestBase() {
       }
       file("build.gradle")
       file("settings.gradle")
+      file(COURSE_AUTHOR_CONTENTS_FILE)
     }.assertEquals(rootDir)
   }
 
@@ -59,6 +60,7 @@ class SqlJCourseBuilderTest : JvmCourseGenerationTestBase() {
       }
       file("build.gradle")
       file("settings.gradle")
+      file(COURSE_AUTHOR_CONTENTS_FILE)
     }.assertEquals(rootDir)
   }
 

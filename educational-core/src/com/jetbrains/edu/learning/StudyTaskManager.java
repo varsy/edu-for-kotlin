@@ -7,14 +7,18 @@ import com.intellij.openapi.components.*;
 import com.intellij.openapi.project.DumbAware;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Computable;
+import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.util.messages.Topic;
 import com.intellij.util.xmlb.annotations.Transient;
-import com.jetbrains.edu.learning.authorContentsStorage.zip.ZipAuthorContentsStorage;
+import com.jetbrains.edu.learning.authorContentsStorage.AuthorContentsStorageUtilsKt;
+import com.jetbrains.edu.learning.authorContentsStorage.zip.UpdatableZipAuthorContentsStorage;
 import com.jetbrains.edu.learning.courseFormat.Course;
 import com.jetbrains.edu.learning.courseFormat.authorContentsStorage.AuthorContentsStorage;
+import com.jetbrains.edu.learning.courseFormat.ext.CourseExt;
 import com.jetbrains.edu.learning.yaml.YamlDeepLoader;
 import com.jetbrains.edu.learning.yaml.YamlFormatSettings;
 import com.jetbrains.edu.learning.yaml.YamlFormatSynchronizer;
+import kotlin.Unit;
 import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -35,11 +39,25 @@ public class StudyTaskManager implements PersistentStateComponent<Element>, Dumb
 
   @Transient @Nullable private final Project myProject;
 
+  /**
+   * This is the author contents storage used to store all the edu files contents for the current course.
+   * It is updatable, that is, if the course is updated by the student, this storage also updates.
+   *
+   * This storage is needed only in the student mode.
+   * It should not be used in the course creation mode.
+   */
   @Transient @Nullable
-  private AuthorContentsStorage myAuthorContentsStorage;
+  private final UpdatableZipAuthorContentsStorage myAuthorContentsStorage;
 
   public StudyTaskManager(@Nullable Project project) {
     myProject = project;
+
+    if (myProject != null) {
+      VirtualFile courseDir = getCourseDir(project);
+      myAuthorContentsStorage = new UpdatableZipAuthorContentsStorage(courseDir);
+    } else {
+      myAuthorContentsStorage = null;
+    }
   }
 
   public StudyTaskManager() {
@@ -50,7 +68,6 @@ public class StudyTaskManager implements PersistentStateComponent<Element>, Dumb
   public void setCourse(Course course) {
     myCourse = course;
     if (myProject != null) {
-      myAuthorContentsStorage = ZipAuthorContentsStorage.initAuthorContentsStorage(course, getCourseDir(myProject));
       myProject.getMessageBus().syncPublisher(COURSE_SET).courseSet(course);
     }
   }
@@ -71,6 +88,23 @@ public class StudyTaskManager implements PersistentStateComponent<Element>, Dumb
   @Transient
   public AuthorContentsStorage getAuthorContentsStorage() {
     return myAuthorContentsStorage;
+  }
+
+  /**
+   * This method saves all current edu file contents to the author contents storage,
+   * and reassigns edu file contents to point to this storage.
+   * We may not reassign edu file contents to point on the storage, but we do it to free up some resources,
+   * for example, if some file contents are pointing into memory.
+   */
+  @Transient
+  public void updateAuthorContentsStorageAndTaskFileContents() {
+    if (myAuthorContentsStorage != null)
+      myAuthorContentsStorage.update(myCourse);
+
+    CourseExt.visitEduFiles(myCourse, eduFile -> {
+      eduFile.setContents(AuthorContentsStorageUtilsKt.fileContentsFromProjectAuthorContentsStorage(eduFile));
+      return Unit.INSTANCE;
+    });
   }
 
   @Override

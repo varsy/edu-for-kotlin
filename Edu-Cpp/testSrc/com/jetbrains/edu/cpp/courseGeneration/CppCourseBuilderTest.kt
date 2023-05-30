@@ -39,6 +39,7 @@ class CppCourseBuilderTest : CourseGenerationTestBase<CppProjectSettings>() {
         file("googletest-download.cmake")
       }
       file("CMakeLists.txt")
+      file(COURSE_AUTHOR_CONTENTS_FILE)
     }.assertEquals(rootDir)
 
   }
@@ -68,6 +69,7 @@ class CppCourseBuilderTest : CourseGenerationTestBase<CppProjectSettings>() {
         file("catch.cmake")
       }
       file("CMakeLists.txt")
+      file(COURSE_AUTHOR_CONTENTS_FILE)
     }.assertEquals(rootDir)
 
   }

@@ -202,3 +202,15 @@ fun Course.updateEnvironmentSettings(project: Project, configurator: EduConfigur
   configurator ?: return
   course.environmentSettings = configurator.getEnvironmentSettings(project)
 }
+
+fun Course.visitEduFiles(visitor: (EduFile) -> Unit) {
+  visitTasks { task ->
+    for (taskFile in task.taskFiles.values) {
+      visitor(taskFile)
+    }
+  }
+
+  for (additionalFile in additionalFiles) {
+    visitor(additionalFile)
+  }
+}

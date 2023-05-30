@@ -28,6 +28,7 @@ class PyNewCourseBuilderTest : CourseGenerationTestBase<PyProjectSettings>() {
           }
         }
       }
+      file(COURSE_AUTHOR_CONTENTS_FILE)
     }.assertEquals(rootDir)
   }
 

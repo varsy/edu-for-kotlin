@@ -23,6 +23,7 @@ import com.intellij.testFramework.LightPlatformTestCase
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import com.jetbrains.edu.coursecreator.settings.CCSettings
 import com.jetbrains.edu.coursecreator.yaml.createConfigFiles
+import com.jetbrains.edu.learning.authorContentsStorage.zip.UpdatableZipAuthorContentsStorage
 import com.jetbrains.edu.learning.authorContentsStorage.zip.ZipAuthorContentsStorage
 import com.jetbrains.edu.learning.actions.EduActionUtils.getCurrentTask
 import com.jetbrains.edu.learning.checker.CheckActionListener
@@ -59,8 +60,8 @@ import org.apache.http.HttpStatus
 import java.io.File
 import java.io.IOException
 import java.util.regex.Pattern
-import kotlin.reflect.KMutableProperty0
 import javax.swing.Icon
+import kotlin.reflect.KMutableProperty0
 
 abstract class EduTestCase : BasePlatformTestCase() {
 
@@ -133,7 +134,7 @@ abstract class EduTestCase : BasePlatformTestCase() {
       override fun getName(): String = extension
       override fun getDescription(): String = extension
       override fun getDefaultExtension(): String = extension
-      override fun getIcon(): Icon = TODO("Not yet implemented")
+      override fun getIcon(): Icon = TODO("Not expected to be called")
       override fun isBinary(): Boolean = isBinary
     }, ExtensionFileNameMatcher(extension))
   }
@@ -244,8 +245,10 @@ abstract class EduTestCase : BasePlatformTestCase() {
 
       initializeCourse(project, course)
 
-      if (createAuthorContentsStorage)
-        ZipAuthorContentsStorage.initAuthorContentsStorage(course, project.courseDir)
+      if (createAuthorContentsStorage) {
+        val storage = UpdatableZipAuthorContentsStorage(project.courseDir)
+        storage.update(course)
+      }
 
       createCourseFiles(project)
       if (createYamlConfigs) {
@@ -256,7 +259,8 @@ abstract class EduTestCase : BasePlatformTestCase() {
       course.id = id
     }
 
-    SubmissionsManager.getInstance(project).course = course
+    val manager = SubmissionsManager.getInstance(project)
+    manager.course = course
     return course
   }
 

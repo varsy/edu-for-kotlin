@@ -71,6 +71,7 @@ class GoCourseBuilderTest : CourseGenerationTestBase<GoProjectSettings>() {
         file("task.md")
         file("go.mod")
       }
+      file(COURSE_AUTHOR_CONTENTS_FILE)
     }.assertEquals(rootDir)
   }
 
