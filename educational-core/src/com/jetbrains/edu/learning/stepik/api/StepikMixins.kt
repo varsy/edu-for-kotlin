@@ -162,9 +162,12 @@ open class StepikEduFileMixin {
   @JsonProperty(IS_VISIBLE)
   var isVisible = true
 
-  @JsonProperty(TEXT)
-  @JsonDeserialize(using = TaskFileTextDeserializer::class)
   lateinit var text: String
+    @JsonProperty(TEXT)
+    @JsonDeserialize(using = TaskFileTextDeserializer::class)
+    get
+    @JsonProperty(TEXT)
+    set
 }
 
 @JsonPropertyOrder(NAME, PLACEHOLDERS, IS_VISIBLE, TEXT)
