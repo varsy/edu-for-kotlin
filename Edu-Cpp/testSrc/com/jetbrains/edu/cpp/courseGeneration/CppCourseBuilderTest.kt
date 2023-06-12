@@ -7,7 +7,6 @@ import com.jetbrains.edu.learning.course
 import com.jetbrains.edu.learning.courseFormat.CourseMode
 import com.jetbrains.edu.learning.courseGeneration.CourseGenerationTestBase
 import com.jetbrains.edu.learning.fileTree
-import com.jetbrains.edu.learning.stepik.course.StepikCourse
 
 class CppCourseBuilderTest : CourseGenerationTestBase<CppProjectSettings>() {
 

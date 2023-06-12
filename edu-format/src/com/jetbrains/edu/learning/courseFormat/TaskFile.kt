@@ -39,6 +39,7 @@ class TaskFile : EduFile {
 
   fun initTaskFile(task: Task, isRestarted: Boolean) {
     this.task = task
+    this.course = task.course
     for (answerPlaceholder in _answerPlaceholders) {
       answerPlaceholder.init(this, isRestarted)
     }

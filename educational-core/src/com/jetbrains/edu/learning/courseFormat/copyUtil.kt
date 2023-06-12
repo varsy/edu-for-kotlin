@@ -7,9 +7,12 @@ import com.fasterxml.jackson.annotation.PropertyAccessor
 import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.core.JsonProcessingException
 import com.fasterxml.jackson.databind.*
+import com.fasterxml.jackson.databind.introspect.Annotated
+import com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector
 import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.databind.ser.BeanSerializerFactory
 import com.intellij.openapi.diagnostic.logger
+import com.jetbrains.edu.learning.courseFormat.fileContents.FileContentsHolder
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
 import com.jetbrains.edu.learning.json.mixins.StudyItemDeserializer
 import com.jetbrains.edu.learning.serialization.SerializationUtils
@@ -27,9 +30,24 @@ private val MAPPER: ObjectMapper by lazy {
   module.addSerializer(StudyItem::class.java, StudyItemCopySerializer())
   module.addDeserializer(StudyItem::class.java, StudyItemDeserializer())
   mapper.registerModule(module)
+
+  // do not serialize or deserialize file contents
+  mapper.setAnnotationIntrospector(object : JacksonAnnotationIntrospector() {
+    override fun _isIgnorable(a: Annotated): Boolean {
+      if (a.name.startsWith("contents"))
+        return true
+      return super._isIgnorable(a)
+    }
+  })
+
   mapper
 }
 
+/**
+ * Copy study item.
+ * Note that this method does not copy the [EduFile.contentsHolder].
+ * If [FileContentsHolder]s should also be copied, it should be done additionally to this method.
+ */
 fun <T : StudyItem> T.copy(): T {
   try {
     val jsonText = MAPPER.writeValueAsString(this)
@@ -50,7 +68,7 @@ class StudyItemCopySerializer : JsonSerializer<StudyItem>() {
     val beanDesc: BeanDescription = provider.config.introspect(javaType)
     val serializer: JsonSerializer<Any> =
       BeanSerializerFactory.instance.findBeanOrAddOnSerializer(provider, javaType, beanDesc,
-                                                               provider.isEnabled(MapperFeature.USE_STATIC_TYPING))
+        provider.isEnabled(MapperFeature.USE_STATIC_TYPING))
     serializer.unwrappingSerializer(null).serialize(value, jgen, provider)
     if (value !is Course) {
       addItemType(value, jgen)

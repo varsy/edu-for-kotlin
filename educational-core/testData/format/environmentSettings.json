@@ -5,7 +5,7 @@
   "language" : "en",
   "course_type" : "PyCharm",
   "items" : [ ],
-  "version" : 16,
+  "version" : 17,
   "environment_settings" : {
     "example key 1" : "example value 1",
     "example key 2" : "example value 2"

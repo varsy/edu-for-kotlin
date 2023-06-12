@@ -273,7 +273,7 @@ class HyperskillNavigationTest : NavigationTestBase() {
     val task2 = course.findTask("lesson1", "task2")
 
     withVirtualFileListener(course) {
-      GeneratorUtils.createChildFile(project, rootDir, "lesson1/task/src/Bar.kt", "fun bar() {}")
+      GeneratorUtils.createTextChildFile(project, rootDir, "lesson1/task/src/Bar.kt", "fun bar() {}")
       task1.openTaskFileInEditor("src/Task.kt")
       testAction(NextTaskAction.ACTION_ID)
     }

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.intellij.lang.Language
+import com.jetbrains.edu.learning.authorContentsStorage.sqlite.SQLiteAuthorContentsStorage
 import com.jetbrains.edu.learning.courseFormat.*
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
 import com.jetbrains.edu.learning.json.configureCourseMapper
@@ -23,7 +24,8 @@ import java.util.*
 @Throws(IOException::class)
 fun createCourseFromJson(pathToJson: String, courseMode: CourseMode, isEncrypted: Boolean = false): EduCourse {
   val courseJson = File(pathToJson).readText()
-  val courseMapper = getCourseMapper()
+  val authorContentStorage = SQLiteAuthorContentsStorage.openTemporaryDB()
+  val courseMapper = getCourseMapper(authorContentStorage)
   configureCourseMapper(courseMapper, isEncrypted)
   var objectNode = courseMapper.readTree(courseJson) as ObjectNode
   objectNode = To10VersionLocalCourseConverter().convert(objectNode)
@@ -47,7 +49,7 @@ fun newCourse(courseLanguage: Language, courseMode: CourseMode = CourseMode.EDUC
   languageId = courseLanguage.id
 }
 
-@Suppress( "unused") // used for correct updateDate deserialization from json test data
+@Suppress("unused") // used for correct updateDate deserialization from json test data
 abstract class TestRemoteLessonMixin : RemoteLessonMixin() {
   @JsonProperty(UPDATE_DATE)
   private lateinit var updateDate: Date
@@ -63,7 +65,7 @@ abstract class TestRemoteTaskMixin : LocalTaskMixin() {
   private lateinit var updateDate: Date
 }
 
-@Suppress( "unused") // used for correct updateDate deserialization from json test data
+@Suppress("unused") // used for correct updateDate deserialization from json test data
 abstract class TestRemoteSectionMixin : RemoteSectionMixin() {
   @JsonProperty(UPDATE_DATE)
   private lateinit var updateDate: Date

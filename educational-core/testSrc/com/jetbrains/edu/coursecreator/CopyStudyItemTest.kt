@@ -1,6 +1,7 @@
 package com.jetbrains.edu.coursecreator
 
 import com.jetbrains.edu.learning.EduTestCase
+import com.jetbrains.edu.learning.copyFileContents
 import com.jetbrains.edu.learning.courseFormat.*
 import com.jetbrains.edu.learning.courseFormat.ext.allTasks
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
@@ -40,6 +41,9 @@ class CopyStudyItemTest : EduTestCase() {
     }
     val eduTask = localCourse.lessons[0].taskList[0]
     val taskCopy = eduTask.copy()
+
+    copyFileContents(eduTask, taskCopy)
+
     assertTrue(eduTask.sameTo(taskCopy))
   }
 

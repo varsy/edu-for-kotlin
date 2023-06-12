@@ -1,8 +1,56 @@
 package com.jetbrains.edu.learning.courseFormat
 
+import com.jetbrains.edu.learning.courseFormat.fileContents.FileContents
+import com.jetbrains.edu.learning.courseFormat.fileContents.FileContentsHolder
+import com.jetbrains.edu.learning.courseFormat.fileContents.InMemoryFileContentsHolder
+import com.jetbrains.edu.learning.courseFormat.fileContents.UndeterminedContents
+
 open class EduFile {
   var name: String = ""
-  var text: String = ""
+
+  /**
+   * The contents of this edu file encoded as a string.
+   * If the file is textual, the contents are stored as is.
+   * If the contents are binary, it is stored as a base64 encoded string.
+   *
+   * In the student mode, this field most of the time stores the initial contents of the file, i.e. the contents provided by the course author.
+   * In the course creation mode, in tests, and sometimes in the student mode, this field stores the contents that are about to be written
+   * to disk.
+   *
+   * It is preferable to use the [contents] property instead of the [text] property, because for the [text] property it is impossible to tell
+   * whether the contents are binary or textual.
+   * Currently, the [text] field delegates to the [contents] field.
+   */
+  var text: String
+    @Deprecated("Use EduFile.contents to be sure, whether this data is textual ")
+    get() = contents.textualRepresentation
+    @Deprecated("Use EduFile.contents to specify explicitly is it binary or not")
+    set(value) {
+      contents = UndeterminedContents(value)
+    }
+
+  /**
+   * The actual storage of [FileContents].
+   * Currently, the [text] field, the [contents] field finally delegate here.
+   */
+  var contentsHolder: FileContentsHolder = InMemoryFileContentsHolder()
+
+  /**
+   * See the [text] field for the description.
+   * The [contents] field, compared to the text field, also contains the information about whether the contents are binary or not.
+   * Currently, delegates to [contentsHolder].
+   */
+  var contents: FileContents
+    get() = contentsHolder.get()
+    set(value) {
+      contentsHolder.set(value)
+    }
+
+  @Suppress("unused") // used for serialization
+  val isBinary: Boolean?
+    get() {
+      return contents.isBinary
+    }
 
   var isTrackChanges: Boolean = true
   var errorHighlightLevel: EduFileErrorHighlightLevel = EduFileErrorHighlightLevel.TEMPORARY_SUPPRESSION
@@ -11,6 +59,9 @@ open class EduFile {
 
   // Should be used only in student mode
   var isLearnerCreated: Boolean = false
+
+  @Transient
+  var course: Course? = null
 
   constructor()
   constructor(name: String, text: String) {
@@ -29,8 +80,10 @@ open class EduFile {
   @Suppress("unused") // used for serialization
   fun getTextToSerialize(): String? {
     if (exceedsBase64ContentLimit(text)) {
-      LOG.warning("Base64 encoding of `$name` file exceeds limit (${getBinaryFileLimit().toLong()}), " +
-               "its content isn't serialized")
+      LOG.warning(
+        "Base64 encoding of `$name` file exceeds limit (${getBinaryFileLimit().toLong()}), " +
+        "its content isn't serialized"
+      )
       return null
     }
     val contentType = mimeFileType(name) ?: return text

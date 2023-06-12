@@ -3,9 +3,12 @@ package com.jetbrains.edu.learning.yaml.format.student
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonPropertyOrder
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
-import com.jetbrains.edu.learning.courseFormat.AnswerPlaceholder
-import com.jetbrains.edu.learning.courseFormat.EduFileErrorHighlightLevel
-import com.jetbrains.edu.learning.courseFormat.TaskFile
+import com.jetbrains.edu.learning.StudyTaskManager
+import com.jetbrains.edu.learning.courseFormat.*
+import com.jetbrains.edu.learning.courseFormat.authorContentsStorage.AuthorContentsStorage
+import com.jetbrains.edu.learning.courseFormat.authorContentsStorage.StorageAuthorContentsHolder
+import com.jetbrains.edu.learning.courseFormat.ext.project
+import com.jetbrains.edu.learning.courseFormat.fileContents.TextualContents
 import com.jetbrains.edu.learning.json.encrypt.Encrypt
 import com.jetbrains.edu.learning.yaml.format.TaskFileBuilder
 import com.jetbrains.edu.learning.yaml.format.TaskFileYamlMixin
@@ -23,11 +26,6 @@ import com.jetbrains.edu.learning.yaml.format.YamlMixinNames.VISIBLE
 @JsonPropertyOrder(NAME, VISIBLE, PLACEHOLDERS, EDITABLE, HIGHLIGHT_LEVEL, TEXT, LEARNER_CREATED)
 abstract class StudentTaskFileYamlMixin : TaskFileYamlMixin() {
 
-  @JsonProperty(TEXT)
-  open fun getTextToSerialize(): String {
-    throw NotImplementedError()
-  }
-
   @JsonProperty(LEARNER_CREATED)
   private var isLearnerCreated = false
 }
@@ -43,15 +41,28 @@ class StudentTaskFileBuilder(
   @JsonProperty(HIGHLIGHT_LEVEL) errorHighlightLevel: EduFileErrorHighlightLevel = EduFileErrorHighlightLevel.ALL_PROBLEMS
 ) : TaskFileBuilder(name, placeholders, visible, editable, errorHighlightLevel) {
   override fun createTaskFile(): TaskFile {
-    return super.createTaskFile().apply {
-      if (encryptedTextFromConfig != null) {
-        text = encryptedTextFromConfig
-      }
-      else if (textFromConfig != null){
-        text = textFromConfig
-      }
-      isLearnerCreated = learnerCreated
+    val taskFile = super.createTaskFile()
+
+    // textFromConfig and encryptedTextFromConfig are legacy values that might apper in yamls created by older versions of the plugin
+    if (encryptedTextFromConfig != null) {
+      taskFile.contents = TextualContents(encryptedTextFromConfig)
     }
+    else if (textFromConfig != null) {
+      taskFile.contents = TextualContents(textFromConfig)
+    }
+    else {
+      taskFile.contentsHolder = object : StorageAuthorContentsHolder(taskFile) {
+        override val storage: AuthorContentsStorage?
+          get() {
+            val project = taskFile.course?.project ?: return null
+            val manager = StudyTaskManager.getInstance(project)
+            return manager.authorContentsStorage
+          }
+      }
+    }
+
+    taskFile.isLearnerCreated = learnerCreated
+
+    return taskFile
   }
 }
-

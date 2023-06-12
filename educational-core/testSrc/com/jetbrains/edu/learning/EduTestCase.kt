@@ -10,6 +10,9 @@ import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.editor.Document
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.fileEditor.FileEditorManager
+import com.intellij.openapi.fileTypes.ExtensionFileNameMatcher
+import com.intellij.openapi.fileTypes.FileType
+import com.intellij.openapi.fileTypes.FileTypeManager
 import com.intellij.openapi.fileTypes.PlainTextLanguage
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.TextRange
@@ -55,6 +58,7 @@ import org.apache.http.HttpStatus
 import java.io.File
 import java.io.IOException
 import java.util.regex.Pattern
+import javax.swing.Icon
 import kotlin.reflect.KMutableProperty0
 
 abstract class EduTestCase : BasePlatformTestCase() {
@@ -86,6 +90,10 @@ abstract class EduTestCase : BasePlatformTestCase() {
     registerConfigurator(myFixture.testRootDisposable, FakeGradleConfigurator::class.java, FakeGradleBasedLanguage)
     registerConfigurator(myFixture.testRootDisposable, FakeGradleHyperskillConfigurator::class.java, FakeGradleBasedLanguage, HYPERSKILL)
 
+    // File types are used to detect, whether files are binary or textual.
+    // In tests, much less plugins are installed, and thus much less file types are known
+    setupFileTypes()
+
     CheckActionListener.reset()
     val connection = project.messageBus.connect(testRootDisposable)
     connection.subscribe(StudyTaskManager.COURSE_SET, object : CourseSetListener {
@@ -100,6 +108,23 @@ abstract class EduTestCase : BasePlatformTestCase() {
     frameworkLessonManagerImpl.storage = FrameworkLessonManagerImpl.createStorage(project)
     createCourse()
     project.putUserData(CourseProjectGenerator.EDU_PROJECT_CREATED, true)
+  }
+
+  private fun setupFileTypes() {
+    runWriteAction {
+      associateFileType("SVG", false)
+      associateFileType("PNG", true)
+    }
+  }
+
+  private fun associateFileType(extension: String, isBinary: Boolean) {
+    FileTypeManager.getInstance().associate(object : FileType {
+      override fun getName(): String = extension
+      override fun getDescription(): String = extension
+      override fun getDefaultExtension(): String = extension
+      override fun getIcon(): Icon = TODO("Not expected to be called")
+      override fun isBinary(): Boolean = isBinary
+    }, ExtensionFileNameMatcher(extension))
   }
 
   override fun tearDown() {
@@ -254,7 +279,7 @@ abstract class EduTestCase : BasePlatformTestCase() {
 
   protected fun Task.createTaskFileAndOpenInEditor(taskFilePath: String, text: String = "") {
     val taskDir = getDir(project.courseDir) ?: error("Can't find task dir")
-    val file = GeneratorUtils.createChildFile(project, taskDir, taskFilePath, text) ?: error("Failed to create `$taskFilePath` in $taskDir")
+    val file = GeneratorUtils.createTextChildFile(project, taskDir, taskFilePath, text) ?: error("Failed to create `$taskFilePath` in $taskDir")
     myFixture.openFileInEditor(file)
   }
 

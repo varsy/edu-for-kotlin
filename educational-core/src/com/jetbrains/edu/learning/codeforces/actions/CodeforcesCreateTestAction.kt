@@ -46,9 +46,9 @@ class CodeforcesCreateTestAction : DumbAwareAction() {
       val testName = nameField.text
       if (validator.checkInput(testName)) {
         popup.closeOk(it)
-        val inputFile = GeneratorUtils.createChildFile(project, testDataDir, GeneratorUtils.joinPaths(testName, selectedTask.inputFileName),
+        val inputFile = GeneratorUtils.createTextChildFile(project, testDataDir, GeneratorUtils.joinPaths(testName, selectedTask.inputFileName),
                                                        "") ?: return@setApplyAction
-        val outputFile = GeneratorUtils.createChildFile(project, testDataDir,
+        val outputFile = GeneratorUtils.createTextChildFile(project, testDataDir,
                                                         GeneratorUtils.joinPaths(testName, selectedTask.outputFileName), "")
                          ?: return@setApplyAction
         openInSplitEditors(project, outputFile, inputFile)

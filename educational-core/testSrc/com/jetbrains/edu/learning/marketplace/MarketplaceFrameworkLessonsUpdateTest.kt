@@ -3,6 +3,7 @@ package com.jetbrains.edu.learning.marketplace
 import com.intellij.testFramework.LightPlatformTestCase
 import com.jetbrains.edu.learning.actions.NextTaskAction
 import com.jetbrains.edu.learning.configurators.FakeGradleBasedLanguage
+import com.jetbrains.edu.learning.copyFileContents
 import com.jetbrains.edu.learning.courseFormat.DescriptionFormat
 import com.jetbrains.edu.learning.courseFormat.EduCourse
 import com.jetbrains.edu.learning.courseFormat.FrameworkLesson
@@ -102,6 +103,7 @@ class MarketplaceFrameworkLessonsUpdateTest : FrameworkLessonsUpdateTest<EduCour
 
   override fun toRemoteCourse(changeCourse: EduCourse.() -> Unit): EduCourse {
     val remoteCourse = localCourse.copy()
+    copyFileContents(localCourse, remoteCourse)
     remoteCourse.init(false)
     remoteCourse.changeCourse()
     return remoteCourse

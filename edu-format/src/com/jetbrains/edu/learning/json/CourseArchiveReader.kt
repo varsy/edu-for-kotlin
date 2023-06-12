@@ -3,6 +3,7 @@
 package com.jetbrains.edu.learning.json
 
 import com.fasterxml.jackson.databind.DeserializationFeature
+import com.fasterxml.jackson.databind.InjectableValues
 import com.fasterxml.jackson.databind.MapperFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.json.JsonMapper
@@ -11,6 +12,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.module.kotlin.treeToValue
 import com.jetbrains.edu.learning.courseFormat.*
 import com.jetbrains.edu.learning.courseFormat.EduFormatNames.MARKETPLACE
+import com.jetbrains.edu.learning.courseFormat.authorContentsStorage.AuthorContentsStorage
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
 import com.jetbrains.edu.learning.courseFormat.tasks.choice.ChoiceOption
 import com.jetbrains.edu.learning.courseFormat.tasks.choice.ChoiceTask
@@ -27,9 +29,11 @@ import java.util.*
 
 private val LOG = logger<LocalEduCourseMixin>()
 
-fun readCourseJson(jsonText: String): Course? {
+const val AUTHOR_CONTENTS_STORAGE_INJECTION_KEY = "author_contents_storage"
+
+fun readCourseJson(jsonText: String, authorContentsStorage: AuthorContentsStorage): Course? {
   return try {
-    val courseMapper = getCourseMapper()
+    val courseMapper = getCourseMapper(authorContentsStorage)
     val isArchiveEncrypted = isArchiveEncrypted(jsonText, courseMapper)
     courseMapper.configureCourseMapper(isArchiveEncrypted)
     var courseNode = courseMapper.readTree(jsonText) as ObjectNode
@@ -78,7 +82,7 @@ fun migrate(node: ObjectNode, maxVersion: Int): ObjectNode {
   return jsonObject
 }
 
-fun getCourseMapper(): ObjectMapper {
+fun getCourseMapper(authorContentsStorage: AuthorContentsStorage): ObjectMapper {
   return JsonMapper.builder()
     .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
     .disable(MapperFeature.AUTO_DETECT_FIELDS)
@@ -86,6 +90,7 @@ fun getCourseMapper(): ObjectMapper {
     .disable(MapperFeature.AUTO_DETECT_IS_GETTERS)
     .disable(MapperFeature.AUTO_DETECT_CREATORS)
     .setDateFormat()
+    .injectableValues(InjectableValues.Std(mapOf(AUTHOR_CONTENTS_STORAGE_INJECTION_KEY to authorContentsStorage)))
     .build()
 }
 
