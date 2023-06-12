@@ -10,18 +10,25 @@ import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.project.Project
 import com.intellij.ui.JBAccountInfoService
 import com.intellij.util.concurrency.annotations.RequiresBackgroundThread
-import com.jetbrains.edu.learning.*
+import com.jetbrains.edu.learning.Err
+import com.jetbrains.edu.learning.Ok
+import com.jetbrains.edu.learning.Result
 import com.jetbrains.edu.learning.api.ConnectorUtils
+import com.jetbrains.edu.learning.courseDir
 import com.jetbrains.edu.learning.courseFormat.AnswerPlaceholder
 import com.jetbrains.edu.learning.courseFormat.AnswerPlaceholderDependency
 import com.jetbrains.edu.learning.courseFormat.ext.getDir
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
 import com.jetbrains.edu.learning.courseFormat.tasks.TheoryTask
+import com.jetbrains.edu.learning.createRetrofitBuilder
+import com.jetbrains.edu.learning.executeHandlingExceptions
+import com.jetbrains.edu.learning.executeParsingErrors
+import com.jetbrains.edu.learning.flatMap
 import com.jetbrains.edu.learning.json.mixins.AnswerPlaceholderDependencyMixin
 import com.jetbrains.edu.learning.json.mixins.AnswerPlaceholderWithAnswerMixin
-import com.jetbrains.edu.learning.json.mixins.TaskFileMixin
 import com.jetbrains.edu.learning.marketplace.SUBMISSIONS_SERVICE_PRODUCTION_URL
 import com.jetbrains.edu.learning.messages.EduCoreBundle
+import com.jetbrains.edu.learning.onError
 import com.jetbrains.edu.learning.submissions.SolutionFile
 import com.jetbrains.edu.learning.submissions.checkNotEmpty
 import com.jetbrains.edu.learning.submissions.findTaskFileInDirWithSizeCheck
@@ -37,7 +44,7 @@ class MarketplaceSubmissionsConnector {
   private val converterFactory: JacksonConverterFactory
   val objectMapper: ObjectMapper by lazy {
     val objectMapper = ConnectorUtils.createRegisteredMapper(SimpleModule())
-    objectMapper.addMixIn(SolutionFile::class.java, TaskFileMixin::class.java)
+    objectMapper.addMixIn(SolutionFile::class.java, SolutionFileMinIn::class.java)
     objectMapper.addMixIn(AnswerPlaceholder::class.java, AnswerPlaceholderWithAnswerMixin::class.java)
     objectMapper.addMixIn(AnswerPlaceholderDependency::class.java, AnswerPlaceholderDependencyMixin::class.java)
     objectMapper
