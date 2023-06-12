@@ -12,7 +12,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.module.kotlin.treeToValue
 import com.jetbrains.edu.learning.courseFormat.*
 import com.jetbrains.edu.learning.courseFormat.EduFormatNames.MARKETPLACE
-import com.jetbrains.edu.learning.courseFormat.authorContentsStorage.AuthorContentsStorageFactory
+import com.jetbrains.edu.learning.courseFormat.authorContentsStorage.AuthorContentsStorage
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
 import com.jetbrains.edu.learning.courseFormat.tasks.choice.ChoiceOption
 import com.jetbrains.edu.learning.courseFormat.tasks.choice.ChoiceTask
@@ -29,11 +29,11 @@ import java.util.*
 
 private val LOG = logger<LocalEduCourseMixin>()
 
-const val AUTHOR_CONTENTS_STORAGE_FACTORY_INJECTION_KEY = "author_contents_storage_factory"
+const val AUTHOR_CONTENTS_STORAGE_INJECTION_KEY = "author_contents_storage"
 
-fun readCourseJson(jsonText: String, authorContentsStorageFactory: AuthorContentsStorageFactory<*>): Course? {
+fun readCourseJson(jsonText: String, authorContentsStorage: AuthorContentsStorage): Course? {
   return try {
-    val courseMapper = getCourseMapper(authorContentsStorageFactory)
+    val courseMapper = getCourseMapper(authorContentsStorage)
     val isArchiveEncrypted = isArchiveEncrypted(jsonText, courseMapper)
     courseMapper.configureCourseMapper(isArchiveEncrypted)
     var courseNode = courseMapper.readTree(jsonText) as ObjectNode
@@ -82,7 +82,7 @@ fun migrate(node: ObjectNode, maxVersion: Int): ObjectNode {
   return jsonObject
 }
 
-fun getCourseMapper(authorContentsStorageFactory: AuthorContentsStorageFactory<*>): ObjectMapper {
+fun getCourseMapper(authorContentsStorage: AuthorContentsStorage): ObjectMapper {
   return JsonMapper.builder()
     .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
     .disable(MapperFeature.AUTO_DETECT_FIELDS)
@@ -90,7 +90,7 @@ fun getCourseMapper(authorContentsStorageFactory: AuthorContentsStorageFactory<*
     .disable(MapperFeature.AUTO_DETECT_IS_GETTERS)
     .disable(MapperFeature.AUTO_DETECT_CREATORS)
     .setDateFormat()
-    .injectableValues(InjectableValues.Std(mapOf(AUTHOR_CONTENTS_STORAGE_FACTORY_INJECTION_KEY to authorContentsStorageFactory)))
+    .injectableValues(InjectableValues.Std(mapOf(AUTHOR_CONTENTS_STORAGE_INJECTION_KEY to authorContentsStorage)))
     .build()
 }
 

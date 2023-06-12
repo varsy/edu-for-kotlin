@@ -1,6 +1,5 @@
 package com.jetbrains.edu.rust.courseGeneration
 
-import com.jetbrains.edu.learning.authorContentsStorage.zip.COURSE_AUTHOR_CONTENTS_FILE
 import com.jetbrains.edu.learning.course
 import com.jetbrains.edu.learning.courseFormat.CourseMode
 import com.jetbrains.edu.learning.courseGeneration.CourseGenerationTestBase
@@ -41,7 +40,6 @@ class RsCourseBuilderTest : CourseGenerationTestBase<RsProjectSettings>() {
           ]
 
       """)
-      file(COURSE_AUTHOR_CONTENTS_FILE)
     }.assertEquals(rootDir)
   }
 
@@ -68,7 +66,6 @@ class RsCourseBuilderTest : CourseGenerationTestBase<RsProjectSettings>() {
         file("Cargo.toml")
         file("task.md")
       }
-      file(COURSE_AUTHOR_CONTENTS_FILE)
     }.assertEquals(rootDir)
   }
 
@@ -96,7 +93,6 @@ class RsCourseBuilderTest : CourseGenerationTestBase<RsProjectSettings>() {
         file("task.md")
         file("Cargo.toml")
       }
-      file(COURSE_AUTHOR_CONTENTS_FILE)
     }.assertEquals(rootDir)
   }
 }

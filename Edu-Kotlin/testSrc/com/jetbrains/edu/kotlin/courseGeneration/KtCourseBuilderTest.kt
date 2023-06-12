@@ -1,7 +1,6 @@
 package com.jetbrains.edu.kotlin.courseGeneration
 
 import com.jetbrains.edu.jvm.courseGeneration.JvmCourseGenerationTestBase
-import com.jetbrains.edu.learning.authorContentsStorage.zip.COURSE_AUTHOR_CONTENTS_FILE
 import com.jetbrains.edu.learning.courseFormat.CourseMode
 import com.jetbrains.edu.learning.fileTree
 import com.jetbrains.edu.learning.newCourse
@@ -51,7 +50,6 @@ class KtCourseBuilderTest : JvmCourseGenerationTestBase() {
       }
       file("build.gradle")
       file("settings.gradle")
-      file(COURSE_AUTHOR_CONTENTS_FILE)
     }
     expectedFileTree.assertEquals(rootDir)
   }
@@ -74,7 +72,6 @@ class KtCourseBuilderTest : JvmCourseGenerationTestBase() {
       }
       file("build.gradle")
       file("settings.gradle")
-      file(COURSE_AUTHOR_CONTENTS_FILE)
     }
 
     expectedFileTree.assertEquals(rootDir)
@@ -122,7 +119,6 @@ class KtCourseBuilderTest : JvmCourseGenerationTestBase() {
       }
       file("build.gradle")
       file("settings.gradle")
-      file(COURSE_AUTHOR_CONTENTS_FILE)
     }
     expectedFileTree.assertEquals(rootDir)
   }

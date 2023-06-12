@@ -158,7 +158,7 @@ class HyperskillCourseUpdater(private val project: Project, val course: Hyperski
     }
     updateProblems(problemsUpdates)
 
-    StudyTaskManager.getInstance(project).updateAuthorContentsStorageAndTaskFileContents()
+    StudyTaskManager.getInstance(project).updateCourseFileContentsHolders()
 
     // update environment at the end as it requires project reload
     if (remoteCourse != null && remoteCourse.environment != course.environment) {

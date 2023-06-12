@@ -40,7 +40,7 @@ class MarketplaceCourseUpdater(project: Project, course: EduCourse, private val 
     EditorNotifications.getInstance(project).updateAllNotifications()
 
     saveLearningProgress(courseFromServer)
-    StudyTaskManager.getInstance(project).updateAuthorContentsStorageAndTaskFileContents()
+    StudyTaskManager.getInstance(project).updateCourseFileContentsHolders()
     showUpdateNotification()
   }
 

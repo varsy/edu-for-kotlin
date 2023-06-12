@@ -163,9 +163,7 @@ abstract class CourseProjectGenerator<S : EduProjectSettings>(
         it.putUserData(EDU_PROJECT_CREATED, true)
       }
       preparedToOpen = {
-        val manager = StudyTaskManager.getInstance(it.project)
-        manager.course = course
-        manager.updateAuthorContentsStorageAndTaskFileContents()
+        StudyTaskManager.getInstance(it.project).course = course
         prepareToOpenCallback(it.project, it)
       }
     }

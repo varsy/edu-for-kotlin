@@ -14,6 +14,8 @@ import com.jetbrains.edu.learning.codeforces.courseFormat.CodeforcesCourse
 import com.jetbrains.edu.learning.codeforces.courseFormat.CodeforcesTaskWithFileIO
 import com.jetbrains.edu.learning.course
 import com.jetbrains.edu.learning.courseFormat.*
+import com.jetbrains.edu.learning.courseFormat.fileContents.BinaryContents
+import com.jetbrains.edu.learning.courseFormat.fileContents.fileContentsFromTextualRepresentation
 import com.jetbrains.edu.learning.courseFormat.tasks.CodeTask
 import com.jetbrains.edu.learning.courseFormat.tasks.EduTask
 import com.jetbrains.edu.learning.courseFormat.tasks.choice.ChoiceOptionStatus
@@ -562,7 +564,7 @@ class StudentYamlSerializationTest : EduTestCase() {
       frameworkLesson {
         eduTask {
           taskFile("task.txt", "task text")
-          taskFile(gitObjectFilePath, inMemoryFileContentsFromText(base64Text, true), false)
+          taskFile(gitObjectFilePath, fileContentsFromTextualRepresentation(base64Text, true), false)
         }
       }
     }.findTask("lesson1", "task1")
@@ -597,7 +599,7 @@ class StudentYamlSerializationTest : EduTestCase() {
       frameworkLesson {
         eduTask {
           taskFile("task.txt", "task text")
-          taskFile(gitObjectFilePath, inMemoryFileContentsFromText(base64Text, true), false)
+          taskFile(gitObjectFilePath, fileContentsFromTextualRepresentation(base64Text, true), false)
         }
       }
     }.findTask("lesson1", "task1")

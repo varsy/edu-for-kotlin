@@ -23,13 +23,13 @@ import com.intellij.openapi.vfs.VirtualFileManager
 import com.intellij.util.PlatformUtils
 import com.intellij.util.TimeoutUtil
 import com.intellij.util.ui.UIUtil
-import com.jetbrains.edu.learning.authorContentsStorage.zip.ZipAuthorContentsStorageFactory
+import com.jetbrains.edu.learning.authorContentsStorage.sqlite.SQLiteAuthorContentsStorage
 import com.jetbrains.edu.learning.courseFormat.AnswerPlaceholder
 import com.jetbrains.edu.learning.courseFormat.Course
-import com.jetbrains.edu.learning.courseFormat.authorContentsStorage.AuthorContentsStorageFactory
 import com.jetbrains.edu.learning.courseFormat.CourseMode
 import com.jetbrains.edu.learning.courseFormat.EduFormatNames.TASK_HTML
 import com.jetbrains.edu.learning.courseFormat.EduFormatNames.TASK_MD
+import com.jetbrains.edu.learning.courseFormat.authorContentsStorage.AuthorContentsStorage
 import com.jetbrains.edu.learning.courseFormat.ext.configurator
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
 import com.jetbrains.edu.learning.coursera.CourseraCourse
@@ -107,16 +107,15 @@ object EduUtilsKt {
     return getLocalCourse(zipFilePath, ::readCourseraCourseJson)
   }
 
-  fun getLocalCourse(zipFilePath: String, readCourseJson: (String, AuthorContentsStorageFactory<*>) -> Course? = ::readCourseJson): Course? {
+  fun getLocalCourse(zipFilePath: String, readCourseJson: (String, AuthorContentsStorage) -> Course? = ::readCourseJson): Course? {
     try {
       val zipFile = ZipFile(zipFilePath)
-      val authorContentStorageFactory = ZipAuthorContentsStorageFactory()
+      val authorContentStorage = SQLiteAuthorContentsStorage.openTemporaryDB()
       val course = zipFile.use {
         val entry = it.getEntry(EduNames.COURSE_META_FILE) ?: return null
         val jsonText = String(it.getInputStream(entry).readAllBytes(), StandardCharsets.UTF_8)
-        readCourseJson(jsonText, authorContentStorageFactory)
+        readCourseJson(jsonText, authorContentStorage)
       }
-      authorContentStorageFactory.build()
       return course
     }
     catch (e: IOException) {
@@ -181,9 +180,9 @@ object EduUtilsKt {
   private val LOG = logger<EduUtilsKt>()
 }
 
-private fun readCourseraCourseJson(jsonText: String, authorContentsStorageFactory: AuthorContentsStorageFactory<*>): Course? {
+private fun readCourseraCourseJson(jsonText: String, authorContentsStorage: AuthorContentsStorage): Course? {
   return try {
-    val courseMapper = getCourseMapper(authorContentsStorageFactory)
+    val courseMapper = getCourseMapper(authorContentsStorage)
     courseMapper.addMixIn(CourseraCourse::class.java, CourseraCourseMixin::class.java)
     courseMapper.configureCourseMapper(false)
     var courseNode = courseMapper.readTree(jsonText) as ObjectNode

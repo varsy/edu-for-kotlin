@@ -17,6 +17,9 @@ import com.jetbrains.edu.learning.courseFormat.EduFormatNames.LESSON
 import com.jetbrains.edu.learning.courseFormat.EduFormatNames.SECTION
 import com.jetbrains.edu.learning.courseFormat.EduFormatNames.TASK
 import com.jetbrains.edu.learning.courseFormat.ext.configurator
+import com.jetbrains.edu.learning.courseFormat.fileContents.FileContents
+import com.jetbrains.edu.learning.courseFormat.fileContents.TextualContents
+import com.jetbrains.edu.learning.courseFormat.fileContents.UndeterminedContents
 import com.jetbrains.edu.learning.courseFormat.tasks.*
 import com.jetbrains.edu.learning.courseFormat.tasks.choice.ChoiceOption
 import com.jetbrains.edu.learning.courseFormat.tasks.choice.ChoiceOptionStatus
@@ -171,7 +174,7 @@ class CourseBuilder(course: Course) : LessonOwnerBuilder(course) {
   }
 
   fun additionalFile(name: String, text: String, buildTaskFile: EduFileBuilder.() -> Unit = {}) =
-    additionalFile(name, InMemoryUndeterminedContents(text), buildTaskFile)
+    additionalFile(name, UndeterminedContents(text), buildTaskFile)
 
   fun additionalFile(name: String, contents: FileContents = UndeterminedContents.EMPTY, buildTaskFile: EduFileBuilder.() -> Unit = {}) {
     val builder = EduFileBuilder()
@@ -499,7 +502,7 @@ class TaskBuilder(val lesson: Lesson, val task: Task) {
     visible: Boolean? = null,
     editable: Boolean? = true,
     buildTaskFile: TaskFileBuilder.() -> Unit = {}
-  ) = taskFile(name, InMemoryUndeterminedContents(text), visible, editable, buildTaskFile)
+  ) = taskFile(name, UndeterminedContents(text), visible, editable, buildTaskFile)
 
   fun taskFile(
     name: String, contents: FileContents = UndeterminedContents.EMPTY,
@@ -513,7 +516,7 @@ class TaskBuilder(val lesson: Lesson, val task: Task) {
     if (contents.isBinary != true) {
       val textBuilder = StringBuilder(contents.textualRepresentation.trimIndent())
       val placeholders = extractPlaceholdersFromText(textBuilder)
-      taskFileBuilder.withContents(InMemoryTextualContents(textBuilder.toString()))
+      taskFileBuilder.withContents(TextualContents(textBuilder.toString()))
       taskFileBuilder.withPlaceholders(placeholders)
     }
     else {

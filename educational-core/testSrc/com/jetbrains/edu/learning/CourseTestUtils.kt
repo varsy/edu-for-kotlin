@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.intellij.lang.Language
-import com.jetbrains.edu.learning.authorContentsStorage.zip.ZipAuthorContentsStorageFactory
+import com.jetbrains.edu.learning.authorContentsStorage.sqlite.SQLiteAuthorContentsStorage
 import com.jetbrains.edu.learning.courseFormat.*
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
 import com.jetbrains.edu.learning.json.configureCourseMapper
@@ -24,15 +24,13 @@ import java.util.*
 @Throws(IOException::class)
 fun createCourseFromJson(pathToJson: String, courseMode: CourseMode, isEncrypted: Boolean = false): EduCourse {
   val courseJson = File(pathToJson).readText()
-  val authorContentStorageFactory = ZipAuthorContentsStorageFactory()
-  val courseMapper = getCourseMapper(authorContentStorageFactory)
+  val authorContentStorage = SQLiteAuthorContentsStorage.openTemporaryDB()
+  val courseMapper = getCourseMapper(authorContentStorage)
   configureCourseMapper(courseMapper, isEncrypted)
   var objectNode = courseMapper.readTree(courseJson) as ObjectNode
   objectNode = To10VersionLocalCourseConverter().convert(objectNode)
   return courseMapper.treeToValue(objectNode, EduCourse::class.java).apply {
     this.courseMode = courseMode
-    authorContentStorageFactory.build()
-    this.init(false)
   }
 }
 

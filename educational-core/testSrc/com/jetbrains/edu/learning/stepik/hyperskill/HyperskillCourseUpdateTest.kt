@@ -4,6 +4,7 @@ import com.intellij.testFramework.LightPlatformTestCase
 import com.jetbrains.edu.learning.actions.NextTaskAction
 import com.jetbrains.edu.learning.actions.PreviousTaskAction
 import com.jetbrains.edu.learning.configurators.FakeGradleBasedLanguage
+import com.jetbrains.edu.learning.copyFileContents
 import com.jetbrains.edu.learning.courseFormat.CheckStatus
 import com.jetbrains.edu.learning.courseFormat.DescriptionFormat
 import com.jetbrains.edu.learning.courseFormat.TaskFile
@@ -358,6 +359,7 @@ class HyperskillCourseUpdateTest : FrameworkLessonsUpdateTest<HyperskillCourse>(
 
   override fun toRemoteCourse(changeCourse: HyperskillCourse.() -> Unit): HyperskillCourse {
     val remoteCourse = localCourse.copy()
+    copyFileContents(localCourse, remoteCourse)
     remoteCourse.getTopicsSection()?.let { remoteCourse.removeSection(it) }
     remoteCourse.init(false)
     remoteCourse.changeCourse()

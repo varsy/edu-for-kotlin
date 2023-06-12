@@ -2,7 +2,6 @@ package com.jetbrains.edu.sql.kotlin.courseGeneration
 
 import com.intellij.sql.psi.SqlLanguage
 import com.jetbrains.edu.jvm.courseGeneration.JvmCourseGenerationTestBase
-import com.jetbrains.edu.learning.authorContentsStorage.zip.COURSE_AUTHOR_CONTENTS_FILE
 import com.jetbrains.edu.learning.course
 import com.jetbrains.edu.learning.courseFormat.CourseMode
 import com.jetbrains.edu.learning.fileTree
@@ -27,7 +26,6 @@ class SqlKtCourseBuilderTest : JvmCourseGenerationTestBase() {
       }
       file("build.gradle")
       file("settings.gradle")
-      file(COURSE_AUTHOR_CONTENTS_FILE)
     }.assertEquals(rootDir)
   }
 
@@ -60,7 +58,6 @@ class SqlKtCourseBuilderTest : JvmCourseGenerationTestBase() {
       }
       file("build.gradle")
       file("settings.gradle")
-      file(COURSE_AUTHOR_CONTENTS_FILE)
     }.assertEquals(rootDir)
   }
 
@@ -93,7 +90,6 @@ class SqlKtCourseBuilderTest : JvmCourseGenerationTestBase() {
       }
       file("build.gradle")
       file("settings.gradle")
-      file(COURSE_AUTHOR_CONTENTS_FILE)
     }.assertEquals(rootDir)
   }
 }

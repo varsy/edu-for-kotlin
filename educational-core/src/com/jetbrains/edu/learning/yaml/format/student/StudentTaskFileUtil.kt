@@ -3,11 +3,12 @@ package com.jetbrains.edu.learning.yaml.format.student
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonPropertyOrder
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
-import com.jetbrains.edu.learning.authorContentsStorage.fileContentsFromProjectAuthorContentsStorage
-import com.jetbrains.edu.learning.courseFormat.AnswerPlaceholder
-import com.jetbrains.edu.learning.courseFormat.EduFileErrorHighlightLevel
-import com.jetbrains.edu.learning.courseFormat.InMemoryTextualContents
-import com.jetbrains.edu.learning.courseFormat.TaskFile
+import com.jetbrains.edu.learning.StudyTaskManager
+import com.jetbrains.edu.learning.courseFormat.*
+import com.jetbrains.edu.learning.courseFormat.authorContentsStorage.AuthorContentsStorage
+import com.jetbrains.edu.learning.courseFormat.authorContentsStorage.StorageAuthorContentsHolder
+import com.jetbrains.edu.learning.courseFormat.ext.project
+import com.jetbrains.edu.learning.courseFormat.fileContents.TextualContents
 import com.jetbrains.edu.learning.json.encrypt.Encrypt
 import com.jetbrains.edu.learning.yaml.format.TaskFileBuilder
 import com.jetbrains.edu.learning.yaml.format.TaskFileYamlMixin
@@ -43,14 +44,21 @@ class StudentTaskFileBuilder(
     val taskFile = super.createTaskFile()
 
     // textFromConfig and encryptedTextFromConfig are legacy values that might apper in yamls created by older versions of the plugin
-    taskFile.contents = if (encryptedTextFromConfig != null) {
-      InMemoryTextualContents(encryptedTextFromConfig)
+    if (encryptedTextFromConfig != null) {
+      taskFile.contents = TextualContents(encryptedTextFromConfig)
     }
     else if (textFromConfig != null) {
-      InMemoryTextualContents(textFromConfig)
+      taskFile.contents = TextualContents(textFromConfig)
     }
     else {
-      fileContentsFromProjectAuthorContentsStorage(taskFile)
+      taskFile.contentsHolder = object : StorageAuthorContentsHolder(taskFile) {
+        override val storage: AuthorContentsStorage?
+          get() {
+            val project = taskFile.course?.project ?: return null
+            val manager = StudyTaskManager.getInstance(project)
+            return manager.authorContentsStorage
+          }
+      }
     }
 
     taskFile.isLearnerCreated = learnerCreated

@@ -20,6 +20,9 @@ import com.intellij.testFramework.TestActionEvent
 import com.intellij.util.ui.UIUtil
 import com.jetbrains.edu.coursecreator.handlers.CCVirtualFileListener
 import com.jetbrains.edu.learning.courseFormat.Course
+import com.jetbrains.edu.learning.courseFormat.fileContents.InMemoryFileContentsHolder
+import com.jetbrains.edu.learning.courseFormat.ItemContainer
+import com.jetbrains.edu.learning.courseFormat.StudyItem
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
 import com.jetbrains.edu.learning.handlers.UserCreatedFileListener
 import org.hamcrest.CoreMatchers
@@ -147,5 +150,26 @@ inline fun withVirtualFileListener(project: Project, course: Course, disposable:
   }
   finally {
     connection.disconnect()
+  }
+}
+
+fun copyFileContents(item1 : StudyItem, item2: StudyItem) {
+  fun copyFileContentsForTasks(item1: Task, item2: Task) {
+    for (taskFile1 in item1.taskFiles.values) {
+      val taskFile2 = item2.getTaskFile(taskFile1.name)
+      taskFile2?.contentsHolder = InMemoryFileContentsHolder(taskFile1.contents)
+    }
+  }
+
+  if (item1 is Task) {
+    copyFileContentsForTasks(item1, item2 as Task)
+    return
+  }
+  if (item1 !is ItemContainer) return
+  item2 as ItemContainer
+
+  for (subItem1 in item1.items) {
+    val subItem2 = item2.getItem(subItem1.name) ?: continue
+    copyFileContents(subItem1, subItem2)
   }
 }

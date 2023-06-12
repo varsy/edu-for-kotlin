@@ -2,13 +2,8 @@ package com.jetbrains.edu.learning.actions.refresh
 
 import com.intellij.openapi.ui.Messages
 import com.intellij.psi.PsiDocumentManager
-import com.jetbrains.edu.learning.EduTestCase
-import com.jetbrains.edu.learning.EduTestDialog
-import com.jetbrains.edu.learning.StudyTaskManager
+import com.jetbrains.edu.learning.*
 import com.jetbrains.edu.learning.actions.RevertTaskAction
-import com.jetbrains.edu.learning.fileTree
-import com.jetbrains.edu.learning.testAction
-import com.jetbrains.edu.learning.withEduTestDialog
 import com.jetbrains.edu.learning.yaml.YamlDeepLoader
 import java.io.IOException
 
@@ -58,9 +53,7 @@ class RefreshTaskTest : EduTestCase() {
 
   fun `test invisible files`() {
     // Emulate load course from yaml after project reopening
-    val manager = StudyTaskManager.getInstance(project)
-    manager.updateAuthorContentsStorageAndTaskFileContents()
-    manager.course = YamlDeepLoader.loadCourse(project)
+    StudyTaskManager.getInstance(project).course = YamlDeepLoader.loadCourse(project)
 
     configureByTaskFile(1, 4, "taskFile1.txt")
     myFixture.editor.caretModel.moveToOffset(0)

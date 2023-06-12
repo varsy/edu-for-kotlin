@@ -10,13 +10,18 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Computable
 import com.intellij.util.messages.Topic
 import com.intellij.util.xmlb.annotations.Transient
-import com.jetbrains.edu.learning.authorContentsStorage.fileContentsFromProjectAuthorContentsStorage
-import com.jetbrains.edu.learning.authorContentsStorage.zip.UpdatableZipAuthorContentsStorage
+import com.jetbrains.edu.learning.authorContentsStorage.sqlite.SQLiteAuthorContentsStorage
 import com.jetbrains.edu.learning.courseFormat.Course
+import com.jetbrains.edu.learning.courseFormat.EduFile
+import com.jetbrains.edu.learning.courseFormat.authorContentsStorage.AuthorContentsStorage
+import com.jetbrains.edu.learning.courseFormat.authorContentsStorage.StorageAuthorContentsHolder
 import com.jetbrains.edu.learning.courseFormat.ext.visitEduFiles
 import com.jetbrains.edu.learning.yaml.YamlDeepLoader.loadCourse
 import com.jetbrains.edu.learning.yaml.YamlFormatSettings.isEduYamlProject
 import com.jetbrains.edu.learning.yaml.YamlFormatSynchronizer.startSynchronization
+import java.nio.file.Files
+import java.nio.file.Path
+import java.nio.file.Paths
 
 /**
  * Implementation of class which contains all the information about study in context of current project
@@ -35,24 +40,8 @@ class StudyTaskManager(private val project: Project) : DumbAware, Disposable {
    * It should not be used in the course creation mode.
    */
   @Transient
-  val authorContentsStorage = UpdatableZipAuthorContentsStorage(project.courseDir)
-
-  /**
-   * This method saves all current edu file contents to the author contents storage,
-   * and reassigns edu file contents to point to this storage.
-   * We may not reassign edu file contents to point on the storage, but we do it to free up some resources,
-   * for example, if some file contents are pointing into memory.
-   */
-  @Transient
-  fun updateAuthorContentsStorageAndTaskFileContents() {
-    val course = course
-    course ?: return
-
-    authorContentsStorage.update(course)
-    course.visitEduFiles { eduFile ->
-      eduFile.contents = fileContentsFromProjectAuthorContentsStorage(eduFile)
-    }
-  }
+  lateinit var authorContentsStorage: AuthorContentsStorage
+    private set
 
   @get:Transient
   @set:Transient
@@ -60,10 +49,39 @@ class StudyTaskManager(private val project: Project) : DumbAware, Disposable {
     get() = _course
     set(course) {
       _course = course
+      authorContentsStorage = SQLiteAuthorContentsStorage.openOrCreateDB(getZipPathForProjectDirectory(project))
+
+      updateCourseFileContentsHolders()
       course?.apply {
         project.messageBus.syncPublisher(COURSE_SET).courseSet(this)
       }
     }
+
+  /**
+   * Should be called each time the course is updated
+   */
+  fun updateCourseFileContentsHolders() {
+    _course?.visitEduFiles { eduFile ->
+      if (!contentsHolderIsForThisFileFromThisStorage(eduFile, project)) {
+        val oldContents = eduFile.contents
+        eduFile.contentsHolder = object : StorageAuthorContentsHolder(eduFile) {
+          override val storage: AuthorContentsStorage
+            get() = authorContentsStorage
+        }
+        eduFile.contents = oldContents
+      }
+    }
+  }
+
+  private fun contentsHolderIsForThisFileFromThisStorage(eduFile: EduFile, project: Project): Boolean {
+    val contentsHolder = eduFile.contentsHolder
+    if (contentsHolder !is StorageAuthorContentsHolder) return false
+
+    if (contentsHolder.eduFile != eduFile) return false
+    val storage = contentsHolder.storage
+    if (storage !is SQLiteAuthorContentsStorage) return false
+    return storage.db == getZipPathForProjectDirectory(project)
+  }
 
   override fun dispose() {}
 
@@ -82,6 +100,27 @@ class StudyTaskManager(private val project: Project) : DumbAware, Disposable {
         startSynchronization(project)
       }
       return manager
+    }
+
+    private const val COURSE_AUTHOR_CONTENTS_FILE = "author_contents_storage.db"
+    private val courseDir2zipDir = mutableMapOf<Path, Path>()
+
+    private fun getZipPathForProjectDirectory(project: Project): Path {
+      val projectFile = Paths.get(
+        project.projectFilePath ?: throw IllegalStateException("working with a default project")
+      )
+
+      val courseStorageFileFolder = projectFile.parent
+      val realFolderForDBfile = if (Files.exists(courseStorageFileFolder)) {
+        courseStorageFileFolder
+      }
+      else {
+        courseDir2zipDir.computeIfAbsent(courseStorageFileFolder) {
+          Files.createTempDirectory("boundAuthorContentStorage")
+        }
+      }
+
+      return realFolderForDBfile.resolve(COURSE_AUTHOR_CONTENTS_FILE)
     }
   }
 }

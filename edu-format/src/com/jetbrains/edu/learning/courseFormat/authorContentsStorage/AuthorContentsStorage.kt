@@ -1,6 +1,7 @@
 package com.jetbrains.edu.learning.courseFormat.authorContentsStorage
 
-import com.jetbrains.edu.learning.courseFormat.FileContents
+import com.jetbrains.edu.learning.courseFormat.fileContents.FileContents
+import com.jetbrains.edu.learning.courseFormat.fileContents.FileContentsHolder
 
 /**
  * After a student creates a project for some course, he or she may modify the created files.
@@ -14,5 +15,12 @@ import com.jetbrains.edu.learning.courseFormat.FileContents
  * files with the initial version of the course files.
  */
 interface AuthorContentsStorage {
-  fun get(path: String): FileContents?
+
+  fun holderForPath(path: String): FileContentsHolder = object : FileContentsHolder {
+    override fun get(): FileContents = get(path)
+    override fun set(value: FileContents) = put(path, value)
+  }
+
+  fun put(path: String, contents: FileContents)
+  fun get(path: String): FileContents
 }

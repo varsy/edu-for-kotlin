@@ -1,5 +1,10 @@
 package com.jetbrains.edu.learning.courseFormat
 
+import com.jetbrains.edu.learning.courseFormat.fileContents.FileContents
+import com.jetbrains.edu.learning.courseFormat.fileContents.FileContentsHolder
+import com.jetbrains.edu.learning.courseFormat.fileContents.InMemoryFileContentsHolder
+import com.jetbrains.edu.learning.courseFormat.fileContents.UndeterminedContents
+
 open class EduFile {
   var name: String = ""
 
@@ -21,14 +26,26 @@ open class EduFile {
     get() = contents.textualRepresentation
     @Deprecated("Use EduFile.contents to specify explicitly is it binary or not")
     set(value) {
-      contents = InMemoryUndeterminedContents(value)
+      contents = UndeterminedContents(value)
     }
+
+  /**
+   * The actual storage of [FileContents].
+   * Currently, the [text] field, the [contents] field finally delegate here.
+   */
+  var contentsHolder: FileContentsHolder = InMemoryFileContentsHolder()
 
   /**
    * See the [text] field for the description.
    * The [contents] field, compared to the text field, also contains the information about whether the contents are binary or not.
+   * Currently, delegates to [contentsHolder].
    */
-  var contents: FileContents = UndeterminedContents.EMPTY
+  var contents: FileContents
+    get() = contentsHolder.get()
+    set(value) {
+      contentsHolder.set(value)
+    }
+
   @Suppress("unused") // used for serialization
   val isBinary: Boolean?
     get() {
@@ -63,8 +80,10 @@ open class EduFile {
   @Suppress("unused") // used for serialization
   fun getTextToSerialize(): String? {
     if (exceedsBase64ContentLimit(text)) {
-      LOG.warning("Base64 encoding of `$name` file exceeds limit (${getBinaryFileLimit().toLong()}), " +
-               "its content isn't serialized")
+      LOG.warning(
+        "Base64 encoding of `$name` file exceeds limit (${getBinaryFileLimit().toLong()}), " +
+        "its content isn't serialized"
+      )
       return null
     }
     val contentType = mimeFileType(name) ?: return text
