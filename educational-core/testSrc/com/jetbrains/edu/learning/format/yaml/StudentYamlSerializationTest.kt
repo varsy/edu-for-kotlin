@@ -578,7 +578,8 @@ class StudentYamlSerializationTest : EduTestCase() {
   }
 
   fun `test huge binary file text is not saved in framework lesson`() {
-    var base64Text = "eAErKUpNVTA3ZjA0MDAzMVHITczM08suYTh0o+NNPdt26bgThdosKRdPVXHN/wNVUpSamJKbqldSUcKwosqLb/75qC5OmZAJs9O9Di0I/PoCAJ5FH4E="
+    // We are going to repeat base64text several times, so its length should be a multiple of 3 to get the correct Base64 encoding.
+    var base64Text = "eAErKUpNVTA3ZjA0MDAzMVHITczM08suYTh0o+NNPdt26bgThdosKRdPVXHN/wNVUpSamJKbqldSUcKwosqLb/75qC5OmZAJs9O9Di0I/PoCAJ5FH4E"
 
     //create huge fileText
     while (!exceedsBase64ContentLimit(base64Text)) {
