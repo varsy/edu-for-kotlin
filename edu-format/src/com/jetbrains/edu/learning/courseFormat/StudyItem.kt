@@ -54,4 +54,17 @@ abstract class StudyItem() {
       id = System.identityHashCode(this)
     }
   }
+
+  fun getPathInCourse(): String {
+    val parents = mutableListOf<String>()
+    var currentParent = parent
+    while (currentParent !is Course) {
+      parents.add(currentParent.name)
+      currentParent = currentParent.parent
+    }
+    parents.reverse()
+    if (parents.isEmpty()) return name
+    parents.add(name)
+    return parents.joinToString("/")
+  }
 }
