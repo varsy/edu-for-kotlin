@@ -5,7 +5,7 @@ import com.intellij.openapi.project.Project
 import com.jetbrains.edu.learning.CourseInfoHolder
 import com.jetbrains.edu.learning.courseDir
 import com.jetbrains.edu.learning.courseFormat.Course
-import com.jetbrains.edu.learning.courseGeneration.GeneratorUtils.createChildFile
+import com.jetbrains.edu.learning.courseGeneration.GeneratorUtils.createTextChildFile
 import com.jetbrains.edu.learning.courseGeneration.GeneratorUtils.getInternalTemplateText
 import com.jetbrains.edu.learning.isUnitTestMode
 import com.jetbrains.edu.learning.newproject.CourseProjectGenerator
@@ -36,7 +36,7 @@ class PhpCourseProjectGenerator(
   private fun createComposerFile(holder: CourseInfoHolder<Course>) {
     val composerFile = holder.courseDir.findChild(ComposerUtils.CONFIG_DEFAULT_FILENAME)
     if (composerFile == null) {
-      createChildFile(
+      createTextChildFile(
         holder,
         holder.courseDir,
         ComposerUtils.CONFIG_DEFAULT_FILENAME,

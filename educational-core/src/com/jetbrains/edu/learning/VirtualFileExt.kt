@@ -275,7 +275,7 @@ fun VirtualFile.toStudentFile(project: Project, task: Task): TaskFile? {
       if (task.lesson is FrameworkLesson && length >= getBinaryFileLimit()) {
         throw HugeBinaryFileException("${task.getPathInCourse()}/${taskFile.name}", length, getBinaryFileLimit().toLong(), true)
       }
-      taskFile.text = loadEncodedContent(isToEncodeContent = true)
+      taskFile.contents = InMemoryBinaryContents(contentsToByteArray())
       return taskFile
     }
     FileDocumentManager.getInstance().saveDocument(document)
@@ -295,7 +295,7 @@ fun VirtualFile.toStudentFile(project: Project, task: Task): TaskFile? {
         }
       }
       val text = studentDocument.immutableCharSequence.toString()
-      taskFile.text = EduMacroUtils.collapseMacrosForFile(project.toCourseInfoHolder(), this, text)
+      taskFile.contents = InMemoryTextualContents(EduMacroUtils.collapseMacrosForFile(project.toCourseInfoHolder(), this, text))
     }
     return taskFile
   }
