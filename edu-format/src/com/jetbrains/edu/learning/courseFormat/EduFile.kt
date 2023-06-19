@@ -43,6 +43,9 @@ open class EduFile {
   // Should be used only in student mode
   var isLearnerCreated: Boolean = false
 
+  @Transient
+  var course: Course? = null
+
   constructor()
   constructor(name: String, text: String) {
     this.name = name
