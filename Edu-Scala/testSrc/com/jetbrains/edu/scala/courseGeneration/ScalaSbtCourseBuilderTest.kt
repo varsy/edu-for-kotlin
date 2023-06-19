@@ -1,6 +1,7 @@
 package com.jetbrains.edu.scala.courseGeneration
 
 import com.jetbrains.edu.jvm.courseGeneration.JvmCourseGenerationTestBase
+import com.jetbrains.edu.learning.authorContentsStorage.zip.COURSE_AUTHOR_CONTENTS_FILE
 import com.jetbrains.edu.learning.fileTree
 import com.jetbrains.edu.learning.newCourse
 import org.jetbrains.plugins.scala.ScalaLanguage
@@ -26,6 +27,7 @@ class ScalaSbtCourseBuilderTest : JvmCourseGenerationTestBase() {
         file("build.properties")
       }
       file("build.sbt")
+      file(COURSE_AUTHOR_CONTENTS_FILE)
     }
     expectedFileTree.assertEquals(rootDir)
   }
@@ -51,6 +53,7 @@ class ScalaSbtCourseBuilderTest : JvmCourseGenerationTestBase() {
         file("build.properties")
       }
       file("build.sbt")
+      file(COURSE_AUTHOR_CONTENTS_FILE)
     }
 
     expectedFileTree.assertEquals(rootDir)
