@@ -2,6 +2,9 @@
 
 package com.jetbrains.edu.learning.format.yaml
 
+import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.annotation.JsonPropertyOrder
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.jetbrains.edu.learning.EduTestCase
 import com.jetbrains.edu.learning.checkio.courseFormat.CheckiOMission
 import com.jetbrains.edu.learning.checkio.courseFormat.CheckiOStation
@@ -16,12 +19,15 @@ import com.jetbrains.edu.learning.courseFormat.tasks.EduTask
 import com.jetbrains.edu.learning.courseFormat.tasks.choice.ChoiceOptionStatus
 import com.jetbrains.edu.learning.courseFormat.tasks.choice.ChoiceTask
 import com.jetbrains.edu.learning.courseFormat.tasks.data.DataTask
-import com.jetbrains.edu.learning.findTask
 import com.jetbrains.edu.learning.courseFormat.tasks.matching.MatchingTask
 import com.jetbrains.edu.learning.courseFormat.tasks.matching.SortingTask
+import com.jetbrains.edu.learning.findTask
 import com.jetbrains.edu.learning.stepik.hyperskill.api.HyperskillProject
 import com.jetbrains.edu.learning.stepik.hyperskill.courseFormat.HyperskillCourse
 import com.jetbrains.edu.learning.yaml.YamlFormatSynchronizer
+import com.jetbrains.edu.learning.yaml.format.YamlMixinNames
+import com.jetbrains.edu.learning.yaml.format.student.StudentTaskFileBuilder
+import com.jetbrains.edu.learning.yaml.format.student.StudentTaskFileYamlMixin
 import org.intellij.lang.annotations.Language
 import java.time.ZonedDateTime
 import java.util.*
@@ -490,7 +496,7 @@ class StudentYamlSerializationTest : EduTestCase() {
     val task = courseWithFiles {
       lesson {
         eduTask {
-          taskFile("task.png", "")
+          taskFile("task.png", BinaryContents.EMPTY)
         }
       }
     }.findTask("lesson1", "task1")
@@ -556,7 +562,7 @@ class StudentYamlSerializationTest : EduTestCase() {
       frameworkLesson {
         eduTask {
           taskFile("task.txt", "task text")
-          taskFile(gitObjectFilePath, base64Text, false)
+          taskFile(gitObjectFilePath, inMemoryFileContentsFromText(base64Text, true), false)
         }
       }
     }.findTask("lesson1", "task1")
@@ -578,8 +584,8 @@ class StudentYamlSerializationTest : EduTestCase() {
   }
 
   fun `test huge binary file text is not saved in framework lesson`() {
-    // We are going to repeat base64text several times, so its length should be a multiple of 3 to get the correct Base64 encoding.
-    var base64Text = "eAErKUpNVTA3ZjA0MDAzMVHITczM08suYTh0o+NNPdt26bgThdosKRdPVXHN/wNVUpSamJKbqldSUcKwosqLb/75qC5OmZAJs9O9Di0I/PoCAJ5FH4E"
+    // We are going to repeat base64text several times, so its length should be a multiple of 3 to get a correct Base64 encoding.
+    var base64Text = "eAErKUpNVTA3ZjA0MDAzMVHITczM08suYTh0o+NNPdt26bgThdosKRdPVXHN/wNVUpSamJKbqldSUcKwosqLb/75qC5OmZAJs9O9Di0I/PoCAJ5FH4"
 
     //create huge fileText
     while (!exceedsBase64ContentLimit(base64Text)) {
@@ -591,7 +597,7 @@ class StudentYamlSerializationTest : EduTestCase() {
       frameworkLesson {
         eduTask {
           taskFile("task.txt", "task text")
-          taskFile(gitObjectFilePath, base64Text, false)
+          taskFile(gitObjectFilePath, inMemoryFileContentsFromText(base64Text, true), false)
         }
       }
     }.findTask("lesson1", "task1")
@@ -656,7 +662,35 @@ class StudentYamlSerializationTest : EduTestCase() {
   }
 
   private fun doTest(item: StudyItem, expected: String) {
-    val actual = YamlFormatSynchronizer.STUDENT_MAPPER.writeValueAsString(item)
+    // There are a lot of tests based on this function, all of them have texts inside YAML.
+    // We can either remove texts from the expected YAMLs, or make YAML serializer do write that texts.
+    val studentMapperWithTexts = YamlFormatSynchronizer
+      .STUDENT_MAPPER
+      .copy()
+      .addMixIn(TaskFile::class.java, StudentTaskFileYamlMixinWithText::class.java)
+
+    val actual = studentMapperWithTexts.writeValueAsString(item)
     assertEquals(expected, actual)
   }
+}
+
+@Suppress("unused") // used for yaml serialization
+@JsonDeserialize(builder = StudentTaskFileBuilder::class)
+@JsonPropertyOrder(
+  YamlMixinNames.NAME,
+  YamlMixinNames.VISIBLE,
+  YamlMixinNames.PLACEHOLDERS,
+  YamlMixinNames.EDITABLE,
+  YamlMixinNames.TEXT,
+  YamlMixinNames.LEARNER_CREATED
+)
+private abstract class StudentTaskFileYamlMixinWithText : StudentTaskFileYamlMixin() {
+
+  @JsonProperty(YamlMixinNames.TEXT)
+  open fun getTextToSerialize(): String {
+    throw NotImplementedError()
+  }
+
+  @JsonProperty(YamlMixinNames.LEARNER_CREATED)
+  private var isLearnerCreated = false
 }

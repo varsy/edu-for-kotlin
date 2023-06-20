@@ -130,11 +130,7 @@ class AuthorContentsStorageForProjectTests : EduTestCase() {
   private fun testAllContentsArePreserved(studentProject: Project) {
     val course = studentProject.course!!
     course.visitEduFiles { eduFile ->
-      // Currently we get actual contents from the zip author contents storage of our course.
-      // But we need to take the actual contents directly from `eduFile.contents`.
-      // We will change this test later when YAML deserialization will be reimplemented
-      val actualContents = fileContentsFromProjectAuthorContentsStorage(eduFile) // will be replaced later with eduFile.contents
-      assertFileContentsEqual(expectedContents(eduFile), actualContents)
+      assertFileContentsEqual(expectedContents(eduFile), eduFile.contents)
     }
   }
 
