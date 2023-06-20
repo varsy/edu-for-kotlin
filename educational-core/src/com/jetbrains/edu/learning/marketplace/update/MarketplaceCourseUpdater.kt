@@ -10,6 +10,7 @@ import com.intellij.ui.EditorNotifications
 import com.jetbrains.edu.coursecreator.AdditionalFilesUtils.getChangeNotesVirtualFile
 import com.jetbrains.edu.coursecreator.CCNotificationUtils
 import com.jetbrains.edu.learning.EduCourseUpdater
+import com.jetbrains.edu.learning.StudyTaskManager
 import com.jetbrains.edu.learning.courseFormat.AnswerPlaceholder
 import com.jetbrains.edu.learning.courseFormat.CheckStatus
 import com.jetbrains.edu.learning.courseFormat.EduCourse
@@ -39,6 +40,7 @@ class MarketplaceCourseUpdater(project: Project, course: EduCourse, private val 
     EditorNotifications.getInstance(project).updateAllNotifications()
 
     saveLearningProgress(courseFromServer)
+    StudyTaskManager.getInstance(project).updateAuthorContentsStorageAndTaskFileContents()
     showUpdateNotification()
   }
 
