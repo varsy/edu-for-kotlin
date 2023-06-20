@@ -3,6 +3,7 @@
 
 package com.jetbrains.edu.learning.json.mixins
 
+import com.fasterxml.jackson.annotation.JacksonInject
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonPropertyOrder
@@ -17,10 +18,12 @@ import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.databind.util.StdConverter
 import com.jetbrains.edu.learning.courseFormat.*
 import com.jetbrains.edu.learning.courseFormat.EduFormatNames.MARKETPLACE
+import com.jetbrains.edu.learning.courseFormat.authorContentsStorage.*
 import com.jetbrains.edu.learning.courseFormat.tasks.*
 import com.jetbrains.edu.learning.courseFormat.tasks.choice.ChoiceOption
 import com.jetbrains.edu.learning.courseFormat.tasks.choice.ChoiceOptionStatus
 import com.jetbrains.edu.learning.courseFormat.tasks.choice.ChoiceTask
+import com.jetbrains.edu.learning.json.AUTHOR_CONTENTS_STORAGE_FACTORY_INJECTION_KEY
 import com.jetbrains.edu.learning.json.encrypt.Encrypt
 import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.ADDITIONAL_FILES
 import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.AUTHORS
@@ -36,6 +39,7 @@ import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.FEEDBACK_LINK
 import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.FILE
 import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.FILES
 import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.FRAMEWORK_TYPE
+import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.IS_BINARY
 import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.HIGHLIGHT_LEVEL
 import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.IS_EDITABLE
 import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.IS_MULTIPLE_CHOICE
@@ -293,7 +297,7 @@ abstract class ChoiceOptionLocalMixin {
   private var status: ChoiceOptionStatus = ChoiceOptionStatus.UNKNOWN
 }
 
-@JsonPropertyOrder(NAME, IS_VISIBLE, TEXT, IS_EDITABLE, HIGHLIGHT_LEVEL)
+@JsonPropertyOrder(NAME, IS_VISIBLE, TEXT, IS_BINARY, IS_EDITABLE, HIGHLIGHT_LEVEL)
 @JsonDeserialize(builder = EduFileBuilder::class)
 abstract class EduFileMixin {
   @JsonProperty(NAME)
@@ -311,6 +315,14 @@ abstract class EduFileMixin {
     @Encrypt
     set
 
+  var isBinary: Boolean? = null
+    @JsonProperty(IS_BINARY)
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    get
+    @JsonProperty(IS_BINARY)
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    set
+
   @JsonInclude(JsonInclude.Include.CUSTOM, valueFilter = TrueValueFilter::class)
   @JsonProperty(IS_EDITABLE)
   var isEditable: Boolean = true
@@ -320,7 +332,7 @@ abstract class EduFileMixin {
   var errorHighlightLevel: EduFileErrorHighlightLevel = EduFileErrorHighlightLevel.TEMPORARY_SUPPRESSION
 }
 
-@JsonPropertyOrder(NAME, PLACEHOLDERS, IS_VISIBLE, TEXT, IS_EDITABLE, HIGHLIGHT_LEVEL)
+@JsonPropertyOrder(NAME, PLACEHOLDERS, IS_VISIBLE, TEXT, IS_BINARY, IS_EDITABLE, HIGHLIGHT_LEVEL)
 @JsonDeserialize(builder = TaskFileBuilder::class)
 abstract class TaskFileMixin : EduFileMixin() {
   @JsonProperty(PLACEHOLDERS)
@@ -453,10 +465,14 @@ private open class EduFileBuilder {
   @JsonProperty(TEXT)
   @Encrypt
   lateinit var text: String
+  @JsonProperty(IS_BINARY)
+  var isBinary: Boolean? = null
   @JsonProperty(IS_EDITABLE)
   var isEditable: Boolean = true
   @JsonProperty(HIGHLIGHT_LEVEL)
   var errorHighlightLevel: EduFileErrorHighlightLevel = EduFileErrorHighlightLevel.TEMPORARY_SUPPRESSION
+  @JacksonInject(AUTHOR_CONTENTS_STORAGE_FACTORY_INJECTION_KEY)
+  var myAuthorContentsStorageFactory: AuthorContentsStorageFactory<*>? = null
 
   private fun build(): EduFile {
     val result = EduFile()
@@ -471,7 +487,11 @@ private open class EduFileBuilder {
     result.isEditable = isEditable
     result.errorHighlightLevel = errorHighlightLevel
 
-    result.text = text
+    val randomPath = UUID.randomUUID().toString() + "/" + name
+    myAuthorContentsStorageFactory?.put(randomPath, inMemoryFileContentsFromText(text, isBinary))
+    result.contents = LazyFileContents {
+      myAuthorContentsStorageFactory?.builtStorage?.get(randomPath)
+    }
   }
 }
 

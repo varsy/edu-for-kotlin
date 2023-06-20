@@ -55,6 +55,7 @@ object JsonMixinNames {
 
   // task file
   const val TEXT = "text"
+  const val IS_BINARY = "is_binary"
   const val IS_VISIBLE = "is_visible"
   const val PLACEHOLDERS = "placeholders"
   const val IS_EDITABLE = "is_editable"
