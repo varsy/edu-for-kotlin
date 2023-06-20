@@ -47,5 +47,5 @@
       "text" : "import scala.collection.mutable.ListBuffer\n\nval list = ListBuffer[ProjectReference]()\n\nval subFolders = file(\".\").listFiles.filter(_.isDirectory).filter(isNotIgnored).foreach { f =>\n  f.listFiles.filter(_.isDirectory).filter(isTaskDir).foreach { folder =>\n    list += ProjectRef(folder, folder.getName.replace(\" \", \"-\"))\n  }\n}\n\nlazy val root = Project(id = \"Scala_sbt_Course\", base = file(\".\")).aggregate(list: _*)\n\ndef isTaskDir(dir: File): Boolean = new File(dir, \"src\").exists()\ndef isNotIgnored(dir: File): Boolean = !Seq(\".idea\", \".coursecreator\", \"project\", \"target\").contains(dir.getName)"
     }
   ],
-  "version" : 16
+  "version" : 17
 }

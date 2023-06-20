@@ -16,25 +16,29 @@
               "placeholders" : [ ],
               "is_visible" : true,
               "text" : "6zkm3NpDQQaIQ+CAebF//w==",
+              "is_binary" : false,
               "highlight_level" : "NONE"
             },
             "b.java" : {
               "name" : "b.java",
               "placeholders" : [ ],
               "is_visible" : true,
-              "text" : "6zkm3NpDQQaIQ+CAebF//w=="
+              "text" : "6zkm3NpDQQaIQ+CAebF//w==",
+              "is_binary" : false
             },
             "c.java" : {
               "name" : "c.java",
               "placeholders" : [ ],
               "is_visible" : true,
-              "text" : "6zkm3NpDQQaIQ+CAebF//w=="
+              "text" : "6zkm3NpDQQaIQ+CAebF//w==",
+              "is_binary" : false
             },
             "d.java" : {
               "name" : "d.java",
               "placeholders" : [ ],
               "is_visible" : true,
-              "text" : "6zkm3NpDQQaIQ+CAebF//w=="
+              "text" : "6zkm3NpDQQaIQ+CAebF//w==",
+              "is_binary" : false
             }
           },
           "description_text" : "solve task",
@@ -45,6 +49,6 @@
       "type" : "lesson"
     }
   ],
-  "version" : 16,
+  "version" : 17,
   "edu_plugin_version" : "yyyy.2-yyyy.1-TEST"
 }
