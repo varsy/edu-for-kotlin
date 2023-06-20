@@ -5,7 +5,7 @@ import com.jetbrains.edu.learning.courseFormat.FileContents
 /**
  * A factory to create instances of [AuthorContentsStorage].
  */
-interface AuthorContentStorageFactory<T: AuthorContentsStorage> {
+interface AuthorContentsStorageFactory<T: AuthorContentsStorage> {
   fun put(path: String, fileContents: FileContents)
 
   /**

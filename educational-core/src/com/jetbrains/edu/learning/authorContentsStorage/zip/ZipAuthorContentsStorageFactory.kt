@@ -7,7 +7,7 @@ import com.intellij.openapi.vfs.VirtualFileSystem
 import com.jetbrains.edu.learning.courseFormat.BinaryContents
 import com.jetbrains.edu.learning.courseFormat.FileContents
 import com.jetbrains.edu.learning.courseFormat.TextualContents
-import com.jetbrains.edu.learning.courseFormat.authorContentsStorage.AuthorContentStorageFactory
+import com.jetbrains.edu.learning.courseFormat.authorContentsStorage.AuthorContentsStorageFactory
 import com.jetbrains.edu.learning.isToEncodeContent
 import java.io.*
 import java.nio.file.Path
@@ -26,7 +26,7 @@ val EXTRA_ENTRY_IS_TEXTUAL = byteArrayOf(2)
  */
 class ZipAuthorContentsStorageFactory @Throws(IOException::class) constructor(
   private val temporaryZipFilePath: Path = createTempFile("author_contents", ".zip")
-) : AuthorContentStorageFactory<ZipAuthorContentsStorage> {
+) : AuthorContentsStorageFactory<ZipAuthorContentsStorage> {
 
   private val initThread: Thread = Thread.currentThread()
 
