@@ -170,7 +170,7 @@ object GeneratorUtils {
       MD -> TASK_MD
     }
 
-    return createChildFile(holder, taskDir, descriptionFileName, InMemoryTextualContents(task.descriptionText))
+    return createChildFile(holder, taskDir, descriptionFileName, TextualContents(task.descriptionText))
   }
 
   enum class IdeaDirectoryUnpackMode(val insideIdeaDirectory: Boolean, val outsideIdeaDirectory: Boolean) {
@@ -198,7 +198,7 @@ object GeneratorUtils {
     ReplaceWith("GeneratorUtils.createChildFile(holder, parentDir, path, fileContent, isEditable)")
   )
   fun createChildFile(project: Project, parentDir: VirtualFile, path: String, text: String): VirtualFile? {
-    return createChildFile(project.toCourseInfoHolder(), parentDir, path, InMemoryUndeterminedContents(text))
+    return createChildFile(project.toCourseInfoHolder(), parentDir, path, UndeterminedContents(text))
   }
 
   @Throws(IOException::class)
@@ -216,7 +216,7 @@ object GeneratorUtils {
     text: String,
     isEditable: Boolean = true
   ): VirtualFile? {
-    return createChildFile(holder, parentDir, path, InMemoryTextualContents(text), isEditable)
+    return createChildFile(holder, parentDir, path, TextualContents(text), isEditable)
   }
 
   @Throws(IOException::class)
@@ -272,14 +272,14 @@ object GeneratorUtils {
       VfsUtil.saveText(virtualTaskFile, expandedText)
     }
 
-    when (fileContents.isBinary) {
-      true -> writeBinary((fileContents as BinaryContents).bytes)
-      false -> writeTextual((fileContents as TextualContents).text)
-      null -> if (virtualTaskFile.isToEncodeContent) { // fallback to the legacy way to interpret task file content
-        writeBinary((fileContents as BinaryContents).bytes)
+    when (fileContents) {
+      is BinaryContents -> writeBinary(fileContents.bytes)
+      is TextualContents -> writeTextual(fileContents.text)
+      is UndeterminedContents -> if (virtualTaskFile.isToEncodeContent) { // fallback to the legacy way to interpret task file content
+        writeBinary(fileContents.bytes)
       }
       else {
-        writeTextual((fileContents as TextualContents).text)
+        writeTextual(fileContents.text)
       }
     }
 
@@ -407,7 +407,7 @@ object GeneratorUtils {
     val file = baseDir.findFileByRelativePath(path)
     if (file == null) {
       val configText = getInternalTemplateText(templateName, templateVariables)
-      createChildFile(holder, baseDir, path, InMemoryTextualContents(configText))
+      createChildFile(holder, baseDir, path, TextualContents(configText))
     }
     else {
       evaluateExistingTemplate(file, templateVariables)

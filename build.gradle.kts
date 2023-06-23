@@ -563,6 +563,7 @@ project(":edu-format") {
 project(":educational-core") {
   dependencies {
     api(project(":edu-format"))
+    implementation("org.xerial:sqlite-jdbc:3.42.0.0")
   }
 }
 

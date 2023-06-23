@@ -1,7 +1,7 @@
 package com.jetbrains.edu.learning.marketplace
 
 import com.jetbrains.edu.learning.FileTree
-import com.jetbrains.edu.learning.authorContentsStorage.zip.COURSE_AUTHOR_CONTENTS_FILE
+import com.jetbrains.edu.learning.StudyTaskManager.Companion.COURSE_AUTHOR_CONTENTS_FILE
 import com.jetbrains.edu.learning.course
 import com.jetbrains.edu.learning.courseFormat.CheckStatus
 import com.jetbrains.edu.learning.courseFormat.DescriptionFormat
@@ -46,7 +46,7 @@ class MarketplaceCourseUpdateTest : CourseGenerationTestBase<EmptyProjectSetting
           file("task.md")
         }
       }
-      file(COURSE_AUTHOR_CONTENTS_FILE)
+      
     }
 
     doTest(course, serverCourse, expectedStructure, 2)
@@ -78,7 +78,7 @@ class MarketplaceCourseUpdateTest : CourseGenerationTestBase<EmptyProjectSetting
           file("task.md")
         }
       }
-      file(COURSE_AUTHOR_CONTENTS_FILE)
+      
     }
 
     doTest(course, serverCourse, expectedStructure, 2)
@@ -110,7 +110,7 @@ class MarketplaceCourseUpdateTest : CourseGenerationTestBase<EmptyProjectSetting
           file("task.md")
         }
       }
-      file(COURSE_AUTHOR_CONTENTS_FILE)
+      
     }
 
     doTest(course, serverCourse, expectedStructure, 2)
@@ -142,7 +142,7 @@ class MarketplaceCourseUpdateTest : CourseGenerationTestBase<EmptyProjectSetting
           file("task.md")
         }
       }
-      file(COURSE_AUTHOR_CONTENTS_FILE)
+      
     }
 
     doTest(course, serverCourse, expectedStructure, 2)
@@ -174,7 +174,7 @@ class MarketplaceCourseUpdateTest : CourseGenerationTestBase<EmptyProjectSetting
           file("task.md")
         }
       }
-      file(COURSE_AUTHOR_CONTENTS_FILE)
+      
     }
 
     doTest(course, serverCourse, expectedStructure, 2)
@@ -210,7 +210,7 @@ class MarketplaceCourseUpdateTest : CourseGenerationTestBase<EmptyProjectSetting
           file("task.md")
         }
       }
-      file(COURSE_AUTHOR_CONTENTS_FILE)
+      
     }
 
     doTest(course, serverCourse, expectedStructure, 2)
@@ -248,7 +248,7 @@ class MarketplaceCourseUpdateTest : CourseGenerationTestBase<EmptyProjectSetting
           file("task.md")
         }
       }
-      file(COURSE_AUTHOR_CONTENTS_FILE)
+      
     }
 
     doTest(course, serverCourse, expectedStructure, 2)
@@ -314,7 +314,7 @@ class MarketplaceCourseUpdateTest : CourseGenerationTestBase<EmptyProjectSetting
           file("task.md")
         }
       }
-      file(COURSE_AUTHOR_CONTENTS_FILE)
+      
     }
     doTest(course, serverCourse, expectedStructure, 2)
     val placeholder = course.allTasks[2].taskFiles.firstOrNull()?.value?.answerPlaceholders?.firstOrNull()
@@ -383,7 +383,7 @@ class MarketplaceCourseUpdateTest : CourseGenerationTestBase<EmptyProjectSetting
           }
         }
       }
-      file(COURSE_AUTHOR_CONTENTS_FILE)
+      
     }
 
     doTest(course, courseFromServer, expectedStructure, 2)
@@ -443,7 +443,7 @@ class MarketplaceCourseUpdateTest : CourseGenerationTestBase<EmptyProjectSetting
           file("task.html")
         }
       }
-      file(COURSE_AUTHOR_CONTENTS_FILE)
+      
     }
 
     doTest(course, courseFromServer, expectedStructure, 2)
@@ -511,7 +511,7 @@ class MarketplaceCourseUpdateTest : CourseGenerationTestBase<EmptyProjectSetting
           file("task.html")
         }
       }
-      file(COURSE_AUTHOR_CONTENTS_FILE)
+      
     }
 
     doTest(course, courseFromServer, expectedStructure, 2)
@@ -575,7 +575,7 @@ class MarketplaceCourseUpdateTest : CourseGenerationTestBase<EmptyProjectSetting
           file("task.html")
         }
       }
-      file(COURSE_AUTHOR_CONTENTS_FILE)
+      
     }
 
     doTest(course, courseFromServer, expectedStructure, 2)

@@ -3,7 +3,6 @@
 package com.jetbrains.edu.learning.courseFormat
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect
-import com.fasterxml.jackson.annotation.JsonIncludeProperties
 import com.fasterxml.jackson.annotation.PropertyAccessor
 import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.core.JsonProcessingException
@@ -13,8 +12,9 @@ import com.fasterxml.jackson.databind.JsonSerializer
 import com.fasterxml.jackson.databind.MapperFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializerProvider
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder
+import com.fasterxml.jackson.databind.introspect.Annotated
+import com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector
 import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.databind.ser.BeanSerializerFactory
 import com.intellij.openapi.diagnostic.logger
@@ -35,15 +35,17 @@ private val MAPPER: ObjectMapper by lazy {
   module.addSerializer(StudyItem::class.java, StudyItemCopySerializer())
   module.addDeserializer(StudyItem::class.java, StudyItemDeserializer())
   mapper.registerModule(module)
-  //do not serialize or deserialize file contents, because we will restore their values after the deserialization
-  mapper.addMixIn(FileContents::class.java, FileContentsMixin::class.java)
+//  do not serialize or deserialize file contents, because we will restore their values after the deserialization
+  mapper.setAnnotationIntrospector(object : JacksonAnnotationIntrospector() {
+    override fun _isIgnorable(a: Annotated): Boolean {
+      if (a.name.startsWith("contents"))
+        return true
+      return super._isIgnorable(a)
+    }
+  })
+
   mapper
 }
-
-@Suppress("unused") // used for serialization
-@JsonDeserialize(builder = FileContentsBuilder::class)
-@JsonIncludeProperties
-private abstract class FileContentsMixin
 
 @JsonPOJOBuilder(withPrefix = "")
 private class FileContentsBuilder {
@@ -84,7 +86,7 @@ private fun <T : StudyItem> copyFileContents(item1: T, item2: T) {
 private fun copyFileContentsForTasks(item1: Task, item2: Task) {
   for (taskFile1 in item1.taskFiles.values) {
     val taskFile2 = item2.getTaskFile(taskFile1.name)
-    taskFile2?.contents = taskFile1.contents
+    taskFile2?.contentsHolder = taskFile1.contentsHolder
   }
 }
 

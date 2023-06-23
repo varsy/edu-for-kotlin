@@ -1,6 +1,8 @@
 package com.jetbrains.edu.learning.courseFormat.authorContentsStorage
 
+import com.jetbrains.edu.learning.courseFormat.Course
 import com.jetbrains.edu.learning.courseFormat.FileContents
+import com.jetbrains.edu.learning.courseFormat.FileContentsHolder
 
 /**
  * After a student creates a project for some course, he or she may modify the created files.
@@ -14,5 +16,13 @@ import com.jetbrains.edu.learning.courseFormat.FileContents
  * files with the initial version of the course files.
  */
 interface AuthorContentsStorage {
-  fun get(path: String): FileContents?
+  fun holderForPath(path: String): FileContentsHolder
+
+  fun put(path: String, contents: FileContents) = holderForPath(path).set(contents)
+  fun get(path: String): FileContents = holderForPath(path).get()
+
+  /**
+   * ALl the contents of edu files from the [course] are saved inside this storage, no other contents are preserved.
+   */
+  fun update(course: Course)
 }

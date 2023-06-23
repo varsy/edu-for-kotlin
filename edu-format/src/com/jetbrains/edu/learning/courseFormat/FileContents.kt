@@ -12,7 +12,7 @@ import java.util.*
  *  This class may represent contents stored in different places, for example, the contents may be stored in memory, come directly from disk,
  *  or may be stored inside a zip file.
  */
-interface FileContents {
+sealed interface FileContents {
   /**
    * Whether the contents are binary or not.
    *
@@ -33,40 +33,44 @@ interface FileContents {
   val textualRepresentation: String
 }
 
-interface TextualContents : FileContents {
+sealed interface DeterminedContents : FileContents
 
-  val text: String
+data class TextualContents(val text: String) : DeterminedContents {
 
-  override val isBinary: Boolean?
+  override val isBinary: Boolean
     get() = false
 
   override val textualRepresentation: String
     get() = text
 
   companion object {
-    val EMPTY = object : TextualContents {
-      override val text
-        get() = ""
-    }
+    val EMPTY: TextualContents = TextualContents("")
   }
 }
 
-interface BinaryContents : FileContents {
-
-  val bytes: ByteArray
+data class BinaryContents(val bytes: ByteArray) : DeterminedContents {
 
   override val textualRepresentation: String
     get() = Base64.getEncoder().encodeToString(bytes)
 
-  override val isBinary: Boolean?
+  override val isBinary: Boolean
     get() = true
 
   companion object {
-    private val EMPTY_BYTE_ARRAY = byteArrayOf()
-    val EMPTY = object : BinaryContents {
-      override val bytes: ByteArray
-        get() = EMPTY_BYTE_ARRAY
-    }
+    val EMPTY: BinaryContents = BinaryContents(byteArrayOf())
+  }
+
+  override fun equals(other: Any?): Boolean {
+    if (this === other) return true
+    if (javaClass != other?.javaClass) return false
+
+    other as BinaryContents
+
+    return bytes.contentEquals(other.bytes)
+  }
+
+  override fun hashCode(): Int {
+    return bytes.contentHashCode()
   }
 }
 
@@ -78,51 +82,28 @@ interface BinaryContents : FileContents {
  * If we determine the actual type incorrectly, we get broken data, or even get an exception, if it is impossible
  * to parse base64 encoding of a [textualRepresentation].
  */
-interface UndeterminedContents : TextualContents, BinaryContents {
-
-  override val textualRepresentation: String
+data class UndeterminedContents(override val textualRepresentation: String) : FileContents {
 
   override val isBinary: Boolean?
     get() = null
 
-  override val text: String
+  val text: String
     get() = textualRepresentation
 
-  override val bytes: ByteArray
+  val bytes: ByteArray
     get() = Base64.getDecoder().decode(textualRepresentation)
 
   companion object {
-    val EMPTY = object : UndeterminedContents {
-      override val textualRepresentation: String = ""
-    }
+    val EMPTY = UndeterminedContents("")
   }
 }
-
-/**
- * Represents a binary FileContents stored in memory.
- * These contents are not persistent.
- */
-class InMemoryBinaryContents(override val bytes: ByteArray): BinaryContents
-
-/**
- * Represents a textual FileContents stored in memory.
- * These contents are not persistent.
- */
-class InMemoryTextualContents(override val text: String) : TextualContents
-
-/**
- * Represents a FileContents of an unknown type stored in memory.
- * These contents are not persistent.
- */
-class InMemoryUndeterminedContents(override val textualRepresentation: String) : UndeterminedContents
-
 /**
  * Creates a [FileContents] that stores its information in memory.
  */
 fun inMemoryFileContentsFromText(text: String, isBinary: Boolean?): FileContents {
   return when (isBinary) {
-    true -> InMemoryBinaryContents(Base64.getDecoder().decode(text))
-    false -> InMemoryTextualContents(text)
-    null -> InMemoryUndeterminedContents(text)
+    true -> BinaryContents(Base64.getDecoder().decode(text))
+    false -> TextualContents(text)
+    null -> UndeterminedContents(text)
   }
 }

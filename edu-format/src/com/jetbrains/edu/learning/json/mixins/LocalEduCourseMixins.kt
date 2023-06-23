@@ -23,7 +23,7 @@ import com.jetbrains.edu.learning.courseFormat.tasks.*
 import com.jetbrains.edu.learning.courseFormat.tasks.choice.ChoiceOption
 import com.jetbrains.edu.learning.courseFormat.tasks.choice.ChoiceOptionStatus
 import com.jetbrains.edu.learning.courseFormat.tasks.choice.ChoiceTask
-import com.jetbrains.edu.learning.json.AUTHOR_CONTENTS_STORAGE_FACTORY_INJECTION_KEY
+import com.jetbrains.edu.learning.json.AUTHOR_CONTENTS_STORAGE_INJECTION_KEY
 import com.jetbrains.edu.learning.json.encrypt.Encrypt
 import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.ADDITIONAL_FILES
 import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.AUTHORS
@@ -471,8 +471,8 @@ private open class EduFileBuilder {
   var isEditable: Boolean = true
   @JsonProperty(HIGHLIGHT_LEVEL)
   var errorHighlightLevel: EduFileErrorHighlightLevel = EduFileErrorHighlightLevel.TEMPORARY_SUPPRESSION
-  @JacksonInject(AUTHOR_CONTENTS_STORAGE_FACTORY_INJECTION_KEY)
-  var myAuthorContentsStorageFactory: AuthorContentsStorageFactory<*>? = null
+  @JacksonInject(AUTHOR_CONTENTS_STORAGE_INJECTION_KEY)
+  var authorContentsStorage: AuthorContentsStorage? = null
 
   private fun build(): EduFile {
     val result = EduFile()
@@ -488,9 +488,11 @@ private open class EduFileBuilder {
     result.errorHighlightLevel = errorHighlightLevel
 
     val randomPath = UUID.randomUUID().toString() + "/" + name
-    myAuthorContentsStorageFactory?.put(randomPath, inMemoryFileContentsFromText(text, isBinary))
-    result.contents = LazyFileContents {
-      myAuthorContentsStorageFactory?.builtStorage?.get(randomPath)
+
+    val storage = authorContentsStorage
+    if (storage != null) {
+      result.contentsHolder = storage.holderForPath(randomPath)
+      result.contents = inMemoryFileContentsFromText(text, isBinary)
     }
   }
 }

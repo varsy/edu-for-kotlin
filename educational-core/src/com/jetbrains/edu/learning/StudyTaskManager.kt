@@ -7,15 +7,20 @@ import com.intellij.openapi.components.*
 import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Computable
+import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.project.stateStore
 import com.intellij.util.messages.Topic
 import com.intellij.util.xmlb.annotations.Transient
-import com.jetbrains.edu.learning.authorContentsStorage.fileContentsFromProjectAuthorContentsStorage
-import com.jetbrains.edu.learning.authorContentsStorage.zip.UpdatableZipAuthorContentsStorage
+import com.jetbrains.edu.learning.authorContentsStorage.sqlite.SQLiteAuthorContentsStorage
 import com.jetbrains.edu.learning.courseFormat.Course
+import com.jetbrains.edu.learning.courseFormat.authorContentsStorage.AuthorContentsStorage
+import com.jetbrains.edu.learning.courseFormat.authorContentsStorage.pathInAuthorContentsStorageForEduFile
 import com.jetbrains.edu.learning.courseFormat.ext.visitEduFiles
 import com.jetbrains.edu.learning.yaml.YamlDeepLoader.loadCourse
 import com.jetbrains.edu.learning.yaml.YamlFormatSettings.isEduYamlProject
 import com.jetbrains.edu.learning.yaml.YamlFormatSynchronizer.startSynchronization
+import java.nio.file.Files
+import java.nio.file.Path
 
 /**
  * Implementation of class which contains all the information about study in context of current project
@@ -36,7 +41,8 @@ class StudyTaskManager(private val project: Project) : DumbAware, Disposable {
    * It should not be used in the course creation mode.
    */
   @Transient
-  val authorContentsStorage = UpdatableZipAuthorContentsStorage(project.courseDir)
+  lateinit var authorContentsStorage: AuthorContentsStorage
+  private set
 
   /**
    * This method saves all current edu file contents to the author contents storage,
@@ -46,13 +52,13 @@ class StudyTaskManager(private val project: Project) : DumbAware, Disposable {
    */
   @Transient
   fun updateAuthorContentsStorageAndTaskFileContents() {
-    val course = course
+    /*val course = course
     course ?: return
 
-    authorContentsStorage.update(course)
+    //authorContentsStorage.update(course)
     course.visitEduFiles { eduFile ->
-      eduFile.contents = fileContentsFromProjectAuthorContentsStorage(eduFile)
-    }
+      eduFile.contentsHolder = authorContentsStorage.holderForPath(pathInAuthorContentsStorageForEduFile(eduFile))
+    }*/
   }
 
   @get:Transient
@@ -76,6 +82,7 @@ class StudyTaskManager(private val project: Project) : DumbAware, Disposable {
       val manager = project.service<StudyTaskManager>()
       if (!project.isDefault && !LightEdit.owns(project) && manager.course == null
           && project.isEduYamlProject() && !manager.courseLoadedWithError) {
+        manager.authorContentsStorage = SQLiteAuthorContentsStorage.openOrCreateDB(getZipPathForProjectDirectory(project))
         val course = ApplicationManager.getApplication().runReadAction(Computable { loadCourse(project) })
         manager.courseLoadedWithError = course == null
         if (course != null) {
@@ -84,6 +91,21 @@ class StudyTaskManager(private val project: Project) : DumbAware, Disposable {
         startSynchronization(project)
       }
       return manager
+    }
+
+    const val COURSE_AUTHOR_CONTENTS_FILE = "author_contents_storage.db"
+    private val courseDir2zipDir = mutableMapOf<VirtualFile, Path>()
+
+    fun getZipPathForProjectDirectory(project: Project): Path {
+      val courseStorageFileFolder = project.projectFile?.parent ?: throw IllegalStateException("working with a default project")
+
+      // We act differently depending on whether courseStorageFileFolder is on a local file system or on a file system for tests
+      val fileSystem = courseStorageFileFolder.fileSystem
+      val courseStorageFileFolderPath = fileSystem.getNioPath(courseStorageFileFolder) // null for the test file system
+      val realFolderForDBfile = courseStorageFileFolderPath ?: courseDir2zipDir.computeIfAbsent(courseStorageFileFolder) {
+        Files.createTempDirectory("boundAuthorContentStorage")
+      }
+      return realFolderForDBfile.resolve(COURSE_AUTHOR_CONTENTS_FILE)
     }
   }
 }
