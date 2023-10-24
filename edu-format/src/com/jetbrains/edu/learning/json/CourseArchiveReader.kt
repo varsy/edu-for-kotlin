@@ -2,6 +2,8 @@
 
 package com.jetbrains.edu.learning.json
 
+import com.fasterxml.jackson.core.JsonFactory
+import com.fasterxml.jackson.core.JsonToken
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.MapperFeature
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -31,7 +33,7 @@ private val LOG = logger<LocalEduCourseMixin>()
 fun readCourseJson(reader: () -> Reader): Course? {
   return try {
     val courseMapper = getCourseMapper()
-    val isArchiveEncrypted = isArchiveEncrypted(reader(), courseMapper)
+    val isArchiveEncrypted = isArchiveEncrypted(reader())
     courseMapper.configureCourseMapper(isArchiveEncrypted)
     var courseNode = courseMapper.readTree(reader()) as ObjectNode
     courseNode = migrate(courseNode)
@@ -43,12 +45,49 @@ fun readCourseJson(reader: () -> Reader): Course? {
   }
 }
 
-private fun isArchiveEncrypted(reader: Reader, courseMapper: ObjectMapper): Boolean {
-  val courseNode = courseMapper.readTree(reader) as ObjectNode
-  val version = courseNode.get(VERSION)?.asInt() ?: error("Format version is null")
+private fun isArchiveEncrypted(reader: Reader): Boolean {
+  val (version, courseType) = getFormatVersionAndCourseTypeFromJson(reader)
+
+  version ?: error("Format version is null")
+
   if (version >= 12) return true
-  val courseType = courseNode.get(COURSE_TYPE)?.asText()
   return courseType == MARKETPLACE
+}
+
+private fun getFormatVersionAndCourseTypeFromJson(reader: Reader): Pair<Int?, String?> {
+  val parser = JsonFactory().createParser(reader)
+
+  var version: Int? = null
+  var courseType: String? = null
+
+  // read start object token
+  parser.nextToken()
+  if (!parser.hasToken(JsonToken.START_OBJECT)) error("no opening bracket in course.json")
+
+  // read object fields until the END_OBJECT
+  while (true) {
+    parser.nextToken()
+    if (parser.hasToken(JsonToken.END_OBJECT)) break
+
+    // if the object is not finished, we expect a field name
+    if (!parser.hasToken(JsonToken.FIELD_NAME)) error("unexpected token ${parser.currentToken} in course.json")
+
+    when (parser.currentName) {
+      VERSION -> {
+        version = parser.nextIntValue(0)
+        if (version == 0) {
+          version = null
+        }
+      }
+      COURSE_TYPE -> courseType = parser.nextTextValue()
+      else -> {
+        parser.nextToken()
+        parser.skipChildren()
+      }
+    }
+  }
+
+  return Pair(version, courseType)
 }
 
 fun migrate(jsonObject: ObjectNode): ObjectNode {
