@@ -19,6 +19,7 @@ import com.intellij.openapi.ui.InputValidatorEx
 import com.intellij.openapi.ui.popup.Balloon
 import com.intellij.openapi.ui.popup.JBPopupFactory
 import com.intellij.openapi.util.text.StringUtil
+import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.vfs.VirtualFileManager
 import com.intellij.util.PlatformUtils
 import com.intellij.util.TimeoutUtil
@@ -41,6 +42,7 @@ import com.jetbrains.edu.learning.newproject.CourseProjectGenerator
 import com.jetbrains.edu.learning.projectView.ProgressUtil.updateCourseProgress
 import com.jetbrains.edu.learning.taskToolWindow.ui.EduBrowserHyperlinkListener
 import com.jetbrains.edu.learning.taskToolWindow.ui.TaskToolWindowView
+import com.jetbrains.edu.learning.yaml.YamlFormatSynchronizer
 import com.jetbrains.edu.learning.yaml.format.YamlMixinNames
 import org.intellij.markdown.flavours.gfm.GFMFlavourDescriptor
 import org.intellij.markdown.html.HtmlGenerator
@@ -86,6 +88,8 @@ object EduUtilsKt {
   fun isAndroidStudio(): Boolean = "AndroidStudio" == PlatformUtils.getPlatformPrefix()
 
   fun isTaskDescriptionFile(fileName: String): Boolean = TASK_HTML == fileName || TASK_MD == fileName
+
+  fun canNotBeTaskFile(file: VirtualFile): Boolean = YamlFormatSynchronizer.isConfigFile(file) || isTaskDescriptionFile(file.name)
 
   fun updateToolWindows(project: Project) {
     TaskToolWindowView.getInstance(project).updateTaskDescription()

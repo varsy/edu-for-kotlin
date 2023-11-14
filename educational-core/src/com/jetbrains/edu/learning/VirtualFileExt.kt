@@ -30,6 +30,7 @@ import com.intellij.ui.components.JBLoadingPanel
 import com.intellij.util.ui.UIUtil
 import com.jetbrains.edu.coursecreator.actions.CourseArchiveIndicator
 import com.jetbrains.edu.learning.EduDocumentListener.Companion.runWithListener
+import com.jetbrains.edu.learning.EduUtilsKt.canNotBeTaskFile
 import com.jetbrains.edu.learning.courseFormat.*
 import com.jetbrains.edu.learning.courseFormat.EduFormatNames.TASK
 import com.jetbrains.edu.learning.courseFormat.ext.configurator
@@ -163,9 +164,7 @@ fun VirtualFile.getStudyItem(project: Project): StudyItem? {
  */
 fun VirtualFile.canBeAddedToTask(project: Project): Boolean {
   if (isDirectory) return false
-  val course = getContainingTask(project)?.course ?: return false
-  val configurator = course.configurator ?: return false
-  return if (configurator.excludeFromArchive(project, course, this)) false else !belongsToTask(project)
+  return if (canNotBeTaskFile(this)) false else !belongsToTask(project)
 }
 
 /**

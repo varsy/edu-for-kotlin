@@ -10,9 +10,8 @@ import com.intellij.openapi.util.NlsActions.ActionText
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFile
 import com.jetbrains.edu.coursecreator.CCUtils
-import com.jetbrains.edu.learning.StudyTaskManager
+import com.jetbrains.edu.learning.EduUtilsKt.canNotBeTaskFile
 import com.jetbrains.edu.learning.actions.EduActionUtils.runUndoableAction
-import com.jetbrains.edu.learning.courseFormat.ext.configurator
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
 import com.jetbrains.edu.learning.getContainingTask
 import com.jetbrains.edu.learning.yaml.YamlFormatSynchronizer.saveItem
@@ -21,8 +20,6 @@ import java.util.function.Supplier
 abstract class CCChangeFilePropertyActionBase(
   private val name: Supplier<@ActionText String>
 ) : DumbAwareAction(name) {
-
-  constructor(@ActionText name: String) : this(Supplier { name })
 
   override fun update(e: AnActionEvent) {
     val project = e.project
@@ -42,8 +39,6 @@ abstract class CCChangeFilePropertyActionBase(
   override fun actionPerformed(e: AnActionEvent) {
     val project = e.project ?: return
     val virtualFiles = CommonDataKeys.VIRTUAL_FILE_ARRAY.getData(e.dataContext)?.toList() ?: return
-    val course = StudyTaskManager.getInstance(project).course ?: return
-    val configurator = course.configurator ?: return
 
     val affectedFiles = mutableListOf<VirtualFile>()
     val states = mutableListOf<State>()
@@ -51,7 +46,7 @@ abstract class CCChangeFilePropertyActionBase(
 
     fun collect(files: List<VirtualFile>) {
       for (file in files) {
-        if (configurator.excludeFromArchive(project, course, file)) continue
+        if (canNotBeTaskFile(file)) continue
         val task = file.getContainingTask(project) ?: return
         if (file.isDirectory) {
           collect(VfsUtil.collectChildrenRecursively(file).filter { !it.isDirectory })
