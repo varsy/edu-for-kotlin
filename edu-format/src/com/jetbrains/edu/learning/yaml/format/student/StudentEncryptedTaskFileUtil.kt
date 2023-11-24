@@ -13,7 +13,7 @@ import com.jetbrains.edu.learning.yaml.format.YamlMixinNames.VISIBLE
 
 @Suppress("unused") // used for yaml serialization
 @JsonDeserialize(builder = StudentTaskFileBuilder::class)
-@JsonPropertyOrder(NAME, VISIBLE, PLACEHOLDERS, EDITABLE, ENCRYPTED_TEXT, LEARNER_CREATED)
+@JsonPropertyOrder(NAME, VISIBLE, PLACEHOLDERS, EDITABLE, ENCRYPTED_TEXT, "is_binary", LEARNER_CREATED)
 abstract class StudentEncryptedTaskFileYamlMixin : StudentTaskFileYamlMixin() {
 
   @JsonProperty(ENCRYPTED_TEXT)

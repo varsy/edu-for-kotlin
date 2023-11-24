@@ -1,12 +1,10 @@
 package com.jetbrains.edu.learning.yaml.format.student
 
+import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonPropertyOrder
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
-import com.jetbrains.edu.learning.courseFormat.AnswerPlaceholder
-import com.jetbrains.edu.learning.courseFormat.EduFileErrorHighlightLevel
-import com.jetbrains.edu.learning.courseFormat.InMemoryTextualContents
-import com.jetbrains.edu.learning.courseFormat.TaskFile
+import com.jetbrains.edu.learning.courseFormat.*
 import com.jetbrains.edu.learning.json.encrypt.Encrypt
 import com.jetbrains.edu.learning.yaml.format.TaskFileBuilder
 import com.jetbrains.edu.learning.yaml.format.TaskFileYamlMixin
@@ -21,8 +19,14 @@ import com.jetbrains.edu.learning.yaml.format.YamlMixinNames.VISIBLE
 
 @Suppress("unused") // used for yaml serialization
 @JsonDeserialize(builder = StudentTaskFileBuilder::class)
-@JsonPropertyOrder(NAME, VISIBLE, PLACEHOLDERS, EDITABLE, HIGHLIGHT_LEVEL, TEXT, LEARNER_CREATED)
+@JsonPropertyOrder(NAME, VISIBLE, PLACEHOLDERS, EDITABLE, HIGHLIGHT_LEVEL, TEXT, "is_binary", LEARNER_CREATED)
 abstract class StudentTaskFileYamlMixin : TaskFileYamlMixin() {
+
+  private val isBinary: Boolean?
+    @JsonProperty("is_binary")
+    @JsonInclude(value=JsonInclude.Include.CUSTOM, valueFilter = FalseFileter::class)
+    get() = null
+
 
   @JsonProperty(TEXT)
   open fun getTextToSerialize(): String {
@@ -33,10 +37,16 @@ abstract class StudentTaskFileYamlMixin : TaskFileYamlMixin() {
   private var isLearnerCreated = false
 }
 
+@Suppress("EqualsOrHashCode")
+class FalseFileter {
+  override fun equals(other: Any?) = other == false
+}
+
 class StudentTaskFileBuilder(
   @JsonProperty(TEXT) val textFromConfig: String?,
   @Encrypt @JsonProperty(ENCRYPTED_TEXT) val encryptedTextFromConfig: String?,
   @JsonProperty(LEARNER_CREATED) val learnerCreated: Boolean = false,
+  @JsonProperty("is_binary") val isBinary1: Boolean? = false,
   name: String?,
   placeholders: List<AnswerPlaceholder> = mutableListOf(),
   visible: Boolean = true,
@@ -45,11 +55,13 @@ class StudentTaskFileBuilder(
 ) : TaskFileBuilder(name, placeholders, visible, editable, errorHighlightLevel) {
   override fun createTaskFile(): TaskFile {
     return super.createTaskFile().apply {
-      if (encryptedTextFromConfig != null) {
-        contents = InMemoryTextualContents(encryptedTextFromConfig)
+      val text = encryptedTextFromConfig ?: textFromConfig ?: ""
+
+      contents = if (isBinary1 == true) {
+        InMemoryBinaryContents.parseBase64Encoding(text)
       }
-      else if (textFromConfig != null){
-        contents = InMemoryTextualContents(textFromConfig)
+      else {
+        InMemoryUndeterminedContents(text)
       }
       isLearnerCreated = learnerCreated
     }

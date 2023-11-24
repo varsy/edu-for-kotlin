@@ -23,6 +23,7 @@ import com.intellij.openapi.project.DumbService
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.NlsActions
 import com.intellij.openapi.util.text.StringUtil
+import com.intellij.openapi.vfs.writeBytes
 import com.intellij.psi.PsiDocumentManager
 import com.jetbrains.edu.coursecreator.CCUtils.isCourseCreator
 import com.jetbrains.edu.learning.*
@@ -33,19 +34,12 @@ import com.jetbrains.edu.learning.checker.CheckListener
 import com.jetbrains.edu.learning.checker.TaskChecker
 import com.jetbrains.edu.learning.checker.details.CheckDetailsView
 import com.jetbrains.edu.learning.checker.remote.RemoteTaskCheckerManager.remoteCheckerForTask
-import com.jetbrains.edu.learning.courseFormat.CheckFeedback
-import com.jetbrains.edu.learning.courseFormat.CheckResult
+import com.jetbrains.edu.learning.courseFormat.*
 import com.jetbrains.edu.learning.courseFormat.CheckResult.Companion.failedToCheck
-import com.jetbrains.edu.learning.courseFormat.CheckStatus
-import com.jetbrains.edu.learning.courseFormat.TaskFile
-import com.jetbrains.edu.learning.courseFormat.ext.configurator
-import com.jetbrains.edu.learning.courseFormat.ext.getDir
-import com.jetbrains.edu.learning.courseFormat.ext.getDocument
-import com.jetbrains.edu.learning.courseFormat.ext.shouldGenerateTestsOnTheFly
+import com.jetbrains.edu.learning.courseFormat.ext.*
 import com.jetbrains.edu.learning.courseFormat.tasks.EduTask
 import com.jetbrains.edu.learning.courseFormat.tasks.OutputTask
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
-import com.jetbrains.edu.learning.messages.EduCoreBundle.lazyMessage
 import com.jetbrains.edu.learning.messages.EduCoreBundle.message
 import com.jetbrains.edu.learning.projectView.ProgressUtil.updateCourseProgress
 import com.jetbrains.edu.learning.statistics.EduCounterUsageCollector.Companion.checkTask
@@ -178,13 +172,33 @@ class CheckAction() : ActionWithProgressIcon(), DumbAware {
 
     private fun deleteTests(testFiles: List<TaskFile>) {
       invokeAndWaitIfNeeded {
-        testFiles.forEach { file -> replaceFileText(file, "") }
+        testFiles.forEach { file ->
+          when (val contents = file.contents) {
+            is BinaryContents -> replaceFileBytes(file, EMPTY_BYTE_ARRAY)
+            is TextualContents -> replaceFileText(file, "")
+            is UndeterminedContents -> replaceFileText(file, "")
+          }
+        }
       }
     }
 
     private fun createTests(testFiles: List<TaskFile>) {
       invokeAndWaitIfNeeded {
-        testFiles.forEach { file -> replaceFileText(file, file.text) }
+        testFiles.forEach { file ->
+          when (val contents = file.contents) {
+            is BinaryContents -> replaceFileBytes(file, contents.bytes)
+            is TextualContents -> replaceFileText(file, contents.text)
+            is UndeterminedContents -> replaceFileText(file, contents.textualRepresentation)
+          }
+        }
+      }
+    }
+
+    private fun replaceFileBytes(file: TaskFile, bytes: ByteArray) {
+      CommandProcessor.getInstance().runUndoTransparentAction {
+        runWriteAction {
+          file.getVirtualFile(project)?.writeBytes(bytes)
+        }
       }
     }
 
@@ -291,5 +305,6 @@ class CheckAction() : ActionWithProgressIcon(), DumbAware {
   companion object {
     private const val PROCESS_MESSAGE = "Check in progress"
     private val LOG = Logger.getInstance(CheckAction::class.java)
+    private val EMPTY_BYTE_ARRAY = byteArrayOf()
   }
 }

@@ -56,13 +56,13 @@ open class EduFile {
 
   @Suppress("unused") // used for serialization
   fun getTextToSerialize(): String? {
-    // first, do not serialize binary contents
+    /*// first, do not serialize binary contents
     if (contents is BinaryContents) return null
     if (contents is UndeterminedContents) {
       // fallback to the legacy file way to determine binarity
       val contentType = mimeFileType(name)
       if (contentType != null && isBinary(contentType)) return null
-    }
+    }*/
 
     val text = contents.textualRepresentation
 
