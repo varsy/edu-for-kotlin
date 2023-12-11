@@ -19,6 +19,7 @@ import com.jetbrains.edu.learning.Executor
 import com.jetbrains.edu.learning.configuration.EduConfigurator
 import com.jetbrains.edu.learning.courseFormat.CourseMode
 import com.jetbrains.edu.learning.courseFormat.EduCourse
+import com.jetbrains.edu.learning.courseFormat.JsonTextToSQLiteConverter
 import com.jetbrains.edu.learning.courseFormat.copy
 import com.jetbrains.edu.learning.messages.EduCoreBundle
 import com.jetbrains.edu.learning.newproject.CourseCreationInfo
@@ -100,26 +101,28 @@ class CCCreateCoursePreviewDialog(
       val errorMessage = CourseArchiveCreator(project, archiveLocation).createArchive()
 
       if (errorMessage.isNullOrEmpty()) {
-        val archivePath = FileUtil.join(FileUtil.toSystemDependentName(folder.path), "$archiveName.zip")
-        val course = Executor.execCancelable(EduCoreBundle.message("action.create.course.archive.reading.progress.bar")) {
-          EduUtilsKt.getLocalCourse(archivePath)
-        }  as? EduCourse ?: return
-        course.isPreview = true
-
         val lastProjectCreationLocation = RecentProjectsManager.getInstance().lastProjectCreationLocation
         try {
-          val location = FileUtil.createTempDirectory(PREVIEW_FOLDER_PREFIX, null)
-          val settings = panel.projectSettings ?: error("Project settings shouldn't be null")
-          val previewProject = configurator.courseBuilder.getCourseProjectGenerator(course)
-            ?.doCreateCourseProject(location.absolutePath, settings)
-          if (previewProject == null) {
-            LOG.info("Failed to create project for course preview")
-            showErrorDialog(project, EduCoreBundle.message("course.creator.create.course.preview.failed.message"),
-                            EduCoreBundle.message("course.creator.create.course.preview.failed.title"))
-            return
+          JsonTextToSQLiteConverter().use { jsonTextConverter ->
+            val archivePath = FileUtil.join(FileUtil.toSystemDependentName(folder.path), "$archiveName.zip")
+            val course = Executor.execCancelable(EduCoreBundle.message("action.create.course.archive.reading.progress.bar")) {
+              EduUtilsKt.getLocalCourse(archivePath, jsonTextConverter)
+            } as? EduCourse ?: return
+            course.isPreview = true
+
+            val location = FileUtil.createTempDirectory(PREVIEW_FOLDER_PREFIX, null)
+            val settings = panel.projectSettings ?: error("Project settings shouldn't be null")
+            val previewProject = configurator.courseBuilder.getCourseProjectGenerator(course)
+              ?.doCreateCourseProject(location.absolutePath, settings)
+            if (previewProject == null) {
+              LOG.info("Failed to create project for course preview")
+              showErrorDialog(project, EduCoreBundle.message("course.creator.create.course.preview.failed.message"),
+                              EduCoreBundle.message("course.creator.create.course.preview.failed.title"))
+              return
+            }
+            RecentProjectsManager.getInstance().removePath(location.absolutePath)
+            EduCounterUsageCollector.createCoursePreview()
           }
-          RecentProjectsManager.getInstance().removePath(location.absolutePath)
-          EduCounterUsageCollector.createCoursePreview()
         }
         catch (e: IOException) {
           LOG.info(TMP_DIR_ERROR, e)
