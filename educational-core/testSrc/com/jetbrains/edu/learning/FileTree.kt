@@ -4,6 +4,7 @@ import com.intellij.openapi.application.runWriteAction
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.testFramework.fixtures.CodeInsightTestFixture
+import com.jetbrains.edu.learning.StudyTaskManager.Companion.COURSE_AUTHOR_CONTENTS_FILE
 import org.intellij.lang.annotations.Language
 import org.junit.Assert
 
@@ -79,7 +80,7 @@ class FileTree(private val rootDirectory: Entry.Directory) {
   }
 
   companion object {
-    private val IGNORED_FILES = setOf(".idea")
+    private val IGNORED_FILES = setOf(".idea", COURSE_AUTHOR_CONTENTS_FILE)
   }
 }
 
