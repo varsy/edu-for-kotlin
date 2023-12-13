@@ -3,6 +3,8 @@ package com.jetbrains.edu.learning
 import com.intellij.testFramework.UsefulTestCase
 import com.jetbrains.edu.learning.courseFormat.Course
 import com.jetbrains.edu.learning.courseFormat.EduCourse
+import com.jetbrains.edu.learning.courseFormat.ToEmptyTextConverter
+import com.jetbrains.edu.learning.courseFormat.ToMemoryTextConverter
 
 class CreateCourseFromZipTest : EduTestCase() {
 
@@ -34,7 +36,7 @@ class CreateCourseFromZipTest : EduTestCase() {
                                            courseName: String = "Introduction to Python",
                                            lessonsSize: Int = 10): Course {
     val zipPath = "$testDataPath/$fileName"
-    val course = EduUtilsKt.getLocalCourse(zipPath) ?: error("Failed to load course from $zipPath")
+    val course = EduUtilsKt.getLocalCourse(zipPath, ToEmptyTextConverter) ?: error("Failed to load course from $zipPath")
 
     UsefulTestCase.assertInstanceOf(course, EduCourse::class.java)
     initializeCourse(project, course)
