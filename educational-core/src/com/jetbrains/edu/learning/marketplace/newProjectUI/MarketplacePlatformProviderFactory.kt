@@ -10,6 +10,7 @@ import com.jetbrains.edu.learning.EduUtilsKt
 import com.jetbrains.edu.learning.courseFormat.Course
 import com.jetbrains.edu.learning.courseFormat.CourseMode
 import com.jetbrains.edu.learning.courseFormat.CourseVisibility
+import com.jetbrains.edu.learning.courseFormat.ToEmptyTextConverter
 import com.jetbrains.edu.learning.marketplace.MARKETPLACE
 import com.jetbrains.edu.learning.marketplace.api.MarketplaceConnector
 import com.jetbrains.edu.learning.marketplace.loadMarketplaceCourseStructure
@@ -66,7 +67,7 @@ class MarketplacePlatformProvider : CoursesPlatformProvider() {
   private fun loadBundledCourses(): List<Course> {
     val courses = mutableListOf<Course>()
     for (path in getBundledCoursesPaths()) {
-      val localCourse = EduUtilsKt.getLocalCourse(path)
+      val localCourse = EduUtilsKt.getLocalCourse(path, ToEmptyTextConverter)
       if (localCourse == null) {
         LOG.error("Failed to import local course form $path")
         continue
