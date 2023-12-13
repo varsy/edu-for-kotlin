@@ -9,8 +9,7 @@ import com.intellij.openapi.ui.Messages
 import com.jetbrains.edu.coursecreator.ui.CCNewCourseDialog
 import com.jetbrains.edu.learning.EduUtilsKt
 import com.jetbrains.edu.learning.RemoteEnvHelper
-import com.jetbrains.edu.learning.courseFormat.CourseMode
-import com.jetbrains.edu.learning.courseFormat.EduCourse
+import com.jetbrains.edu.learning.courseFormat.JsonTextToSQLiteConverter
 import com.jetbrains.edu.learning.messages.EduCoreBundle
 
 class CCEditCourseArchive : DumbAwareAction() {
@@ -24,16 +23,24 @@ class CCEditCourseArchive : DumbAwareAction() {
     val descriptor = FileChooserDescriptor(true, true, true, true,
                                            true, false)
     val virtualFile = FileChooser.chooseFile(descriptor, project, null) ?: return
-    val course = EduUtilsKt.getLocalCourse(virtualFile.path)
+    val jsonTextConverter = JsonTextToSQLiteConverter()
+    val course = EduUtilsKt.getLocalCourse(virtualFile.path, jsonTextConverter)
+
     if (course == null) {
       Messages.showErrorDialog(
         EduCoreBundle.message("dialog.message.course.incompatible"),
         EduCoreBundle.message("dialog.title.failed.to.unpack.course")
       )
+      jsonTextConverter.close()
       return
     }
 
-    val producer = { EduCourse().apply { courseMode = CourseMode.EDUCATOR } }
-    CCNewCourseDialog(EduCoreBundle.message("dialog.title.unpack.course"), EduCoreBundle.message("button.unpack"), course, producer).show()
+    val newCourseDialog = CCNewCourseDialog(
+      EduCoreBundle.message("dialog.title.unpack.course"),
+      EduCoreBundle.message("button.unpack"),
+      course,
+      courseTexts = jsonTextConverter
+    )
+    newCourseDialog.show()
   }
 }
