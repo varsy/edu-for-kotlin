@@ -22,8 +22,7 @@ import com.jetbrains.edu.coursecreator.CCNotificationUtils.showNotification
 import com.jetbrains.edu.coursecreator.actions.marketplace.MarketplacePushCourse
 import com.jetbrains.edu.learning.*
 import com.jetbrains.edu.learning.authUtils.ConnectorUtils
-import com.jetbrains.edu.learning.courseFormat.EduCourse
-import com.jetbrains.edu.learning.courseFormat.JBAccountUserInfo
+import com.jetbrains.edu.learning.courseFormat.*
 import com.jetbrains.edu.learning.marketplace.*
 import com.jetbrains.edu.learning.marketplace.MarketplaceNotificationUtils.showFailedToFindMarketplaceCourseOnRemoteNotification
 import com.jetbrains.edu.learning.marketplace.MarketplaceNotificationUtils.showLoginNeededNotification
@@ -146,13 +145,14 @@ abstract class MarketplaceConnector : MarketplaceAuthConnector(), CourseConnecto
   }
 
   fun loadCourseStructure(course: EduCourse) {
-    val unpackedCourse = loadCourse(course.id)
+    val jsonTextConverter = ToMemoryTextConverter //TODO should be read to disk with JsonTextToSQLiteConverter
+    val unpackedCourse = loadCourse(course.id, jsonTextConverter)
     course.items = unpackedCourse.items
     course.additionalFiles = unpackedCourse.additionalFiles
     course.marketplaceCourseVersion = unpackedCourse.marketplaceCourseVersion
   }
 
-  fun loadCourse(courseId: Int): EduCourse {
+  fun loadCourse(courseId: Int, jsonTextConverter: JsonTextConverter): EduCourse {
     val buildNumber = getBuildNumber()
     val uuid = PluginDownloader.getMarketplaceDownloadsUUID()
     val updateInfo = getLatestCourseUpdateInfo(courseId) ?: error("Update info for course $courseId is null")
@@ -162,7 +162,7 @@ abstract class MarketplaceConnector : MarketplaceAuthConnector(), CourseConnecto
     val tempFile = FileUtil.createTempFile(filePrefix, ".zip", true)
     DownloadUtil.downloadAtomically(null, link, tempFile)
 
-    return EduUtilsKt.getLocalCourse(tempFile.path) as? EduCourse
+    return EduUtilsKt.getLocalCourse(tempFile.path, jsonTextConverter) as? EduCourse
                          ?: error(message("dialog.title.failed.to.unpack.course"))
   }
 

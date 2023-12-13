@@ -7,6 +7,7 @@ import com.jetbrains.edu.learning.EduUtilsKt.isStudentProject
 import com.jetbrains.edu.learning.StudyTaskManager
 import com.jetbrains.edu.learning.courseFormat.CourseMode
 import com.jetbrains.edu.learning.courseFormat.EduCourse
+import com.jetbrains.edu.learning.courseFormat.ToEmptyTextConverter
 import com.jetbrains.edu.learning.isUnitTestMode
 import com.jetbrains.edu.learning.marketplace.api.MarketplaceConnector
 import com.jetbrains.edu.learning.marketplace.update.MarketplaceUpdateChecker
@@ -22,7 +23,7 @@ class MarketplaceStartupActivity : StartupActivity {
 
     if (course.courseMode == CourseMode.EDUCATOR && course.generatedEduId == null) {
       ApplicationManager.getApplication().executeOnPooledThread {
-        val generatedId = MarketplaceConnector.getInstance().loadCourse(course.id).generatedEduId ?: course.generateEduId()
+        val generatedId = MarketplaceConnector.getInstance().loadCourse(course.id, ToEmptyTextConverter).generatedEduId ?: course.generateEduId()
         course.generatedEduId = generatedId
         YamlFormatSynchronizer.saveRemoteInfo(course)
       }
