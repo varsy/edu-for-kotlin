@@ -60,6 +60,7 @@ object JsonMixinNames {
   const val PLACEHOLDERS = "placeholders"
   const val IS_EDITABLE = "is_editable"
   const val HIGHLIGHT_LEVEL = "highlight_level"
+  const val JSON_TEXT_CONVERTER = "jsonTextConverter"
 
   // feedback
   const val FEEDBACK_LINK = "feedback_link"

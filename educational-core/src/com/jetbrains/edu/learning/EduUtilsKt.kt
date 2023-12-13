@@ -23,10 +23,7 @@ import com.intellij.openapi.vfs.VirtualFileManager
 import com.intellij.util.PlatformUtils
 import com.intellij.util.TimeoutUtil
 import com.intellij.util.ui.UIUtil
-import com.jetbrains.edu.learning.courseFormat.AnswerPlaceholder
-import com.jetbrains.edu.learning.courseFormat.Course
-import com.jetbrains.edu.learning.courseFormat.CourseMode
-import com.jetbrains.edu.learning.courseFormat.CourseraCourse
+import com.jetbrains.edu.learning.courseFormat.*
 import com.jetbrains.edu.learning.courseFormat.EduFormatNames.COURSE_META_FILE
 import com.jetbrains.edu.learning.courseFormat.EduFormatNames.TASK_HTML
 import com.jetbrains.edu.learning.courseFormat.EduFormatNames.TASK_MD
@@ -104,15 +101,22 @@ object EduUtilsKt {
   }
 
   fun getCourseraCourse(zipFilePath: String): Course? {
-    return getLocalCourse(zipFilePath, ::readCourseraCourseJson)
+    return getLocalCourse(zipFilePath, ToMemoryTextConverter, ::readCourseraCourseJson)
   }
 
-  fun getLocalCourse(zipFilePath: String, readCourseJson: (() -> Reader) -> Course? = ::readCourseJson): Course? {
+  @Deprecated("This method loads all the texts inside the course into memory", replaceWith = ReplaceWith("getLocalCourse(path, mode, readCourseJson)"))
+  fun getLocalCourse(zipFilePath: String) = getLocalCourse(zipFilePath, ToMemoryTextConverter, ::readCourseJson)
+
+  fun getLocalCourse(
+    zipFilePath: String,
+    textConverter: JsonTextConverter,
+    readCourseJson: (() -> Reader, JsonTextConverter) -> Course? = ::readCourseJson
+  ): Course? {
     try {
       return ZipFile(zipFilePath).use { zipFile ->
         val entry = zipFile.getEntry(COURSE_META_FILE) ?: return null
         val reader = { zipFile.getInputStream(entry).reader(StandardCharsets.UTF_8) }
-        readCourseJson(reader)
+        readCourseJson(reader, textConverter)
       }
     }
     catch (e: IOException) {
@@ -177,11 +181,11 @@ object EduUtilsKt {
   private val LOG = logger<EduUtilsKt>()
 }
 
-private fun readCourseraCourseJson(reader: () -> Reader): Course? {
+private fun readCourseraCourseJson(reader: () -> Reader, jsonTextConverter: JsonTextConverter): Course? {
   return try {
     val courseMapper = getCourseMapper()
     courseMapper.addMixIn(CourseraCourse::class.java, CourseraCourseMixin::class.java)
-    courseMapper.configureCourseMapper(false)
+    courseMapper.configureCourseMapper(false, jsonTextConverter)
     var courseNode = reader().use { currentReader ->
       courseMapper.readTree(currentReader) as ObjectNode
     }

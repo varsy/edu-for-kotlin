@@ -4,6 +4,7 @@ package com.jetbrains.edu.learning.json
 
 import com.fasterxml.jackson.core.JsonToken
 import com.fasterxml.jackson.databind.DeserializationFeature
+import com.fasterxml.jackson.databind.InjectableValues
 import com.fasterxml.jackson.databind.MapperFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.json.JsonMapper
@@ -31,13 +32,16 @@ private val LOG = logger<LocalEduCourseMixin>()
 
 private class CourseJsonParsingException(message: String): Exception(message)
 
-fun readCourseJson(reader: () -> Reader): Course? {
+fun readCourseJson(
+  reader: () -> Reader,
+  jsonTextConverter: JsonTextConverter
+): Course? {
   return try {
     val courseMapper = getCourseMapper()
     val isArchiveEncrypted = reader().use { currentReader ->
       isArchiveEncrypted(currentReader, courseMapper)
     }
-    courseMapper.configureCourseMapper(isArchiveEncrypted)
+    courseMapper.configureCourseMapper(isArchiveEncrypted, jsonTextConverter)
     var courseNode = reader().use { currentReader ->
       courseMapper.readTree(currentReader) as ObjectNode
     }
@@ -138,10 +142,15 @@ fun getCourseMapper(): ObjectMapper {
     .build()
 }
 
-fun ObjectMapper.configureCourseMapper(isEncrypted: Boolean) {
+fun ObjectMapper.configureCourseMapper(isEncrypted: Boolean, jsonTextConverter: JsonTextConverter = ToMemoryTextConverter) {
   if (isEncrypted) {
     registerModule(EncryptionModule(getAesKey()))
   }
+
+  setInjectableValues(InjectableValues.Std(mapOf(
+    JsonMixinNames.JSON_TEXT_CONVERTER to jsonTextConverter
+  )))
+
   val module = SimpleModule()
   module.addDeserializer(StudyItem::class.java, StudyItemDeserializer())
   module.addDeserializer(Course::class.java, CourseDeserializer())

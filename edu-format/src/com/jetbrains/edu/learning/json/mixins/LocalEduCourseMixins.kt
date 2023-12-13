@@ -3,6 +3,7 @@
 
 package com.jetbrains.edu.learning.json.mixins
 
+import com.fasterxml.jackson.annotation.JacksonInject
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonPropertyOrder
@@ -37,6 +38,7 @@ import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.ENVIRONMENT_SETTING
 import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.FEEDBACK_LINK
 import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.FILE
 import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.FILES
+import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.JSON_TEXT_CONVERTER
 import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.FRAMEWORK_TYPE
 import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.IS_BINARY
 import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.HIGHLIGHT_LEVEL
@@ -472,6 +474,8 @@ private open class EduFileBuilder {
   var isEditable: Boolean = true
   @JsonProperty(HIGHLIGHT_LEVEL)
   var errorHighlightLevel: EduFileErrorHighlightLevel = EduFileErrorHighlightLevel.TEMPORARY_SUPPRESSION
+  @JacksonInject(JSON_TEXT_CONVERTER)
+  var myJsonTextConverter: JsonTextConverter = ToMemoryTextConverter
 
   private fun build(): EduFile {
     val result = EduFile()
@@ -485,11 +489,7 @@ private open class EduFileBuilder {
     result.isVisible = isVisible
     result.isEditable = isEditable
     result.errorHighlightLevel = errorHighlightLevel
-    result.contents = when (isBinary) {
-      true -> InMemoryBinaryContents.parseBase64Encoding(text)
-      false -> InMemoryTextualContents(text)
-      null -> InMemoryUndeterminedContents(text)
-    }
+    result.contents = myJsonTextConverter.getContents(text, isBinary)
   }
 }
 
