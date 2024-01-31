@@ -42,7 +42,13 @@ interface CourseIgnoreRules {
       }
     }
 
-    private val EMPTY: CourseIgnoreRules = object : CourseIgnoreRules {
+    fun fromIgnoringEntries(project: Project, entries: List<IgnoringEntry>): CourseIgnoreRules {
+      val ignoreText = entries.flatMap { it.courseignoreLines }.joinToString("\n")
+      val psiFileToParse = PsiFileFactory.getInstance(project).createFileFromText(CourseIgnoreLanguage, ignoreText)
+      return CourseIgnoreRulesFromFile(project, psiFileToParse)
+    }
+
+    val EMPTY: CourseIgnoreRules = object : CourseIgnoreRules {
       override fun isIgnored(file: VirtualFile): Boolean = false
     }
   }

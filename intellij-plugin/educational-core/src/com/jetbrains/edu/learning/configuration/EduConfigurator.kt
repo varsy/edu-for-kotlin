@@ -4,9 +4,11 @@ import com.intellij.openapi.extensions.PluginId
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VfsUtilCore
 import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.profile.codeInspection.PROFILE_DIR
 import com.intellij.util.ui.EmptyIcon
 import com.jetbrains.edu.coursecreator.CCUtils
+import com.jetbrains.edu.coursecreator.courseignore.IgnoringEntry
+import com.jetbrains.edu.coursecreator.courseignore.PermanentCourseIgnore
+import com.jetbrains.edu.coursecreator.courseignore.ignoringEntry
 import com.jetbrains.edu.learning.*
 import com.jetbrains.edu.learning.checker.TaskCheckerProvider
 import com.jetbrains.edu.learning.compatibility.CourseCompatibilityProvider
@@ -55,41 +57,34 @@ interface EduConfigurator<Settings : EduProjectSettings> {
    * Used in educator plugin to filter files to be packed into course archive
    */
   fun excludeFromArchive(project: Project, course: Course, file: VirtualFile): Boolean {
-    val ancestorNames = mutableListOf<String>()
-    var parent: VirtualFile? = file
-    while (parent != null) {
-      ancestorNames.add(parent.name)
-      parent = parent.parent
-    }
+    val rules = PermanentCourseIgnore.getInstance(project).permanentIgnoreRules
+    if (rules.isIgnored(file)) return true
 
     val name = file.name
-
-    val ideaFolderIndex = ancestorNames.indexOf(Project.DIRECTORY_STORE_FOLDER)
-
-    // Remove hidden files, except the .idea folder
-    for ((i, ancestorName) in ancestorNames.withIndex()) {
-      if (ancestorName.startsWith(".") && i != ideaFolderIndex) {
-        return true
-      }
-    }
-
-    // Project related files: inside .idea include only .idea/scopes and .idea/inspectionProfiles
-    if (ideaFolderIndex == 0) {
-      return false
-    }
-    else {
-      if (ideaFolderIndex >= 1) {
-        return ancestorNames[ideaFolderIndex - 1] !in INCLUDED_SETTINGS_SUBDIRECTORIES
-      }
-    }
-
-    return "iml" == file.extension ||
-           // Course structure files
-           EduUtilsKt.isTaskDescriptionFile(name) || isConfigFile(file) ||
-           // Special files
-           ancestorNames.contains(CCUtils.GENERATED_FILES_FOLDER) || EduNames.HINTS == name || EduNames.STEPIK_IDS_JSON == name ||
-           EduNames.COURSE_IGNORE == name || EduFormatNames.COURSE_ICON_FILE == name
+    return EduUtilsKt.isTaskDescriptionFile(name) ||
+           isConfigFile(file) ||
+           EduNames.COURSE_IGNORE == name ||
+           EduFormatNames.COURSE_ICON_FILE == name
   }
+
+  fun ignoringEntries(): List<IgnoringEntry> = listOf(
+    ignoringEntry(
+      "all files and directories staring with dot, except the .idea directory",
+      """
+        .*
+        !/.idea
+      """
+    ),
+    ignoringEntry(
+      "project settings except settings for inspection profiles",
+      """
+        .idea/*
+        !.idea/inspectionProfiles
+        !.idea/scopes
+        *.iml
+      """
+    )
+  )
 
   /**
    * @return true for all the test files
@@ -191,8 +186,4 @@ interface EduConfigurator<Settings : EduProjectSettings> {
   fun getCodeTaskFile(project: Project, task: Task): TaskFile? = task.getCodeTaskFile(project)
 
   fun getEnvironmentSettings(project: Project): Map<String, String> = mapOf()
-
-  companion object {
-    val INCLUDED_SETTINGS_SUBDIRECTORIES = setOf(PROFILE_DIR, "scopes")
-  }
 }
