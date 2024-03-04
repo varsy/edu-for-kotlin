@@ -1,8 +1,8 @@
 package com.jetbrains.edu.cpp
 
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.vfs.VirtualFile
 import com.jetbrains.edu.EducationalCoreIcons
+import com.jetbrains.edu.coursecreator.courseignore.IgnoringEntry
+import com.jetbrains.edu.coursecreator.courseignore.ignoringEntry
 import com.jetbrains.edu.cpp.checker.CppCatchTaskCheckerProvider
 import com.jetbrains.edu.cpp.checker.CppGTaskCheckerProvider
 import com.jetbrains.edu.cpp.checker.CppTaskCheckerProvider
@@ -10,11 +10,7 @@ import com.jetbrains.edu.learning.EduCourseBuilder
 import com.jetbrains.edu.learning.EduNames
 import com.jetbrains.edu.learning.checker.TaskCheckerProvider
 import com.jetbrains.edu.learning.configuration.EduConfigurator
-import com.jetbrains.edu.learning.course
-import com.jetbrains.edu.learning.courseDir
 import com.jetbrains.edu.learning.courseFormat.Course
-import com.jetbrains.edu.learning.courseFormat.ext.getDir
-import com.jetbrains.edu.learning.courseGeneration.GeneratorUtils
 import com.jetbrains.edu.learning.courseGeneration.GeneratorUtils.getInternalTemplateText
 import javax.swing.Icon
 
@@ -61,19 +57,17 @@ open class CppConfigurator : EduConfigurator<CppProjectSettings> {
   override val logo: Icon
     get() = EducationalCoreIcons.CppLogo
 
-  override fun excludeFromArchive(project: Project, course: Course, file: VirtualFile): Boolean {
-    if (super.excludeFromArchive(project, course, file)) {
-      return true
-    }
-
-    val courseDir = project.course?.getDir(project.courseDir) ?: return false
-    // we could use it how indicator because CLion generate build dirs with names `cmake-build-*`
-    // @see com.jetbrains.cidr.cpp.cmake.workspace.CMakeWorkspace.getProfileGenerationDirNames
-    val buildDirPrefix = GeneratorUtils.joinPaths(courseDir.path, "cmake-build-")
-    val googleTestDirPrefix = GeneratorUtils.joinPaths(courseDir.path, TEST_FRAMEWORKS_BASE_DIR_VALUE)
-
-    return file.path.startsWith(buildDirPrefix) || file.path.startsWith(googleTestDirPrefix)
-  }
+  override fun ignoringEntries(): List<IgnoringEntry> =
+    super.ignoringEntries() +
+    listOf(
+      ignoringEntry(
+        "CLion build dirs and google test dir",
+        """
+          /cmake-build-*/
+          /test-framework/
+        """
+      )
+    )
 
   override val defaultPlaceholderText: String
     get() = "/* TODO */"

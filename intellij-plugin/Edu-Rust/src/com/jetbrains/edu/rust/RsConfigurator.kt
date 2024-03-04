@@ -5,6 +5,8 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.BuildNumber
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.util.text.VersionComparatorUtil
+import com.jetbrains.edu.coursecreator.courseignore.IgnoringEntry
+import com.jetbrains.edu.coursecreator.courseignore.ignoringEntry
 import com.jetbrains.edu.learning.EduCourseBuilder
 import com.jetbrains.edu.learning.configuration.EduConfigurator
 import com.jetbrains.edu.learning.courseDir
@@ -41,12 +43,21 @@ class RsConfigurator : EduConfigurator<RsProjectSettings> {
   override val logo: Icon
     get() = RsIcons.RUST
 
-  override fun excludeFromArchive(project: Project, course: Course, file: VirtualFile): Boolean {
-    // Cargo config file should be included into course even it's located in "hidden" `.cargo` directory
-    if (file.isCargoConfigDirOrFile(project)) return false
-    return super.excludeFromArchive(project, course, file) || file.name == CargoConstants.LOCK_FILE ||
-           generateSequence(file, VirtualFile::getParent).any { it.name == CargoConstants.ProjectLayout.target }
-  }
+  override fun ignoringEntries(): List<IgnoringEntry> =
+    super.ignoringEntries() + listOf(
+      // Cargo config file should be included into course even it's located in "hidden" `.cargo` directory
+      ignoringEntry(
+        "cargo configuration and output",
+        """
+          !/.cargo
+          /.cargo/*
+          !/.cargo/${CargoConstants.CONFIG_TOML_FILE}
+          !/.cargo/${CargoConstants.CONFIG_FILE}
+          ${CargoConstants.LOCK_FILE}
+          ${CargoConstants.ProjectLayout.target}/
+        """
+      )
+    )
 
   private fun VirtualFile.isCargoConfigDirOrFile(project: Project): Boolean {
     val courseDir = project.courseDir

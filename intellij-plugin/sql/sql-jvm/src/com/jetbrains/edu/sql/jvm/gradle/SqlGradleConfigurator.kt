@@ -2,6 +2,8 @@ package com.jetbrains.edu.sql.jvm.gradle
 
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
+import com.jetbrains.edu.coursecreator.courseignore.IgnoringEntry
+import com.jetbrains.edu.coursecreator.courseignore.ignoringEntry
 import com.jetbrains.edu.jvm.JdkProjectSettings
 import com.jetbrains.edu.jvm.gradle.GradleConfiguratorBase
 import com.jetbrains.edu.jvm.gradle.GradleCourseBuilderBase
@@ -18,10 +20,15 @@ class SqlGradleConfigurator : GradleConfiguratorBase(), SqlConfiguratorBase<JdkP
   override val courseBuilder: GradleCourseBuilderBase
     get() = SqlGradleCourseBuilder()
 
-  override fun excludeFromArchive(project: Project, course: Course, file: VirtualFile): Boolean {
-    if (super<GradleConfiguratorBase>.excludeFromArchive(project, course, file)) return true
-    return file.extension == DB_EXTENSION
-  }
+  override fun ignoringEntries(): List<IgnoringEntry> =
+    super<GradleConfiguratorBase>.ignoringEntries() + listOf(
+      ignoringEntry(
+        "Database files",
+        """
+          *.$DB_EXTENSION
+        """
+      )
+    )
 
   override val taskCheckerProvider: TaskCheckerProvider
     get() = GradleTaskCheckerProvider()

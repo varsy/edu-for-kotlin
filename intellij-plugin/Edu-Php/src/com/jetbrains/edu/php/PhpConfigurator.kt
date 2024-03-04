@@ -4,6 +4,8 @@ import com.intellij.openapi.extensions.PluginId
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.jetbrains.edu.EducationalCoreIcons
+import com.jetbrains.edu.coursecreator.courseignore.IgnoringEntry
+import com.jetbrains.edu.coursecreator.courseignore.ignoringEntry
 import com.jetbrains.edu.learning.EduCourseBuilder
 import com.jetbrains.edu.learning.EduNames
 import com.jetbrains.edu.learning.checker.TaskCheckerProvider
@@ -41,10 +43,17 @@ class PhpConfigurator : EduConfigurator<PhpProjectSettings> {
 
   override fun isTestFile(task: Task, path: String): Boolean = super.isTestFile(task, path) || path == testFileName
 
-  override fun excludeFromArchive(project: Project, course: Course, file: VirtualFile): Boolean =
-    super.excludeFromArchive(project, course, file) ||
-    file.path.contains(ComposerUtils.VENDOR_DIR_DEFAULT_NAME) ||
-    file.path.contains(ComposerUtils.COMPOSER_PHAR_NAME)
+  override fun ignoringEntries(): List<IgnoringEntry> =
+    super.ignoringEntries() +
+    listOf(
+      ignoringEntry(
+        "Composer phar and libraries",
+        """
+          ${ComposerUtils.VENDOR_DIR_DEFAULT_NAME}/
+          ${ComposerUtils.COMPOSER_PHAR_NAME}/
+        """.trimIndent()
+      )
+    )
 
   companion object {
     const val MAIN_PHP = "main.php"

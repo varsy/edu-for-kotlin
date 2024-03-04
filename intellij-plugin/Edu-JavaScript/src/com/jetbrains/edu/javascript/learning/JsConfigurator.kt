@@ -4,6 +4,8 @@ import com.intellij.openapi.extensions.PluginId
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.jetbrains.edu.EducationalCoreIcons
+import com.jetbrains.edu.coursecreator.courseignore.IgnoringEntry
+import com.jetbrains.edu.coursecreator.courseignore.ignoringEntry
 import com.jetbrains.edu.learning.EduCourseBuilder
 import com.jetbrains.edu.learning.EduNames
 import com.jetbrains.edu.learning.checker.TaskCheckerProvider
@@ -33,8 +35,17 @@ open class JsConfigurator : EduConfigurator<JsNewProjectSettings> {
   override val logo: Icon
     get() = EducationalCoreIcons.JsLogo
 
-  override fun excludeFromArchive(project: Project, course: Course, file: VirtualFile): Boolean =
-    super.excludeFromArchive(project, course, file) || file.path.contains("node_modules") || "package-lock.json" == file.name
+  override fun ignoringEntries(): List<IgnoringEntry> =
+    super.ignoringEntries() +
+    listOf(
+      ignoringEntry(
+        "node.js",
+        """
+          node_modules/
+          package-lock.json
+        """
+      )
+    )
 
   override val defaultPlaceholderText: String
     get() = "/* TODO */"

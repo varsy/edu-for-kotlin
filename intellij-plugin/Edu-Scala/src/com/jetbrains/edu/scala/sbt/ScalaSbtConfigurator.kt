@@ -3,6 +3,8 @@ package com.jetbrains.edu.scala.sbt
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.jetbrains.edu.EducationalCoreIcons
+import com.jetbrains.edu.coursecreator.courseignore.IgnoringEntry
+import com.jetbrains.edu.coursecreator.courseignore.ignoringEntry
 import com.jetbrains.edu.jvm.JdkProjectSettings
 import com.jetbrains.edu.jvm.jvmEnvironmentSettings
 import com.jetbrains.edu.jvm.stepik.fileName
@@ -48,10 +50,15 @@ class ScalaSbtConfigurator : EduConfigurator<JdkProjectSettings> {
   override val defaultPlaceholderText: String
     get() = "/* TODO */"
 
-  override fun excludeFromArchive(project: Project, course: Course, file: VirtualFile): Boolean {
-    return super.excludeFromArchive(project, course, file) ||
-           generateSequence(file, VirtualFile::getParent).any { it.name == "target"}
-  }
+  override fun ignoringEntries(): List<IgnoringEntry> =
+    super.ignoringEntries() + listOf(
+      ignoringEntry(
+        "SBT target folder",
+        """
+          target/
+        """
+      )
+    )
 
   companion object {
     const val TEST_SCALA = "TestSpec.scala"

@@ -3,6 +3,7 @@ package com.jetbrains.edu.python.learning
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.util.PlatformUtils
+import com.jetbrains.edu.coursecreator.courseignore.IgnoringEntry
 import com.jetbrains.edu.learning.checker.TaskCheckerProvider
 import com.jetbrains.edu.learning.compatibility.isDataSpellSupported
 import com.jetbrains.edu.learning.configuration.EduConfigurator
@@ -24,8 +25,7 @@ class PyNewConfigurator : EduConfigurator<PyProjectSettings> {
   override val testDirs: List<String>
     get() = listOf(TEST_FOLDER)
 
-  override fun excludeFromArchive(project: Project, course: Course, file: VirtualFile): Boolean =
-    super.excludeFromArchive(project, course, file) || excludeFromArchive(file)
+  override fun ignoringEntries(): List<IgnoringEntry> = super.ignoringEntries() + pyIgnoringEntries()
 
   override val taskCheckerProvider: TaskCheckerProvider
     get() = PyNewTaskCheckerProvider()
