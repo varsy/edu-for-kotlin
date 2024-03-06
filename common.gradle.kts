@@ -15,3 +15,4 @@ extra["inJetBrainsNetwork"] = fun(): Boolean {
 }
 
 extra["secretProperties"] = "secret.properties"
+extra["llmProfileProperties"] = "llmProfileId.properties"

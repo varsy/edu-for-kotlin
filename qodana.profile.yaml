@@ -13,6 +13,9 @@ inspections:
       # Also, IDE integration doesn't know well about the new layout of localized resources yet.
       # So, let's not check them by Qodana for now
       - "intellij-plugin/localization/resources/localization/**"
+      - "intellij-plugin/Edu-Kotlin/testSrc/com/jetbrains/edu/kotlin/eduAssistant/courses/**"
+      - "intellij-plugin/ai-assistant-validation/testResources/com/jetbrains/edu/assistant/validation/test/KotlinOnboardingData/**"
+      - "intellij-plugin/ai-assistant-validation/resources/**"
   - group: "category:Proofreading"
     enabled: false
     # The inspection produces too many false positives, so let's disable it for now

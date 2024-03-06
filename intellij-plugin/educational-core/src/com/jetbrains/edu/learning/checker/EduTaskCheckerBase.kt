@@ -221,7 +221,7 @@ abstract class EduTaskCheckerBase(task: EduTask, private val envChecker: Environ
       else {
         result.addAll(getEduTestInfo(paths, it.children))
       }
-      paths.removeLast()
+      paths.removeAt(paths.size - 1)
     }
     return result
   }

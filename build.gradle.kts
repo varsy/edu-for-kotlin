@@ -42,6 +42,8 @@ allprojects {
     maven("https://cache-redirector.jetbrains.com/intellij-dependencies")
     maven("https://maven.pkg.jetbrains.space/kotlin/p/kotlin/kotlin-js-wrappers")
     maven("https://packages.jetbrains.team/maven/p/edu/edu-ai-format")
+    maven("https://packages.jetbrains.team/maven/p/edu/educational-ml-library")
+    maven("https://packages.jetbrains.team/maven/p/grazi/grazie-platform-public")
   }
 
   configure<JavaPluginExtension> {

@@ -5,42 +5,25 @@ import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.actionSystem.DataContext
 import com.intellij.openapi.actionSystem.impl.SimpleDataContext
 import com.intellij.openapi.fileEditor.FileEditorManager
-import com.intellij.openapi.ui.TestDialog
 import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.testFramework.HeavyPlatformTestCase
-import com.intellij.util.ThrowableRunnable
 import com.intellij.util.ui.UIUtil
-import com.jetbrains.edu.learning.*
+import com.jetbrains.edu.learning.RefreshCause
 import com.jetbrains.edu.learning.actions.CheckAction
 import com.jetbrains.edu.learning.actions.NextTaskAction
-import com.jetbrains.edu.learning.courseFormat.Course
 import com.jetbrains.edu.learning.courseFormat.FrameworkLesson
 import com.jetbrains.edu.learning.courseFormat.ext.configurator
 import com.jetbrains.edu.learning.courseFormat.ext.getVirtualFile
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
+import com.jetbrains.edu.learning.getActionById
 import com.jetbrains.edu.learning.newproject.EduProjectSettings
+import com.jetbrains.edu.learning.testAction
 import com.jetbrains.edu.learning.ui.getUICheckLabel
 import org.junit.ComparisonFailure
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
 
 @RunWith(JUnit4::class)
-abstract class CheckersTestBase<Settings : EduProjectSettings> : HeavyPlatformTestCase() {
-    protected lateinit var myCourse: Course
-
-    private val checkerFixture: EduCheckerFixture<Settings> by lazy {
-        createCheckerFixture()
-    }
-
-    override fun runTestRunnable(context: ThrowableRunnable<Throwable>) {
-        val skipTestReason = checkerFixture.getSkipTestReason()
-        if (skipTestReason != null) {
-            System.err.println("SKIP `$name`: $skipTestReason")
-        }
-        else {
-            super.runTestRunnable(context)
-        }
-    }
+abstract class CheckersTestBase<Settings : EduProjectSettings> : CheckersTestCommonBase<Settings>() {
 
     protected open fun doTest() {
         refreshProject()
@@ -110,11 +93,6 @@ abstract class CheckersTestBase<Settings : EduProjectSettings> : HeavyPlatformTe
             get() = "\n" + causes.joinToString("\n") { it.message ?: "" }
     }
 
-    protected abstract fun createCheckerFixture(): EduCheckerFixture<Settings>
-    protected abstract fun createCourse(): Course
-
-    private fun projectName() = getTestName(true)
-
     private fun launchAction(virtualFile: VirtualFile, action: AnAction) {
         val context = createDataEvent(virtualFile)
         testAction(action, context)
@@ -125,40 +103,5 @@ abstract class CheckersTestBase<Settings : EduProjectSettings> : HeavyPlatformTe
           .add(CommonDataKeys.VIRTUAL_FILE_ARRAY, arrayOf(virtualFile))
           .add(CommonDataKeys.PROJECT, myProject)
           .build()
-    }
-
-    override fun setUpProject() {
-        checkerFixture.setUp()
-        if (checkerFixture.getSkipTestReason() == null) {
-            myCourse = createCourse()
-            val settings = checkerFixture.projectSettings
-
-            withTestDialog(TestDialog.NO) {
-                val rootDir = tempDir.createVirtualDir()
-                val generator = myCourse.configurator?.courseBuilder?.getCourseProjectGenerator(myCourse)
-                                ?: error("Failed to get `CourseProjectGenerator`")
-                myProject = generator.doCreateCourseProject(rootDir.path, settings)
-                            ?: error("Cannot create project with name ${projectName()}")
-            }
-        }
-    }
-
-    override fun setUp() {
-        super.setUp()
-
-        if (myProject != null) {
-            EduDocumentListener.setGlobalListener(myProject, testRootDisposable)
-        }
-
-        CheckActionListener.registerListener(testRootDisposable)
-        CheckActionListener.reset()
-    }
-
-    override fun tearDown() {
-        try {
-            checkerFixture.tearDown()
-        } finally {
-            super.tearDown()
-        }
     }
 }

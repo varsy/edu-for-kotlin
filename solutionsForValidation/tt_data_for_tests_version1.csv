@@ -1,0 +1,3397 @@
+id,lesson_name,task_name,code
+23806,TheFirstDateWithProgramming,Variables,"package jetbrains.kotlin.course.first.date
+
+fun main() {
+    println(""Hello! I will ask you several questions."")
+    println()
+}
+"
+23723,TheFirstDateWithProgramming,Variables,"package jetbrains.kotlin.course.first.date
+
+fun main() {
+    val firstUserAnswer: String;
+    val secondUserAnswer: String;
+    
+}
+"
+9687,TheFirstDateWithProgramming,Variables,"package jetbrains.kotlin.course.first.date
+
+fun main() {
+    println(""Hello! I will ask you several questions."")
+    println(""Please answer all of them and be honest with me!"")
+    
+    var firstUserAnswer = "" ""
+    var secondUserAnswer = "" ""
+    var thirdUserAnswer = "" ""
+}
+"
+17551,TheFirstDateWithProgramming,Variables,"package jetbrains.kotlin.course.first.date
+
+fun main() {
+    println(""Hello! I will ask you several questions."")
+    println(""Please answer all of them and be honest with me!"")
+    val fisrtUserAnswer: String = """"
+    val secondtUserAnswer: String = ""love""
+    val thirdUserAnswer: String = """"
+}
+"
+17505,TheFirstDateWithProgramming,Variables,"package jetbrains.kotlin.course.first.date
+
+fun main() {
+    println(""Hello! I will ask you several questions."")
+    println(""Please answer all of them and be honest with me!"")
+    val fisrtUserAnswer: String = """"
+    
+}
+"
+18135,TheFirstDateWithProgramming,Variables,"package jetbrains.kotlin.course.first.date
+
+fun main() {
+    println(""Hello! I will ask you several questions.\n"" +
+            ""Please answer all of them and be honest with me!""
+    )
+    val string: String
+}
+"
+9200,TheFirstDateWithProgramming,Variables,"package jetbrains.kotlin.course.first.date
+
+fun main() {
+    println(""Hello! I will ask you several questions."")
+    println(""Please answer all of them and be honest with me!"")
+    val firstUserAnswer = """"
+    val secondUserAnswer = """"
+}
+"
+18202,TheFirstDateWithProgramming,Variables,"package jetbrains.kotlin.course.first.date
+
+fun main() {
+    println(""Hello! I will ask you several questions.\n"" +
+            ""Please answer all of them and be honest with me!""
+    )
+    val firstUserAnswer: String
+    val secondUserAnswer: String
+    
+}
+"
+19203,WarmUp,isCompleteFunction,"package jetbrains.kotlin.course.warmup
+
+// You will use this function later
+fun getGameRules(wordLength: Int, maxAttemptsCount: Int, secretExample: String) =
+    ""Welcome to the game! $newLineSymbol"" +
+            newLineSymbol +
+            ""Two people play this game: one chooses a word (a sequence of letters), "" +
+            ""the other guesses it. In this version, the computer chooses the word: "" +
+            ""a sequence of $wordLength letters (for example, $secretExample). "" +
+            ""The user has several attempts to guess it (the max number is $maxAttemptsCount). "" +
+            ""For each attempt, the number of complete matches (letter and position) "" +
+            ""and partial matches (letter only) is reported. $newLineSymbol"" +
+            newLineSymbol +
+            ""For example, with $secretExample as the hidden word, the BCDF guess will "" +
+            ""give 1 full match (C) and 1 partial match (B).""
+fun generateSecret(): String = ""ABCD""
+fun gen(): Boolean = true
+fun countPartialMatches(secret: String, guess: String): Int = TODO(""not implemented yet"")
+fun countExactMatches(secret: String, guess: String): Int = TODO(""not implemented yet"")
+fun main() {
+    // Write your solution here
+    val wordLength = 4
+    val maxAttemptsCount = 3
+    val secretExample = ""ACEB""
+    println(getGameRules(wordLength,maxAttemptsCount,secretExample))
+}
+"
+19193,WarmUp,isCompleteFunction,"package jetbrains.kotlin.course.warmup
+
+// You will use this function later
+fun getGameRules(wordLength: Int, maxAttemptsCount: Int, secretExample: String) =
+    ""Welcome to the game! $newLineSymbol"" +
+            newLineSymbol +
+            ""Two people play this game: one chooses a word (a sequence of letters), "" +
+            ""the other guesses it. In this version, the computer chooses the word: "" +
+            ""a sequence of $wordLength letters (for example, $secretExample). "" +
+            ""The user has several attempts to guess it (the max number is $maxAttemptsCount). "" +
+            ""For each attempt, the number of complete matches (letter and position) "" +
+            ""and partial matches (letter only) is reported. $newLineSymbol"" +
+            newLineSymbol +
+            ""For example, with $secretExample as the hidden word, the BCDF guess will "" +
+            ""give 1 full match (C) and 1 partial match (B).""
+fun generateSecret(): String = ""ABCD""
+fun generateSecre(): Boolean = true
+fun countPartialMatches(secret: String, guess: String): Int = TODO(""not implemented yet"")
+fun countExactMatches(secret: String, guess: String): Int = TODO(""not implemented yet"")
+fun main() {
+    // Write your solution here
+    val wordLength = 4
+    val maxAttemptsCount = 3
+    val secretExample = ""ACEB""
+    println(getGameRules(wordLength,maxAttemptsCount,secretExample))
+}
+"
+19171,WarmUp,isCompleteFunction,"package jetbrains.kotlin.course.warmup
+
+// You will use this function later
+fun getGameRules(wordLength: Int, maxAttemptsCount: Int, secretExample: String) =
+    ""Welcome to the game! $newLineSymbol"" +
+            newLineSymbol +
+            ""Two people play this game: one chooses a word (a sequence of letters), "" +
+            ""the other guesses it. In this version, the computer chooses the word: "" +
+            ""a sequence of $wordLength letters (for example, $secretExample). "" +
+            ""The user has several attempts to guess it (the max number is $maxAttemptsCount). "" +
+            ""For each attempt, the number of complete matches (letter and position) "" +
+            ""and partial matches (letter only) is reported. $newLineSymbol"" +
+            newLineSymbol +
+            ""For example, with $secretExample as the hidden word, the BCDF guess will "" +
+            ""give 1 full match (C) and 1 partial match (B).""
+fun generateSecret(): String = ""ABCD""
+
+fun countPartialMatches(secret: String, guess: String): Int = TODO(""not implemented yet"")
+fun countExactMatches(secret: String, guess: String): Int = TODO(""not implemented yet"")
+fun main() {
+    // Write your solution here
+    val wordLength = 4
+    val maxAttemptsCount = 3
+    val secretExample = ""ACEB""
+    println(getGameRules(wordLength,maxAttemptsCount,secretExample))
+}
+"
+19210,WarmUp,isCompleteFunction,"package jetbrains.kotlin.course.warmup
+
+// You will use this function later
+fun getGameRules(wordLength: Int, maxAttemptsCount: Int, secretExample: String) =
+    ""Welcome to the game! $newLineSymbol"" +
+            newLineSymbol +
+            ""Two people play this game: one chooses a word (a sequence of letters), "" +
+            ""the other guesses it. In this version, the computer chooses the word: "" +
+            ""a sequence of $wordLength letters (for example, $secretExample). "" +
+            ""The user has several attempts to guess it (the max number is $maxAttemptsCount). "" +
+            ""For each attempt, the number of complete matches (letter and position) "" +
+            ""and partial matches (letter only) is reported. $newLineSymbol"" +
+            newLineSymbol +
+            ""For example, with $secretExample as the hidden word, the BCDF guess will "" +
+            ""give 1 full match (C) and 1 partial match (B).""
+fun generateSecret(): String = ""ABCD""
+fun isCo(): Boolean = true
+fun countPartialMatches(secret: String, guess: String): Int = TODO(""not implemented yet"")
+fun countExactMatches(secret: String, guess: String): Int = TODO(""not implemented yet"")
+fun main() {
+    // Write your solution here
+    val wordLength = 4
+    val maxAttemptsCount = 3
+    val secretExample = ""ACEB""
+    println(getGameRules(wordLength,maxAttemptsCount,secretExample))
+}
+"
+19215,WarmUp,isCompleteFunction,"package jetbrains.kotlin.course.warmup
+
+// You will use this function later
+fun getGameRules(wordLength: Int, maxAttemptsCount: Int, secretExample: String) =
+    ""Welcome to the game! $newLineSymbol"" +
+            newLineSymbol +
+            ""Two people play this game: one chooses a word (a sequence of letters), "" +
+            ""the other guesses it. In this version, the computer chooses the word: "" +
+            ""a sequence of $wordLength letters (for example, $secretExample). "" +
+            ""The user has several attempts to guess it (the max number is $maxAttemptsCount). "" +
+            ""For each attempt, the number of complete matches (letter and position) "" +
+            ""and partial matches (letter only) is reported. $newLineSymbol"" +
+            newLineSymbol +
+            ""For example, with $secretExample as the hidden word, the BCDF guess will "" +
+            ""give 1 full match (C) and 1 partial match (B).""
+fun generateSecret(): String = ""ABCD""
+fun isComplet(): Boolean = true
+fun countPartialMatches(secret: String, guess: String): Int = TODO(""not implemented yet"")
+fun countExactMatches(secret: String, guess: String): Int = TODO(""not implemented yet"")
+fun main() {
+    // Write your solution here
+    val wordLength = 4
+    val maxAttemptsCount = 3
+    val secretExample = ""ACEB""
+    println(getGameRules(wordLength,maxAttemptsCount,secretExample))
+}
+"
+12879,MastermindAdvanced,safeUserInputFunction,"package jetbrains.kotlin.course.mastermind.advanced
+const val alphabet = ""ABCDEFGH""
+
+fun safeUserInput(wordLength: Int, alphabet: String) {
+    println(""Please input your guess. It should be of length <wordLength>, and each symbol should be from the alphabet: <alphabet>."")
+}
+
+fun isCorrectInput(userInput: String, wordLength: Int, alphabet: String): Boolean {
+    if(userInput.length != wordLength) {
+        println(""The length of your guess should be $wordLength characters! Try again!"")
+        return false
+    }
+    if(userInput.any { it !in alphabet }){
+        println(""All symbols in your guess should be the $alphabet alphabet characters! Try again!"")
+        return false
+    }
+    return true
+}
+
+fun getGameRules(wordLength: Int, maxAttemptsCount: Int, secretExample: String) =
+    ""Welcome to the game! $newLineSymbol"" +
+            newLineSymbol +
+            ""Two people play this game: one chooses a word (a sequence of letters), "" +
+            ""the other guesses it. In this version, the computer chooses the word: "" +
+            ""a sequence of $wordLength letters (for example, $secretExample). "" +
+            ""The user has several attempts to guess it (the max number is $maxAttemptsCount). "" +
+            ""For each attempt, the number of complete matches (letter and position) "" +
+            ""and partial matches (letter only) is reported. $newLineSymbol"" +
+            newLineSymbol +
+            ""For example, with $secretExample as the hidden word, the BCDF guess will "" +
+            ""give 1 full match (C) and 1 partial match (B).""
+
+fun countPartialMatches(secret: String, guess: String): Int {
+    val matches = minOf(
+        secret.filter { it in guess }.length,
+        guess.filter { it in secret }.length,
+    )
+    return matches - countExactMatches(guess, secret)
+}
+
+fun countExactMatches(secret: String, guess: String): Int =
+    guess.filterIndexed { index, letter -> letter == secret[index] }.length
+
+fun generateSecret(wordLength: Int, alphabet: String) = List (wordLength) { alphabet.random() }.joinToString("""")
+
+fun isComplete(secret: String, guess: String) = secret == guess
+
+fun printRoundResults(secret: String, guess: String) {
+    val fullMatches = countExactMatches(secret, guess)
+    val partialMatches = countPartialMatches(secret, guess)
+    println(""Your guess has $fullMatches full matches and $partialMatches partial matches."")
+}
+
+fun isWon(complete: Boolean, attempts: Int, maxAttemptsCount: Int) = complete && attempts <= maxAttemptsCount
+
+fun isLost(complete: Boolean, attempts: Int, maxAttemptsCount: Int) = !complete && attempts > maxAttemptsCount
+
+fun playGame(secret: String, wordLength: Int, maxAttemptsCount: Int) {
+    var complete: Boolean
+    var attempts = 0
+    do {
+        println(""Please input your guess. It should be of length $wordLength."")
+        val guess = safeReadLine()
+        printRoundResults(secret, guess)
+        complete = isComplete(secret, guess)
+        attempts++
+        if (isLost(complete, attempts, maxAttemptsCount)) {
+            println(""Sorry, you lost! :( My word is $secret"")
+            break
+        } else if (isWon(complete, attempts, maxAttemptsCount)) {
+            println(""Congratulations! You guessed it!"")
+        }
+    } while (!complete)
+}
+
+fun main() {
+    val wordLength = 4
+    val maxAttemptsCount = 3
+    val secretExample = ""ACEB""
+    println(getGameRules(wordLength, maxAttemptsCount, secretExample))
+    playGame(generateSecret(wordLength, alphabet), wordLength, maxAttemptsCount)
+}
+"
+12923,MastermindAdvanced,safeUserInputFunction,"package jetbrains.kotlin.course.mastermind.advanced
+const val alphabet = ""ABCDEFGH""
+
+fun safeUserInput(wordLength: Int, alphabet: String) {
+    println(""Please input your guess. It should be of length $wordLength, "" +
+            ""and each symbol should be from the alphabet: $alphabet."")
+    val userInput = safeReadLine()
+    
+}
+
+fun isCorrectInput(userInput: String, wordLength: Int, alphabet: String): Boolean {
+    if(userInput.length != wordLength) {
+        println(""The length of your guess should be $wordLength characters! Try again!"")
+        return false
+    }
+    if(userInput.any { it !in alphabet }){
+        println(""All symbols in your guess should be the $alphabet alphabet characters! Try again!"")
+        return false
+    }
+    return true
+}
+
+fun getGameRules(wordLength: Int, maxAttemptsCount: Int, secretExample: String) =
+    ""Welcome to the game! $newLineSymbol"" +
+            newLineSymbol +
+            ""Two people play this game: one chooses a word (a sequence of letters), "" +
+            ""the other guesses it. In this version, the computer chooses the word: "" +
+            ""a sequence of $wordLength letters (for example, $secretExample). "" +
+            ""The user has several attempts to guess it (the max number is $maxAttemptsCount). "" +
+            ""For each attempt, the number of complete matches (letter and position) "" +
+            ""and partial matches (letter only) is reported. $newLineSymbol"" +
+            newLineSymbol +
+            ""For example, with $secretExample as the hidden word, the BCDF guess will "" +
+            ""give 1 full match (C) and 1 partial match (B).""
+
+fun countPartialMatches(secret: String, guess: String): Int {
+    val matches = minOf(
+        secret.filter { it in guess }.length,
+        guess.filter { it in secret }.length,
+    )
+    return matches - countExactMatches(guess, secret)
+}
+
+fun countExactMatches(secret: String, guess: String): Int =
+    guess.filterIndexed { index, letter -> letter == secret[index] }.length
+
+fun generateSecret(wordLength: Int, alphabet: String) = List (wordLength) { alphabet.random() }.joinToString("""")
+
+fun isComplete(secret: String, guess: String) = secret == guess
+
+fun printRoundResults(secret: String, guess: String) {
+    val fullMatches = countExactMatches(secret, guess)
+    val partialMatches = countPartialMatches(secret, guess)
+    println(""Your guess has $fullMatches full matches and $partialMatches partial matches."")
+}
+
+fun isWon(complete: Boolean, attempts: Int, maxAttemptsCount: Int) = complete && attempts <= maxAttemptsCount
+
+fun isLost(complete: Boolean, attempts: Int, maxAttemptsCount: Int) = !complete && attempts > maxAttemptsCount
+
+fun playGame(secret: String, wordLength: Int, maxAttemptsCount: Int) {
+    var complete: Boolean
+    var attempts = 0
+    do {
+        println(""Please input your guess. It should be of length $wordLength."")
+        val guess = safeReadLine()
+        printRoundResults(secret, guess)
+        complete = isComplete(secret, guess)
+        attempts++
+        if (isLost(complete, attempts, maxAttemptsCount)) {
+            println(""Sorry, you lost! :( My word is $secret"")
+            break
+        } else if (isWon(complete, attempts, maxAttemptsCount)) {
+            println(""Congratulations! You guessed it!"")
+        }
+    } while (!complete)
+}
+
+fun main() {
+    val wordLength = 4
+    val maxAttemptsCount = 3
+    val secretExample = ""ACEB""
+    println(getGameRules(wordLength, maxAttemptsCount, secretExample))
+    playGame(generateSecret(wordLength, alphabet), wordLength, maxAttemptsCount)
+}
+"
+12893,MastermindAdvanced,safeUserInputFunction,"package jetbrains.kotlin.course.mastermind.advanced
+const val alphabet = ""ABCDEFGH""
+
+fun safeUserInput(wordLength: Int, alphabet: String) {
+    println(""Please input your guess. It should be of length $wordLength, "" +
+            ""and each symbol should be from the alphabet: $alphabet."")
+}   
+
+fun isCorrectInput(userInput: String, wordLength: Int, alphabet: String): Boolean {
+    if(userInput.length != wordLength) {
+        println(""The length of your guess should be $wordLength characters! Try again!"")
+        return false
+    }
+    if(userInput.any { it !in alphabet }){
+        println(""All symbols in your guess should be the $alphabet alphabet characters! Try again!"")
+        return false
+    }
+    return true
+}
+
+fun getGameRules(wordLength: Int, maxAttemptsCount: Int, secretExample: String) =
+    ""Welcome to the game! $newLineSymbol"" +
+            newLineSymbol +
+            ""Two people play this game: one chooses a word (a sequence of letters), "" +
+            ""the other guesses it. In this version, the computer chooses the word: "" +
+            ""a sequence of $wordLength letters (for example, $secretExample). "" +
+            ""The user has several attempts to guess it (the max number is $maxAttemptsCount). "" +
+            ""For each attempt, the number of complete matches (letter and position) "" +
+            ""and partial matches (letter only) is reported. $newLineSymbol"" +
+            newLineSymbol +
+            ""For example, with $secretExample as the hidden word, the BCDF guess will "" +
+            ""give 1 full match (C) and 1 partial match (B).""
+
+fun countPartialMatches(secret: String, guess: String): Int {
+    val matches = minOf(
+        secret.filter { it in guess }.length,
+        guess.filter { it in secret }.length,
+    )
+    return matches - countExactMatches(guess, secret)
+}
+
+fun countExactMatches(secret: String, guess: String): Int =
+    guess.filterIndexed { index, letter -> letter == secret[index] }.length
+
+fun generateSecret(wordLength: Int, alphabet: String) = List (wordLength) { alphabet.random() }.joinToString("""")
+
+fun isComplete(secret: String, guess: String) = secret == guess
+
+fun printRoundResults(secret: String, guess: String) {
+    val fullMatches = countExactMatches(secret, guess)
+    val partialMatches = countPartialMatches(secret, guess)
+    println(""Your guess has $fullMatches full matches and $partialMatches partial matches."")
+}
+
+fun isWon(complete: Boolean, attempts: Int, maxAttemptsCount: Int) = complete && attempts <= maxAttemptsCount
+
+fun isLost(complete: Boolean, attempts: Int, maxAttemptsCount: Int) = !complete && attempts > maxAttemptsCount
+
+fun playGame(secret: String, wordLength: Int, maxAttemptsCount: Int) {
+    var complete: Boolean
+    var attempts = 0
+    do {
+        println(""Please input your guess. It should be of length $wordLength."")
+        val guess = safeReadLine()
+        printRoundResults(secret, guess)
+        complete = isComplete(secret, guess)
+        attempts++
+        if (isLost(complete, attempts, maxAttemptsCount)) {
+            println(""Sorry, you lost! :( My word is $secret"")
+            break
+        } else if (isWon(complete, attempts, maxAttemptsCount)) {
+            println(""Congratulations! You guessed it!"")
+        }
+    } while (!complete)
+}
+
+fun main() {
+    val wordLength = 4
+    val maxAttemptsCount = 3
+    val secretExample = ""ACEB""
+    println(getGameRules(wordLength, maxAttemptsCount, secretExample))
+    playGame(generateSecret(wordLength, alphabet), wordLength, maxAttemptsCount)
+}
+"
+12971,MastermindAdvanced,safeUserInputFunction,"package jetbrains.kotlin.course.mastermind.advanced
+const val alphabet = ""ABCDEFGH""
+
+fun safeUserInput(wordLength: Int, alphabet: String) {
+    println(""Please input your guess. It should be of length $wordLength, "" +
+            ""and each symbol should be from the alphabet: $alphabet."")
+    do { val userInput = safeReadLine() } while(!isCorrectInput(userInput, wordLength, alphabet))
+}
+
+fun isCorrectInput(userInput: String, wordLength: Int, alphabet: String): Boolean {
+    if(userInput.length != wordLength) {
+        println(""The length of your guess should be $wordLength characters! Try again!"")
+        return false
+    }
+    if(userInput.any { it !in alphabet }){
+        println(""All symbols in your guess should be the $alphabet alphabet characters! Try again!"")
+        return false
+    }
+    return true
+}
+
+fun getGameRules(wordLength: Int, maxAttemptsCount: Int, secretExample: String) =
+    ""Welcome to the game! $newLineSymbol"" +
+            newLineSymbol +
+            ""Two people play this game: one chooses a word (a sequence of letters), "" +
+            ""the other guesses it. In this version, the computer chooses the word: "" +
+            ""a sequence of $wordLength letters (for example, $secretExample). "" +
+            ""The user has several attempts to guess it (the max number is $maxAttemptsCount). "" +
+            ""For each attempt, the number of complete matches (letter and position) "" +
+            ""and partial matches (letter only) is reported. $newLineSymbol"" +
+            newLineSymbol +
+            ""For example, with $secretExample as the hidden word, the BCDF guess will "" +
+            ""give 1 full match (C) and 1 partial match (B).""
+
+fun countPartialMatches(secret: String, guess: String): Int {
+    val matches = minOf(
+        secret.filter { it in guess }.length,
+        guess.filter { it in secret }.length,
+    )
+    return matches - countExactMatches(guess, secret)
+}
+
+fun countExactMatches(secret: String, guess: String): Int =
+    guess.filterIndexed { index, letter -> letter == secret[index] }.length
+
+fun generateSecret(wordLength: Int, alphabet: String) = List (wordLength) { alphabet.random() }.joinToString("""")
+
+fun isComplete(secret: String, guess: String) = secret == guess
+
+fun printRoundResults(secret: String, guess: String) {
+    val fullMatches = countExactMatches(secret, guess)
+    val partialMatches = countPartialMatches(secret, guess)
+    println(""Your guess has $fullMatches full matches and $partialMatches partial matches."")
+}
+
+fun isWon(complete: Boolean, attempts: Int, maxAttemptsCount: Int) = complete && attempts <= maxAttemptsCount
+
+fun isLost(complete: Boolean, attempts: Int, maxAttemptsCount: Int) = !complete && attempts > maxAttemptsCount
+
+fun playGame(secret: String, wordLength: Int, maxAttemptsCount: Int) {
+    var complete: Boolean
+    var attempts = 0
+    do {
+        println(""Please input your guess. It should be of length $wordLength."")
+        val guess = safeReadLine()
+        printRoundResults(secret, guess)
+        complete = isComplete(secret, guess)
+        attempts++
+        if (isLost(complete, attempts, maxAttemptsCount)) {
+            println(""Sorry, you lost! :( My word is $secret"")
+            break
+        } else if (isWon(complete, attempts, maxAttemptsCount)) {
+            println(""Congratulations! You guessed it!"")
+        }
+    } while (!complete)
+}
+
+fun main() {
+    val wordLength = 4
+    val maxAttemptsCount = 3
+    val secretExample = ""ACEB""
+    println(getGameRules(wordLength, maxAttemptsCount, secretExample))
+    playGame(generateSecret(wordLength, alphabet), wordLength, maxAttemptsCount)
+}
+"
+13030,MastermindAdvanced,CompleteTheProject,"package jetbrains.kotlin.course.mastermind.advanced
+const val alphabet = ""ABCDEFGH""
+
+fun safeUserInput(wordLength: Int, alphabet: String): String {
+    println(""Please input your guess. It should be of length $wordLength, "" +
+            ""and each symbol should be from the alphabet: $alphabet."")
+    var userInput: String
+    do { userInput = safeReadLine() } while(!isCorrectInput(userInput, wordLength, alphabet))
+    return userInput
+}
+
+fun isCorrectInput(userInput: String, wordLength: Int, alphabet: String): Boolean {
+    if(userInput.length != wordLength) {
+        println(""The length of your guess should be $wordLength characters! Try again!"")
+        return false
+    }
+    if(userInput.any { it !in alphabet }){
+        println(""All symbols in your guess should be the $alphabet alphabet characters! Try again!"")
+        return false
+    }
+    return true
+}
+
+fun getGameRules(wordLength: Int, maxAttemptsCount: Int, secretExample: String) =
+    ""Welcome to the game! $newLineSymbol"" +
+            newLineSymbol +
+            ""Two people play this game: one chooses a word (a sequence of letters), "" +
+            ""the other guesses it. In this version, the computer chooses the word: "" +
+            ""a sequence of $wordLength letters (for example, $secretExample). "" +
+            ""The user has several attempts to guess it (the max number is $maxAttemptsCount). "" +
+            ""For each attempt, the number of complete matches (letter and position) "" +
+            ""and partial matches (letter only) is reported. $newLineSymbol"" +
+            newLineSymbol +
+            ""For example, with $secretExample as the hidden word, the BCDF guess will "" +
+            ""give 1 full match (C) and 1 partial match (B).""
+
+fun countPartialMatches(secret: String, guess: String): Int {
+    val matches = minOf(
+        secret.filter { it in guess }.length,
+        guess.filter { it in secret }.length,
+    )
+    return matches - countExactMatches(guess, secret)
+}
+
+fun countExactMatches(secret: String, guess: String): Int =
+    guess.filterIndexed { index, letter -> letter == secret[index] }.length
+
+fun generateSecret(wordLength: Int, alphabet: String) = List (wordLength) { alphabet.random() }.joinToString("""")
+
+fun isComplete(secret: String, guess: String) = secret == guess
+
+fun printRoundResults(secret: String, guess: String) {
+    val fullMatches = countExactMatches(secret, guess)
+    val partialMatches = countPartialMatches(secret, guess)
+    println(""Your guess has $fullMatches full matches and $partialMatches partial matches."")
+}
+
+fun isWon(complete: Boolean, attempts: Int, maxAttemptsCount: Int) = complete && attempts <= maxAttemptsCount
+
+fun isLost(complete: Boolean, attempts: Int, maxAttemptsCount: Int) = !complete && attempts > maxAttemptsCount
+
+fun playGame(secret: String, wordLength: Int, maxAttemptsCount: Int) {
+    var complete: Boolean
+    var attempts = 0
+    do {
+        println(""Please input your guess. It should be of length $wordLength."")
+        val guess = safeReadLine()
+        printRoundResults(secret, guess)
+        complete = isComplete(secret, guess)
+        attempts++
+        if (isLost(complete, attempts, maxAttemptsCount)) {
+            println(""Sorry, you lost! :( My word is $secret"")
+            break
+        } else if (isWon(complete, attempts, maxAttemptsCount)) {
+            println(""Congratulations! You guessed it!"")
+        }
+    } while (!complete)
+}
+
+fun main() {
+    val wordLength = 4
+    val maxAttemptsCount = 3
+    val secretExample = ""ACEB""
+    println(getGameRules(wordLength, maxAttemptsCount, secretExample))
+    playGame(generateSecret(wordLength, alphabet), wordLength, maxAttemptsCount)
+}
+"
+13051,MastermindAdvanced,CompleteTheProject,"package jetbrains.kotlin.course.mastermind.advanced
+const val alphabet = ""ABCDEFGH""
+
+fun safeUserInput(wordLength: Int, alphabet: String): String {
+    println(""Please input your guess. It should be of length $wordLength, "" +
+            ""and each symbol should be from the alphabet: $alphabet."")
+    var userInput: String
+    do { userInput = safeReadLine() } while(!isCorrectInput(userInput, wordLength, alphabet))
+    return userInput
+}
+
+fun isCorrectInput(userInput: String, wordLength: Int, alphabet: String): Boolean {
+    if(userInput.length != wordLength) {
+        println(""The length of your guess should be $wordLength characters! Try again!"")
+        return false
+    }
+    if(userInput.any { it !in alphabet }){
+        println(""All symbols in your guess should be the $alphabet alphabet characters! Try again!"")
+        return false
+    }
+    return true
+}
+
+fun getGameRules(wordLength: Int, maxAttemptsCount: Int, secretExample: String) =
+    ""Welcome to the game! $newLineSymbol"" +
+            newLineSymbol +
+            ""Two people play this game: one chooses a word (a sequence of letters), "" +
+            ""the other guesses it. In this version, the computer chooses the word: "" +
+            ""a sequence of $wordLength letters (for example, $secretExample). "" +
+            ""The user has several attempts to guess it (the max number is $maxAttemptsCount). "" +
+            ""For each attempt, the number of complete matches (letter and position) "" +
+            ""and partial matches (letter only) is reported. $newLineSymbol"" +
+            newLineSymbol +
+            ""For example, with $secretExample as the hidden word, the BCDF guess will "" +
+            ""give 1 full match (C) and 1 partial match (B).""
+
+fun countPartialMatches(secret: String, guess: String): Int {
+    val matches = minOf(
+        secret.filter { it in guess }.length,
+        guess.filter { it in secret }.length,
+    )
+    return matches - countExactMatches(guess, secret)
+}
+
+fun countExactMatches(secret: String, guess: String): Int =
+    guess.filterIndexed { index, letter -> letter == secret[index] }.length
+
+fun generateSecret(wordLength: Int, alphabet: String) = List (wordLength) { alphabet.random() }.joinToString("""")
+
+fun isComplete(secret: String, guess: String) = secret == guess
+
+fun printRoundResults(secret: String, guess: String) {
+    val fullMatches = countExactMatches(secret, guess)
+    val partialMatches = countPartialMatches(secret, guess)
+    println(""Your guess has $fullMatches full matches and $partialMatches partial matches."")
+}
+
+fun isWon(complete: Boolean, attempts: Int, maxAttemptsCount: Int) = complete && attempts <= maxAttemptsCount
+
+fun isLost(complete: Boolean, attempts: Int, maxAttemptsCount: Int) = !complete && attempts > maxAttemptsCount
+
+fun playGame(secret: String, wordLength: Int, maxAttemptsCount: Int) {
+    var complete: Boolean
+    var attempts = 0
+    do {
+        println(""Please input your guess. It should be of length $wordLength."")
+        val guess = safeUserInput(wordLength, alphabet)
+        printRoundResults(secret, guess)
+        complete = isComplete(secret, guess)
+        attempts++
+        if (isLost(complete, attempts, maxAttemptsCount)) {
+            println(""Sorry, you lost! :( My word is $secret"")
+            break
+        } else if (isWon(complete, attempts, maxAttemptsCount)) {
+            println(""Congratulations! You guessed it!"")
+        }
+    } while (!complete)
+}
+
+fun main() {
+    val wordLength = 4
+    val maxAttemptsCount = 3
+    val secretExample = ""ACEB""
+    println(getGameRules(wordLength, maxAttemptsCount, secretExample))
+    playGame(generateSecret(wordLength, alphabet), wordLength, maxAttemptsCount)
+}
+"
+22109,Hangman,generateSecretFunction,"package jetbrains.kotlin.course.hangman
+
+// You will use this function later
+fun getGameRules(wordLength: Int, maxAttemptsCount: Int) = ""Welcome to the game!$newLineSymbol$newLineSymbol"" +
+        ""In this game, you need to guess the word made by the computer.$newLineSymbol"" +
+        ""The hidden word will appear as a sequence of underscores, one underscore means one letter.$newLineSymbol"" +
+        ""You have $maxAttemptsCount attempts to guess the word.$newLineSymbol"" +
+        ""All words are English words, consisting of $wordLength letters.$newLineSymbol"" +
+        ""Each attempt you should enter any one letter,$newLineSymbol"" +
+        ""if it is in the hidden word, all matches will be guessed.$newLineSymbol$newLineSymbol"" +
+        """" +
+        ""For example, if the word \""CAT\"" was guessed, \""_ _ _\"" will be displayed first, "" +
+        ""since the word has 3 letters.$newLineSymbol"" +
+        ""If you enter the letter A, you will see \""_ A _\"" and so on.$newLineSymbol$newLineSymbol"" +
+        """" +
+        ""Good luck in the game!""
+
+// You will use this function later
+fun isWon(complete: Boolean, attempts: Int, maxAttemptsCount: Int) = complete && attempts <= maxAttemptsCount
+
+// You will use this function later
+fun isLost(complete: Boolean, attempts: Int, maxAttemptsCount: Int) = !complete && attempts > maxAttemptsCount
+
+fun isComplete(secret: String, currentGuess: String): Boolean {
+    // \\s is saying to replace whitespace with nothign AKA """"
+    return secret == currentGuess.replace(""\\s"".toRegex(), """")
+}
+
+fun generateNewUserWord(secret: String, guess: Char, currentUserWord: String): String {
+    val result = StringBuilder()
+
+    for (i in secret.indices) {
+       if (guess == secret[i])
+           result.append(guess)
+       else
+           result.append(currentUserWord[i*2])
+       result.append("" "")
+    }
+
+    return result.toString()
+}
+
+
+
+fun main() {
+    // Uncomment this code on the last step of the game
+
+    // println(getGameRules(wordLength, maxAttemptsCount))
+    // playGame(generateSecret(), maxAttemptsCount)
+}
+"
+22157,Hangman,generateSecretFunction,"package jetbrains.kotlin.course.hangman
+
+import kotlin.random.Random
+
+// You will use this function later
+fun getGameRules(wordLength: Int, maxAttemptsCount: Int) = ""Welcome to the game!$newLineSymbol$newLineSymbol"" +
+        ""In this game, you need to guess the word made by the computer.$newLineSymbol"" +
+        ""The hidden word will appear as a sequence of underscores, one underscore means one letter.$newLineSymbol"" +
+        ""You have $maxAttemptsCount attempts to guess the word.$newLineSymbol"" +
+        ""All words are English words, consisting of $wordLength letters.$newLineSymbol"" +
+        ""Each attempt you should enter any one letter,$newLineSymbol"" +
+        ""if it is in the hidden word, all matches will be guessed.$newLineSymbol$newLineSymbol"" +
+        """" +
+        ""For example, if the word \""CAT\"" was guessed, \""_ _ _\"" will be displayed first, "" +
+        ""since the word has 3 letters.$newLineSymbol"" +
+        ""If you enter the letter A, you will see \""_ A _\"" and so on.$newLineSymbol$newLineSymbol"" +
+        """" +
+        ""Good luck in the game!""
+
+// You will use this function later
+fun isWon(complete: Boolean, attempts: Int, maxAttemptsCount: Int) = complete && attempts <= maxAttemptsCount
+
+// You will use this function later
+fun isLost(complete: Boolean, attempts: Int, maxAttemptsCount: Int) = !complete && attempts > maxAttemptsCount
+
+fun isComplete(secret: String, currentGuess: String): Boolean {
+    // \\s is saying to replace whitespace with nothign AKA """"
+    return secret == currentGuess.replace(""\\s"".toRegex(), """")
+}
+
+fun generateNewUserWord(secret: String, guess: Char, currentUserWord: String): String {
+    val result = StringBuilder()
+
+    for (i in secret.indices) {
+       if (guess == secret[i])
+           result.append(guess)
+       else
+           result.append(currentUserWord[i*2])
+       result.append("" "")
+    }
+
+    return result.toString()
+}
+
+fun generateSecret(): String = words[Random.nextInt()]
+
+fun main() {
+    // Uncomment this code on the last step of the game
+
+    // println(getGameRules(wordLength, maxAttemptsCount))
+    // playGame(generateSecret(), maxAttemptsCount)
+}
+"
+24191,Hangman,isCorrectInputFunction,"package jetbrains.kotlin.course.hangman
+
+// You will use this function later
+fun getGameRules(wordLength: Int, maxAttemptsCount: Int) = ""Welcome to the game!$newLineSymbol$newLineSymbol"" +
+        ""In this game, you need to guess the word made by the computer.$newLineSymbol"" +
+        ""The hidden word will appear as a sequence of underscores, one underscore means one letter.$newLineSymbol"" +
+        ""You have $maxAttemptsCount attempts to guess the word.$newLineSymbol"" +
+        ""All words are English words, consisting of $wordLength letters.$newLineSymbol"" +
+        ""Each attempt you should enter any one letter,$newLineSymbol"" +
+        ""if it is in the hidden word, all matches will be guessed.$newLineSymbol$newLineSymbol"" +
+        """" +
+        ""For example, if the word \""CAT\"" was guessed, \""_ _ _\"" will be displayed first, "" +
+        ""since the word has 3 letters.$newLineSymbol"" +
+        ""If you enter the letter A, you will see \""_ A _\"" and so on.$newLineSymbol$newLineSymbol"" +
+        """" +
+        ""Good luck in the game!""
+
+// You will use this function later
+fun isWon(complete: Boolean, attempts: Int, maxAttemptsCount: Int) = complete && attempts <= maxAttemptsCount
+
+// You will use this function later
+fun isLost(complete: Boolean, attempts: Int, maxAttemptsCount: Int) = !complete && attempts > maxAttemptsCount
+
+fun isComplete(secret: String, currentGuess: String): Boolean = (secret == currentGuess.replace(separator, """"))
+
+fun generateNewUserWord(secret: String, guess: Char, currentUserWord: String): String {
+    val newWord = StringBuilder()
+    var secretIndex = 0
+    for (i in currentUserWord.indices) {
+        if (currentUserWord[i] == ' ') continue
+
+        if (currentUserWord[i] != '_') {
+            newWord.append(currentUserWord[i])
+        } else if (secret[secretIndex] == guess) {
+            newWord.append(guess)
+        } else {
+            newWord.append('_')
+        }
+        newWord.append(separator)
+        ++secretIndex
+    }
+    return newWord.toString().removeSuffix(separator)
+}
+
+fun generateSecret(): String = words.random()
+
+fun getHiddenSecret(wordLength: Int): String = (underscore + separator).repeat(wordLength).trim()
+
+
+fun main() {
+    // Uncomment this code on the last step of the game
+
+    // println(getGameRules(wordLength, maxAttemptsCount))
+    // playGame(generateSecret(), maxAttemptsCount)
+}
+"
+30977,Hangman,isCorrectInputFunction,"package jetbrains.kotlin.course.hangman
+
+// You will use this function later
+fun getGameRules(wordLength: Int, maxAttemptsCount: Int) = ""Welcome to the game!$newLineSymbol$newLineSymbol"" +
+        ""In this game, you need to guess the word made by the computer.$newLineSymbol"" +
+        ""The hidden word will appear as a sequence of underscores, one underscore means one letter.$newLineSymbol"" +
+        ""You have $maxAttemptsCount attempts to guess the word.$newLineSymbol"" +
+        ""All words are English words, consisting of $wordLength letters.$newLineSymbol"" +
+        ""Each attempt you should enter any one letter,$newLineSymbol"" +
+        ""if it is in the hidden word, all matches will be guessed.$newLineSymbol$newLineSymbol"" +
+        """" +
+        ""For example, if the word \""CAT\"" was guessed, \""_ _ _\"" will be displayed first, "" +
+        ""since the word has 3 letters.$newLineSymbol"" +
+        ""If you enter the letter A, you will see \""_ A _\"" and so on.$newLineSymbol$newLineSymbol"" +
+        """" +
+        ""Good luck in the game!""
+
+fun generateSecret(): String = words.random()
+
+fun getHiddenSecret(wordLength: Int): String = (List(wordLength) { underscore}).joinToString(separator)
+
+fun isCorrectInput(userInput: String): Boolean {
+    var res = true
+        
+    return res
+}
+
+fun generateNewUserWord(secret: String, guess: Char, currentUserWord: String): String {
+    var result = """"
+    for (i in secret.indices) {
+        result += if (secret[i] == guess) {
+            guess
+        } else {
+            currentUserWord[2 * i]
+        }
+        if (i != secret.length - 1) {
+            result += ' '
+        }
+    }
+    return result
+}
+
+// You will use this function later
+fun isWon(complete: Boolean, attempts: Int, maxAttemptsCount: Int) = complete && attempts <= maxAttemptsCount
+
+// You will use this function later
+fun isLost(complete: Boolean, attempts: Int, maxAttemptsCount: Int) = !complete && attempts > maxAttemptsCount
+
+fun isComplete(secret: String, currentGuess: String): Boolean {
+    val currentGuess1 = currentGuess.replace("" "", """")
+    return currentGuess1 == secret
+}
+
+fun main() {
+    // Uncomment this code on the last step of the game
+
+    // println(getGameRules(wordLength, maxAttemptsCount))
+    // playGame(generateSecret(), maxAttemptsCount)
+}
+"
+31121,Hangman,isCorrectInputFunction,"package jetbrains.kotlin.course.hangman
+
+// You will use this function later
+fun getGameRules(wordLength: Int, maxAttemptsCount: Int) = ""Welcome to the game!$newLineSymbol$newLineSymbol"" +
+        ""In this game, you need to guess the word made by the computer.$newLineSymbol"" +
+        ""The hidden word will appear as a sequence of underscores, one underscore means one letter.$newLineSymbol"" +
+        ""You have $maxAttemptsCount attempts to guess the word.$newLineSymbol"" +
+        ""All words are English words, consisting of $wordLength letters.$newLineSymbol"" +
+        ""Each attempt you should enter any one letter,$newLineSymbol"" +
+        ""if it is in the hidden word, all matches will be guessed.$newLineSymbol$newLineSymbol"" +
+        """" +
+        ""For example, if the word \""CAT\"" was guessed, \""_ _ _\"" will be displayed first, "" +
+        ""since the word has 3 letters.$newLineSymbol"" +
+        ""If you enter the letter A, you will see \""_ A _\"" and so on.$newLineSymbol$newLineSymbol"" +
+        """" +
+        ""Good luck in the game!""
+
+fun generateSecret(): String = words.random()
+
+fun getHiddenSecret(wordLength: Int): String = (List(wordLength) { underscore}).joinToString(separator)
+
+fun isCorrectInput(userInput: String): Boolean {
+    var res = true
+    if (userInput.length != 1) {
+        println(""The length of your guess should be 1! Try again!"")
+        res = false
+    }
+    if (!userInput[0].isLetter()) {
+        
+        res = false
+    }
+    return res
+}
+
+fun generateNewUserWord(secret: String, guess: Char, currentUserWord: String): String {
+    var result = """"
+    for (i in secret.indices) {
+        result += if (secret[i] == guess) {
+            guess
+        } else {
+            currentUserWord[2 * i]
+        }
+        if (i != secret.length - 1) {
+            result += ' '
+        }
+    }
+    return result
+}
+
+// You will use this function later
+fun isWon(complete: Boolean, attempts: Int, maxAttemptsCount: Int) = complete && attempts <= maxAttemptsCount
+
+// You will use this function later
+fun isLost(complete: Boolean, attempts: Int, maxAttemptsCount: Int) = !complete && attempts > maxAttemptsCount
+
+fun isComplete(secret: String, currentGuess: String): Boolean {
+    val currentGuess1 = currentGuess.replace("" "", """")
+    return currentGuess1 == secret
+}
+
+fun main() {
+    // Uncomment this code on the last step of the game
+
+    // println(getGameRules(wordLength, maxAttemptsCount))
+    // playGame(generateSecret(), maxAttemptsCount)
+}
+"
+24195,Hangman,isCorrectInputFunction,"package jetbrains.kotlin.course.hangman
+
+// You will use this function later
+fun getGameRules(wordLength: Int, maxAttemptsCount: Int) = ""Welcome to the game!$newLineSymbol$newLineSymbol"" +
+        ""In this game, you need to guess the word made by the computer.$newLineSymbol"" +
+        ""The hidden word will appear as a sequence of underscores, one underscore means one letter.$newLineSymbol"" +
+        ""You have $maxAttemptsCount attempts to guess the word.$newLineSymbol"" +
+        ""All words are English words, consisting of $wordLength letters.$newLineSymbol"" +
+        ""Each attempt you should enter any one letter,$newLineSymbol"" +
+        ""if it is in the hidden word, all matches will be guessed.$newLineSymbol$newLineSymbol"" +
+        """" +
+        ""For example, if the word \""CAT\"" was guessed, \""_ _ _\"" will be displayed first, "" +
+        ""since the word has 3 letters.$newLineSymbol"" +
+        ""If you enter the letter A, you will see \""_ A _\"" and so on.$newLineSymbol$newLineSymbol"" +
+        """" +
+        ""Good luck in the game!""
+
+// You will use this function later
+fun isWon(complete: Boolean, attempts: Int, maxAttemptsCount: Int) = complete && attempts <= maxAttemptsCount
+
+// You will use this function later
+fun isLost(complete: Boolean, attempts: Int, maxAttemptsCount: Int) = !complete && attempts > maxAttemptsCount
+
+fun isComplete(secret: String, currentGuess: String): Boolean = (secret == currentGuess.replace(separator, """"))
+
+fun generateNewUserWord(secret: String, guess: Char, currentUserWord: String): String {
+    val newWord = StringBuilder()
+    var secretIndex = 0
+    for (i in currentUserWord.indices) {
+        if (currentUserWord[i] == ' ') continue
+
+        if (currentUserWord[i] != '_') {
+            newWord.append(currentUserWord[i])
+        } else if (secret[secretIndex] == guess) {
+            newWord.append(guess)
+        } else {
+            newWord.append('_')
+        }
+        newWord.append(separator)
+        ++secretIndex
+    }
+    return newWord.toString().removeSuffix(separator)
+}
+
+fun generateSecret(): String = words.random()
+
+fun getHiddenSecret(wordLength: Int): String = (underscore + separator).repeat(wordLength).trim()
+
+fun isCorrectInput(userInput: String): Boolean = userInput.length == 1 && userInput[0].isLetter()
+
+fun main() {
+    // Uncomment this code on the last step of the game
+
+    // println(getGameRules(wordLength, maxAttemptsCount))
+    // playGame(generateSecret(), maxAttemptsCount)
+}
+"
+15789,Hangman,CompleteTheProject,"package jetbrains.kotlin.course.hangman
+
+fun playGame(secret: String, maxAttemptsCount: Int) {
+    var currentUserWord = getHiddenSecret(secret.length)
+    
+    do{
+        val guess = safeUserInput()
+        currentUserWord = getRoundResults(secret, guess.first(), currentUserWord)
+    }while(isComplete(secret, guess))
+    
+}
+
+fun getRoundResults(secret: String, guess: Char, currentUserWord: String) =
+    if(guess !in secret) {
+        println(""Sorry, the secret does not contain the symbol: $guess. The current word is $currentUserWord"")
+        currentUserWord
+    }
+    else {
+        val newUserWord = generateNewUserWord(secret, guess, currentUserWord)
+        println(""Great! This letter is in the word! The current word is ${newUserWord}"")
+        newUserWord
+    }
+
+
+fun safeUserInput(): String {
+    println(""Please input your guess."")
+    var guess: String
+    do{
+        guess = safeReadLine()
+    }while(!isCorrectInput(guess))
+    return guess.uppercase()
+}
+
+fun isCorrectInput(userInput: String): Boolean{
+    if(userInput.length != 1){
+        println(""The length of your guess should be 1! Try again!"")
+        return false
+    }
+    if(!userInput[0].isLetter()){
+        println(""You should input only English letters! Try again!"")
+        return false
+    }
+    return true
+}
+
+fun getHiddenSecret(wordLength: Int) = List(wordLength) { underscore }.joinToString(separator)
+
+fun generateSecret() = words.random()
+
+fun generateNewUserWord(secret: String, guess: Char, currentUserWord: String): String{
+    return secret.
+    mapIndexed{ ind, it -> if(it == guess) it else currentUserWord[2*ind]}.joinToString(
+        separator)
+}
+
+fun isComplete(secret: String, currentGuess: String) = secret == currentGuess.split(separator).joinToString("""")
+
+
+// You will use this function later
+fun getGameRules(wordLength: Int, maxAttemptsCount: Int) = ""Welcome to the game!$newLineSymbol$newLineSymbol"" +
+        ""In this game, you need to guess the word made by the computer.$newLineSymbol"" +
+        ""The hidden word will appear as a sequence of underscores, one underscore means one letter.$newLineSymbol"" +
+        ""You have $maxAttemptsCount attempts to guess the word.$newLineSymbol"" +
+        ""All words are English words, consisting of $wordLength letters.$newLineSymbol"" +
+        ""Each attempt you should enter any one letter,$newLineSymbol"" +
+        ""if it is in the hidden word, all matches will be guessed.$newLineSymbol$newLineSymbol"" +
+        """" +
+        ""For example, if the word \""CAT\"" was guessed, \""_ _ _\"" will be displayed first, "" +
+        ""since the word has 3 letters.$newLineSymbol"" +
+        ""If you enter the letter A, you will see \""_ A _\"" and so on.$newLineSymbol$newLineSymbol"" +
+        """" +
+        ""Good luck in the game!""
+
+// You will use this function later
+fun isWon(complete: Boolean, attempts: Int, maxAttemptsCount: Int) = complete && attempts <= maxAttemptsCount
+
+// You will use this function later
+fun isLost(complete: Boolean, attempts: Int, maxAttemptsCount: Int) = !complete && attempts > maxAttemptsCount
+
+fun main() {
+    // Uncomment this code on the last step of the game
+     println(getGameRules(wordLength, maxAttemptsCount))
+     playGame(generateSecret(), maxAttemptsCount)
+}
+"
+22324,Hangman,CompleteTheProject,"package jetbrains.kotlin.course.hangman
+
+import kotlin.random.Random
+
+// You will use this function later
+fun getGameRules(wordLength: Int, maxAttemptsCount: Int) = ""Welcome to the game!$newLineSymbol$newLineSymbol"" +
+        ""In this game, you need to guess the word made by the computer.$newLineSymbol"" +
+        ""The hidden word will appear as a sequence of underscores, one underscore means one letter.$newLineSymbol"" +
+        ""You have $maxAttemptsCount attempts to guess the word.$newLineSymbol"" +
+        ""All words are English words, consisting of $wordLength letters.$newLineSymbol"" +
+        ""Each attempt you should enter any one letter,$newLineSymbol"" +
+        ""if it is in the hidden word, all matches will be guessed.$newLineSymbol$newLineSymbol"" +
+        """" +
+        ""For example, if the word \""CAT\"" was guessed, \""_ _ _\"" will be displayed first, "" +
+        ""since the word has 3 letters.$newLineSymbol"" +
+        ""If you enter the letter A, you will see \""_ A _\"" and so on.$newLineSymbol$newLineSymbol"" +
+        """" +
+        ""Good luck in the game!""
+
+// You will use this function later
+fun isWon(complete: Boolean, attempts: Int, maxAttemptsCount: Int) = complete && attempts <= maxAttemptsCount
+
+// You will use this function later
+fun isLost(complete: Boolean, attempts: Int, maxAttemptsCount: Int) = !complete && attempts > maxAttemptsCount
+
+fun isComplete(secret: String, currentGuess: String): Boolean {
+    // \\s is saying to replace whitespace with nothign AKA """"
+    return secret == currentGuess.replace(""\\s"".toRegex(), """")
+}
+
+fun generateNewUserWord(secret: String, guess: Char, currentUserWord: String): String {
+    val result = StringBuilder()
+
+    for (i in secret.indices) {
+       if (guess == secret[i])
+           result.append(guess)
+       else
+           result.append(currentUserWord[i*2])
+       result.append("" "")
+    }
+
+    return result.toString().trim()
+}
+
+fun generateSecret(): String = words[Random.nextInt(words.size)]
+
+fun getHiddenSecret(wordLength: Int): String {
+    val result = StringBuilder()
+    for (i in 1..wordLength) {
+        result.append(""_"")
+        result.append("" "")
+    }
+
+    return result.toString().trim()
+}
+
+fun isCorrectInput(userInput: String): Boolean {
+    if (userInput.length != 1) {
+        println(""The length of your guess should be 1! Try again!"")
+        return false
+    }
+
+    // converts it to a char and checks if its a letter
+    if (!userInput.single().isLetter()) {
+        println(""You should input only English letters! Try again!"")
+        return false
+    }
+
+    return true
+}
+
+fun safeUserInput(): Char {
+    var guess: String
+    do {
+    println(""Please input your guess."")
+    guess = safeReadLine()
+    } while (!isCorrectInput(guess))
+
+    return guess.uppercase()[0]
+}
+
+fun getRoundResults(secret: String, guess: Char, currentUserWord: String): String {
+    println(""Sorry, the secret does not contain the symbol: $guess. The current word is $currentUserWord"")
+
+    if (guess in secret)
+        println(""Great! This letter is in the word! The current word is ${generateNewUserWord(secret, guess, currentUserWord)}"")
+
+    return generateNewUserWord(secret, guess, currentUserWord)
+}
+
+fun playGame(secret: String, maxAttemptsCount: Int) {
+    var guess = getHiddenSecret(secret.length)
+    var attempts = maxAttemptsCount
+    while (true) {
+        val input = safeUserInput()
+        guess = generateNewUserWord(secret, input, guess)
+
+        if (!isComplete(secret, guess)) {
+            println(""Sorry, you lost! My word is $secret"")
+            break
+        }
+
+        if (attempts == 0) {
+            println(""Congratulations! You guessed it!"")
+            break
+        }
+
+        attempts -= 1
+    }
+}
+
+
+
+fun main() {
+    // Uncomment this code on the last step of the game
+
+    println(getGameRules(wordLength, maxAttemptsCount))
+    playGame(generateSecret(), maxAttemptsCount)
+}
+"
+15993,Hangman,CompleteTheProject,"package jetbrains.kotlin.course.hangman
+
+fun playGame(secret: String, maxAttemptsCount: Int) {
+    var currentUserWord = getHiddenSecret(secret.length)
+    var attempts = 0
+    while(true){
+        val guess = safeUserInput()
+        currentUserWord = getRoundResults(secret, guess.first(), currentUserWord)
+        attempts++
+        if(isLost(isComplete(secret, currentUserWord), attempts, maxAttemptsCount)){
+
+        }
+    }
+    
+}
+
+fun getRoundResults(secret: String, guess: Char, currentUserWord: String) =
+    if(guess !in secret) {
+        println(""Sorry, the secret does not contain the symbol: $guess. The current word is $currentUserWord"")
+        currentUserWord
+    }
+    else {
+        val newUserWord = generateNewUserWord(secret, guess, currentUserWord)
+        println(""Great! This letter is in the word! The current word is ${newUserWord}"")
+        newUserWord
+    }
+
+
+fun safeUserInput(): String {
+    println(""Please input your guess."")
+    var guess: String
+    do{
+        guess = safeReadLine()
+    }while(!isCorrectInput(guess))
+    return guess.uppercase()
+}
+
+fun isCorrectInput(userInput: String): Boolean{
+    if(userInput.length != 1){
+        println(""The length of your guess should be 1! Try again!"")
+        return false
+    }
+    if(!userInput[0].isLetter()){
+        println(""You should input only English letters! Try again!"")
+        return false
+    }
+    return true
+}
+
+fun getHiddenSecret(wordLength: Int) = List(wordLength) { underscore }.joinToString(separator)
+
+fun generateSecret() = words.random()
+
+fun generateNewUserWord(secret: String, guess: Char, currentUserWord: String): String{
+    return secret.
+    mapIndexed{ ind, it -> if(it == guess) it else currentUserWord[2*ind]}.joinToString(
+        separator)
+}
+
+fun isComplete(secret: String, currentGuess: String) = secret == currentGuess.split(separator).joinToString("""")
+
+
+// You will use this function later
+fun getGameRules(wordLength: Int, maxAttemptsCount: Int) = ""Welcome to the game!$newLineSymbol$newLineSymbol"" +
+        ""In this game, you need to guess the word made by the computer.$newLineSymbol"" +
+        ""The hidden word will appear as a sequence of underscores, one underscore means one letter.$newLineSymbol"" +
+        ""You have $maxAttemptsCount attempts to guess the word.$newLineSymbol"" +
+        ""All words are English words, consisting of $wordLength letters.$newLineSymbol"" +
+        ""Each attempt you should enter any one letter,$newLineSymbol"" +
+        ""if it is in the hidden word, all matches will be guessed.$newLineSymbol$newLineSymbol"" +
+        """" +
+        ""For example, if the word \""CAT\"" was guessed, \""_ _ _\"" will be displayed first, "" +
+        ""since the word has 3 letters.$newLineSymbol"" +
+        ""If you enter the letter A, you will see \""_ A _\"" and so on.$newLineSymbol$newLineSymbol"" +
+        """" +
+        ""Good luck in the game!""
+
+// You will use this function later
+fun isWon(complete: Boolean, attempts: Int, maxAttemptsCount: Int) = complete && attempts <= maxAttemptsCount
+
+// You will use this function later
+fun isLost(complete: Boolean, attempts: Int, maxAttemptsCount: Int) = !complete && attempts > maxAttemptsCount
+
+fun main() {
+    // Uncomment this code on the last step of the game
+     println(getGameRules(wordLength, maxAttemptsCount))
+     playGame(generateSecret(), maxAttemptsCount)
+}
+"
+16256,Hangman,CompleteTheProject,"package jetbrains.kotlin.course.hangman
+
+fun playGame(secret: String, maxAttemptsCount: Int) {
+    var currentUserWord = getHiddenSecret(wordLength)
+    var attempts = 0
+    while(true){
+        val guess = safeUserInput()
+        currentUserWord = getRoundResults(secret, guess, currentUserWord)
+        
+        val complete = isComplete(secret, currentUserWord)
+        if(isLost(complete, attempts, maxAttemptsCount)){
+            println(""Sorry, you lost! My word is $secret"")
+            return
+        }
+        if(isWon(complete, attempts, maxAttemptsCount)){
+            println(""Congratulations! You guessed it!"")
+            return
+        }
+        
+    }
+
+}
+
+fun getRoundResults(secret: String, guess: Char, currentUserWord: String) =
+    if(guess !in secret) {
+        println(""Sorry, the secret does not contain the symbol: $guess. The current word is $currentUserWord"")
+        currentUserWord
+    }
+    else {
+        val newUserWord = generateNewUserWord(secret, guess, currentUserWord)
+        println(""Great! This letter is in the word! The current word is ${newUserWord}"")
+        newUserWord
+    }
+
+
+fun safeUserInput(): Char {
+    println(""Please input your guess."")
+    var guess: String
+    do{
+        guess = safeReadLine()
+    }while(!isCorrectInput(guess))
+    return guess[0].uppercaseChar()
+}
+
+fun isCorrectInput(userInput: String): Boolean{
+    if(userInput.length != 1){
+        println(""The length of your guess should be 1! Try again!"")
+        return false
+    }
+    if(!userInput[0].isLetter()){
+        println(""You should input only English letters! Try again!"")
+        return false
+    }
+    return true
+}
+
+fun getHiddenSecret(wordLength: Int) = List(wordLength) { underscore }.joinToString(separator)
+
+fun generateSecret() = words.random()
+
+fun generateNewUserWord(secret: String, guess: Char, currentUserWord: String): String{
+    return secret.
+    mapIndexed{ ind, it -> if(it == guess) it else currentUserWord[2*ind]}.joinToString(
+        separator)
+}
+
+fun isComplete(secret: String, currentGuess: String) = secret == currentGuess.split(separator).joinToString("""")
+
+
+// You will use this function later
+fun getGameRules(wordLength: Int, maxAttemptsCount: Int) = ""Welcome to the game!$newLineSymbol$newLineSymbol"" +
+        ""In this game, you need to guess the word made by the computer.$newLineSymbol"" +
+        ""The hidden word will appear as a sequence of underscores, one underscore means one letter.$newLineSymbol"" +
+        ""You have $maxAttemptsCount attempts to guess the word.$newLineSymbol"" +
+        ""All words are English words, consisting of $wordLength letters.$newLineSymbol"" +
+        ""Each attempt you should enter any one letter,$newLineSymbol"" +
+        ""if it is in the hidden word, all matches will be guessed.$newLineSymbol$newLineSymbol"" +
+        """" +
+        ""For example, if the word \""CAT\"" was guessed, \""_ _ _\"" will be displayed first, "" +
+        ""since the word has 3 letters.$newLineSymbol"" +
+        ""If you enter the letter A, you will see \""_ A _\"" and so on.$newLineSymbol$newLineSymbol"" +
+        """" +
+        ""Good luck in the game!""
+
+// You will use this function later
+fun isWon(complete: Boolean, attempts: Int, maxAttemptsCount: Int) = complete && attempts <= maxAttemptsCount
+
+// You will use this function later
+fun isLost(complete: Boolean, attempts: Int, maxAttemptsCount: Int) = !complete && attempts > maxAttemptsCount
+
+fun main() {
+    // Uncomment this code on the last step of the game
+     println(getGameRules(wordLength, maxAttemptsCount))
+     playGame(generateSecret(), maxAttemptsCount)
+}
+"
+33074,AlmostDone,StringFunctionsPartTwo,"package jetbrains.kotlin.course.almost.done
+
+fun trimPicture(picture: String) = picture.trimIndent()
+
+fun applyBordersFilter(picture: String): String {
+    val listOfLines = picture.lines()
+    val width = getPictureWidth(picture)
+    val length = width + 4
+    val newPicture = StringBuilder()
+    newPicture.append(""#"".repeat(length) + '\n')
+    for (line in listOfLines) {
+        val newLine = StringBuilder()
+        newLine.append(""#$separator"")
+        newLine.append(line)
+        newLine.append(""$separator"".repeat(width - line.length))
+        newLine.append(""$separator#\n"")
+        newPicture.append(newLine)
+    }
+    newPicture.append(""#"".repeat(length))
+    return newPicture.toString()
+}
+
+fun applySquaredFilter(picture: String): String {
+    val bordersFilterPicture = applyBordersFilter(picture)
+    val newPicture = StringBuilder()
+    for (line in bordersFilterPicture.lines()) {
+        val newLine = StringBuilder()
+        newLine.append(line + line + ""\n"")
+        newPicture.append(newLine)
+    }
+    var firstLine = true
+    for (line in bordersFilterPicture.lines()) {
+        if (firstLine) {
+            firstLine = false
+            continue
+        }
+        val newLine = StringBuilder()
+        newLine.append(line + line + ""\n"")
+        newPicture.append(newLine)
+    }
+    return newPicture.toString()
+}
+
+fun applyFilter(picture: String, filterName: String): String {
+    return when (filterName) {
+        ""borders"" -> applyBordersFilter(trimPicture(picture))
+        else -> applySquaredFilter(trimPicture(picture))
+    }
+}
+
+fun safeReadLine() = readlnOrNull()?: error(""You entered null"")
+
+fun chooseFilter(): String {
+    var filter = """"
+    println(""Please choose the filter: 'borders' or 'squared'"")
+    while (filter.isEmpty()) {
+        when (val input = safeReadLine()) {
+            ""borders"", ""squared"" -> filter = input
+            else -> println(""Please input 'borders' or 'squared'"")
+        }
+    }
+    return filter
+}
+
+fun choosePicture(): String {
+    var picture = """"
+    println(""Please choose a picture. The possible options are: "" + allPictures().joinToString("", ""))
+    while (picture.isEmpty()) {
+        when (val input = safeReadLine()) {
+            in allPictures() -> picture = input
+            else -> println(""Please choose a picture. The possible options are: "" + allPictures().joinToString("", ""))
+        }
+    }
+    return getPictureByName(picture)!!
+}
+
+fun getPicture(): String {
+    var picture = """"
+    println(""Do you want to use a predefined picture or a custom one? Please input 'yes' for a predefined image or 'no' for a custom one"")
+    var firstAnswer = """"
+    while (firstAnswer.isEmpty()) {
+        when (val input = safeReadLine()) {
+            ""yes"", ""no"" -> firstAnswer = input
+            else -> println(""Please, input 'yes' or 'no'"")
+        }
+    }
+    if (firstAnswer == ""yes"") {
+        picture = choosePicture()
+    }
+    else {
+        println(""Please, input a custom picture"")
+        picture = safeReadLine()
+    }
+    return picture
+}
+
+fun photoshop() {
+    var picture = getPicture()
+    println(""The old image:"")
+    println(picture)
+    val filter = chooseFilter()
+    println(""The transformed picture:"")
+    picture = applyFilter(picture, filter)
+    println(picture)
+}
+
+fun main() {
+
+    photoshop()
+}
+"
+14483,AlmostDone,StringFunctionsPartTwo,"package jetbrains.kotlin.course.almost.done
+
+fun trimPicture(picture: String) = picture.trimIndent()
+
+fun applyBordersFilter(picture: String): String {
+    val pictureWidth = getPictureWidth(picture) + 4
+    val pictureLines = picture.lines()
+    val pictureWithBorders = StringBuilder()
+    pictureWithBorders.append(borderSymbol.toString().repeat(pictureWidth))
+    pictureWithBorders.append(newLineSymbol)
+    for (line in pictureLines) {
+        val lineWithBorders = StringBuilder()
+        lineWithBorders.append(borderSymbol)
+        lineWithBorders.append(separator)
+        lineWithBorders.append(line)
+        while (lineWithBorders.length <= pictureWidth - 2) {
+            lineWithBorders.append(separator)
+        }
+        lineWithBorders.append(borderSymbol)
+        lineWithBorders.append(newLineSymbol)
+        pictureWithBorders.append(lineWithBorders)
+    }
+    pictureWithBorders.append(borderSymbol.toString().repeat(pictureWidth))
+    return pictureWithBorders.toString()
+
+}
+
+
+fun applySquaredFilter(picture: String): String {
+    val pictureWithBorders = applyBordersFilter(picture)
+    val squaredPicture = StringBuilder()
+    val linesArr = pictureWithBorders.lines().toMutableList()
+    for (i in linesArr.indices) {
+        squaredPicture.append(linesArr[i].repeat(2))
+        squaredPicture.append(newLineSymbol)
+    }
+    for (i in linesArr.indices) {
+        if (i != 0) {
+            squaredPicture.append(linesArr[i].repeat(2))
+            squaredPicture.append(newLineSymbol)
+        }
+    }
+    return squaredPicture.toString()
+
+}
+
+fun safeReadLine(): String = readlnOrNull() ?: error(""Null input"")
+
+fun chooseFilter(): String {
+    println(""Please choose the filter: 'borders' or 'squared'."")
+    var input = safeReadLine()
+    while (input != ""borders"" && input != ""squared"") {
+        println(""Please input 'borders' or 'squared'"")
+        input = safeReadLine()
+    }
+    return input
+}
+
+fun applyFilter(picture: String, filterName: String): String {
+    return when (filterName) {
+        ""borders"" -> applyBordersFilter(picture)
+        ""squared"" -> applySquaredFilter(picture)
+        else -> error(""this filter doesn't exist"")
+    }
+}
+
+fun choosePicture(): String {
+    var picture: String
+    do {
+        println(""Please choose a picture. The possible options are: ${allPictures()}"")
+        picture = safeReadLine()
+
+    } while (picture !in allPictures())
+    return getPictureByName(picture)!!
+}
+
+fun getPicture(): String {
+    println(""Do you want to use a predefined picture or a custom one? Please input 'yes' for a predefined image or 'no' for a custom one"")
+    var answer = safeReadLine()
+    while (answer != ""no"" && answer != ""yes"") {
+        println(""Please input 'yes' or 'no'"")
+        answer = safeReadLine()
+    }
+    return when (answer) {
+        ""yes"" -> choosePicture()
+        ""no"" -> safeReadLine()
+        else -> {
+            ""x""
+        }
+    }
+}
+
+fun photoshop(): Unit {
+    var picture = getPicture()
+    val filter = chooseFilter()
+    println(""The old image:"")
+    println(picture)
+    picture = trimPicture(picture)
+    picture = applyFilter(picture, filter)
+    println(""The transformed picture:"")
+    println(picture)
+}
+
+fun main() {
+    // Uncomment this code on the last step of the game
+
+     photoshop()
+}
+"
+38349,AlmostDone,StringFunctionsPartTwo,"package jetbrains.kotlin.course.almost.done
+
+
+fun trimPicture(picture: String): String {
+   val pattern = Regex(""^\\s+"", RegexOption.MULTILINE)
+    return picture.replace(pattern, """").trimEnd('\n')
+}
+
+fun applyBordersFilter(picture: String): String {
+
+    val width = getPictureWidth(picture)
+    val newpicture = StringBuilder()
+
+    newpicture.append(""$borderSymbol"".repeat(width+4))
+    newpicture.append(""$newLineSymbol"")
+
+    for (line in picture.lines()) {
+        val newline=StringBuilder()
+        newline.append(""$borderSymbol$separator"")
+        newline.append(line)
+        newline.append(""$separator"".repeat(width-line.length+1))
+        newline.append(""$borderSymbol"")
+        newline.append(""$newLineSymbol"")
+
+        val new =newline.toString()
+        newpicture.append(newline)
+    }
+    newpicture.append(""$borderSymbol"".repeat(width+4))
+    val newpic = newpicture.toString()
+    return newpic
+}
+
+fun applySquaredFilter(picture: String): String {
+    val width = getPictureWidth(picture)
+
+    val newpicture = StringBuilder()
+
+    newpicture.append(""$borderSymbol"".repeat(width+4))
+    
+    
+    return newpicture.toString()
+}
+
+
+fun applyFilter(picture: String, filter: String): String = applyBordersFilter(picture)
+
+
+
+fun main() {
+    // Uncomment this code on the last step of the game
+
+    // photoshop()
+}
+"
+25839,AlmostDone,StringFunctionsPartTwo,"package jetbrains.kotlin.course.almost.done
+
+
+fun trimPicture(picture: String): String = picture.trimIndent()
+
+fun applyBordersFilter(picture: String): String {
+    val width = getPictureWidth(picture) + 4
+    val result = StringBuilder()
+
+    result.append(borderSymbol.toString().repeat(width))
+    result.append(newLineSymbol)
+    for (line in picture.lines()) {
+        val curWidth = line.length
+        result.append(borderSymbol)
+        result.append(separator)
+        result.append(line)
+        result.append(separator.toString().repeat(width - 3 - curWidth))
+        result.append(borderSymbol)
+        result.append(newLineSymbol)
+    }
+    result.append(borderSymbol.toString().repeat(width))
+    return result.toString()
+}
+
+fun applySquaredFilter(picture: String): String {
+    val borderedPicture = applyBordersFilter(picture)
+    val result = StringBuilder()
+    for (line in borderedPicture.lines()) {
+        result.append(line)
+        result.append(line)
+        result.append(newLineSymbol)
+    }
+    for (line in borderedPicture.lines().drop(1)) {
+        result.append(line)
+        result.append(line)
+        result.append(newLineSymbol)
+    }
+    return result.toString()
+}
+
+fun applyFilter(picture: String, filter: String): String {
+    val result = trimPicture(picture)
+    return when (filter) {
+        ""borders"" -> applyBordersFilter(result)
+        ""squared"" -> applySquaredFilter(result)
+        else -> error(""Unknown filter"")
+    }
+}
+
+fun safeReadLine(): String =  when (val input = readlnOrNull()) {
+    null -> error(""No input"")
+    else -> input
+}
+
+fun chooseFilter(): String {
+    var input: String
+    do {
+        println(""Please input 'borders' or 'squared'"")
+        input = safeReadLine()
+    } while (input != ""borders"" && input != ""squared"")
+    return input;
+}
+
+fun choosePicture(): String {
+    var input: String
+    do {
+        println(""Please choose a picture. The possible options are: ${}"")
+        input = safeReadLine()
+    } while (input != ""borders"" && input != ""squared"")
+    return input;
+}
+
+fun main() {
+    // Uncomment this code on the last step of the game
+
+    // photoshop()
+    println(applyFilter(simba, ""borders""))   // an example with the simba picture
+    println(applyFilter(monkey, ""borders""))  // an example with the monkey picture
+    println(applyFilter(android, ""borders"")) // an example with the android picture (this picture has different line lengths)
+}
+"
+25874,AlmostDone,choosePictureFunction,"package jetbrains.kotlin.course.almost.done
+
+
+fun trimPicture(picture: String): String = picture.trimIndent()
+
+fun applyBordersFilter(picture: String): String {
+    val width = getPictureWidth(picture) + 4
+    val result = StringBuilder()
+
+    result.append(borderSymbol.toString().repeat(width))
+    result.append(newLineSymbol)
+    for (line in picture.lines()) {
+        val curWidth = line.length
+        result.append(borderSymbol)
+        result.append(separator)
+        result.append(line)
+        result.append(separator.toString().repeat(width - 3 - curWidth))
+        result.append(borderSymbol)
+        result.append(newLineSymbol)
+    }
+    result.append(borderSymbol.toString().repeat(width))
+    return result.toString()
+}
+
+fun applySquaredFilter(picture: String): String {
+    val borderedPicture = applyBordersFilter(picture)
+    val result = StringBuilder()
+    for (line in borderedPicture.lines()) {
+        result.append(line)
+        result.append(line)
+        result.append(newLineSymbol)
+    }
+    for (line in borderedPicture.lines().drop(1)) {
+        result.append(line)
+        result.append(line)
+        result.append(newLineSymbol)
+    }
+    return result.toString()
+}
+
+fun applyFilter(picture: String, filter: String): String {
+    val result = trimPicture(picture)
+    return when (filter) {
+        ""borders"" -> applyBordersFilter(result)
+        ""squared"" -> applySquaredFilter(result)
+        else -> error(""Unknown filter"")
+    }
+}
+
+fun safeReadLine(): String =  when (val input = readlnOrNull()) {
+    null -> error(""No input"")
+    else -> input
+}
+
+fun chooseFilter(): String {
+    var input: String
+    do {
+        println(""Please input 'borders' or 'squared'"")
+        input = safeReadLine()
+    } while (input != ""borders"" && input != ""squared"")
+    return input;
+}
+
+fun choosePicture(): String {
+    var input: String
+    do {
+        println(""Please choose a picture. The possible options are: ${allPictures()}"")
+        input = safeReadLine()
+    } while (getPictureByName(input) == null)
+    val picture = getPictureByName(input)!!
+    return getPictureByName(input)!!
+}
+
+fun main() {
+    // Uncomment this code on the last step of the game
+
+    // photoshop()
+    println(applyFilter(simba, ""borders""))   // an example with the simba picture
+    println(applyFilter(monkey, ""borders""))  // an example with the monkey picture
+    println(applyFilter(android, ""borders"")) // an example with the android picture (this picture has different line lengths)
+}
+"
+39641,AlmostDone,choosePictureFunction,"package jetbrains.kotlin.course.almost.done
+
+fun safeReadLine(): String {
+    val line: String = readlnOrNull() ?: error(""aboba"")
+    return line
+}
+
+fun trimPicture(picture: String): String = picture.trimIndent()
+
+fun applyBordersFilter(picture: String): String {
+    val pictureWidth = getPictureWidth(picture)
+    val res = StringBuilder()
+    res.append(""#"".repeat(pictureWidth + 4))
+    res.append(newLineSymbol)
+    for (line in picture.lines()) {
+        res.append(""#"")
+        res.append("" "")
+        res.append(line)
+        res.append("" "".repeat(pictureWidth - line.length + 1))
+        res.append(""#$newLineSymbol"")
+    }
+    res.append(""#"".repeat(pictureWidth + 4))
+    return res.toString()
+}
+
+fun applySquaredFilter(picture: String): String {
+    val tmp = applyBordersFilter(picture)
+    val res = StringBuilder()
+    for (line in tmp.lines()) {
+        res.append(line.repeat(2))
+        res.append(newLineSymbol)
+    }
+    for (line in tmp.lines()) {
+        if (line[1] == '#') continue
+        res.append(line.repeat(2))
+        res.append(newLineSymbol)
+    }
+    res.append(tmp.lines()[0].repeat(2))
+    return res.toString()
+}
+
+fun applyFilter(picture: String, filterName: String):String {
+    val pic = trimPicture(picture)
+    return when(filterName) {
+        ""borders"" -> applyBordersFilter(pic)
+        ""squared"" -> applySquaredFilter(pic)
+        else -> error(""aboba"")
+    }
+}
+
+fun chooseFilter(): String {
+    println(""Please choose the filter: 'borders' or 'squared'"")
+    var line = safeReadLine()
+    while (line != ""borders"" && line != ""squared"") {
+        println(""Please choose the filter: 'borders' or 'squared'"")
+        line = safeReadLine()
+    }
+    return line
+}
+
+fun choosePicture(): String {
+    while (true) {
+        println(""Please choose a picture. The possible options are: ${allPictures()}"")
+        val pic = readlnOrNull()
+        
+    }
+}
+
+fun main() {
+    // Uncomment this code on the last step of the game
+
+    // photoshop()
+}
+"
+39692,AlmostDone,choosePictureFunction,"package jetbrains.kotlin.course.almost.done
+
+fun safeReadLine(): String {
+    val line: String = readlnOrNull() ?: error(""aboba"")
+    return line
+}
+
+fun trimPicture(picture: String): String = picture.trimIndent()
+
+fun applyBordersFilter(picture: String): String {
+    val pictureWidth = getPictureWidth(picture)
+    val res = StringBuilder()
+    res.append(""#"".repeat(pictureWidth + 4))
+    res.append(newLineSymbol)
+    for (line in picture.lines()) {
+        res.append(""#"")
+        res.append("" "")
+        res.append(line)
+        res.append("" "".repeat(pictureWidth - line.length + 1))
+        res.append(""#$newLineSymbol"")
+    }
+    res.append(""#"".repeat(pictureWidth + 4))
+    return res.toString()
+}
+
+fun applySquaredFilter(picture: String): String {
+    val tmp = applyBordersFilter(picture)
+    val res = StringBuilder()
+    for (line in tmp.lines()) {
+        res.append(line.repeat(2))
+        res.append(newLineSymbol)
+    }
+    for (line in tmp.lines()) {
+        if (line[1] == '#') continue
+        res.append(line.repeat(2))
+        res.append(newLineSymbol)
+    }
+    res.append(tmp.lines()[0].repeat(2))
+    return res.toString()
+}
+
+fun applyFilter(picture: String, filterName: String):String {
+    val pic = trimPicture(picture)
+    return when(filterName) {
+        ""borders"" -> applyBordersFilter(pic)
+        ""squared"" -> applySquaredFilter(pic)
+        else -> error(""aboba"")
+    }
+}
+
+fun chooseFilter(): String {
+    println(""Please choose the filter: 'borders' or 'squared'"")
+    var line = safeReadLine()
+    while (line != ""borders"" && line != ""squared"") {
+        println(""Please choose the filter: 'borders' or 'squared'"")
+        line = safeReadLine()
+    }
+    return line
+}
+
+fun choosePicture(): String {
+    while (true) {
+        println(""Please choose a picture. The possible options are: ${allPictures()}"")
+        val pic: String = readln()
+        val res = getPictureByName(pic)
+        
+    }
+}
+
+fun main() {
+    // Uncomment this code on the last step of the game
+
+    // photoshop()
+}
+"
+25855,AlmostDone,choosePictureFunction,"package jetbrains.kotlin.course.almost.done
+
+
+fun trimPicture(picture: String): String = picture.trimIndent()
+
+fun applyBordersFilter(picture: String): String {
+    val width = getPictureWidth(picture) + 4
+    val result = StringBuilder()
+
+    result.append(borderSymbol.toString().repeat(width))
+    result.append(newLineSymbol)
+    for (line in picture.lines()) {
+        val curWidth = line.length
+        result.append(borderSymbol)
+        result.append(separator)
+        result.append(line)
+        result.append(separator.toString().repeat(width - 3 - curWidth))
+        result.append(borderSymbol)
+        result.append(newLineSymbol)
+    }
+    result.append(borderSymbol.toString().repeat(width))
+    return result.toString()
+}
+
+fun applySquaredFilter(picture: String): String {
+    val borderedPicture = applyBordersFilter(picture)
+    val result = StringBuilder()
+    for (line in borderedPicture.lines()) {
+        result.append(line)
+        result.append(line)
+        result.append(newLineSymbol)
+    }
+    for (line in borderedPicture.lines().drop(1)) {
+        result.append(line)
+        result.append(line)
+        result.append(newLineSymbol)
+    }
+    return result.toString()
+}
+
+fun applyFilter(picture: String, filter: String): String {
+    val result = trimPicture(picture)
+    return when (filter) {
+        ""borders"" -> applyBordersFilter(result)
+        ""squared"" -> applySquaredFilter(result)
+        else -> error(""Unknown filter"")
+    }
+}
+
+fun safeReadLine(): String =  when (val input = readlnOrNull()) {
+    null -> error(""No input"")
+    else -> input
+}
+
+fun chooseFilter(): String {
+    var input: String
+    do {
+        println(""Please input 'borders' or 'squared'"")
+        input = safeReadLine()
+    } while (input != ""borders"" && input != ""squared"")
+    return input;
+}
+
+fun choosePicture(): String {
+    var input: String
+    do {
+        println(""Please choose a picture. The possible options are: ${allPictures()}"")
+        input = safeReadLine()
+    } while (getPictureByName(input) == null)
+    return input;
+}
+
+fun main() {
+    // Uncomment this code on the last step of the game
+
+    // photoshop()
+    println(applyFilter(simba, ""borders""))   // an example with the simba picture
+    println(applyFilter(monkey, ""borders""))  // an example with the monkey picture
+    println(applyFilter(android, ""borders"")) // an example with the android picture (this picture has different line lengths)
+}
+"
+14482,AlmostDone,NullSafetyPartTwo,"package jetbrains.kotlin.course.almost.done
+
+fun trimPicture(picture: String) = picture.trimIndent()
+
+fun applyBordersFilter(picture: String): String {
+    val pictureWidth = getPictureWidth(picture) + 4
+    val pictureLines = picture.lines()
+    val pictureWithBorders = StringBuilder()
+    pictureWithBorders.append(borderSymbol.toString().repeat(pictureWidth))
+    pictureWithBorders.append(newLineSymbol)
+    for (line in pictureLines) {
+        val lineWithBorders = StringBuilder()
+        lineWithBorders.append(borderSymbol)
+        lineWithBorders.append(separator)
+        lineWithBorders.append(line)
+        while (lineWithBorders.length <= pictureWidth - 2) {
+            lineWithBorders.append(separator)
+        }
+        lineWithBorders.append(borderSymbol)
+        lineWithBorders.append(newLineSymbol)
+        pictureWithBorders.append(lineWithBorders)
+    }
+    pictureWithBorders.append(borderSymbol.toString().repeat(pictureWidth))
+    return pictureWithBorders.toString()
+
+}
+
+
+fun applySquaredFilter(picture: String): String {
+    val pictureWithBorders = applyBordersFilter(picture)
+    val squaredPicture = StringBuilder()
+    val linesArr = pictureWithBorders.lines().toMutableList()
+    for (i in linesArr.indices) {
+        squaredPicture.append(linesArr[i].repeat(2))
+        squaredPicture.append(newLineSymbol)
+    }
+    for (i in linesArr.indices) {
+        if (i != 0) {
+            squaredPicture.append(linesArr[i].repeat(2))
+            squaredPicture.append(newLineSymbol)
+        }
+    }
+    return squaredPicture.toString()
+
+}
+
+fun safeReadLine(): String = readlnOrNull() ?: error(""Null input"")
+
+fun chooseFilter(): String {
+    println(""Please choose the filter: 'borders' or 'squared'."")
+    var input = safeReadLine()
+    while (input != ""borders"" && input != ""squared"") {
+        println(""Please input 'borders' or 'squared'"")
+        input = safeReadLine()
+    }
+    return input
+}
+
+fun applyFilter(picture: String, filterName: String): String {
+    return when (filterName) {
+        ""borders"" -> applyBordersFilter(picture)
+        ""squared"" -> applySquaredFilter(picture)
+        else -> error(""this filter doesn't exist"")
+    }
+}
+
+fun choosePicture(): String {
+    var picture: String
+    do {
+        println(""Please choose a picture. The possible options are: ${allPictures()}"")
+        picture = safeReadLine()
+
+    } while (picture !in allPictures())
+    return getPictureByName(picture)!!
+}
+
+fun getPicture(): String {
+    println(""Do you want to use a predefined picture or a custom one? Please input 'yes' for a predefined image or 'no' for a custom one"")
+    var answer = safeReadLine()
+    while (answer != ""no"" && answer != ""yes"") {
+        println(""Please input 'yes' or 'no'"")
+        answer = safeReadLine()
+    }
+    return when (answer) {
+        ""yes"" -> choosePicture()
+        ""no"" -> safeReadLine()
+        else -> {
+            ""x""
+        }
+    }
+}
+
+fun photoshop(): Unit {
+    var picture = getPicture()
+    val filter = chooseFilter()
+    println(""The old image:"")
+    println(picture)
+    picture = trimPicture(picture)
+    picture = applyFilter(picture, filter)
+    println(""The transformed picture:"")
+    println(picture)
+}
+
+fun main() {
+    // Uncomment this code on the last step of the game
+
+     photoshop()
+}
+"
+25995,AlmostDone,NullSafetyPartTwo,"package jetbrains.kotlin.course.almost.done
+
+
+fun trimPicture(picture: String): String = picture.trimIndent()
+
+fun applyBordersFilter(picture: String): String {
+    val width = getPictureWidth(picture) + 4
+    val result = StringBuilder()
+
+    result.append(borderSymbol.toString().repeat(width))
+    result.append(newLineSymbol)
+    for (line in picture.lines()) {
+        val curWidth = line.length
+        result.append(borderSymbol)
+        result.append(separator)
+        result.append(line)
+        result.append(separator.toString().repeat(width - 3 - curWidth))
+        result.append(borderSymbol)
+        result.append(newLineSymbol)
+    }
+    result.append(borderSymbol.toString().repeat(width))
+    return result.toString()
+}
+
+fun applySquaredFilter(picture: String): String {
+    val borderedPicture = applyBordersFilter(picture)
+    val result = StringBuilder()
+    for (line in borderedPicture.lines()) {
+        result.append(line)
+        result.append(line)
+        result.append(newLineSymbol)
+    }
+    for (line in borderedPicture.lines().drop(1)) {
+        result.append(line)
+        result.append(line)
+        result.append(newLineSymbol)
+    }
+    return result.toString()
+}
+
+fun applyFilter(picture: String, filter: String): String {
+    val result = trimPicture(picture)
+    return when (filter) {
+        ""borders"" -> applyBordersFilter(result)
+        ""squared"" -> applySquaredFilter(result)
+        else -> error(""Unknown filter"")
+    }
+}
+
+fun safeReadLine(): String =  when (val input = readlnOrNull()) {
+    null -> error(""No input"")
+    else -> input
+}
+
+fun chooseFilter(): String {
+    var input: String
+    do {
+        println(""Please input 'borders' or 'squared'"")
+        input = safeReadLine()
+    } while (input != ""borders"" && input != ""squared"")
+    return input;
+}
+
+fun choosePicture(): String {
+    var input: String
+    do {
+        println(""Please choose a picture. The possible options are: ${allPictures()}"")
+        input = safeReadLine()
+    } while (getPictureByName(input) == null)
+    return getPictureByName(input)!!
+}
+
+fun getPicture(): String {
+    println(""Do you want to use a predefined picture or a custom one? Please input 'yes' for a predefined image or 'no' for a custom one"")
+    do {
+        val input = safeReadLine()
+        when (input) {
+            ""yes"" -> return choosePicture()
+            ""no"" -> {
+                println(""Please input a custom picture"")
+            }
+        }
+    } while (true)
+}
+
+fun main() {
+    // Uncomment this code on the last step of the game
+
+    // photoshop()
+    println(applyFilter(simba, ""borders""))   // an example with the simba picture
+    println(applyFilter(monkey, ""borders""))  // an example with the monkey picture
+    println(applyFilter(android, ""borders"")) // an example with the android picture (this picture has different line lengths)
+}
+"
+39258,AlmostDone,NullSafetyPartTwo,"package jetbrains.kotlin.course.almost.done
+
+fun safeReadLine() =
+    readlnOrNull() ?: error(""meaningful error message"")
+
+fun trimPicture(picture: String) = picture.trimIndent()
+
+fun applyBordersFilter(picture: String): String {
+    val width = getPictureWidth(picture)
+    val borderedCenter = picture
+        .lines()
+        .joinToString(newLineSymbol) {
+            ""$borderSymbol$separator${it.padEnd(width, separator)}$separator$borderSymbol""
+        }
+    val yBorder = borderSymbol.toString().repeat(getPictureWidth(picture) + 4)
+    return ""$yBorder$newLineSymbol$borderedCenter$newLineSymbol$yBorder""
+}
+
+fun applySquaredFilter(picture: String) =
+    applyBordersFilter(picture)
+        .lines()
+        .dropLast(1)
+        .map { it.repeat(2) }
+        .let { it + it + it[0] }
+        .joinToString(newLineSymbol)
+
+fun applyFilter(picture: String, filter: String): String {
+    val trimmed = trimPicture(picture)
+    return when (filter) {
+        ""borders"" -> applyBordersFilter(picture)
+        ""squared"" -> applySquaredFilter(picture)
+        else -> error(""debug vivod"")
+    }
+}
+
+fun chooseFilter(): String {
+    println(""Please choose the filter: 'borders' or 'squared'."")
+    val filters = listOf(""borders"", ""squared"")
+    while (true) {
+        val input = safeReadLine()
+        if (filters.contains(input)) {
+            return input
+        } else {
+            println(""Please input 'borders' or 'squared'"")
+        }
+    }
+}
+
+fun choosePicture(): String {
+    while (true) {
+        println(""Please choose a picture. The possible options are: ${allPictures().joinToString()}"")
+        val input = safeReadLine()
+        val picture = getPictureByName(input)
+        if (picture != null) {
+            return picture
+        }
+    }
+}
+
+fun getPicture(): String {
+    println(""Do you want to use a predefined picture or a custom one? Please input 'yes' for a predefined image or 'no' for a custom one"")
+    while (true) {
+        val input = safeReadLine()
+        when (input) {
+            ""yes"" -> return choosePicture()
+            ""no"" -> {
+                println(""Please input a custom picture"")
+                return safeReadLine()
+            }
+        }
+    }
+}
+
+fun main() {
+    // Uncomment this code on the last step of the game
+
+    // photoshop()
+}
+"
+20460,LastPush,repeatHorizontallyFunction,"package jetbrains.kotlin.course.last.push
+
+fun repeatHorizontally(pattern: String, n: Int, patternWidth: Int) =
+    List(n) {pattern}.joinToString()
+
+fun fillPatternRow(patternRow: String, patternWidth: Int) =
+    if(patternWidth - patternRow.length >= 0) patternRow + ""$separator"".repeat(patternWidth - patternRow.length)
+    else {
+        IllegalStateException()
+        """"
+    }
+
+fun getPatternHeight(pattern: String) = pattern.lines().size
+
+// You will use this function later
+fun getPattern(): String {
+    println(
+        ""Do you want to use a pre-defined pattern or a custom one? "" +
+                ""Please input 'yes' for a pre-defined pattern or 'no' for a custom one""
+    )
+    do {
+        when (safeReadLine()) {
+            ""yes"" -> {
+                return choosePattern()
+            }
+            ""no"" -> {
+                println(""Please, input a custom picture"")
+                return safeReadLine()
+            }
+            else -> println(""Please input 'yes' or 'no'"")
+        }
+    } while (true)
+}
+
+// You will use this function later
+fun choosePattern(): String {
+    do {
+        println(""Please choose a pattern. The possible options: ${allPatterns().joinToString("", "")}"")
+        val name = safeReadLine()
+        val pattern = getPatternByName(name)
+        pattern?.let {
+            return@choosePattern pattern
+        }
+    } while (true)
+}
+
+// You will use this function later
+fun chooseGenerator(): String {
+    var toContinue = true
+    var generator = """"
+    println(""Please choose the generator: 'canvas' or 'canvasGaps'."")
+    do {
+        when (val input = safeReadLine()) {
+            ""canvas"", ""canvasGaps"" -> {
+                toContinue = false
+                generator = input
+            }
+            else -> println(""Please, input 'canvas' or 'canvasGaps'"")
+        }
+    } while (toContinue)
+    return generator
+}
+
+// You will use this function later
+fun safeReadLine(): String = readlnOrNull() ?: error(""Your input is incorrect, sorry"")
+
+fun main() {
+    // Uncomment this code on the last step of the game
+
+    // val pattern = getPattern()
+    // val generatorName = chooseGenerator()
+    // println(""Please input the width of the resulting picture:"")
+    // val width = safeReadLine().toInt()
+    // println(""Please input the height of the resulting picture:"")
+    // val height = safeReadLine().toInt()
+
+    // println(""The pattern:$newLineSymbol${pattern.trimIndent()}"")
+
+    // println(""The generated image:"")
+    // println(applyGenerator(pattern, generatorName, width, height))
+}
+"
+20453,LastPush,repeatHorizontallyFunction,"package jetbrains.kotlin.course.last.push
+
+fun repeatHorizontally(pattern: String, n: Int, patternWidth: Int) =
+    List(n) {pattern}
+
+fun fillPatternRow(patternRow: String, patternWidth: Int) =
+    if(patternWidth - patternRow.length >= 0) patternRow + ""$separator"".repeat(patternWidth - patternRow.length)
+    else {
+        IllegalStateException()
+        """"
+    }
+
+fun getPatternHeight(pattern: String) = pattern.lines().size
+
+// You will use this function later
+fun getPattern(): String {
+    println(
+        ""Do you want to use a pre-defined pattern or a custom one? "" +
+                ""Please input 'yes' for a pre-defined pattern or 'no' for a custom one""
+    )
+    do {
+        when (safeReadLine()) {
+            ""yes"" -> {
+                return choosePattern()
+            }
+            ""no"" -> {
+                println(""Please, input a custom picture"")
+                return safeReadLine()
+            }
+            else -> println(""Please input 'yes' or 'no'"")
+        }
+    } while (true)
+}
+
+// You will use this function later
+fun choosePattern(): String {
+    do {
+        println(""Please choose a pattern. The possible options: ${allPatterns().joinToString("", "")}"")
+        val name = safeReadLine()
+        val pattern = getPatternByName(name)
+        pattern?.let {
+            return@choosePattern pattern
+        }
+    } while (true)
+}
+
+// You will use this function later
+fun chooseGenerator(): String {
+    var toContinue = true
+    var generator = """"
+    println(""Please choose the generator: 'canvas' or 'canvasGaps'."")
+    do {
+        when (val input = safeReadLine()) {
+            ""canvas"", ""canvasGaps"" -> {
+                toContinue = false
+                generator = input
+            }
+            else -> println(""Please, input 'canvas' or 'canvasGaps'"")
+        }
+    } while (toContinue)
+    return generator
+}
+
+// You will use this function later
+fun safeReadLine(): String = readlnOrNull() ?: error(""Your input is incorrect, sorry"")
+
+fun main() {
+    // Uncomment this code on the last step of the game
+
+    // val pattern = getPattern()
+    // val generatorName = chooseGenerator()
+    // println(""Please input the width of the resulting picture:"")
+    // val width = safeReadLine().toInt()
+    // println(""Please input the height of the resulting picture:"")
+    // val height = safeReadLine().toInt()
+
+    // println(""The pattern:$newLineSymbol${pattern.trimIndent()}"")
+
+    // println(""The generated image:"")
+    // println(applyGenerator(pattern, generatorName, width, height))
+}
+"
+20738,LastPush,repeatHorizontallyFunction,"package jetbrains.kotlin.course.last.push
+
+fun repeatHorizontally(pattern: String, n: Int, patternWidth: Int) =
+    pattern.lines()
+        .map { fillPatternRow(it, patternWidth) }.joinToString(
+            newLineSymbol
+        ){ List(3) {it}.joinToString("""") }
+
+fun fillPatternRow(patternRow: String, patternWidth: Int) =
+    if(patternWidth - patternRow.length >= 0) patternRow + ""$separator"".repeat(patternWidth - patternRow.length)
+    else {
+        throw IllegalStateException()
+        """"
+    }
+
+fun getPatternHeight(pattern: String) = pattern.lines().size
+
+// You will use this function later
+fun getPattern(): String {
+    println(
+        ""Do you want to use a pre-defined pattern or a custom one? "" +
+                ""Please input 'yes' for a pre-defined pattern or 'no' for a custom one""
+    )
+    do {
+        when (safeReadLine()) {
+            ""yes"" -> {
+                return choosePattern()
+            }
+            ""no"" -> {
+                println(""Please, input a custom picture"")
+                return safeReadLine()
+            }
+            else -> println(""Please input 'yes' or 'no'"")
+        }
+    } while (true)
+}
+
+// You will use this function later
+fun choosePattern(): String {
+    do {
+        println(""Please choose a pattern. The possible options: ${allPatterns().joinToString("", "")}"")
+        val name = safeReadLine()
+        val pattern = getPatternByName(name)
+        pattern?.let {
+            return@choosePattern pattern
+        }
+    } while (true)
+}
+
+// You will use this function later
+fun chooseGenerator(): String {
+    var toContinue = true
+    var generator = """"
+    println(""Please choose the generator: 'canvas' or 'canvasGaps'."")
+    do {
+        when (val input = safeReadLine()) {
+            ""canvas"", ""canvasGaps"" -> {
+                toContinue = false
+                generator = input
+            }
+            else -> println(""Please, input 'canvas' or 'canvasGaps'"")
+        }
+    } while (toContinue)
+    return generator
+}
+
+// You will use this function later
+fun safeReadLine(): String = readlnOrNull() ?: error(""Your input is incorrect, sorry"")
+
+fun main() {
+    println(repeatHorizontally(""○"", 1, 1))
+
+    // Uncomment this code on the last step of the game
+
+    // val pattern = getPattern()
+    // val generatorName = chooseGenerator()
+    // println(""Please input the width of the resulting picture:"")
+    // val width = safeReadLine().toInt()
+    // println(""Please input the height of the resulting picture:"")
+    // val height = safeReadLine().toInt()
+
+    // println(""The pattern:$newLineSymbol${pattern.trimIndent()}"")
+
+    // println(""The generated image:"")
+    // println(applyGenerator(pattern, generatorName, width, height))
+}
+"
+20798,LastPush,repeatHorizontallyFunction,"package jetbrains.kotlin.course.last.push
+
+fun repeatHorizontally(pattern: String, n: Int, patternWidth: Int) =
+    pattern.lines()
+        .map{ listOf("""").joinToString("""") }
+
+fun fillPatternRow(patternRow: String, patternWidth: Int) =
+    if(patternWidth - patternRow.length >= 0) patternRow + ""$separator"".repeat(patternWidth - patternRow.length)
+    else {
+        throw IllegalStateException()
+    }
+
+fun getPatternHeight(pattern: String) = pattern.lines().size
+
+// You will use this function later
+fun getPattern(): String {
+    println(
+        ""Do you want to use a pre-defined pattern or a custom one? "" +
+                ""Please input 'yes' for a pre-defined pattern or 'no' for a custom one""
+    )
+    do {
+        when (safeReadLine()) {
+            ""yes"" -> {
+                return choosePattern()
+            }
+            ""no"" -> {
+                println(""Please, input a custom picture"")
+                return safeReadLine()
+            }
+            else -> println(""Please input 'yes' or 'no'"")
+        }
+    } while (true)
+}
+
+// You will use this function later
+fun choosePattern(): String {
+    do {
+        println(""Please choose a pattern. The possible options: ${allPatterns().joinToString("", "")}"")
+        val name = safeReadLine()
+        val pattern = getPatternByName(name)
+        pattern?.let {
+            return@choosePattern pattern
+        }
+    } while (true)
+}
+
+// You will use this function later
+fun chooseGenerator(): String {
+    var toContinue = true
+    var generator = """"
+    println(""Please choose the generator: 'canvas' or 'canvasGaps'."")
+    do {
+        when (val input = safeReadLine()) {
+            ""canvas"", ""canvasGaps"" -> {
+                toContinue = false
+                generator = input
+            }
+            else -> println(""Please, input 'canvas' or 'canvasGaps'"")
+        }
+    } while (toContinue)
+    return generator
+}
+
+// You will use this function later
+fun safeReadLine(): String = readlnOrNull() ?: error(""Your input is incorrect, sorry"")
+
+fun main() {
+    println(repeatHorizontally(""○"", 1, 1))
+
+    // Uncomment this code on the last step of the game
+
+    // val pattern = getPattern()
+    // val generatorName = chooseGenerator()
+    // println(""Please input the width of the resulting picture:"")
+    // val width = safeReadLine().toInt()
+    // println(""Please input the height of the resulting picture:"")
+    // val height = safeReadLine().toInt()
+
+    // println(""The pattern:$newLineSymbol${pattern.trimIndent()}"")
+
+    // println(""The generated image:"")
+    // println(applyGenerator(pattern, generatorName, width, height))
+}
+"
+20524,LastPush,repeatHorizontallyFunction,"package jetbrains.kotlin.course.last.push
+
+fun repeatHorizontally(pattern: String, n: Int, patternWidth: Int) =
+    pattern.lines().map { fillPatternRow(it, patternWidth) }
+
+fun fillPatternRow(patternRow: String, patternWidth: Int) =
+    if(patternWidth - patternRow.length >= 0) patternRow + ""$separator"".repeat(patternWidth - patternRow.length)
+    else {
+        IllegalStateException()
+        """"
+    }
+
+fun getPatternHeight(pattern: String) = pattern.lines().size
+
+// You will use this function later
+fun getPattern(): String {
+    println(
+        ""Do you want to use a pre-defined pattern or a custom one? "" +
+                ""Please input 'yes' for a pre-defined pattern or 'no' for a custom one""
+    )
+    do {
+        when (safeReadLine()) {
+            ""yes"" -> {
+                return choosePattern()
+            }
+            ""no"" -> {
+                println(""Please, input a custom picture"")
+                return safeReadLine()
+            }
+            else -> println(""Please input 'yes' or 'no'"")
+        }
+    } while (true)
+}
+
+// You will use this function later
+fun choosePattern(): String {
+    do {
+        println(""Please choose a pattern. The possible options: ${allPatterns().joinToString("", "")}"")
+        val name = safeReadLine()
+        val pattern = getPatternByName(name)
+        pattern?.let {
+            return@choosePattern pattern
+        }
+    } while (true)
+}
+
+// You will use this function later
+fun chooseGenerator(): String {
+    var toContinue = true
+    var generator = """"
+    println(""Please choose the generator: 'canvas' or 'canvasGaps'."")
+    do {
+        when (val input = safeReadLine()) {
+            ""canvas"", ""canvasGaps"" -> {
+                toContinue = false
+                generator = input
+            }
+            else -> println(""Please, input 'canvas' or 'canvasGaps'"")
+        }
+    } while (toContinue)
+    return generator
+}
+
+// You will use this function later
+fun safeReadLine(): String = readlnOrNull() ?: error(""Your input is incorrect, sorry"")
+
+fun main() {
+    // Uncomment this code on the last step of the game
+
+    // val pattern = getPattern()
+    // val generatorName = chooseGenerator()
+    // println(""Please input the width of the resulting picture:"")
+    // val width = safeReadLine().toInt()
+    // println(""Please input the height of the resulting picture:"")
+    // val height = safeReadLine().toInt()
+
+    // println(""The pattern:$newLineSymbol${pattern.trimIndent()}"")
+
+    // println(""The generated image:"")
+    // println(applyGenerator(pattern, generatorName, width, height))
+}
+"
+20785,LastPush,repeatHorizontallyFunction,"package jetbrains.kotlin.course.last.push
+
+fun repeatHorizontally(pattern: String, n: Int, patternWidth: Int) =
+    pattern.lines()
+        .map { fillPatternRow(it, patternWidth) }.map{ List(n) {it}.joinToString("""") }
+
+fun fillPatternRow(patternRow: String, patternWidth: Int) =
+    if(patternWidth - patternRow.length >= 0) patternRow + ""$separator"".repeat(patternWidth - patternRow.length)
+    else {
+        throw IllegalStateException()
+    }
+
+fun getPatternHeight(pattern: String) = pattern.lines().size
+
+// You will use this function later
+fun getPattern(): String {
+    println(
+        ""Do you want to use a pre-defined pattern or a custom one? "" +
+                ""Please input 'yes' for a pre-defined pattern or 'no' for a custom one""
+    )
+    do {
+        when (safeReadLine()) {
+            ""yes"" -> {
+                return choosePattern()
+            }
+            ""no"" -> {
+                println(""Please, input a custom picture"")
+                return safeReadLine()
+            }
+            else -> println(""Please input 'yes' or 'no'"")
+        }
+    } while (true)
+}
+
+// You will use this function later
+fun choosePattern(): String {
+    do {
+        println(""Please choose a pattern. The possible options: ${allPatterns().joinToString("", "")}"")
+        val name = safeReadLine()
+        val pattern = getPatternByName(name)
+        pattern?.let {
+            return@choosePattern pattern
+        }
+    } while (true)
+}
+
+// You will use this function later
+fun chooseGenerator(): String {
+    var toContinue = true
+    var generator = """"
+    println(""Please choose the generator: 'canvas' or 'canvasGaps'."")
+    do {
+        when (val input = safeReadLine()) {
+            ""canvas"", ""canvasGaps"" -> {
+                toContinue = false
+                generator = input
+            }
+            else -> println(""Please, input 'canvas' or 'canvasGaps'"")
+        }
+    } while (toContinue)
+    return generator
+}
+
+// You will use this function later
+fun safeReadLine(): String = readlnOrNull() ?: error(""Your input is incorrect, sorry"")
+
+fun main() {
+    println(repeatHorizontally(""○"", 1, 1))
+
+    // Uncomment this code on the last step of the game
+
+    // val pattern = getPattern()
+    // val generatorName = chooseGenerator()
+    // println(""Please input the width of the resulting picture:"")
+    // val width = safeReadLine().toInt()
+    // println(""Please input the height of the resulting picture:"")
+    // val height = safeReadLine().toInt()
+
+    // println(""The pattern:$newLineSymbol${pattern.trimIndent()}"")
+
+    // println(""The generated image:"")
+    // println(applyGenerator(pattern, generatorName, width, height))
+}
+"
+20990,LastPush,dropTopFromLineFunction,"package jetbrains.kotlin.course.last.push
+
+fun dropTopFromLine(line: String, width: Int, patternHeight: Int, patternWidth: Int) {
+    
+}
+
+fun repeatHorizontally(pattern: String, n: Int, patternWidth: Int) =
+    pattern.lines()
+        .map { fillPatternRow(it, patternWidth) }.joinToString(
+            newLineSymbol
+        ){ elem -> List(n) {elem}.joinToString("""") }
+
+
+fun fillPatternRow(patternRow: String, patternWidth: Int) =
+    if(patternWidth - patternRow.length >= 0) patternRow + ""$separator"".repeat(patternWidth - patternRow.length)
+    else {
+        throw IllegalStateException()
+    }
+
+fun getPatternHeight(pattern: String) = pattern.lines().size
+
+// You will use this function later
+fun getPattern(): String {
+    println(
+        ""Do you want to use a pre-defined pattern or a custom one? "" +
+                ""Please input 'yes' for a pre-defined pattern or 'no' for a custom one""
+    )
+    do {
+        when (safeReadLine()) {
+            ""yes"" -> {
+                return choosePattern()
+            }
+            ""no"" -> {
+                println(""Please, input a custom picture"")
+                return safeReadLine()
+            }
+            else -> println(""Please input 'yes' or 'no'"")
+        }
+    } while (true)
+}
+
+// You will use this function later
+fun choosePattern(): String {
+    do {
+        println(""Please choose a pattern. The possible options: ${allPatterns().joinToString("", "")}"")
+        val name = safeReadLine()
+        val pattern = getPatternByName(name)
+        pattern?.let {
+            return@choosePattern pattern
+        }
+    } while (true)
+}
+
+// You will use this function later
+fun chooseGenerator(): String {
+    var toContinue = true
+    var generator = """"
+    println(""Please choose the generator: 'canvas' or 'canvasGaps'."")
+    do {
+        when (val input = safeReadLine()) {
+            ""canvas"", ""canvasGaps"" -> {
+                toContinue = false
+                generator = input
+            }
+            else -> println(""Please, input 'canvas' or 'canvasGaps'"")
+        }
+    } while (toContinue)
+    return generator
+}
+
+// You will use this function later
+fun safeReadLine(): String = readlnOrNull() ?: error(""Your input is incorrect, sorry"")
+
+fun main() {
+
+    // Uncomment this code on the last step of the game
+
+    // val pattern = getPattern()
+    // val generatorName = chooseGenerator()
+    // println(""Please input the width of the resulting picture:"")
+    // val width = safeReadLine().toInt()
+    // println(""Please input the height of the resulting picture:"")
+    // val height = safeReadLine().toInt()
+
+    // println(""The pattern:$newLineSymbol${pattern.trimIndent()}"")
+
+    // println(""The generated image:"")
+    // println(applyGenerator(pattern, generatorName, width, height))
+}
+"
+21028,LastPush,dropTopFromLineFunction,"package jetbrains.kotlin.course.last.push
+
+fun dropTopFromLine(line: String, width: Int, patternHeight: Int, patternWidth: Int) {
+    if(patternHeight <= 1) return 
+}
+
+fun repeatHorizontally(pattern: String, n: Int, patternWidth: Int) =
+    pattern.lines()
+        .map { fillPatternRow(it, patternWidth) }.joinToString(
+            newLineSymbol
+        ){ elem -> List(n) {elem}.joinToString("""") }
+
+
+fun fillPatternRow(patternRow: String, patternWidth: Int) =
+    if(patternWidth - patternRow.length >= 0) patternRow + ""$separator"".repeat(patternWidth - patternRow.length)
+    else {
+        throw IllegalStateException()
+    }
+
+fun getPatternHeight(pattern: String) = pattern.lines().size
+
+// You will use this function later
+fun getPattern(): String {
+    println(
+        ""Do you want to use a pre-defined pattern or a custom one? "" +
+                ""Please input 'yes' for a pre-defined pattern or 'no' for a custom one""
+    )
+    do {
+        when (safeReadLine()) {
+            ""yes"" -> {
+                return choosePattern()
+            }
+            ""no"" -> {
+                println(""Please, input a custom picture"")
+                return safeReadLine()
+            }
+            else -> println(""Please input 'yes' or 'no'"")
+        }
+    } while (true)
+}
+
+// You will use this function later
+fun choosePattern(): String {
+    do {
+        println(""Please choose a pattern. The possible options: ${allPatterns().joinToString("", "")}"")
+        val name = safeReadLine()
+        val pattern = getPatternByName(name)
+        pattern?.let {
+            return@choosePattern pattern
+        }
+    } while (true)
+}
+
+// You will use this function later
+fun chooseGenerator(): String {
+    var toContinue = true
+    var generator = """"
+    println(""Please choose the generator: 'canvas' or 'canvasGaps'."")
+    do {
+        when (val input = safeReadLine()) {
+            ""canvas"", ""canvasGaps"" -> {
+                toContinue = false
+                generator = input
+            }
+            else -> println(""Please, input 'canvas' or 'canvasGaps'"")
+        }
+    } while (toContinue)
+    return generator
+}
+
+// You will use this function later
+fun safeReadLine(): String = readlnOrNull() ?: error(""Your input is incorrect, sorry"")
+
+fun main() {
+
+    // Uncomment this code on the last step of the game
+
+    // val pattern = getPattern()
+    // val generatorName = chooseGenerator()
+    // println(""Please input the width of the resulting picture:"")
+    // val width = safeReadLine().toInt()
+    // println(""Please input the height of the resulting picture:"")
+    // val height = safeReadLine().toInt()
+
+    // println(""The pattern:$newLineSymbol${pattern.trimIndent()}"")
+
+    // println(""The generated image:"")
+    // println(applyGenerator(pattern, generatorName, width, height))
+}
+"
+40985,LastPush,dropTopFromLineFunction,"package jetbrains.kotlin.course.last.push
+
+import java.lang.IllegalStateException
+
+// You will use this function later
+fun getPattern(): String {
+    println(
+        ""Do you want to use a pre-defined pattern or a custom one? "" +
+                ""Please input 'yes' for a pre-defined pattern or 'no' for a custom one""
+    )
+    do {
+        when (safeReadLine()) {
+            ""yes"" -> {
+                return choosePattern()
+            }
+            ""no"" -> {
+                println(""Please, input a custom picture"")
+                return safeReadLine()
+            }
+            else -> println(""Please input 'yes' or 'no'"")
+        }
+    } while (true)
+}
+
+// You will use this function later
+fun choosePattern(): String {
+    do {
+        println(""Please choose a pattern. The possible options: ${allPatterns().joinToString("", "")}"")
+        val name = safeReadLine()
+        val pattern = getPatternByName(name)
+        pattern?.let {
+            return@choosePattern pattern
+        }
+    } while (true)
+}
+
+// You will use this function later
+fun chooseGenerator(): String {
+    var toContinue = true
+    var generator = """"
+    println(""Please choose the generator: 'canvas' or 'canvasGaps'."")
+    do {
+        when (val input = safeReadLine()) {
+            ""canvas"", ""canvasGaps"" -> {
+                toContinue = false
+                generator = input
+            }
+            else -> println(""Please, input 'canvas' or 'canvasGaps'"")
+        }
+    } while (toContinue)
+    return generator
+}
+
+// You will use this function later
+fun safeReadLine(): String = readlnOrNull() ?: error(""Your input is incorrect, sorry"")
+
+fun getPatternHeight(pattern: String): Int {
+    return pattern.lines().size
+}
+
+fun fillPatternRow(patternRow: String, patternWidth: Int): String {
+    if (patternRow.length > patternWidth) throw IllegalStateException()
+    return patternRow + "" "".repeat(patternWidth - patternRow.length)
+}
+
+fun repeatHorizontally(pattern: String, n: Int, patternWidth: Int): String {
+    val res = StringBuilder()
+    for (i in 0 until pattern.lines().size) {
+        res.append(fillPatternRow(pattern.lines()[i], patternWidth).repeat(n))
+        if (i != pattern.lines().size - 1) res.append(""\n"")
+    }
+    return res.toString()
+}
+
+fun dropTopFromLine(line: String, width: Int, patternHeight: Int, patternWidth: Int): String {
+    if (patternHeight == 1) return line
+    return line
+}
+
+fun main() {
+    // Uncomment this code on the last step of the game
+
+    // val pattern = getPattern()
+    // val generatorName = chooseGenerator()
+    // println(""Please input the width of the resulting picture:"")
+    // val width = safeReadLine().toInt()
+    // println(""Please input the height of the resulting picture:"")
+    // val height = safeReadLine().toInt()
+
+    // println(""The pattern:$newLineSymbol${pattern.trimIndent()}"")
+
+    // println(""The generated image:"")
+    // println(applyGenerator(pattern, generatorName, width, height))
+}
+"
+14476,LastPush,dropTopFromLineFunction,"package jetbrains.kotlin.course.last.push
+
+import kotlin.math.max
+
+// You will use this function later
+fun getPattern(): String {
+    println(
+        ""Do you want to use a pre-defined pattern or a custom one? "" +
+                ""Please input 'yes' for a pre-defined pattern or 'no' for a custom one""
+    )
+    do {
+        when (safeReadLine()) {
+            ""yes"" -> {
+                return choosePattern()
+            }
+
+            ""no"" -> {
+                println(""Please, input a custom picture"")
+                return safeReadLine()
+            }
+
+            else -> println(""Please input 'yes' or 'no'"")
+        }
+    } while (true)
+}
+
+// You will use this function later
+fun choosePattern(): String {
+    do {
+        println(""Please choose a pattern. The possible options: ${allPatterns().joinToString("", "")}"")
+        val name = safeReadLine()
+        val pattern = getPatternByName(name)
+        pattern?.let {
+            return@choosePattern pattern
+        }
+    } while (true)
+}
+
+// You will use this function later
+fun chooseGenerator(): String {
+    var toContinue = true
+    var generator = """"
+    println(""Please choose the generator: 'canvas' or 'canvasGaps'."")
+    do {
+        when (val input = safeReadLine()) {
+            ""canvas"", ""canvasGaps"" -> {
+                toContinue = false
+                generator = input
+            }
+
+            else -> println(""Please, input 'canvas' or 'canvasGaps'"")
+        }
+    } while (toContinue)
+    return generator
+}
+
+fun getPatternHeight(pattern: String): Int = pattern.lines().size
+fun fillPatternRow(patternRow: String, patternWidth: Int): String {
+    val diff = patternWidth - patternRow.length
+    when {
+        diff >= 0 -> return patternRow + separator.toString().repeat(diff)
+        else -> throw IllegalStateException()
+    }
+}
+
+fun repeatHorizontally(pattern: String, n: Int, patternWidth: Int): String {
+    val finalPattern = StringBuilder()
+    for (line in pattern.lines()) {
+        val patternLine = fillPatternRow(line, patternWidth).repeat(n)
+        finalPattern.append(patternLine)
+        finalPattern.append(newLineSymbol)
+    }
+    return finalPattern.toString()
+}
+
+fun dropTopFromLine(line: String, width: Int, patternHeight: Int, patternWidth: Int): String {
+    val rowLength = width + 1
+    return if (patternHeight > 1) {
+        line.drop(rowLength)
+    } else {
+        line
+    }
+}
+
+fun canvasGenerator(pattern: String, width: Int, height: Int): String {
+    val pattern1 = pattern.trimIndent()
+    val patternWidth = getPatternWidth(pattern1)
+    val patternHeight = getPatternHeight(pattern1)
+    val horizontalPattern = repeatHorizontally(pattern1, width, patternWidth).trimIndent()
+    val canvas = StringBuilder(horizontalPattern)
+    repeat(height - 1) {
+        val currentPattern = dropTopFromLine(horizontalPattern, width, patternHeight, patternWidth).trimIndent()
+        canvas.append(newLineSymbol)
+        canvas.append(currentPattern)
+
+
+    }
+    return canvas.toString()
+
+
+}
+
+// You will use this function later
+fun safeReadLine(): String = readlnOrNull() ?: error(""Your input is incorrect, sorry"")
+
+fun main() {
+    // Uncomment this code on the last step of the game
+
+    // val pattern = getPattern()
+    // val generatorName = chooseGenerator()
+    // println(""Please input the width of the resulting picture:"")
+    // val width = safeReadLine().toInt()
+    // println(""Please input the height of the resulting picture:"")
+    // val height = safeReadLine().toInt()
+
+    // println(""The pattern:$newLineSymbol${pattern.trimIndent()}"")
+
+    // println(""The generated image:"")
+    // println(applyGenerator(pattern, generatorName, width, height))
+}
+"
+40999,LastPush,dropTopFromLineFunction,"package jetbrains.kotlin.course.last.push
+
+import java.lang.IllegalStateException
+
+// You will use this function later
+fun getPattern(): String {
+    println(
+        ""Do you want to use a pre-defined pattern or a custom one? "" +
+                ""Please input 'yes' for a pre-defined pattern or 'no' for a custom one""
+    )
+    do {
+        when (safeReadLine()) {
+            ""yes"" -> {
+                return choosePattern()
+            }
+            ""no"" -> {
+                println(""Please, input a custom picture"")
+                return safeReadLine()
+            }
+            else -> println(""Please input 'yes' or 'no'"")
+        }
+    } while (true)
+}
+
+// You will use this function later
+fun choosePattern(): String {
+    do {
+        println(""Please choose a pattern. The possible options: ${allPatterns().joinToString("", "")}"")
+        val name = safeReadLine()
+        val pattern = getPatternByName(name)
+        pattern?.let {
+            return@choosePattern pattern
+        }
+    } while (true)
+}
+
+// You will use this function later
+fun chooseGenerator(): String {
+    var toContinue = true
+    var generator = """"
+    println(""Please choose the generator: 'canvas' or 'canvasGaps'."")
+    do {
+        when (val input = safeReadLine()) {
+            ""canvas"", ""canvasGaps"" -> {
+                toContinue = false
+                generator = input
+            }
+            else -> println(""Please, input 'canvas' or 'canvasGaps'"")
+        }
+    } while (toContinue)
+    return generator
+}
+
+// You will use this function later
+fun safeReadLine(): String = readlnOrNull() ?: error(""Your input is incorrect, sorry"")
+
+fun getPatternHeight(pattern: String): Int {
+    return pattern.lines().size
+}
+
+fun fillPatternRow(patternRow: String, patternWidth: Int): String {
+    if (patternRow.length > patternWidth) throw IllegalStateException()
+    return patternRow + "" "".repeat(patternWidth - patternRow.length)
+}
+
+fun repeatHorizontally(pattern: String, n: Int, patternWidth: Int): String {
+    val res = StringBuilder()
+    for (i in 0 until pattern.lines().size) {
+        res.append(fillPatternRow(pattern.lines()[i], patternWidth).repeat(n))
+        if (i != pattern.lines().size - 1) res.append(""\n"")
+    }
+    return res.toString()
+}
+
+fun dropTopFromLine(line: String, width: Int, patternHeight: Int, patternWidth: Int): String {
+    if (patternHeight == 1) return line
+    return line.drop(width)
+}
+
+fun main() {
+    // Uncomment this code on the last step of the game
+
+    // val pattern = getPattern()
+    // val generatorName = chooseGenerator()
+    // println(""Please input the width of the resulting picture:"")
+    // val width = safeReadLine().toInt()
+    // println(""Please input the height of the resulting picture:"")
+    // val height = safeReadLine().toInt()
+
+    // println(""The pattern:$newLineSymbol${pattern.trimIndent()}"")
+
+    // println(""The generated image:"")
+    // println(applyGenerator(pattern, generatorName, width, height))
+}
+"
