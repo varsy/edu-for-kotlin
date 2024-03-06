@@ -13,6 +13,9 @@ inspections:
       # Also, IDE integration doesn't know well about the new layout of localized resources yet.
       # So, let's not check them by Qodana for now
       - "intellij-plugin/localization/resources/localization/**"
+      # The data in the following modules will not pass Qodana inspection tests.
+      # These modules were intentionally created with inspection issues to test the code that should fix them.
+      - "intellij-plugin/Edu-Kotlin/testSrc/com/jetbrains/edu/kotlin/eduAssistant/courses/**"
   - group: "category:Proofreading"
     enabled: false
     # The inspection produces too many false positives, so let's disable it for now

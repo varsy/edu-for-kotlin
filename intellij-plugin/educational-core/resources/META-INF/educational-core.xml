@@ -33,6 +33,36 @@
   </projectListeners>
 
   <extensionPoints>
+    <extensionPoint qualifiedName="Educational.functionSignaturesProvider"
+                    beanClass="com.intellij.lang.LanguageExtensionPoint"
+                    dynamic="true">
+      <with attribute="implementationClass" implements="com.jetbrains.edu.learning.eduAssistant.context.function.signatures.FunctionSignaturesProvider"/>
+    </extensionPoint>
+    <extensionPoint qualifiedName="Educational.functionSignatureResolver"
+                    beanClass="com.intellij.lang.LanguageExtensionPoint"
+                    dynamic="true">
+      <with attribute="implementationClass" implements="com.jetbrains.edu.learning.eduAssistant.context.function.signatures.FunctionSignatureResolver"/>
+    </extensionPoint>
+    <extensionPoint qualifiedName="Educational.filesDiffer"
+                    beanClass="com.intellij.lang.LanguageExtensionPoint"
+                    dynamic="true">
+      <with attribute="implementationClass" implements="com.jetbrains.edu.learning.eduAssistant.context.differ.FilesDiffer"/>
+    </extensionPoint>
+    <extensionPoint qualifiedName="Educational.functionDiffReducer"
+                    beanClass="com.intellij.lang.LanguageExtensionPoint"
+                    dynamic="true">
+      <with attribute="implementationClass" implements="com.jetbrains.edu.learning.eduAssistant.context.differ.FunctionDiffReducer"/>
+    </extensionPoint>
+    <extensionPoint qualifiedName="Educational.stringExtractor"
+                    beanClass="com.intellij.lang.LanguageExtensionPoint"
+                    dynamic="true">
+      <with attribute="implementationClass" implements="com.jetbrains.edu.learning.eduAssistant.context.StringExtractor"/>
+    </extensionPoint>
+    <extensionPoint qualifiedName="Educational.inspectionProvider"
+                    beanClass="com.intellij.lang.LanguageExtensionPoint"
+                    dynamic="true">
+      <with attribute="implementationClass" implements="com.jetbrains.edu.learning.eduAssistant.inspection.InspectionProvider"/>
+    </extensionPoint>
     <extensionPoint qualifiedName="Educational.configurator"
                     beanClass="com.jetbrains.edu.learning.configuration.EducationalExtensionPoint"
                     dynamic="true">
@@ -104,6 +134,7 @@
   <actions>
     <action id="Educational.ImportLocalCourse" class="com.jetbrains.edu.learning.actions.ImportLocalCourseAction"/>
     <action id="Educational.Check" class="com.jetbrains.edu.learning.actions.CheckAction"/>
+    <action id="Educational.NextStepHint" class="com.jetbrains.edu.learning.actions.NextStepHintAction"/>
     <action id="Educational.Retry" class="com.jetbrains.edu.learning.actions.RetryAction"/>
     <action id="Educational.PrevPlaceholder"
             class="com.jetbrains.edu.learning.actions.PrevPlaceholderAction"
@@ -259,6 +290,14 @@
         keymap="$default"
         first-keystroke="control alt shift A"
       />
+    </action>
+    <action id="Educational.Assistant.AcceptHint"
+            class="com.jetbrains.edu.learning.actions.AcceptHintAction">
+      <add-to-group group-id="Diff.ViewerToolbar" anchor="before" relative-to-action="Educational.Assistant.CancelHint"/>
+    </action>
+    <action id="Educational.Assistant.CancelHint"
+            class="com.jetbrains.edu.learning.actions.CancelHintAction">
+      <add-to-group group-id="Diff.ViewerToolbar" anchor="last"/>
     </action>
 
     <group id="Educational.CourseView.SecondaryActions">
