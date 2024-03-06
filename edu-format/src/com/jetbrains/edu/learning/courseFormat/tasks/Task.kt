@@ -1,6 +1,7 @@
 package com.jetbrains.edu.learning.courseFormat.tasks
 
 import com.jetbrains.edu.learning.courseFormat.*
+import com.jetbrains.edu.learning.courseFormat.eduAssistant.AuthorSolutionContext
 import java.util.*
 
 /**
@@ -24,6 +25,17 @@ abstract class Task : StudyItem {
       require(value is LinkedHashMap<String, TaskFile>) // taskFiles is supposed to be ordered
       _taskFiles = value
     }
+
+  /**
+   * Stores a context created by the author's solution, if any
+   */
+  var authorSolutionContext: AuthorSolutionContext? = null
+
+  /**
+   * Stores a map of task file full names (including path) to functions that can be changed.
+   * This map stores only task files in which changes have been made in the author's solution.
+   */
+  var taskFilesWithChangedFunctions: Map<String, List<String>>? = null
 
   var feedback: CheckFeedback? = null
   var descriptionText: String = ""

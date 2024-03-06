@@ -18,6 +18,7 @@ import com.jetbrains.edu.learning.EduUtilsKt.isStudentProject
 import com.jetbrains.edu.learning.actions.EduActionUtils.getCurrentTask
 import com.jetbrains.edu.learning.courseFormat.TaskFile
 import com.jetbrains.edu.learning.courseFormat.ext.canShowSolution
+import com.jetbrains.edu.learning.courseFormat.ext.getSolution
 import com.jetbrains.edu.learning.courseFormat.ext.getVirtualFile
 import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
@@ -51,7 +52,7 @@ open class CompareWithAnswerAction : DumbAwareAction() {
     val requests = taskFiles.map {
       val virtualFile = it.getVirtualFile(state.project) ?: error("VirtualFile for ${it.name} not found")
       val studentFileContent = DiffContentFactory.getInstance().create(VfsUtil.loadText(virtualFile), virtualFile.fileType)
-      val solution = getSolution(it)
+      val solution = it.getSolution()
       val solutionFileContent = DiffContentFactory.getInstance().create(solution, virtualFile.fileType)
       solutionFilePaths.add(virtualFile.path)
       SimpleDiffRequest(EduCoreBundle.message("action.Educational.CompareWithAnswer.description"), studentFileContent, solutionFileContent,
@@ -76,18 +77,6 @@ open class CompareWithAnswerAction : DumbAwareAction() {
 
   private fun getTaskFiles(task: Task) =
     task.taskFiles.values.filter { it.answerPlaceholders.isNotEmpty() }.toMutableList()
-
-  private fun getSolution(taskFile: TaskFile): String {
-    val fullAnswer = StringBuilder(taskFile.text)
-
-    taskFile.answerPlaceholders.sortedBy { it.offset }.reversed().forEach { placeholder ->
-      placeholder.possibleAnswer.let { answer ->
-        fullAnswer.replace(placeholder.initialState.offset,
-                           placeholder.initialState.offset + placeholder.initialState.length, answer)
-      }
-    }
-    return fullAnswer.toString()
-  }
 
   private fun putSelectedTaskFileFirst(taskFiles: List<TaskFile>, selectedTaskFile: TaskFile) {
     val selectedTaskFileIndex = taskFiles.indexOf(selectedTaskFile)

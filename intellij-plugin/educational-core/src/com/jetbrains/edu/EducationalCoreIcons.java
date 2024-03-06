@@ -50,6 +50,7 @@ public final class EducationalCoreIcons {
    * <p>All icons are 16x16</p>
    */
   public static final class Actions {
+    public static final Icon AiAssistant = load("/icons/com/jetbrains/edu/learning/aiAssistant.svg");
     public static final Icon ApplyCode = load("/icons/com/jetbrains/edu/learning/applyCode.svg");
     public static final Icon CommentTask = load("/icons/com/jetbrains/edu/learning/commentTask.svg");
     public static final Icon EduCourse = load("/icons/com/jetbrains/edu/eduCourseAction.svg");

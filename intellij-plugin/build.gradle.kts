@@ -200,6 +200,8 @@ allprojects {
     implementationWithoutKotlin(rootProject.libs.retrofit)
     implementationWithoutKotlin(rootProject.libs.converter.jackson)
     implementationWithoutKotlin(rootProject.libs.kotlin.css.jvm)
+    implementationWithoutKotlin(rootProject.libs.educational.ml.library.core)
+    implementationWithoutKotlin(rootProject.libs.educational.ml.library.hints)
 
     testImplementation(rootProject.libs.junit)
     testImplementation(rootProject.libs.openTest4J)
@@ -1021,6 +1023,9 @@ fun <T : ModuleDependency> T.excludeKotlinDeps() {
   exclude(module = "kotlin-stdlib")
   exclude(module = "kotlin-stdlib-common")
   exclude(module = "kotlin-stdlib-jdk8")
+  exclude(module = "kotlin-stdlib-jdk7")
+  exclude(module = "kotlinx-coroutines-core")
+  exclude(module = "kotlinx-coroutines-core-jvm")
 }
 
 fun parseManifest(file: File): Node {

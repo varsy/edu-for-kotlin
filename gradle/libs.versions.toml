@@ -3,6 +3,7 @@ jackson = "2.17.2"
 kotlin = "2.0.0"
 okhttp = "4.12.0"
 retrofit = "2.9.0"
+educational-ml-library = "1.0.13"
 
 [libraries]
 annotations = { group = "org.jetbrains", name = "annotations", version = "23.0.0" }
@@ -28,6 +29,8 @@ kotlin-test-junit = { group = "org.jetbrains.kotlin", name = "kotlin-test-junit"
 mockk = { group = "io.mockk", name = "mockk", version = "1.12.0" }
 mockwebserver = { group = "com.squareup.okhttp3", name = "mockwebserver", version.ref = "okhttp" }
 openTest4J = { group = "org.opentest4j", name = "opentest4j", version = "1.3.0" }
+educational-ml-library-core = { group = "com.jetbrains.educational.ml", name = "educational-ml-library-core", version.ref = "educational-ml-library" }
+educational-ml-library-hints = { group = "com.jetbrains.educational.ml", name = "educational-ml-library-hints", version.ref = "educational-ml-library" }
 
 [plugins]
 downloadPlugin = { id = "de.undercouch.download", version = "5.3.0" }
