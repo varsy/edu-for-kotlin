@@ -5,9 +5,10 @@ import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.vfs.VirtualFile
 import com.jetbrains.edu.learning.courseFormat.Lesson
 import com.jetbrains.edu.learning.courseFormat.Section
-import com.jetbrains.edu.learning.courseFormat.ext.configurator
 import com.jetbrains.edu.learning.courseFormat.ext.shouldBeEmpty
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
+import com.jetbrains.edu.learning.yaml.YamlConfigSettings.REMOTE_TASK_CONFIG
+import com.jetbrains.edu.learning.yaml.YamlConfigSettings.TASK_CONFIG
 
 fun VirtualFile.fileInfo(project: Project): FileInfo? {
   if (project.isDisposed) return null
@@ -29,9 +30,16 @@ fun VirtualFile.fileInfo(project: Project): FileInfo? {
 private fun shouldIgnore(file: VirtualFile, project: Project, task: Task): Boolean {
   val courseDir = project.courseDir
   if (!FileUtil.isAncestor(courseDir.path, file.path, true)) return true
-  val course = StudyTaskManager.getInstance(project).course ?: return true
-  if (course.configurator?.excludeFromArchive(project, course, file) == true) return true
+  if (file.isTaskSpecialFile()) return true
   return task.shouldBeEmpty(file.path)
+}
+
+/**
+ * Must be called for files inside a task directory.
+ * Returns, whether this is a `task-info.yaml`, `task-remote-info.yaml` or a task description file.
+ */
+fun VirtualFile.isTaskSpecialFile(): Boolean {
+  return EduUtilsKt.isTaskDescriptionFile(name) || name == TASK_CONFIG || name == REMOTE_TASK_CONFIG
 }
 
 sealed class FileInfo {

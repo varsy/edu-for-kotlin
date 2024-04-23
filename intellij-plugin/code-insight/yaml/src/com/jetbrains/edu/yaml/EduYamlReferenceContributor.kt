@@ -21,6 +21,7 @@ import com.jetbrains.edu.codeInsight.inFileWithName
 import com.jetbrains.edu.codeInsight.psiElement
 import com.jetbrains.edu.learning.StudyTaskManager
 import com.jetbrains.edu.learning.courseFormat.ext.configurator
+import com.jetbrains.edu.learning.isTaskSpecialFile
 import com.jetbrains.edu.learning.yaml.YamlConfigSettings.COURSE_CONFIG
 import com.jetbrains.edu.learning.yaml.YamlConfigSettings.LESSON_CONFIG
 import com.jetbrains.edu.learning.yaml.YamlConfigSettings.SECTION_CONFIG
@@ -54,7 +55,7 @@ class EduYamlTaskFilePathReferenceProvider : EduPsiReferenceProvider() {
       return Condition { item ->
         val virtualFile = item.virtualFile
         // Do not suggest files & directories that cannot be in course
-        if (excludeFromArchive(element.project, virtualFile)) return@Condition false
+        if (virtualFile.isTaskSpecialFile()) return@Condition false
         if (item.isDirectory) return@Condition true
         val filePaths = (element as YAMLScalar).collectFilePaths()
         val itemPath = VfsUtil.getRelativePath(virtualFile, taskDir) ?: return@Condition false
