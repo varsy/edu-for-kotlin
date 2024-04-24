@@ -16,5 +16,12 @@
 
     <!-- Hyperskill -->
     <configurator implementationClass="com.jetbrains.edu.kotlin.hyperskill.KtHyperskillConfigurator" language="kotlin" courseType="Hyperskill"/>
+
+    <descriptionExpressionParser language="kotlin" implementationClass="com.jetbrains.edu.kotlin.jarvis.psi.KtDescriptionExpressionParser"/>
+    <draftExpressionWriter language="kotlin" implementationClass="com.jetbrains.edu.kotlin.jarvis.psi.KtDraftExpressionWriter"/>
+  </extensions>
+
+  <extensions defaultExtensionNs="com.intellij">
+        <runLineMarkerContributor language="kotlin" implementationClass="com.jetbrains.edu.kotlin.jarvis.DescriptionRunLineMarkerContributor"/>
   </extensions>
 </idea-plugin>

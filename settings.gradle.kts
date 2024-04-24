@@ -157,6 +157,7 @@ buildCache {
 pluginManagement {
   repositories {
     mavenCentral()
+    mavenLocal()
     gradlePluginPortal()
     maven("https://oss.sonatype.org/content/repositories/snapshots/")
     if (settings.providers.gradleProperty("fleetIntegration").get().toBoolean()) {
