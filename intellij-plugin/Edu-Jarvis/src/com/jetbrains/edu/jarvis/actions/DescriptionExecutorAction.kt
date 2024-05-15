@@ -1,4 +1,4 @@
-package com.jetbrains.edu.learning.actions
+package com.jetbrains.edu.jarvis.actions
 
 import com.intellij.notification.Notification
 import com.intellij.notification.NotificationType
@@ -6,13 +6,13 @@ import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.psi.PsiElement
-import com.jetbrains.edu.learning.jarvis.DescriptionExpressionParser
-import com.jetbrains.edu.learning.jarvis.DraftExpressionWriter
+import com.jetbrains.edu.jarvis.DescriptionExpressionParser
+import com.jetbrains.edu.jarvis.DraftExpressionWriter
+import com.jetbrains.edu.jarvis.messages.EduJarvisBundle
 import com.jetbrains.edu.learning.marketplace.MarketplaceNotificationUtils
-import com.jetbrains.edu.learning.messages.EduCoreBundle
 
 
-class DescriptionExecutorAction(val element: PsiElement) : AnAction() {
+class DescriptionExecutorAction(private val element: PsiElement) : AnAction() {
 
   override fun actionPerformed(e: AnActionEvent) {
     val project = e.project ?: error("Project was not found")
@@ -20,7 +20,7 @@ class DescriptionExecutorAction(val element: PsiElement) : AnAction() {
     if (descriptionExpression == null) {
       Notification(
         MarketplaceNotificationUtils.JETBRAINS_ACADEMY_GROUP_ID,
-        EduCoreBundle.message("action.not.run.due.to.nested.block.text"),
+        EduJarvisBundle.message("action.not.run.due.to.nested.block.text"),
         NotificationType.ERROR
       ).notify(project)
       return
@@ -30,10 +30,9 @@ class DescriptionExecutorAction(val element: PsiElement) : AnAction() {
     val generatedCode = """
       val a = "A"
     """.trimIndent()
+    // TODO: reformat and improve the generated code
     DraftExpressionWriter.addDraftExpression(project, element, generatedCode, element.language)
   }
 
-  override fun getActionUpdateThread(): ActionUpdateThread {
-    return ActionUpdateThread.BGT
-  }
+  override fun getActionUpdateThread() = ActionUpdateThread.BGT
 }
