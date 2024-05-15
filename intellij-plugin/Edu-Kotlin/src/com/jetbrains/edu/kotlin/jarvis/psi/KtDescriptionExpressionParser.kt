@@ -2,9 +2,10 @@ package com.jetbrains.edu.kotlin.jarvis.psi
 
 import com.intellij.psi.PsiElement
 import com.intellij.psi.util.PsiTreeUtil
+import com.jetbrains.edu.jarvis.DescriptionExpressionParser
 import com.jetbrains.edu.kotlin.jarvis.DescriptionRunLineMarkerContributor.Companion.DESCRIPTION
+import com.jetbrains.edu.kotlin.jarvis.DescriptionRunLineMarkerContributor.Companion.isCallFromJarvisDslPackage
 import com.jetbrains.edu.learning.courseFormat.jarvis.DescriptionExpression
-import com.jetbrains.edu.learning.jarvis.DescriptionExpressionParser
 import org.jetbrains.kotlin.psi.KtCallExpression
 
 class KtDescriptionExpressionParser : DescriptionExpressionParser {
@@ -21,6 +22,7 @@ class KtDescriptionExpressionParser : DescriptionExpressionParser {
 
   private fun existsNestedDescriptionExpressions(descriptionExpression: KtCallExpression) =
     PsiTreeUtil.findChildrenOfType(descriptionExpression, KtCallExpression::class.java).any {
-      it.calleeExpression?.text == DESCRIPTION
+      it.calleeExpression?.text == DESCRIPTION &&
+      isCallFromJarvisDslPackage(it)
     }
 }

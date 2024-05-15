@@ -1,4 +1,4 @@
-package com.jetbrains.edu.learning.actions
+package com.jetbrains.edu.jarvis.actions
 
 import com.intellij.codeInsight.intention.IntentionAction
 import com.intellij.icons.AllIcons
@@ -8,15 +8,15 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Iconable
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
-import com.jetbrains.edu.learning.messages.EduCoreBundle
+import com.jetbrains.edu.jarvis.messages.EduJarvisBundle
 import javax.swing.Icon
 
 class DraftIntentionAction : IntentionAction, Iconable {
   override fun startInWriteAction(): Boolean = false
 
-  override fun getFamilyName(): String = EduCoreBundle.message("action.draft.intention.family.name")
+  override fun getFamilyName(): String = EduJarvisBundle.message("action.draft.intention.family.name")
 
-  override fun getText(): String = EduCoreBundle.message("action.draft.intention.text")
+  override fun getText(): String = EduJarvisBundle.message("action.draft.intention.text")
 
   override fun isAvailable(project: Project, editor: Editor?, file: PsiFile?): Boolean {
     // TODO: verify that there are no errors
