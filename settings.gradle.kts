@@ -39,7 +39,8 @@ include(
   "intellij-plugin:localization",
   "intellij-plugin:features:command-line",
   "intellij-plugin:features:ai-hints-core",
-  "intellij-plugin:features:ai-hints-kotlin"
+  "intellij-plugin:features:ai-hints-kotlin",
+  "intellij-plugin:Edu-Jarvis"
 )
 
 if (settings.providers.gradleProperty("fleetIntegration").get().toBoolean()) {
@@ -157,7 +158,6 @@ buildCache {
 pluginManagement {
   repositories {
     mavenCentral()
-    mavenLocal()
     gradlePluginPortal()
     maven("https://oss.sonatype.org/content/repositories/snapshots/")
     if (settings.providers.gradleProperty("fleetIntegration").get().toBoolean()) {
