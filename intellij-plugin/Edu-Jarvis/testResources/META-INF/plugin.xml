@@ -1,0 +1,9 @@
+<!--suppress PluginXmlValidity -->
+<idea-plugin package="com.jetbrains.edu" xmlns:xi="http://www.w3.org/2001/XInclude">
+  <id>com.jetbrains.edu.jarvis</id>
+  <xi:include href="/META-INF/educational-core.xml" xpointer="xpointer(/idea-plugin/*)"/>
+
+  <content>
+    <module name="Edu-Jarvis"/>
+  </content>
+</idea-plugin>
