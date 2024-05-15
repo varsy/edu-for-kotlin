@@ -1,10 +1,10 @@
-package com.jetbrains.edu.learning.jarvis
+package com.jetbrains.edu.jarvis
 
 import com.intellij.lang.Language
 import com.intellij.lang.LanguageExtension
-import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
+import com.intellij.util.concurrency.ThreadingAssertions
 
 interface DraftExpressionWriter {
   fun addDraftExpression(project: Project, element: PsiElement, generatedCode: String)
@@ -13,7 +13,7 @@ interface DraftExpressionWriter {
     private val EP_NAME = LanguageExtension<DraftExpressionWriter>("Educational.draftExpressionWriter")
 
     fun addDraftExpression(project: Project, element: PsiElement, generatedCode: String, language: Language) {
-      ApplicationManager.getApplication().assertReadAccessAllowed()
+      ThreadingAssertions.assertReadAccess()
       EP_NAME.forLanguage(language)?.addDraftExpression(project, element, generatedCode)
              ?: error("Not supported to provide a draft expression for the ${language.displayName} language")
     }
