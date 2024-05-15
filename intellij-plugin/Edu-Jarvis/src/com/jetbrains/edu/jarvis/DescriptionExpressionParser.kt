@@ -1,9 +1,9 @@
-package com.jetbrains.edu.learning.jarvis
+package com.jetbrains.edu.jarvis
 
 import com.intellij.lang.Language
 import com.intellij.lang.LanguageExtension
-import com.intellij.openapi.application.ApplicationManager
 import com.intellij.psi.PsiElement
+import com.intellij.util.concurrency.ThreadingAssertions
 import com.jetbrains.edu.learning.courseFormat.jarvis.DescriptionExpression
 
 interface DescriptionExpressionParser {
@@ -13,7 +13,7 @@ interface DescriptionExpressionParser {
     private val EP_NAME = LanguageExtension<DescriptionExpressionParser>("Educational.descriptionExpressionParser")
 
     fun parseDescriptionExpression(descriptionExpression: PsiElement, language: Language): DescriptionExpression? {
-      ApplicationManager.getApplication().assertReadAccessAllowed()
+      ThreadingAssertions.assertReadAccess()
       return EP_NAME.forLanguage(language)?.parseDescriptionExpression(descriptionExpression)
     }
   }
