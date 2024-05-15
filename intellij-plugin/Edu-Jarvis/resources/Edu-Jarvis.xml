@@ -1,0 +1,29 @@
+<idea-plugin package="com.jetbrains.edu.jarvis">
+  <!--suppress PluginXmlValidity -->
+  <dependencies>
+    <module name="jvm-core"/>
+
+    <plugin id="org.jetbrains.plugins.gradle"/>
+    <plugin id="JUnit"/>
+  </dependencies>
+
+  <extensionPoints>
+    <extensionPoint qualifiedName="Educational.descriptionExpressionParser"
+                    beanClass="com.intellij.lang.LanguageExtensionPoint"
+                    dynamic="true">
+      <with attribute="implementationClass" implements="com.jetbrains.edu.jarvis.DescriptionExpressionParser"/>
+    </extensionPoint>
+    <extensionPoint qualifiedName="Educational.draftExpressionWriter"
+                    beanClass="com.intellij.lang.LanguageExtensionPoint"
+                    dynamic="true">
+      <with attribute="implementationClass" implements="com.jetbrains.edu.jarvis.DraftExpressionWriter"/>
+    </extensionPoint>
+  </extensionPoints>
+
+  <extensions defaultExtensionNs="com.intellij">
+    <intentionAction>
+      <className>com.jetbrains.edu.jarvis.actions.DraftIntentionAction</className>
+      <category>jarvis.intention.category.name</category>
+    </intentionAction>
+  </extensions>
+</idea-plugin>
