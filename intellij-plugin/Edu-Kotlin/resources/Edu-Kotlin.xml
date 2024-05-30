@@ -3,6 +3,7 @@
   <dependencies>
     <!--suppress PluginXmlValidity -->
     <module name="jvm-core"/>
+    <module name="Edu-Jarvis"/>
 
     <plugin id="org.jetbrains.kotlin"/>
     <plugin id="org.jetbrains.plugins.gradle"/>
