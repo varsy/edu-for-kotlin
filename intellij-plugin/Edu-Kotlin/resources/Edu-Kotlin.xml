@@ -20,6 +20,7 @@
 
     <descriptionExpressionParser language="kotlin" implementationClass="com.jetbrains.edu.kotlin.jarvis.psi.KtDescriptionExpressionParser"/>
     <draftExpressionWriter language="kotlin" implementationClass="com.jetbrains.edu.kotlin.jarvis.psi.KtDraftExpressionWriter"/>
+    <jarvisDslPackageCallChecker language="kotlin" implementationClass="com.jetbrains.edu.kotlin.jarvis.psi.KtJarvisDslPackageCallChecker"/>
   </extensions>
 
   <extensions defaultExtensionNs="com.intellij">

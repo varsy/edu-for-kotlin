@@ -4,7 +4,7 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.util.PsiTreeUtil
 import com.jetbrains.edu.jarvis.DescriptionExpressionParser
 import com.jetbrains.edu.kotlin.jarvis.DescriptionRunLineMarkerContributor.Companion.DESCRIPTION
-import com.jetbrains.edu.kotlin.jarvis.DescriptionRunLineMarkerContributor.Companion.isCallFromJarvisDslPackage
+import com.jetbrains.edu.kotlin.jarvis.psi.KtJarvisDslPackageCallChecker.Companion.isCallFromJarvisDslPackage
 import com.jetbrains.edu.learning.courseFormat.jarvis.DescriptionExpression
 import org.jetbrains.kotlin.psi.KtCallExpression
 
