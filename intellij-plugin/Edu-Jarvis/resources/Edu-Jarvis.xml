@@ -1,8 +1,6 @@
 <idea-plugin package="com.jetbrains.edu.jarvis">
   <!--suppress PluginXmlValidity -->
   <dependencies>
-    <module name="jvm-core"/>
-
     <plugin id="org.jetbrains.plugins.gradle"/>
     <plugin id="JUnit"/>
   </dependencies>
@@ -18,12 +16,18 @@
                     dynamic="true">
       <with attribute="implementationClass" implements="com.jetbrains.edu.jarvis.DraftExpressionWriter"/>
     </extensionPoint>
+    <extensionPoint qualifiedName="Educational.jarvisDslPackageCallChecker"
+                    beanClass="com.intellij.lang.LanguageExtensionPoint"
+                    dynamic="true">
+      <with attribute="implementationClass" implements="com.jetbrains.edu.jarvis.JarvisDslPackageCallChecker"/>
+    </extensionPoint>
   </extensionPoints>
 
   <extensions defaultExtensionNs="com.intellij">
     <intentionAction>
+      <language>kotlin</language>
       <className>com.jetbrains.edu.jarvis.actions.DraftIntentionAction</className>
-      <category>jarvis.intention.category.name</category>
+      <categoryKey>jarvis.intention.category.name</categoryKey>
     </intentionAction>
   </extensions>
 </idea-plugin>

@@ -5,6 +5,7 @@
 
   <content>
     <module name="jvm-core"/>
+    <module name="Edu-Jarvis"/>
     <module name="Edu-Kotlin"/>
   </content>
 </idea-plugin>
