@@ -30,6 +30,7 @@
       <language>kotlin</language>
       <className>com.jetbrains.edu.jarvis.actions.DraftIntentionAction</className>
       <categoryKey>jarvis.intention.category.name</categoryKey>
+      <descriptionDirectoryName>DraftIntentionAction</descriptionDirectoryName>
     </intentionAction>
   </extensions>
 </idea-plugin>

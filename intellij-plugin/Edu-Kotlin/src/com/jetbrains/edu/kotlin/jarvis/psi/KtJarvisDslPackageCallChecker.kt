@@ -12,15 +12,12 @@ class KtJarvisDslPackageCallChecker : JarvisDslPackageCallChecker {
 
   override fun isCallFromJarvisDslPackage(element: PsiElement) =
     if (element is KtCallExpression) {
-      Companion.isCallFromJarvisDslPackage(element)
+      element.calleeExpression.getResolvedCall(element.analyze())?.resultingDescriptor?.containingDeclaration?.fqNameSafe == FqName(JARVIS_DSL_PACKAGE)
     } else {
       error("The element must be a call expression")
     }
 
   companion object {
     private const val JARVIS_DSL_PACKAGE = "org.jetbrains.academy.jarvis.dsl"
-
-    fun isCallFromJarvisDslPackage(callExpression: KtCallExpression) =
-      callExpression.calleeExpression.getResolvedCall(callExpression.analyze())?.resultingDescriptor?.containingDeclaration?.fqNameSafe == FqName(JARVIS_DSL_PACKAGE)
   }
 }
