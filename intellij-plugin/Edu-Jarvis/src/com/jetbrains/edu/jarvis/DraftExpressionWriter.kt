@@ -6,6 +6,9 @@ import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
 import com.intellij.util.concurrency.ThreadingAssertions
 
+/**
+ * Adds a `draft` DSL block with the generated code to the code after the given [PsiElement].
+ */
 interface DraftExpressionWriter {
   fun addDraftExpression(project: Project, element: PsiElement, generatedCode: String)
 

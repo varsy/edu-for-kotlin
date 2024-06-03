@@ -1023,7 +1023,7 @@ project("Edu-Jarvis") {
 
     testImplementation(project(":intellij-plugin:educational-core", "testOutput"))
 
-    implementation("org.jetbrains.academy.jarvis.dsl:Jarvis-no-code-in-edu:1.0.0") {
+    implementation(rootProject.libs.jarvis) {
       excludeKotlinDeps()
     }
   }
