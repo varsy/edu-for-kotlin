@@ -12,6 +12,12 @@ import com.jetbrains.edu.jarvis.messages.EduJarvisBundle
 import com.jetbrains.edu.learning.marketplace.MarketplaceNotificationUtils
 
 
+/**
+ * An action class responsible for handling the running of `description` DSL (Domain-Specific Language) elements.
+ * The main task is to parse the `description` DSL, generate code, process the code, and then append a `draft` DSL block with the generated code.
+ *
+ * @param element The PSI element associated with the `description` DSL that this action is supposed to execute.
+ */
 class DescriptionExecutorAction(private val element: PsiElement) : AnAction() {
 
   override fun actionPerformed(e: AnActionEvent) {

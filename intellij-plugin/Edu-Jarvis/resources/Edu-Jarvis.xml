@@ -5,6 +5,8 @@
     <plugin id="JUnit"/>
   </dependencies>
 
+  <resource-bundle>messages.EduJarvisBundle</resource-bundle>
+
   <extensionPoints>
     <extensionPoint qualifiedName="Educational.descriptionExpressionParser"
                     beanClass="com.intellij.lang.LanguageExtensionPoint"
