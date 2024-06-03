@@ -4,6 +4,7 @@ jackson = "2.17.2"
 kotlin = "2.0.0"
 okhttp = "4.12.0"
 retrofit = "2.9.0"
+jarvis = "1.0.0"
 
 [libraries]
 annotations = { group = "org.jetbrains", name = "annotations", version = "23.0.0" }
@@ -24,7 +25,7 @@ okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhtt
 retrofit = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" }
 twitter4j-core = { group = "org.twitter4j", name = "twitter4j-core", version = "4.0.7" }
 twitter4j-v2 = { group = "io.github.takke", name = "jp.takke.twitter4j-v2", version = "1.4.2" }
-
+jarvis = { group = "org.jetbrains.academy.jarvis.dsl", name = "Jarvis-no-code-in-edu", version.ref = "jarvis" }
 # test dependencies
 classgraph = { module = "io.github.classgraph:classgraph", version = "4.8.179" }
 junit = { group = "junit", name = "junit", version = "4.13.2" }

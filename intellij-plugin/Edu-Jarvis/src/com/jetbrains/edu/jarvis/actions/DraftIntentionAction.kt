@@ -12,6 +12,15 @@ import com.jetbrains.edu.jarvis.JarvisDslPackageCallChecker
 import com.jetbrains.edu.jarvis.messages.EduJarvisBundle
 import javax.swing.Icon
 
+/**
+ * Represents an intention action for `draft` DSL elements.
+ * The main purpose is to provide users with an option to apply the code enclosed within the `draft` block, provided there are no associated errors within the block.
+ *
+ * This class implements the [IntentionAction] and [Iconable] interfaces.
+ *
+ * @see IntentionAction
+ * @see Iconable
+ */
 class DraftIntentionAction : IntentionAction, Iconable {
   override fun startInWriteAction(): Boolean = false
 

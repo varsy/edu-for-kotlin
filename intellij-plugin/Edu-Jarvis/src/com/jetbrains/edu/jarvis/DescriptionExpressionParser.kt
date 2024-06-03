@@ -6,6 +6,9 @@ import com.intellij.psi.PsiElement
 import com.intellij.util.concurrency.ThreadingAssertions
 import com.jetbrains.edu.learning.courseFormat.jarvis.DescriptionExpression
 
+/**
+ * Parses a `description` DSL element and returns a [DescriptionExpression] object if successful.
+ */
 interface DescriptionExpressionParser {
   fun parseDescriptionExpression(descriptionExpression: PsiElement): DescriptionExpression?
 

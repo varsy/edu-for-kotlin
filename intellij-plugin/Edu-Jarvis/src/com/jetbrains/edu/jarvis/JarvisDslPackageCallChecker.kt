@@ -5,6 +5,9 @@ import com.intellij.lang.LanguageExtension
 import com.intellij.psi.PsiElement
 import com.intellij.util.concurrency.ThreadingAssertions
 
+/**
+ * Checks if a given [PsiElement] represents a call from the Jarvis DSL package.
+ */
 interface JarvisDslPackageCallChecker {
   fun isCallFromJarvisDslPackage(element: PsiElement): Boolean
 
