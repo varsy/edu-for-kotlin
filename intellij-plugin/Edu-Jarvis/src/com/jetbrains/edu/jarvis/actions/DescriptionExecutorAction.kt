@@ -33,9 +33,7 @@ class DescriptionExecutorAction(private val element: PsiElement) : AnAction() {
     }
 
     // TODO: get the generated code with errors
-    val generatedCode = """
-      val a = "A"
-    """.trimIndent()
+    val generatedCode = descriptionExpression.codeBlock
     // TODO: reformat and improve the generated code
     DraftExpressionWriter.addDraftExpression(project, element, generatedCode, element.language)
   }
