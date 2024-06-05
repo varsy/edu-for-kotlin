@@ -23,6 +23,11 @@
                     dynamic="true">
       <with attribute="implementationClass" implements="com.jetbrains.edu.jarvis.JarvisDslPackageCallChecker"/>
     </extensionPoint>
+    <extensionPoint qualifiedName="Educational.draftApplier"
+                    beanClass="com.intellij.lang.LanguageExtensionPoint"
+                    dynamic="true">
+      <with attribute="implementationClass" implements="com.jetbrains.edu.jarvis.DraftApplier"/>
+    </extensionPoint>
   </extensionPoints>
 
   <extensions defaultExtensionNs="com.intellij">
