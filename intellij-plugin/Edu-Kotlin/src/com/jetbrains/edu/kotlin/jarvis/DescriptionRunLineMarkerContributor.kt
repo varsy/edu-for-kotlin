@@ -7,6 +7,7 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.impl.source.tree.LeafPsiElement
 import com.jetbrains.edu.jarvis.JarvisDslPackageCallChecker
 import com.jetbrains.edu.jarvis.actions.DescriptionExecutorAction
+import com.jetbrains.edu.kotlin.jarvis.utils.DESCRIPTION
 import com.jetbrains.edu.kotlin.messages.EduKotlinBundle
 import org.jetbrains.kotlin.psi.KtCallExpression
 
@@ -25,8 +26,5 @@ class DescriptionRunLineMarkerContributor : RunLineMarkerContributor(), DumbAwar
       }
     }
     return null
-  }
-  companion object {
-    const val DESCRIPTION = "description"
   }
 }

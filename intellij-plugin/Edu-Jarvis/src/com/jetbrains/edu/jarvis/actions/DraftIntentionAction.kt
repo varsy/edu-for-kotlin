@@ -8,6 +8,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Iconable
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
+import com.jetbrains.edu.jarvis.DraftApplier
 import com.jetbrains.edu.jarvis.JarvisDslPackageCallChecker
 import com.jetbrains.edu.jarvis.messages.EduJarvisBundle
 import javax.swing.Icon
@@ -29,14 +30,16 @@ class DraftIntentionAction : IntentionAction, Iconable {
   override fun getText(): String = EduJarvisBundle.message("action.draft.intention.text")
 
   override fun isAvailable(project: Project, editor: Editor?, file: PsiFile?): Boolean {
-    // TODO: verify that there are no errors
+    // TODO: verify that there are no errors and no internal blocks
     val caretModel: CaretModel = editor?.caretModel ?: return false
     val element: PsiElement = file?.findElementAt(caretModel.offset) ?: return false
     return element.text == DRAFT && JarvisDslPackageCallChecker.isCallFromJarvisDslPackage(element.parent.parent, element.language)
   }
 
   override fun invoke(project: Project, editor: Editor?, file: PsiFile?) {
-    // TODO: replace description with draft
+    val caretModel: CaretModel = editor?.caretModel ?: return
+    val element: PsiElement = file?.findElementAt(caretModel.offset) ?: return
+    DraftApplier.applyCodeDraftToMainCode(project, element, file, element.language)
   }
 
   override fun getIcon(flags: Int): Icon = AllIcons.Actions.IntentionBulb
