@@ -22,8 +22,8 @@ class JarvisCompletionContributor : CompletionContributor() {
       object : CompletionProvider<CompletionParameters>() {
         override fun addCompletions(parameters: CompletionParameters, context: ProcessingContext, resultSet: CompletionResultSet) {
           //TODO: add all completions
-          addCompletion(resultSet, "Create `variable` equal to `value`", listOf("Create ", " equal to "), listOf("variable", "value"))
-          addCompletion(resultSet, "Create constant `variable` equal to `value`", listOf("Create constant ", " equal to "), listOf("variable", "value"))
+          addCompletion(resultSet, "Create `variable` equal to `value`.", listOf("Create `", "` equal to `", "`."), listOf("variable", "value"))
+          addCompletion(resultSet, "Create constant `variable` equal to `value`.", listOf("Create constant `", "` equal to `", "`."), listOf("variable", "value"))
         }
       }
     )
