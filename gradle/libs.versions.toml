@@ -26,6 +26,7 @@ retrofit = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = 
 twitter4j-core = { group = "org.twitter4j", name = "twitter4j-core", version = "4.0.7" }
 twitter4j-v2 = { group = "io.github.takke", name = "jp.takke.twitter4j-v2", version = "1.4.2" }
 jarvis = { group = "org.jetbrains.academy.jarvis.dsl", name = "Jarvis-no-code-in-edu", version.ref = "jarvis" }
+antlr = { group = "org.antlr", name = "antlr4", version = "4.13.1" }
 # test dependencies
 classgraph = { module = "io.github.classgraph:classgraph", version = "4.8.179" }
 junit = { group = "junit", name = "junit", version = "4.13.2" }
