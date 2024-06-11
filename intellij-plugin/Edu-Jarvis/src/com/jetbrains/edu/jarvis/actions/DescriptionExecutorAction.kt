@@ -8,6 +8,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.psi.PsiElement
 import com.jetbrains.edu.jarvis.DescriptionExpressionParser
 import com.jetbrains.edu.jarvis.DraftExpressionWriter
+import com.jetbrains.edu.jarvis.grammar.parse
 import com.jetbrains.edu.jarvis.messages.EduJarvisBundle
 import com.jetbrains.edu.learning.marketplace.MarketplaceNotificationUtils
 
@@ -31,6 +32,7 @@ class DescriptionExecutorAction(private val element: PsiElement) : AnAction() {
       ).notify(project)
       return
     }
+    parse(descriptionExpression.prompt)
 
     // TODO: get the generated code with errors
     val generatedCode = descriptionExpression.codeBlock
