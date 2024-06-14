@@ -5,7 +5,7 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.util.ThreeState
 import com.jetbrains.edu.jarvis.JarvisDslPackageCallChecker
-import com.jetbrains.edu.kotlin.jarvis.DescriptionRunLineMarkerContributor.Companion.DESCRIPTION
+import com.jetbrains.edu.kotlin.jarvis.utils.DESCRIPTION
 import org.jetbrains.kotlin.psi.KtLiteralStringTemplateEntry
 
 
