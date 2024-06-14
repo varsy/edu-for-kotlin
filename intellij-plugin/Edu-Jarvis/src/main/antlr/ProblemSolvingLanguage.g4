@@ -2,7 +2,7 @@ grammar ProblemSolvingLanguage;
 
 sentence: arbitraryText? expr arbitraryText? EOF;
 
-arbitraryText : (IDENTIFIER | AND | VALUE | ELSE | THEN | LOOP | EACH | WHILE | DO | EMPTY | RANDOM | STRING_WORD | VARIABLE | SET | CALLED | FUNCTION | PRINT | STORE | CALL | IN | CREATE | BOOL | REPEAT | UNTIL | ADD | EQUAL | RETURN | READ | WITH | GET)+?;
+arbitraryText : (IDENTIFIER | AND | VALUE | ELSE | THEN | LOOP | EACH | WHILE | DO | EMPTY | RANDOM | STRING_WORD | VARIABLE | SET | CALLED | FUNCTION | PRINT | STORE | CALL | IN | CREATE | BOOL | REPEAT | UNTIL | ADD | EQUAL | RETURN | READ | WITH | GET | CONST)+?;
 
 word: STRING_WORD | (RANDOM STRING_WORD) | (EMPTY STRING_WORD) | NUMBER | CODE;
 
@@ -11,7 +11,7 @@ value: NUMBER | STRING | CODE | IDENTIFIER | BOOL;
 contains: value arbitraryText? IN arbitraryText? CODE;
 
 expr: PRINT arbitraryText? (STRING | CODE)?
-    | CALL arbitraryText? CODE FUNCTION? (WITH arbitraryText? CODE+?)? arbitraryText? (GET arbitraryText? CODE)?
+    | CALL arbitraryText? CODE FUNCTION? (WITH arbitraryText? value+?)? arbitraryText? (GET arbitraryText? CODE)?
     | STORE arbitraryText? IN arbitraryText? VARIABLE? CODE
     | CREATE arbitraryText? word? VARIABLE? CALLED? CODE (EQUAL arbitraryText? word)?
     | SET arbitraryText? VALUE? arbitraryText? value
@@ -22,9 +22,13 @@ expr: PRINT arbitraryText? (STRING | CODE)?
     | LOOP arbitraryText? EACH arbitraryText? CODE arbitraryText? IN arbitraryText? CODE (DO arbitraryText?)?
     | ADD arbitraryText? value arbitraryText? CODE
     | LOOP EACH CODE IN CODE
+    | LOOP EACH CODE IN CODE
     | RETURN arbitraryText? value
     | READ arbitraryText?
+    | GET arbitraryText?
+    | SAVE arbitraryText? VARIABLE? CALLED? CODE
     | CODE FUNCTION? arbitraryText? RETURN arbitraryText? value
+    | CODE EQUAL arbitraryText? word
     | expr AND (expr | arbitraryText)
     | expr arbitraryText? expr;
 
@@ -44,8 +48,9 @@ RANDOM: 'random';
 STRING_WORD: 'string';
 VARIABLE: VAL | VAR;
 MUTABLE: 'mutable';
+CONST: 'constant' | 'const';
 VAR: 'var' | 'variable' | MUTABLE VAR;
-VAL: 'val';
+VAL: 'val' | CONST VAL;
 SET: 'set' | 'assign' | 'give' | 'initialize';
 CALLED: 'called' | 'named';
 FUNCTION: 'fun' | 'function';
@@ -61,6 +66,7 @@ RETURN: 'return' | 'returns';
 READ: 'read' | 'reads';
 WITH: 'with';
 GET: 'get' | 'gets' | 'receive' | 'receives' | 'obtain' | 'obtains';
+SAVE: 'save';
 NUMBER: [0-9]+;
 STRING: '"'(~["\r\n])*'"';
 CODE: '`'(~[`\r\n])*'`';
