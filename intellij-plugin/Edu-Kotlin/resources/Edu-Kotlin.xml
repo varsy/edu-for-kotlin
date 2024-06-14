@@ -28,5 +28,6 @@
     <runLineMarkerContributor language="kotlin" implementationClass="com.jetbrains.edu.kotlin.jarvis.DescriptionRunLineMarkerContributor"/>
     <completion.confidence language="kotlin" implementationClass="com.jetbrains.edu.kotlin.jarvis.completion.JarvisCompletionConfidence" id="kotlinStrings" order="first"/>
     <completion.contributor language="kotlin" implementationClass="com.jetbrains.edu.kotlin.jarvis.completion.JarvisCompletionContributor"/>
+    <annotator language="kotlin" implementationClass="com.jetbrains.edu.kotlin.jarvis.psi.KtDescriptionAnnotator"/>
   </extensions>
 </idea-plugin>
