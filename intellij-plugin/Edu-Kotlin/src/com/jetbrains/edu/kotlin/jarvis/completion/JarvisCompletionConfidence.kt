@@ -4,8 +4,8 @@ import com.intellij.codeInsight.completion.CompletionConfidence
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.util.ThreeState
-import com.jetbrains.edu.jarvis.JarvisDslPackageCallChecker
 import com.jetbrains.edu.kotlin.jarvis.utils.DESCRIPTION
+import com.jetbrains.edu.kotlin.jarvis.utils.findBlock
 import org.jetbrains.kotlin.psi.KtLiteralStringTemplateEntry
 
 
@@ -17,10 +17,8 @@ import org.jetbrains.kotlin.psi.KtLiteralStringTemplateEntry
  */
 class JarvisCompletionConfidence : CompletionConfidence() {
   override fun shouldSkipAutopopup(contextElement: PsiElement, psiFile: PsiFile, offset: Int): ThreeState {
-    val functionElement = contextElement.parent.parent.parent.parent.parent
-    if (contextElement.parent is KtLiteralStringTemplateEntry &&
-        JarvisDslPackageCallChecker.isCallFromJarvisDslPackage(functionElement, functionElement.language) &&
-        functionElement.text.startsWith(DESCRIPTION)) {
+    val descriptionBlock = findBlock(contextElement, { it.parent }, DESCRIPTION)
+    if (descriptionBlock != null && contextElement.parent is KtLiteralStringTemplateEntry) {
       return ThreeState.NO
     }
 
