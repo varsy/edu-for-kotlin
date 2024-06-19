@@ -1,5 +1,5 @@
 package com.jetbrains.edu.jarvis
 
-import com.jetbrains.edu.jarvis.errors.AnnotatorError
+import com.jetbrains.edu.jarvis.errors.AnnotatorParametrizedError
 
-data class DescriptionAnnotatorResult(val range: IntRange, val error: AnnotatorError)
+data class DescriptionAnnotatorResult(val range: IntRange, val parametrizedError: AnnotatorParametrizedError)
