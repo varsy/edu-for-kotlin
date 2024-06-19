@@ -23,7 +23,11 @@ interface DescriptionErrorAnnotator : Annotator {
         descriptionContent.startOffset + it.range.first,
         descriptionContent.startOffset + it.range.last + 1
       )
-      holder.newAnnotation(HighlightSeverity.ERROR, EduJarvisBundle.message(it.error.message))
+      holder
+        .newAnnotation(
+          HighlightSeverity.ERROR,
+          EduJarvisBundle.message(it.parametrizedError.errorType.message, *it.parametrizedError.params)
+        )
         .range(errorRange)
         .create()
     }
