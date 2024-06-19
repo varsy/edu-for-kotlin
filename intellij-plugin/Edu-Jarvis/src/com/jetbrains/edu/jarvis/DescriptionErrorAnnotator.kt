@@ -18,7 +18,7 @@ interface DescriptionErrorAnnotator : Annotator {
     descriptionContent: PsiElement,
     holder: AnnotationHolder
   ) =
-    getIncorrectParts(descriptionContent.text).forEach {
+    getIncorrectParts(descriptionContent).forEach {
       val errorRange = TextRange(
         descriptionContent.startOffset + it.range.first,
         descriptionContent.startOffset + it.range.last + 1
@@ -32,7 +32,7 @@ interface DescriptionErrorAnnotator : Annotator {
    * Returns a sequence of [DescriptionAnnotatorResult] which contains parts of
    * `context` to be highlighted and the type of error that the corresponding part contains.
    */
-  fun getIncorrectParts(context: String): Sequence<DescriptionAnnotatorResult>
+  fun getIncorrectParts(context: PsiElement): Sequence<DescriptionAnnotatorResult>
 
   /**
    * Returns whether the [PsiElement] is relevant, that is, whether it may contain an error.
@@ -41,6 +41,7 @@ interface DescriptionErrorAnnotator : Annotator {
 
   companion object {
     val codeBlockRegex = "`([^`]+)`".toRegex()
+    val functionCallRegex = "[a-zA-Z_][a-zA-Z0-9_]*\\((?:\\s*[^(),\\s]+\\s*(?:,\\s*[^(),\\s]+\\s*)*)?\\s*\\)".toRegex()
   }
 
 }
