@@ -6,6 +6,7 @@ import com.jetbrains.edu.jarvis.DescriptionAnnotatorResult
 import com.jetbrains.edu.jarvis.DescriptionErrorAnnotator
 import com.jetbrains.edu.jarvis.DescriptionErrorAnnotator.Companion.codeBlockRegex
 import com.jetbrains.edu.jarvis.errors.AnnotatorError
+import com.jetbrains.edu.jarvis.errors.AnnotatorParametrizedError
 import com.jetbrains.edu.jarvis.models.FunctionCall
 import com.jetbrains.edu.kotlin.jarvis.utils.ARGUMENT_SEPARATOR
 import com.jetbrains.edu.kotlin.jarvis.utils.CLOSE_PARENTHESIS
@@ -16,7 +17,6 @@ import org.jetbrains.kotlin.psi.KtParameterList
 import org.jetbrains.kotlin.psi.KtValueArgumentList
 import org.jetbrains.kotlin.psi.psiUtil.getChildOfType
 import org.jetbrains.kotlin.psi.psiUtil.getChildrenOfType
-
 
 
 class KtDescriptionErrorAnnotator : DescriptionErrorAnnotator {
@@ -42,7 +42,7 @@ class KtDescriptionErrorAnnotator : DescriptionErrorAnnotator {
           it.value.getError(visibleFunctions)
         )
       }
-      .filter { it.error != AnnotatorError.NONE }
+      .filter { it.parametrizedError.errorType != AnnotatorError.NONE }
   }
 
 
@@ -69,10 +69,28 @@ class KtDescriptionErrorAnnotator : DescriptionErrorAnnotator {
     return FunctionCall(functionName, numberOfParameters)
   }
 
-  private fun String.getError(visibleFunctions: Collection<FunctionCall>): AnnotatorError {
-    if (this.isAFunctionCall() && this.toFunctionCall() !in visibleFunctions) {
-      return AnnotatorError.UNKNOWN_FUNCTION
+  private fun String.getError(visibleFunctions: Collection<FunctionCall>): AnnotatorParametrizedError {
+    when {
+      this.isAFunctionCall() -> {
+        val functionCall = this.toFunctionCall()
+        if (visibleFunctions.find { it.name == functionCall.name } == null) {
+          return AnnotatorParametrizedError(
+            AnnotatorError.UNKNOWN_FUNCTION,
+            arrayOf(functionCall.name)
+          )
+        }
+        else if (functionCall !in visibleFunctions) {
+          return AnnotatorParametrizedError(
+            AnnotatorError.WRONG_NUMBER_OF_ARGUMENTS,
+            arrayOf(functionCall.name, functionCall.numberOfArguments)
+          )
+        }
+      }
     }
-    return AnnotatorError.NONE
+    return AnnotatorParametrizedError(
+      AnnotatorError.NONE,
+      emptyArray()
+    )
+
   }
 }
