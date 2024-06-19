@@ -22,7 +22,6 @@ expr: PRINT arbitraryText? (STRING | CODE)?
     | LOOP arbitraryText? EACH arbitraryText? CODE arbitraryText? IN arbitraryText? CODE (DO arbitraryText?)?
     | ADD arbitraryText? value arbitraryText? CODE
     | LOOP EACH CODE IN CODE
-    | LOOP EACH CODE IN CODE
     | RETURN arbitraryText? value
     | READ arbitraryText?
     | GET arbitraryText?
