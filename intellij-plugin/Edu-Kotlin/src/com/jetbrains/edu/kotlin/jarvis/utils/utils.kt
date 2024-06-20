@@ -23,6 +23,7 @@ fun findBlock(
 internal fun PsiElement.isDescriptionBlock() = text.startsWith(DESCRIPTION) &&
                                                JarvisDslPackageCallChecker.isCallFromJarvisDslPackage(this, this.language)
 
+
 const val DRAFT = "draft"
 const val DESCRIPTION = "description"
 const val ARGUMENT_SEPARATOR = ','
