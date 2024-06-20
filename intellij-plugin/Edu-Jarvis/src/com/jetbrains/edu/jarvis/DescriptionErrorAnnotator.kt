@@ -36,7 +36,7 @@ interface DescriptionErrorAnnotator : Annotator {
    * Returns a sequence of [DescriptionAnnotatorResult] which contains parts of
    * `context` to be highlighted and the type of error that the corresponding part contains.
    */
-  fun getIncorrectParts(context: PsiElement): Sequence<DescriptionAnnotatorResult>
+  fun getIncorrectParts(context: PsiElement): Collection<DescriptionAnnotatorResult>
 
   /**
    * Returns whether the [PsiElement] is relevant, that is, whether it may contain an error.
@@ -44,8 +44,11 @@ interface DescriptionErrorAnnotator : Annotator {
   fun PsiElement.isRelevant(): Boolean
 
   companion object {
-    val codeBlockRegex = "`([^`]+)`".toRegex()
+    val callSynonyms = listOf("call", "calls", "invoke", "invokes")
+    val functionSynonyms = listOf("function", "fun")
+
     val functionCallRegex = "[a-zA-Z_][a-zA-Z0-9_]*\\((?:\\s*[^(),\\s]+\\s*(?:,\\s*[^(),\\s]+\\s*)*)?\\s*\\)".toRegex()
+
   }
 
 }
