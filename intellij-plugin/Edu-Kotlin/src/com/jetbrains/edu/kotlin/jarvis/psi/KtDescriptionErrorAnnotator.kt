@@ -4,13 +4,11 @@ import com.intellij.lang.annotation.AnnotationHolder
 import com.intellij.psi.PsiElement
 import com.jetbrains.edu.jarvis.DescriptionAnnotatorResult
 import com.jetbrains.edu.jarvis.DescriptionErrorAnnotator
-import com.jetbrains.edu.jarvis.DescriptionErrorAnnotator.Companion.codeBlockRegex
-import com.jetbrains.edu.jarvis.errors.AnnotatorError
+import com.jetbrains.edu.jarvis.enums.AnnotatorRule
+import com.jetbrains.edu.jarvis.enums.AnnotatorError
 import com.jetbrains.edu.jarvis.errors.AnnotatorParametrizedError
 import com.jetbrains.edu.jarvis.models.FunctionCall
-import com.jetbrains.edu.kotlin.jarvis.utils.ARGUMENT_SEPARATOR
-import com.jetbrains.edu.kotlin.jarvis.utils.CLOSE_PARENTHESIS
-import com.jetbrains.edu.kotlin.jarvis.utils.OPEN_PARENTHESIS
+import com.jetbrains.edu.kotlin.KtErrorProcessor
 import com.jetbrains.edu.kotlin.jarvis.utils.isDescriptionBlock
 import org.jetbrains.kotlin.psi.KtNamedFunction
 import org.jetbrains.kotlin.psi.KtParameterList
@@ -29,68 +27,45 @@ class KtDescriptionErrorAnnotator : DescriptionErrorAnnotator {
 
   override fun PsiElement.isRelevant() = isDescriptionBlock()
 
-  override fun getIncorrectParts(context: PsiElement): Sequence<DescriptionAnnotatorResult> {
+  override fun getIncorrectParts(context: PsiElement): Collection<DescriptionAnnotatorResult> {
     val visibleFunctions = context.containingFile
       .getChildrenOfType<KtNamedFunction>()
       .mapNotNull { it.toFunctionCallOrNull() }
-    return codeBlockRegex
-      .findAll(context.text)
-      .mapNotNull { it.groups[1] }
-      .map {
-        DescriptionAnnotatorResult(
-          it.range,
-          it.value.getError(visibleFunctions)
-        )
+    return AnnotatorRule.values()
+      .flatMap { rule ->
+        getIncorrectPartsByRegex(context, rule.regex).map {
+          DescriptionAnnotatorResult(
+            it.range,
+            it.value.getError(rule, visibleFunctions)
+          )
+        }
       }
+      .toSet()
       .filter { it.parametrizedError.errorType != AnnotatorError.NONE }
+
   }
 
+  private fun getIncorrectPartsByRegex(context: PsiElement, regex: Regex): Sequence<MatchGroup> {
+    return regex
+      .findAll(context.text)
+      .mapNotNull { it.groups[1] }
+  }
 
   private fun KtNamedFunction.toFunctionCallOrNull(): FunctionCall? {
     val numberOfParameters = getChildOfType<KtParameterList>()?.parameters?.size ?: 0
     return FunctionCall(name ?: return null, numberOfParameters)
   }
 
-  private fun String.isAFunctionCall() =
-    // TODO: check if string is a function call from surrounding context
-    DescriptionErrorAnnotator.functionCallRegex.matches(this)
-
-  private fun String.toFunctionCall(): FunctionCall {
-    val functionName = this.substringBefore(OPEN_PARENTHESIS)
-    val parameters = this
-      .substringAfter(OPEN_PARENTHESIS)
-      .substringBefore(CLOSE_PARENTHESIS)
-
-    val numberOfParameters = if (parameters.isNotBlank()) {
-      parameters.count { it == ARGUMENT_SEPARATOR } + 1
-    }
-    else 0
-
-    return FunctionCall(functionName, numberOfParameters)
-  }
-
-  private fun String.getError(visibleFunctions: Collection<FunctionCall>): AnnotatorParametrizedError {
-    when {
-      this.isAFunctionCall() -> {
-        val functionCall = this.toFunctionCall()
-        if (visibleFunctions.find { it.name == functionCall.name } == null) {
-          return AnnotatorParametrizedError(
-            AnnotatorError.UNKNOWN_FUNCTION,
-            arrayOf(functionCall.name)
-          )
-        }
-        else if (functionCall !in visibleFunctions) {
-          return AnnotatorParametrizedError(
-            AnnotatorError.WRONG_NUMBER_OF_ARGUMENTS,
-            arrayOf(functionCall.name, functionCall.numberOfArguments)
-          )
-        }
+  private fun String.getError(rule: AnnotatorRule, visibleFunctions: Collection<FunctionCall>): AnnotatorParametrizedError {
+    val processor = KtErrorProcessor(this, visibleFunctions)
+    return when(rule) {
+      AnnotatorRule.ISOLATED_CODE -> {
+        processor.processIsolatedCode()
       }
+      AnnotatorRule.NO_PARENTHESES_FUNCTION_CALL -> {
+        processor.processNoParenthesesFunctionCall()
+      }
+      else -> AnnotatorParametrizedError.NO_ERROR
     }
-    return AnnotatorParametrizedError(
-      AnnotatorError.NONE,
-      emptyArray()
-    )
-
   }
 }
