@@ -1,4 +1,4 @@
-package com.jetbrains.edu.jarvis.errors
+package com.jetbrains.edu.jarvis.enums
 
 enum class AnnotatorError(val message: String) {
   NONE(""),
