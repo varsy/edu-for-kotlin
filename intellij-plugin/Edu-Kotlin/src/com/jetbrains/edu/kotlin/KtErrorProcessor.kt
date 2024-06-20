@@ -1,55 +1,47 @@
 package com.jetbrains.edu.kotlin
 
 import com.jetbrains.edu.jarvis.ErrorProcessor
-import com.jetbrains.edu.jarvis.DescriptionErrorAnnotator
 import com.jetbrains.edu.jarvis.enums.AnnotatorError
 import com.jetbrains.edu.jarvis.errors.AnnotatorParametrizedError
-import com.jetbrains.edu.jarvis.models.FunctionCall
+import com.jetbrains.edu.jarvis.models.NamedFunction
+import com.jetbrains.edu.jarvis.models.NamedVariable
 import com.jetbrains.edu.kotlin.jarvis.utils.ARGUMENT_SEPARATOR
 import com.jetbrains.edu.kotlin.jarvis.utils.CLOSE_PARENTHESIS
 import com.jetbrains.edu.kotlin.jarvis.utils.OPEN_PARENTHESIS
 
-class KtErrorProcessor(private val context: String, private val visibleFunctions: Collection<FunctionCall>) : ErrorProcessor {
-  override fun processIsolatedCode(): AnnotatorParametrizedError {
-    return when {
-      !context.isAFunctionCall() -> AnnotatorParametrizedError.NO_ERROR
-      else -> {
-        val functionCall = context.toFunctionCall()
-        when {
-          visibleFunctions.none { it.name == functionCall.name } ->
-            AnnotatorParametrizedError(
-              AnnotatorError.UNKNOWN_FUNCTION,
-              arrayOf(functionCall.name)
-            )
-          functionCall !in visibleFunctions ->
-            AnnotatorParametrizedError(
-              AnnotatorError.WRONG_NUMBER_OF_ARGUMENTS,
-              arrayOf(functionCall.name, functionCall.numberOfArguments)
-            )
-          else -> AnnotatorParametrizedError.NO_ERROR
-        }
-      }
-    }
-  }
+class KtErrorProcessor(
+  private val context: String,
+  private val visibleFunctions: Collection<NamedFunction>,
+  private val visibleVariables: Collection<NamedVariable>) : ErrorProcessor {
 
-  override fun processNoParenthesesFunctionCall(): AnnotatorParametrizedError {
-    val functionCall = context.toFunctionCall()
+  override fun processNamedFunction(): AnnotatorParametrizedError {
+    val namedFunction = context.toNamedFunction()
     return when {
-      visibleFunctions.none { it.name == functionCall.name } ->
+      visibleFunctions.none { it.name == namedFunction.name } ->
         AnnotatorParametrizedError(
           AnnotatorError.UNKNOWN_FUNCTION,
-          arrayOf(functionCall.name)
+          arrayOf(namedFunction.name)
         )
-      functionCall !in visibleFunctions ->
+      namedFunction !in visibleFunctions ->
         AnnotatorParametrizedError(
           AnnotatorError.WRONG_NUMBER_OF_ARGUMENTS,
-          arrayOf(functionCall.name, functionCall.numberOfArguments)
+          arrayOf(namedFunction.name, namedFunction.numberOfArguments)
         )
       else -> AnnotatorParametrizedError.NO_ERROR
     }
   }
 
-  private fun String.toFunctionCall(): FunctionCall {
+  override fun processNamedVariable(): AnnotatorParametrizedError {
+    val namedVariable = context.toNamedVariable()
+    return if(namedVariable !in visibleVariables) {
+      AnnotatorParametrizedError(
+        AnnotatorError.UNKNOWN_VARIABLE,
+        arrayOf(namedVariable.name)
+      )
+    } else AnnotatorParametrizedError.NO_ERROR
+  }
+
+  private fun String.toNamedFunction(): NamedFunction {
     val functionName = this.substringBefore(OPEN_PARENTHESIS)
     val parameters = if (OPEN_PARENTHESIS in this) {
       this
@@ -63,9 +55,8 @@ class KtErrorProcessor(private val context: String, private val visibleFunctions
       parameters.count { it == ARGUMENT_SEPARATOR } + 1
     }
     else 0
-    return FunctionCall(functionName, numberOfParameters)
+    return NamedFunction(functionName, numberOfParameters)
   }
 
-  private fun String.isAFunctionCall() =
-    DescriptionErrorAnnotator.functionCallRegex.matches(this)
+  private fun String.toNamedVariable(): NamedVariable = NamedVariable(this)
 }

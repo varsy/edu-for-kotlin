@@ -7,11 +7,11 @@ import com.jetbrains.edu.jarvis.errors.AnnotatorParametrizedError
  */
 interface ErrorProcessor {
   /**
-   * Processes the case with isolated code blocks.
+   * Processes a named function.
    */
-  fun processIsolatedCode(): AnnotatorParametrizedError
+  fun processNamedFunction(): AnnotatorParametrizedError
   /**
-   * Processes the case with function calls without parentheses.
+   * Processes a named variable.
    */
-  fun processNoParenthesesFunctionCall(): AnnotatorParametrizedError
+  fun processNamedVariable(): AnnotatorParametrizedError
 }
