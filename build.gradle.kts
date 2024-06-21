@@ -41,7 +41,6 @@ allprojects {
     mavenCentral()
     maven("https://cache-redirector.jetbrains.com/intellij-dependencies")
     maven("https://maven.pkg.jetbrains.space/kotlin/p/kotlin/kotlin-js-wrappers")
-    maven("https://packages.jetbrains.team/maven/p/edu/jarvis")
     maven("https://packages.jetbrains.team/maven/p/edu/maven")
     maven("https://packages.jetbrains.team/maven/p/edu/educational-ml-library")
     maven("https://packages.jetbrains.team/maven/p/grazi/grazie-platform-public")

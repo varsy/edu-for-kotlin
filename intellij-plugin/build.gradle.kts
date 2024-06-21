@@ -1056,12 +1056,19 @@ project("Edu-Jarvis") {
     }
 
     implementation(project(":intellij-plugin:educational-core"))
+    api(rootProject.libs.educational.ml.library.core) {
+      excludeKotlinDeps()
+      excludeKotlinSerializationDeps()
+      exclude(group = "net.java.dev.jna")
+    }
+    api(rootProject.libs.educational.ml.library.jarvis) {
+      excludeKotlinDeps()
+      excludeKotlinSerializationDeps()
+      exclude(group = "net.java.dev.jna")
+    }
 
     testImplementation(project(":intellij-plugin:educational-core", "testOutput"))
 
-    implementation(rootProject.libs.jarvis) {
-      excludeKotlinDeps()
-    }
     antlr(rootProject.libs.antlr)
   }
 
