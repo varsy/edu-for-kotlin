@@ -1,7 +1,6 @@
 package com.jetbrains.edu.jarvis.actions
 
-import com.intellij.notification.Notification
-import com.intellij.notification.NotificationType
+import com.intellij.notification.NotificationType.ERROR
 import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
@@ -10,7 +9,7 @@ import com.jetbrains.edu.jarvis.DescriptionExpressionParser
 import com.jetbrains.edu.jarvis.DraftExpressionWriter
 import com.jetbrains.edu.jarvis.grammar.parse
 import com.jetbrains.edu.jarvis.messages.EduJarvisBundle
-import com.jetbrains.edu.learning.marketplace.MarketplaceNotificationUtils
+import com.jetbrains.edu.learning.notification.EduNotificationManager
 
 
 /**
@@ -25,11 +24,12 @@ class DescriptionExecutorAction(private val element: PsiElement) : AnAction() {
     val project = e.project ?: error("Project was not found")
     val descriptionExpression = DescriptionExpressionParser.parseDescriptionExpression(element, element.language)
     if (descriptionExpression == null) {
-      Notification(
-        MarketplaceNotificationUtils.JETBRAINS_ACADEMY_GROUP_ID,
-        EduJarvisBundle.message("action.not.run.due.to.nested.block.text"),
-        NotificationType.ERROR
-      ).notify(project)
+      EduNotificationManager.create(
+          ERROR,
+          EduJarvisBundle.message("action.not.run.due.to.nested.block.title"),
+          EduJarvisBundle.message("action.not.run.due.to.nested.block.text")
+        )
+        .notify(project)
       return
     }
     parse(descriptionExpression.prompt)

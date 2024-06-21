@@ -4,7 +4,6 @@ jackson = "2.17.2"
 kotlin = "2.0.0"
 okhttp = "4.12.0"
 retrofit = "2.9.0"
-jarvis = "1.0.0"
 
 [libraries]
 annotations = { group = "org.jetbrains", name = "annotations", version = "23.0.0" }
@@ -13,6 +12,7 @@ converter-jackson = { group = "com.squareup.retrofit2", name = "converter-jackso
 edu-ai-format = { group = "com.jetbrains.edu", name = "edu-ai-format", version = "0.0.9" }
 educational-ml-library-core = { group = "com.jetbrains.educational.ml", name = "educational-ml-library-core", version.ref = "educational-ml-library" }
 educational-ml-library-hints = { group = "com.jetbrains.educational.ml", name = "educational-ml-library-hints", version.ref = "educational-ml-library" }
+educational-ml-library-jarvis = { group = "com.jetbrains.educational.ml", name = "educational-ml-library-jarvis", version.ref = "educational-ml-library" }
 jackson-dataformat-yaml = { group = "com.fasterxml.jackson.dataformat", name = "jackson-dataformat-yaml", version.ref = "jackson" }
 jackson-datatype-jsr310 = { group = "com.fasterxml.jackson.datatype", name = "jackson-datatype-jsr310", version.ref = "jackson" }
 jackson-module-kotlin = { group = "com.fasterxml.jackson.module", name = "jackson-module-kotlin", version.ref = "jackson" }
@@ -25,7 +25,6 @@ okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhtt
 retrofit = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" }
 twitter4j-core = { group = "org.twitter4j", name = "twitter4j-core", version = "4.0.7" }
 twitter4j-v2 = { group = "io.github.takke", name = "jp.takke.twitter4j-v2", version = "1.4.2" }
-jarvis = { group = "org.jetbrains.academy.jarvis.dsl", name = "Jarvis-no-code-in-edu", version.ref = "jarvis" }
 antlr = { group = "org.antlr", name = "antlr4", version = "4.13.1" }
 # test dependencies
 classgraph = { module = "io.github.classgraph:classgraph", version = "4.8.179" }
