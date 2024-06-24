@@ -16,6 +16,11 @@ import com.jetbrains.edu.learning.courseGeneration.GeneratorUtils.joinPaths
 import com.jetbrains.edu.learning.messages.EduCoreBundle
 import com.jetbrains.edu.learning.yaml.YamlFormatSynchronizer
 
+/**
+ * TutorialGenerator is a utility object for generating a tutorial section in a course.
+ * The section includes lessons designed to assist users in learning the new syntax for programming in the native language.
+ * The tutorial section can be accessed by navigating to New -> Section -> Tutorial.
+ */
 object TutorialGenerator {
   fun generateTutorial(course: Course): VirtualFile {
     val section = course.createSection()
@@ -75,27 +80,32 @@ object TutorialGenerator {
     }
 
   private fun createTaskFile(task: Task, isTests: Boolean = false): TaskFile {
-    val course = task.course
-    val configurator = course.configurator
-    val courseBuilder = configurator?.courseBuilder
-    val fileName = if (isTests) {
-      courseBuilder?.testTemplateName(course) ?: error("Test file name not configured")
-    } else {
-      courseBuilder?.mainTemplateName(course) ?: error("Main file name not configured")
-    }
-    val path = if (isTests) {
-      joinPaths(configurator.testDirs.firstOrNull(), fileName)
-    } else {
-      joinPaths(configurator.sourceDir, PACKAGE + task.lesson.name.toPackageFormat(), fileName)
-    }
-    val pathToContent = joinPaths(RESOURCE_FOLDER, task.lesson.name, task.name, fileName)
-    val content = getFileContentFromResources(task.course, pathToContent)
+    val fileName = getFileName(task.course, isTests)
     return TaskFile().apply {
-      name = path
-      contents = InMemoryTextualContents(content)
+      name = getPath(task, fileName, isTests)
+      contents = InMemoryTextualContents(getFileContentFromResources(
+        task.course,
+        joinPaths(RESOURCE_FOLDER, task.lesson.name, task.name, fileName)
+      ))
       isVisible = !isTests
       this.task = task
     }
+  }
+
+  private fun getFileName(course: Course, isTests: Boolean) = if (isTests) {
+    course.configurator?.courseBuilder?.testTemplateName(course) ?: error("Test file name not configured")
+  } else {
+    course.configurator?.courseBuilder?.mainTemplateName(course) ?: error("Main file name not configured")
+  }
+
+  private fun getPath(task: Task, fileName: String, isTests: Boolean) = if (isTests) {
+    joinPaths(task.course.configurator?.testDirs?.firstOrNull(), fileName)
+  } else {
+    joinPaths(
+      task.course.configurator?.sourceDir ?: error("Can't find source dir for task ${task.name}"),
+      PACKAGE + task.lesson.name.toPackageFormat(),
+      fileName
+    )
   }
 
   private fun getFileContentFromResources(course: Course, path: String) = course.configurator?.javaClass?.getResource(path)?.readText()
