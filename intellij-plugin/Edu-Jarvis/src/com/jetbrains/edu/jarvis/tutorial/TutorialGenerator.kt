@@ -4,7 +4,9 @@ import com.intellij.ide.projectView.ProjectView
 import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.DumbAwareAction
+import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFile
 import com.jetbrains.edu.EducationalCoreIcons
 import com.jetbrains.edu.coursecreator.CCUtils
@@ -140,8 +142,11 @@ class TutorialGenerator : DumbAwareAction(EduJarvisBundle.message("item.tutorial
     )
   }
 
-  private fun getFileContentFromResources(course: Course, path: String) = course.configurator?.javaClass?.getResource(path)?.readText()
-                                                          ?: error("File from resources not found: $path")
+  private fun getFileContentFromResources(course: Course, path: String) = ApplicationManager.getApplication().runReadAction<String> {
+    course.configurator?.javaClass?.getResource(path)
+      ?.let { resourceUrl -> VfsUtil.findFileByURL(resourceUrl) }
+      ?.let { virtualFile -> VfsUtil.loadText(virtualFile) }
+  } ?: error("File from resources not found or unable to read: $path")
 
   private fun String.getPresentableName() = replace(capitalLetterRegex, " $1").trim()
 
