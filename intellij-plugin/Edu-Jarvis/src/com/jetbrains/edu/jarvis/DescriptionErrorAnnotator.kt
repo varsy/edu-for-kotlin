@@ -7,12 +7,12 @@ import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.refactoring.suggested.startOffset
-import com.jetbrains.edu.jarvis.enums.AnnotatorError
-import com.jetbrains.edu.jarvis.enums.AnnotatorRule
-import com.jetbrains.edu.jarvis.errors.AnnotatorParametrizedError
+import com.jetbrains.edu.jarvis.highlighting.*
 import com.jetbrains.edu.jarvis.messages.EduJarvisBundle
 import com.jetbrains.edu.jarvis.models.NamedFunction
+import com.jetbrains.edu.jarvis.models.NamedFunction.Companion.isNamedFunction
 import com.jetbrains.edu.jarvis.models.NamedVariable
+import com.jetbrains.edu.jarvis.models.NamedVariable.Companion.isNamedVariable
 import kotlin.reflect.KClass
 
 /**
@@ -49,25 +49,23 @@ interface DescriptionErrorAnnotator : Annotator {
     }
 
   /**
-   * Returns a sequence of [DescriptionAnnotatorResult] which contains parts of
+   * Returns a sequence of [IncorrectPart] which contains parts of
    * `context` to be highlighted and the type of error that the corresponding part contains.
    */
-  fun getIncorrectParts(context: PsiElement): Collection<DescriptionAnnotatorResult> {
+  fun getIncorrectParts(context: PsiElement): Collection<IncorrectPart> {
     val visibleFunctions = getVisibleEntities(context, *getNamedFunctionClasses()) { it.toNamedFunctionOrNull() }
     val visibleVariables = getVisibleEntities(context, *getNamedVariableClasses()) { it.toNamedVariableOrNull() }
     val processor = getProcessor(visibleFunctions, visibleVariables)
     return AnnotatorRule.values().asSequence()
       .flatMap { rule ->
-        getRelevantPartsByRegex(context.text, rule.regex).map {
-          it to rule
-        }
-      }.sortedBy { (match, _) ->
-        match.range.first
-      }.distinctBy { (match, _) ->
-        match.range.first
-      }.map { (match, rule) ->
-        DescriptionAnnotatorResult(
-          match.range, getError(rule, processor, match.value)
+        getAnnotatorRuleMatches(context.text, rule)
+      }.distinctBy { match ->
+        match.identifier.range.first
+      }.sortedBy { match ->
+        match.identifier.range.first
+      }.map { match ->
+        IncorrectPart(
+          match.identifier.range, getError(match.rule, processor, match)
         )
       }.filter { it.parametrizedError.errorType != AnnotatorError.NONE }
       .toList()
@@ -77,14 +75,23 @@ interface DescriptionErrorAnnotator : Annotator {
    * Returns a sequence of [MatchGroup] representing the parts of `target`
    * string that are relevant based on the given [Regex].
    */
-  private fun getRelevantPartsByRegex(target: String, regex: Regex): Sequence<MatchGroup> {
-    return regex.findAll(target).mapNotNull { it.groups[1] }
+  private fun getAnnotatorRuleMatches(target: String, rule: AnnotatorRule): Sequence<AnnotatorRuleMatch> {
+    return rule.regex.findAll(target).map { it.toAnnotatorRuleMatch(rule) }
   }
 
-  fun String.isNamedFunction() = namedFunctionRegex.matches(this)
+  /**
+   * Converts [MatchResult] to [AnnotatorRuleMatch].
+   * The [MatchResult] must contain at least one non-null capturing group.
+   */
+  private fun MatchResult.toAnnotatorRuleMatch(rule: AnnotatorRule): AnnotatorRuleMatch {
+    val identifier = groups[1] ?: error("Invalid regular expression. There should be at least one non-null capturing group.")
+    val arguments = if(groups.size > 2) groups[2]?.value else null
+    return AnnotatorRuleMatch(rule, identifier, arguments)
+  }
 
-  fun String.isNamedVariable() = namedVariableRegex.matches(this)
-
+  /**
+   * Returns visible entities, that is, entities that can be accessed from the `context` scope.
+   */
   fun <T> getVisibleEntities(
     context: PsiElement,
     vararg targetClasses: KClass<out PsiElement>,
@@ -100,22 +107,22 @@ interface DescriptionErrorAnnotator : Annotator {
   fun getError(
     rule: AnnotatorRule,
     processor: ErrorProcessor,
-    target: String
+    target: AnnotatorRuleMatch
   ): AnnotatorParametrizedError {
     return when (rule) {
-      AnnotatorRule.VARIABLE_DECLARATION -> {
-        processor.visibleVariables.add(NamedVariable(target))
+      AnnotatorRule.STORE_VARIABLE, AnnotatorRule.CREATE_VARIABLE, AnnotatorRule.SET_VARIABLE -> {
+        processor.visibleVariables.add(NamedVariable(target.identifier.value))
         AnnotatorParametrizedError.NO_ERROR
       }
 
-      AnnotatorRule.NO_PARENTHESES_FUNCTION -> {
-        processor.processNamedFunction(target)
+      AnnotatorRule.CALL_FUNCTION -> {
+        processor.processNamedFunction(target.identifier.value, target.arguments)
       }
 
       AnnotatorRule.ISOLATED_CODE -> {
         when {
-          target.isNamedFunction() -> processor.processNamedFunction(target)
-          target.isNamedVariable() -> processor.processNamedVariable(target)
+          target.identifier.value.isNamedFunction() -> processor.processNamedFunction(target.identifier.value)
+          target.identifier.value.isNamedVariable() -> processor.processNamedVariable(target.identifier.value)
           else -> AnnotatorParametrizedError.NO_ERROR
         }
       }
@@ -138,23 +145,16 @@ interface DescriptionErrorAnnotator : Annotator {
    * Returns the classes of PSI elements that represent named functions.
    */
   fun getNamedFunctionClasses(): Array<KClass<out PsiElement>>
+
+  /**
+   * Returns the [ErrorProcessor] for analyzing and finding the errors.
+   */
   fun getProcessor(visibleFunctions: MutableSet<NamedFunction>, visibleVariables: MutableSet<NamedVariable>): ErrorProcessor
+
+  /**
+   * Returns the [PsiElement] representing the description block.
+   * May return `null` if there is no description.
+   */
   fun getDescriptionContentOrNull(element: PsiElement): PsiElement?
-
-
-  companion object {
-    fun callSynonyms() = listOf("call", "calls", "invoke", "invokes", "execute", "executes", "run", "runs")
-    fun functionSynonyms() = listOf("function", "fun")
-    fun declareSynonyms() =
-      listOf(
-        "create", "creates", "declare", "declares", "set up", "sets up", "store", "stores",
-        "stored", "set", "sets", "assign", "assigns", "give", "gives", "initialize", "initializes"
-      )
-
-    fun variableSynonyms() = listOf("var", "variable")
-
-    val namedFunctionRegex = "[a-zA-Z_][a-zA-Z0-9_]*\\((?:\\s*[^(),\\s]+\\s*(?:,\\s*[^(),\\s]+\\s*)*)?\\s*\\)".toRegex()
-    val namedVariableRegex = "[a-zA-Z_][a-zA-Z0-9_]*".toRegex()
-  }
 
 }
