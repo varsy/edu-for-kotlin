@@ -19,13 +19,13 @@ import com.jetbrains.edu.learning.courseFormat.EduFormatNames.TASK_MD
 import com.jetbrains.edu.learning.courseFormat.ext.configurator
 import com.jetbrains.edu.learning.courseFormat.ext.project
 import com.jetbrains.edu.learning.courseFormat.tasks.EduTask
-import com.jetbrains.edu.learning.courseFormat.tasks.EduTask.Companion.EDU_TASK_TYPE
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
 import com.jetbrains.edu.learning.courseFormat.tasks.TheoryTask
-import com.jetbrains.edu.learning.courseFormat.tasks.TheoryTask.Companion.THEORY_TASK_TYPE
 import com.jetbrains.edu.learning.courseGeneration.GeneratorUtils
 import com.jetbrains.edu.learning.courseGeneration.GeneratorUtils.joinPaths
 import com.jetbrains.edu.learning.yaml.YamlFormatSynchronizer
+import com.jetbrains.edu.jarvis.tutorial.TaskType.EDU_TASK
+import com.jetbrains.edu.jarvis.tutorial.TaskType.THEORY_TASK
 
 /**
  * TutorialGenerator class is used to generate a tutorial section in a course.
@@ -58,12 +58,12 @@ class TutorialGenerator : DumbAwareAction(EduJarvisBundle.message("item.tutorial
 
   private fun generateTutorial(course: Course): VirtualFile {
     val section = course.createSection()
-    lessons.forEach { (lessonName, taskList) ->
-      section.createLesson(lessonName) { lesson ->
-        taskList.mapIndexed { index, (taskName, itemType) ->
-          createTask(taskName, lesson, index + 1, itemType) { task ->
+    tutorialComponents.forEach { tutorialLesson ->
+      section.createLesson(tutorialLesson.name) { lesson ->
+        tutorialLesson.tasks.mapIndexed { index, tutorialTask ->
+          createTask(tutorialTask.name, lesson, index + 1, tutorialTask.type) { task ->
             mutableListOf(createTaskFile(task)).apply {
-              if (itemType == EDU_TASK_TYPE) {
+              if (tutorialTask.type == EDU_TASK) {
                 add(createTaskFile(task, true))
               }
             }
@@ -82,27 +82,28 @@ class TutorialGenerator : DumbAwareAction(EduJarvisBundle.message("item.tutorial
 
   private fun Course.createSection() =
     Section().apply {
+      val course = this@createSection
       name = EduJarvisBundle.message("item.tutorial.title")
       index = 0
-      parent = this@createSection
-      this@createSection.addItem(0, this)
+      parent = course
+      course.addItem(0, this)
     }
 
   private fun Section.createLesson(lessonName: String, createTasks: (Lesson) -> List<Task>) =
     FrameworkLesson().apply {
+      val section = this@createLesson
       name = lessonName
       customPresentableName = lessonName.getPresentableName()
-      index = this@createLesson.items.size + 1
-      parent = this@createLesson
-      this@createLesson.addLesson(this)
+      index = section.items.size + 1
+      parent = section
+      section.addLesson(this)
       createTasks(this).forEach { task -> addTask(task) }
     }
 
-  private fun createTask(taskName: String, lesson: ItemContainer, taskIndex: Int, itemType: String, createTaskFiles: (Task) -> List<TaskFile>) =
+  private fun createTask(taskName: String, lesson: ItemContainer, taskIndex: Int, itemType: TaskType, createTaskFiles: (Task) -> List<TaskFile>) =
     when (itemType) {
-      THEORY_TASK_TYPE -> TheoryTask()
-      EDU_TASK_TYPE -> EduTask()
-      else -> error("Not supported task type for tutorial lesson")
+      THEORY_TASK -> TheoryTask()
+      EDU_TASK -> EduTask()
     }.apply {
       name = taskName
       index = taskIndex
@@ -156,20 +157,20 @@ class TutorialGenerator : DumbAwareAction(EduJarvisBundle.message("item.tutorial
     private const val RESOURCE_FOLDER = "/jarvis/Tutorial"
     private const val PACKAGE = "jetbrains/course/tutorial"
     private val capitalLetterRegex = Regex("([A-Z])")
-    val lessons = listOf(
-      "Introduction" to listOf ("TutorialIntroduction" to THEORY_TASK_TYPE),
-      "DogYears" to listOf (
-        "Introduction" to THEORY_TASK_TYPE,
-        "Function" to EDU_TASK_TYPE,
-        "DescriptionBlock" to EDU_TASK_TYPE,
-        "ReceivingUserInput" to EDU_TASK_TYPE,
-        "VariableDeclaration" to EDU_TASK_TYPE,
-        "FunctionCall" to EDU_TASK_TYPE,
-        "IfExpression" to EDU_TASK_TYPE,
-        "Run" to EDU_TASK_TYPE,
-        "Correction" to EDU_TASK_TYPE,
-        "AcceptanceOfCode" to EDU_TASK_TYPE
-      )
+    val tutorialComponents = listOf(
+      TutorialLesson("Introduction", listOf(TutorialTask("TutorialIntroduction", THEORY_TASK))),
+      TutorialLesson("DogYears", listOf (
+        TutorialTask("Introduction", THEORY_TASK),
+        TutorialTask("Function", EDU_TASK),
+        TutorialTask("DescriptionBlock", EDU_TASK),
+        TutorialTask("ReceivingUserInput", EDU_TASK),
+        TutorialTask("VariableDeclaration", EDU_TASK),
+        TutorialTask("FunctionCall", EDU_TASK),
+        TutorialTask("IfExpression", EDU_TASK),
+        TutorialTask("Run", EDU_TASK),
+        TutorialTask("Correction", EDU_TASK),
+        TutorialTask("AcceptanceOfCode", EDU_TASK)
+      ))
     )
   }
 }
