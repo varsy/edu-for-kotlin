@@ -1,5 +1,8 @@
-package com.jetbrains.edu.jarvis.enums
+package com.jetbrains.edu.jarvis.highlighting
 
+/**
+ * Represents a type of error that was found by the [AnnotatorRule].
+ */
 enum class AnnotatorError(val message: String) {
   NONE(""),
   UNKNOWN_FUNCTION("description.annotator.unknown.function.error"),
