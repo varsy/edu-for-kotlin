@@ -1,6 +1,4 @@
-package com.jetbrains.edu.jarvis.errors
-
-import com.jetbrains.edu.jarvis.enums.AnnotatorError
+package com.jetbrains.edu.jarvis.highlighting
 
 /**
  * A parametrized version of [AnnotatorError],
