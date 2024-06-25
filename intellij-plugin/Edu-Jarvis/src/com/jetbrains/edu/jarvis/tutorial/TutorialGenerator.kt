@@ -1,8 +1,18 @@
-package com.jetbrains.edu.learning.courseGeneration.jarvis.tutorial
+package com.jetbrains.edu.jarvis.tutorial
 
+import com.intellij.ide.projectView.ProjectView
+import com.intellij.openapi.actionSystem.ActionUpdateThread
+import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.openapi.actionSystem.CommonDataKeys
+import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.vfs.VirtualFile
+import com.jetbrains.edu.EducationalCoreIcons
+import com.jetbrains.edu.coursecreator.CCUtils
+import com.jetbrains.edu.jarvis.messages.EduJarvisBundle
+import com.jetbrains.edu.learning.StudyTaskManager
 import com.jetbrains.edu.learning.courseDir
 import com.jetbrains.edu.learning.courseFormat.*
+import com.jetbrains.edu.learning.courseFormat.EduFormatNames.KOTLIN
 import com.jetbrains.edu.learning.courseFormat.EduFormatNames.TASK_MD
 import com.jetbrains.edu.learning.courseFormat.ext.configurator
 import com.jetbrains.edu.learning.courseFormat.ext.project
@@ -13,16 +23,38 @@ import com.jetbrains.edu.learning.courseFormat.tasks.TheoryTask
 import com.jetbrains.edu.learning.courseFormat.tasks.TheoryTask.Companion.THEORY_TASK_TYPE
 import com.jetbrains.edu.learning.courseGeneration.GeneratorUtils
 import com.jetbrains.edu.learning.courseGeneration.GeneratorUtils.joinPaths
-import com.jetbrains.edu.learning.messages.EduCoreBundle
 import com.jetbrains.edu.learning.yaml.YamlFormatSynchronizer
 
 /**
- * TutorialGenerator is a utility object for generating a tutorial section in a course.
+ * TutorialGenerator class is used to generate a tutorial section in a course.
  * The section includes lessons designed to assist users in learning the new syntax for programming in the native language.
- * The tutorial section can be accessed by navigating to New -> Section -> Tutorial.
+ * The tutorial section can be accessed by right-clicking on the project root directory (main folder) and navigating to New -> Tutorial.
  */
-object TutorialGenerator {
-  fun generateTutorial(course: Course): VirtualFile {
+// TODO: change the icon
+class TutorialGenerator : DumbAwareAction(EduJarvisBundle.message("item.tutorial.title"), "", EducationalCoreIcons.Section) {
+  override fun actionPerformed(e: AnActionEvent) {
+    val project = e.project ?: return
+    val course = StudyTaskManager.getInstance(project).course ?: return
+    val itemDir = generateTutorial(course)
+    ProjectView.getInstance(project).select(itemDir, itemDir, true)
+  }
+
+  override fun update(event: AnActionEvent) {
+    val presentation = event.presentation
+    presentation.isEnabledAndVisible = false
+    val project = event.getData(CommonDataKeys.PROJECT) ?: return
+    val course = StudyTaskManager.getInstance(project).course ?: return
+    if (!CCUtils.isCourseCreator(project)) return
+    if (course.languageId != KOTLIN) return
+    val selectedFiles = event.getData(CommonDataKeys.VIRTUAL_FILE_ARRAY) ?: return
+    if (selectedFiles[0] != project.courseDir) return
+    if (CommonDataKeys.PSI_FILE.getData(event.dataContext) != null) return
+    presentation.isEnabledAndVisible = true
+  }
+
+  override fun getActionUpdateThread() = ActionUpdateThread.BGT
+
+  private fun generateTutorial(course: Course): VirtualFile {
     val section = course.createSection()
     lessons.forEach { (lessonName, taskList) ->
       section.createLesson(lessonName) { lesson ->
@@ -48,7 +80,7 @@ object TutorialGenerator {
 
   private fun Course.createSection() =
     Section().apply {
-      name = EduCoreBundle.message("item.tutorial.title")
+      name = EduJarvisBundle.message("item.tutorial.title")
       index = 0
       parent = this@createSection
       this@createSection.addItem(0, this)
@@ -115,22 +147,24 @@ object TutorialGenerator {
 
   private fun String.toPackageFormat() = replace(capitalLetterRegex, "/$1").lowercase()
 
-  private const val RESOURCE_FOLDER = "/jarvis/Tutorial"
-  private const val PACKAGE = "jetbrains/course/tutorial"
-  private val capitalLetterRegex = Regex("([A-Z])")
-  val lessons = listOf(
-    "Introduction" to listOf ("TutorialIntroduction" to THEORY_TASK_TYPE),
-    "DogYears" to listOf (
-      "Introduction" to THEORY_TASK_TYPE,
-      "Function" to EDU_TASK_TYPE,
-      "DescriptionBlock" to EDU_TASK_TYPE,
-      "ReceivingUserInput" to EDU_TASK_TYPE,
-      "VariableDeclaration" to EDU_TASK_TYPE,
-      "FunctionCall" to EDU_TASK_TYPE,
-      "IfExpression" to EDU_TASK_TYPE,
-      "Run" to EDU_TASK_TYPE,
-      "Correction" to EDU_TASK_TYPE,
-      "AcceptanceOfCode" to EDU_TASK_TYPE
+  companion object {
+    private const val RESOURCE_FOLDER = "/jarvis/Tutorial"
+    private const val PACKAGE = "jetbrains/course/tutorial"
+    private val capitalLetterRegex = Regex("([A-Z])")
+    val lessons = listOf(
+      "Introduction" to listOf ("TutorialIntroduction" to THEORY_TASK_TYPE),
+      "DogYears" to listOf (
+        "Introduction" to THEORY_TASK_TYPE,
+        "Function" to EDU_TASK_TYPE,
+        "DescriptionBlock" to EDU_TASK_TYPE,
+        "ReceivingUserInput" to EDU_TASK_TYPE,
+        "VariableDeclaration" to EDU_TASK_TYPE,
+        "FunctionCall" to EDU_TASK_TYPE,
+        "IfExpression" to EDU_TASK_TYPE,
+        "Run" to EDU_TASK_TYPE,
+        "Correction" to EDU_TASK_TYPE,
+        "AcceptanceOfCode" to EDU_TASK_TYPE
+      )
     )
-  )
+  }
 }

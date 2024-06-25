@@ -38,4 +38,11 @@
       <descriptionDirectoryName>DraftIntentionAction</descriptionDirectoryName>
     </intentionAction>
   </extensions>
+
+  <actions>
+    <action id="Educational.Educator.CreateTutorial"
+            class="com.jetbrains.edu.jarvis.tutorial.TutorialGenerator">
+      <add-to-group group-id="Educational.Educator.NewFile" anchor="first"/>
+    </action>
+  </actions>
 </idea-plugin>
