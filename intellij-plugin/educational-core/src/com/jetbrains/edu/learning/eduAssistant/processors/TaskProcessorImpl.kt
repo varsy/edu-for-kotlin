@@ -20,8 +20,8 @@ import com.jetbrains.edu.learning.eduAssistant.context.differ.filterAllowedModif
 import com.jetbrains.edu.learning.eduAssistant.context.differ.getChangedContent
 import com.jetbrains.edu.learning.eduAssistant.context.function.signatures.*
 import com.jetbrains.edu.learning.eduAssistant.inspection.applyInspections
-import com.jetbrains.edu.learning.eduState
 import com.jetbrains.edu.learning.getTextFromTaskTextFile
+import com.jetbrains.edu.learning.selectedTaskFile
 import com.jetbrains.educational.ml.hints.context.TestFailureContext
 import com.jetbrains.educational.ml.hints.processors.TaskProcessor
 import com.jetbrains.rd.util.firstOrNull
@@ -35,10 +35,8 @@ class TaskProcessorImpl(val task: Task) : TaskProcessor {
 
   private val language = task.course.languageById ?: error("Language was not found")
 
-  private val state = project.eduState ?: error("State was not found")
-
   override fun getFullTaskFileText() = runReadAction {
-    state.taskFile.getText(state.project) ?: error("Failed to retrieve the text of the task file")
+    project.selectedTaskFile?.getText(project) ?: error("Failed to retrieve the text of the task file")
   }
 
   override fun getLowercaseLanguageDisplayName() = language.displayName.lowercase()
@@ -128,7 +126,7 @@ class TaskProcessorImpl(val task: Task) : TaskProcessor {
       it.bodyLineCount != null && (it.bodyLineCount ?: Int.MAX_VALUE) <= MAX_BODY_LINES_IN_SHORT_FUNCTION
     } ?: return null
     if (signature != null && functionsSignaturesFromSolution.contains(signature)) {
-      val taskFile = currentTaskFile ?: state.taskFile
+      val taskFile = currentTaskFile ?: project.selectedTaskFile ?: error("Can't get task file")
       return runReadAction {
         val psiFileSolution = taskFile.getSolution().createPsiFileForSolution(project, language)
         FunctionSignatureResolver.getFunctionBySignature(
@@ -151,9 +149,12 @@ class TaskProcessorImpl(val task: Task) : TaskProcessor {
     val codePsiFile = PsiFileFactory.getInstance(project).createFileFromText(CODE_PSI_FILE_NAME, language, codeStr)
     val functionName = FilesDiffer.findDifferentMethods(codePsiFile, codeHintPsiFile, language, true)?.firstOrNull()
     ?: error("The code prompt didn't make any difference")
-    currentTaskFile = task.taskFiles[task.taskFilesWithChangedFunctions?.filter { (_, functions) ->
-      functionName in functions
-    }?.firstOrNull()?.key ?: state.taskFile.name] ?: state.taskFile
+    val selectedTaskFile = project.selectedTaskFile
+    val taskName = task.taskFilesWithChangedFunctions
+      ?.filter { (_, functions) -> functionName in functions }
+      ?.firstOrNull()
+      ?.key ?: selectedTaskFile ?: error("Can't get task name")
+    currentTaskFile = task.taskFiles[taskName] ?: selectedTaskFile ?: error("Can't get task file")
     functionName
   }
 
@@ -171,7 +172,7 @@ class TaskProcessorImpl(val task: Task) : TaskProcessor {
   }
 
   override fun applyCodeHint(codeHint: String): String? {
-    val taskFile = currentTaskFile ?: state.taskFile
+    val taskFile = currentTaskFile ?: project.selectedTaskFile ?: return null
     val virtualFile = taskFile.getVirtualFile(project) ?: return null
     val virtualFileText = runReadAction { virtualFile.getTextFromTaskTextFile() } ?: return null
     val psiFileCopy = runReadAction {

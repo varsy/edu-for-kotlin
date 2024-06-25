@@ -7,36 +7,40 @@ import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.ProgressManager
+import com.intellij.openapi.progress.Task.Backgroundable
 import com.intellij.openapi.progress.runBlockingCancellable
 import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.project.Project
-import com.jetbrains.edu.assistant.validation.messages.EduAndroidAiAssistantValidationBundle
-import com.jetbrains.edu.learning.actions.ActionWithProgressIcon
-import com.jetbrains.edu.learning.courseFormat.Course
-import com.jetbrains.edu.learning.courseFormat.ext.allTasks
-import com.jetbrains.edu.learning.courseFormat.tasks.EduTask
-import com.jetbrains.edu.learning.courseFormat.tasks.Task
-import com.intellij.openapi.progress.Task.Backgroundable
 import com.jetbrains.edu.assistant.validation.accuracy.AccuracyCalculator
-import com.jetbrains.edu.assistant.validation.util.*
-import com.jetbrains.edu.learning.EduState
+import com.jetbrains.edu.assistant.validation.messages.EduAndroidAiAssistantValidationBundle
+import com.jetbrains.edu.assistant.validation.util.StudentSolutionRecord
+import com.jetbrains.edu.assistant.validation.util.parseCsvFile
+import com.jetbrains.edu.assistant.validation.util.propagateAuthorSolution
+import com.jetbrains.edu.learning.actions.ActionWithProgressIcon
 import com.jetbrains.edu.learning.course
+import com.jetbrains.edu.learning.courseFormat.Course
 import com.jetbrains.edu.learning.courseFormat.FrameworkLesson
 import com.jetbrains.edu.learning.courseFormat.Lesson
+import com.jetbrains.edu.learning.courseFormat.ext.allTasks
 import com.jetbrains.edu.learning.courseFormat.ext.project
 import com.jetbrains.edu.learning.courseFormat.ext.updateContent
-import com.jetbrains.edu.learning.eduState
+import com.jetbrains.edu.learning.courseFormat.tasks.EduTask
+import com.jetbrains.edu.learning.courseFormat.tasks.Task
 import com.jetbrains.edu.learning.framework.FrameworkLessonManager
 import com.jetbrains.edu.learning.navigation.NavigationUtils
-import java.time.LocalDateTime
+import com.jetbrains.edu.learning.selectedTaskFile
+import com.jetbrains.edu.learning.taskToolWindow.ui.TaskToolWindowView
 import org.apache.commons.csv.CSVFormat
 import org.apache.commons.csv.CSVRecord
-import org.jetbrains.kotlinx.dataframe.*
+import org.jetbrains.kotlinx.dataframe.DataFrame
 import org.jetbrains.kotlinx.dataframe.api.forEach
 import java.io.File
 import java.io.FileWriter
 import java.nio.file.Path
-import kotlin.io.path.*
+import java.time.LocalDateTime
+import kotlin.io.path.Path
+import kotlin.io.path.createDirectories
+import kotlin.io.path.div
 
 /**
  * Abstract class for performing validation actions in the educational AI assistant.
@@ -125,14 +129,13 @@ abstract class ValidationAction<T> : ActionWithProgressIcon(), DumbAware {
               NavigationUtils.navigateToTask(project, firstTask)
             }
           }
+          val currentTask = TaskToolWindowView.getInstance(project).currentTask
           for (task in lesson.taskList) {
             if (task is EduTask) {
-              val project = task.project ?: error("Cannot get project")
-              val eduState = project.eduState ?: error("Cannot get eduState for project ${project.name}")
               if (isNavigationRequired) {
                 ApplicationManager.getApplication().invokeAndWait {
                   ApplicationManager.getApplication().runWriteAction {
-                    NavigationUtils.navigateToTask(project, task, fromTask = project.eduState?.task, showDialogIfConflict = false)
+                    NavigationUtils.navigateToTask(project, task, fromTask = currentTask, showDialogIfConflict = false)
                   }
                 }
               }
@@ -143,7 +146,7 @@ abstract class ValidationAction<T> : ActionWithProgressIcon(), DumbAware {
               studentSolutions?.let {
                 it.getSolutionListForTask(lesson.name, task.name).forEach { studentCode ->
                   ApplicationManager.getApplication().invokeAndWait {
-                    lesson.replaceContent(task, studentCode, eduState, project)
+                    lesson.replaceContent(task, studentCode, project)
                   }
                   runBlockingCancellable {
                     lessonRecords.addAll(buildRecords(task, lesson))
@@ -233,8 +236,9 @@ abstract class ValidationAction<T> : ActionWithProgressIcon(), DumbAware {
     frameworkLessonManager.saveExternalChanges(task, externalState)
   }
 
-  protected fun Lesson.replaceContent(task: Task, newCode: String, eduState: EduState, project: Project) {
-    eduState.taskFile.updateContent(project, newCode)
+  protected fun Lesson.replaceContent(task: Task, newCode: String, project: Project) {
+    val taskFile = project.selectedTaskFile ?: error("Can't get task file")
+    taskFile.updateContent(project, newCode)
     if (this is FrameworkLesson) {
       changeStateForMainFile(task, newCode)
     }

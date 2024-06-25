@@ -80,7 +80,7 @@ abstract class SequentialCodeValidationAction<T> : CodeValidationAction<T>() {
 
         currentUserCode = response?.codeHint?.value ?: error("Code hint is empty")
 
-        lesson.replaceContent(task, currentUserCode, baseAssistantInfoStorage.eduState, baseAssistantInfoStorage.project)
+        lesson.replaceContent(task, currentUserCode, baseAssistantInfoStorage.project)
 
         runCheckAction(baseAssistantInfoStorage.project)
 
@@ -95,7 +95,7 @@ abstract class SequentialCodeValidationAction<T> : CodeValidationAction<T>() {
       }
     }
 
-    lesson.replaceContent(task, currentUserCode, baseAssistantInfoStorage.eduState, baseAssistantInfoStorage.project)
+    lesson.replaceContent(task, currentUserCode, baseAssistantInfoStorage.project)
     return records
   }
   companion object {

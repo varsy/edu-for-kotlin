@@ -81,6 +81,7 @@ class AutoHintValidationAction : ValidationAction<ValidationOfHintsDataframeReco
   override suspend fun buildRecords(task: EduTask, lesson: Lesson): List<ValidationOfHintsDataframeRecord> {
     val taskProcessor = TaskProcessorImpl(task)
     val project = task.project ?: error("Cannot get project")
+    val taskFile = project.selectedTaskFile ?: error("Cannot get task file of ${task.name} task")
     val response = AiHintsAssistant.getAssistant(taskProcessor).getHint()
     val assistantHint = response.getOrNull()
 
@@ -96,7 +97,7 @@ class AutoHintValidationAction : ValidationAction<ValidationOfHintsDataframeReco
         taskId = task.id,
         taskName = task.name,
         taskDescription = taskProcessor.getTaskTextRepresentation(),
-        userCode = project.selectedTaskFile?.getVirtualFile(project)?.getTextFromTaskTextFile() ?: "",
+        userCode = taskFile.getVirtualFile(project)?.getTextFromTaskTextFile() ?: "",
         nextStepCodeHint = assistantHint?.codeHint?.value ?: "",
         nextStepTextHint = assistantHint?.textHint?.value ?: "",
         errors = "${EduAndroidAiAssistantValidationBundle.message("action.validation.error")} ${e.message}"
