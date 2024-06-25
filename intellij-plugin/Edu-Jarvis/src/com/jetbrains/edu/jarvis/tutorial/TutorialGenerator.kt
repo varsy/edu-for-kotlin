@@ -14,7 +14,6 @@ import com.jetbrains.edu.jarvis.messages.EduJarvisBundle
 import com.jetbrains.edu.learning.StudyTaskManager
 import com.jetbrains.edu.learning.courseDir
 import com.jetbrains.edu.learning.courseFormat.*
-import com.jetbrains.edu.learning.courseFormat.EduFormatNames.KOTLIN
 import com.jetbrains.edu.learning.courseFormat.EduFormatNames.TASK_MD
 import com.jetbrains.edu.learning.courseFormat.ext.configurator
 import com.jetbrains.edu.learning.courseFormat.ext.project
@@ -26,6 +25,9 @@ import com.jetbrains.edu.learning.courseGeneration.GeneratorUtils.joinPaths
 import com.jetbrains.edu.learning.yaml.YamlFormatSynchronizer
 import com.jetbrains.edu.jarvis.tutorial.TaskType.EDU_TASK
 import com.jetbrains.edu.jarvis.tutorial.TaskType.THEORY_TASK
+import com.jetbrains.edu.jarvis.tutorial.ContentType.MAIN
+import com.jetbrains.edu.jarvis.tutorial.ContentType.TEST
+import com.jetbrains.edu.jarvis.utils.isJarvisApplicable
 
 /**
  * TutorialGenerator class is used to generate a tutorial section in a course.
@@ -33,6 +35,7 @@ import com.jetbrains.edu.jarvis.tutorial.TaskType.THEORY_TASK
  * The tutorial section can be accessed by right-clicking on the project root directory (main folder) and navigating to New -> Tutorial.
  */
 // TODO: change the icon
+@Suppress("ComponentNotRegistered")
 class TutorialGenerator : DumbAwareAction(EduJarvisBundle.message("item.tutorial.title"), "", EducationalCoreIcons.Section) {
   override fun actionPerformed(e: AnActionEvent) {
     val project = e.project ?: return
@@ -47,9 +50,9 @@ class TutorialGenerator : DumbAwareAction(EduJarvisBundle.message("item.tutorial
     val project = event.getData(CommonDataKeys.PROJECT) ?: return
     val course = StudyTaskManager.getInstance(project).course ?: return
     if (!CCUtils.isCourseCreator(project)) return
-    if (course.languageId != KOTLIN) return
+    if (!isJarvisApplicable(course)) return
     val selectedFiles = event.getData(CommonDataKeys.VIRTUAL_FILE_ARRAY) ?: return
-    if (selectedFiles[0] != project.courseDir) return
+    if (selectedFiles.firstOrNull() != project.courseDir) return
     if (CommonDataKeys.PSI_FILE.getData(event.dataContext) != null) return
     presentation.isEnabledAndVisible = true
   }
@@ -62,9 +65,9 @@ class TutorialGenerator : DumbAwareAction(EduJarvisBundle.message("item.tutorial
       section.createLesson(tutorialLesson.name) { lesson ->
         tutorialLesson.tasks.mapIndexed { index, tutorialTask ->
           createTask(tutorialTask.name, lesson, index + 1, tutorialTask.type) { task ->
-            mutableListOf(createTaskFile(task)).apply {
+            mutableListOf(createTaskFile(task, MAIN)).apply {
               if (tutorialTask.type == EDU_TASK) {
-                add(createTaskFile(task, true))
+                add(createTaskFile(task, TEST))
               }
             }
           }
@@ -73,11 +76,15 @@ class TutorialGenerator : DumbAwareAction(EduJarvisBundle.message("item.tutorial
     }
     val project = course.project ?: error("Project is not found")
     val virtualFile = GeneratorUtils.createSection(project, section, project.courseDir)
+    saveSectionStructureToYaml(section, course)
+    return virtualFile
+  }
+
+  private fun saveSectionStructureToYaml(section: Section, course: Course) {
     section.lessons.forEach { it.taskList.forEach { task -> YamlFormatSynchronizer.saveItemWithRemoteInfo(task) } }
     section.lessons.forEach { lesson -> YamlFormatSynchronizer.saveItem(lesson) }
     YamlFormatSynchronizer.saveItem(section)
     YamlFormatSynchronizer.saveItem(course)
-    return virtualFile
   }
 
   private fun Course.createSection() =
@@ -96,6 +103,7 @@ class TutorialGenerator : DumbAwareAction(EduJarvisBundle.message("item.tutorial
       customPresentableName = lessonName.getPresentableName()
       index = section.items.size + 1
       parent = section
+      isTemplateBased = false
       section.addLesson(this)
       createTasks(this).forEach { task -> addTask(task) }
     }
@@ -107,36 +115,37 @@ class TutorialGenerator : DumbAwareAction(EduJarvisBundle.message("item.tutorial
     }.apply {
       name = taskName
       index = taskIndex
-      customPresentableName = "${lesson.parent.presentableName} - ${lesson.presentableName} - ${taskName.getPresentableName()}"
+      customPresentableName = getTaskPresentableName(lesson, taskName)
       parent = lesson
       descriptionText = getFileContentFromResources(lesson.course, joinPaths(RESOURCE_FOLDER, lesson.name, taskName, TASK_MD))
       descriptionFormat = DescriptionFormat.MD
       taskFiles = createTaskFiles(this).associateBy { it.name }
     }
 
-  private fun createTaskFile(task: Task, isTests: Boolean = false): TaskFile {
-    val fileName = getFileName(task.course, isTests)
+  private fun getTaskPresentableName(lesson: ItemContainer, taskName: String) =
+    "${lesson.parent.presentableName} - ${lesson.presentableName} - ${taskName.getPresentableName()}"
+
+  private fun createTaskFile(task: Task, contentType: ContentType): TaskFile {
+    val fileName = getFileName(task.course, contentType)
     return TaskFile().apply {
-      name = getPath(task, fileName, isTests)
+      name = getPath(task, fileName, contentType)
       contents = InMemoryTextualContents(getFileContentFromResources(
         task.course,
         joinPaths(RESOURCE_FOLDER, task.lesson.name, task.name, fileName)
       ))
-      isVisible = !isTests
+      isVisible = contentType.isVisible
       this.task = task
     }
   }
 
-  private fun getFileName(course: Course, isTests: Boolean) = if (isTests) {
-    course.configurator?.courseBuilder?.testTemplateName(course) ?: error("Test file name not configured")
-  } else {
-    course.configurator?.courseBuilder?.mainTemplateName(course) ?: error("Main file name not configured")
-  }
+  private fun getFileName(course: Course, contentType: ContentType) = when (contentType) {
+      TEST -> course.configurator?.courseBuilder?.testTemplateName(course) ?: error("Test file name not configured")
+      MAIN -> course.configurator?.courseBuilder?.mainTemplateName(course) ?: error("Main file name not configured")
+    }
 
-  private fun getPath(task: Task, fileName: String, isTests: Boolean) = if (isTests) {
-    joinPaths(task.course.configurator?.testDirs?.firstOrNull(), fileName)
-  } else {
-    joinPaths(
+  private fun getPath(task: Task, fileName: String, contentType: ContentType) = when (contentType) {
+    TEST -> joinPaths(task.course.configurator?.testDirs?.firstOrNull(), fileName)
+    MAIN -> joinPaths(
       task.course.configurator?.sourceDir ?: error("Can't find source dir for task ${task.name}"),
       PACKAGE + task.lesson.name.toPackageFormat(),
       fileName
