@@ -2,7 +2,7 @@ grammar ProblemSolvingLanguage;
 
 sentence: arbitraryText? expr arbitraryText? EOF;
 
-arbitraryText : (IDENTIFIER | AND | VALUE | ELSE | THEN | LOOP | EACH | WHILE | DO | EMPTY | RANDOM | STRING_WORD | VARIABLE | SET | CALLED | FUNCTION | PRINT | STORE | CALL | IN | CREATE | BOOL | REPEAT | UNTIL | ADD | EQUAL | RETURN | READ | WITH | GET | CONST)+?;
+arbitraryText : ( ARGUMENT | ARTICLE | MODIFIED | BY | IDENTIFIER | AND | VALUE | ELSE | THEN | LOOP | EACH | WHILE | DO | EMPTY | RANDOM | STRING_WORD | VARIABLE | SET | CALLED | FUNCTION | PRINT | STORE | CALL | IN | CREATE | BOOL | REPEAT | UNTIL | ADD | EQUAL | RETURN | READ | WITH | GET | CONST)+?;
 
 word: STRING_WORD | (RANDOM STRING_WORD) | (EMPTY STRING_WORD) | NUMBER | CODE;
 
@@ -11,11 +11,11 @@ value: NUMBER | STRING | CODE | IDENTIFIER | BOOL;
 contains: value arbitraryText? IN arbitraryText? CODE;
 
 expr: PRINT arbitraryText? (STRING | CODE)?
-    | CALL arbitraryText? CODE FUNCTION? (WITH arbitraryText? value+?)? arbitraryText? (GET arbitraryText? CODE)?
+    | CALL arbitraryText? FUNCTION? CODE (WITH arbitraryText? value+?)? arbitraryText? (GET arbitraryText? CODE)?
     | STORE arbitraryText? IN arbitraryText? VARIABLE? CODE
     | CREATE arbitraryText? word? VARIABLE? CALLED? CODE (EQUAL arbitraryText? word)?
     | SET arbitraryText? VALUE? arbitraryText? value
-    | SET VARIABLE? CALLED? (IDENTIFIER | CODE) arbitraryText? VALUE? value
+    | SET arbitraryText? VARIABLE? CALLED? (IDENTIFIER | CODE) arbitraryText? VALUE? value
     | IF arbitraryText? (BOOL | CODE | contains) arbitraryText? (EQUAL (NUMBER | STRING | CODE | IDENTIFIER))? (THEN? arbitraryText? expr arbitraryText?)? (ELSE arbitraryText? expr)?
     | REPEAT arbitraryText? (UNTIL | WHILE) arbitraryText?
     | WHILE arbitraryText? DO arbitraryText?
@@ -31,6 +31,11 @@ expr: PRINT arbitraryText? (STRING | CODE)?
     | expr AND (expr | arbitraryText)
     | expr arbitraryText? expr;
 
+
+ARGUMENT: 'argument' | 'arguments';
+ARTICLE: 'a' | 'an' | 'the';
+MODIFIED: 'multiplied' | 'divided' | 'incremented' | 'decremented';
+BY: 'by';
 AND: 'and';
 VALUE: 'value' | 'number';
 IF: 'if';

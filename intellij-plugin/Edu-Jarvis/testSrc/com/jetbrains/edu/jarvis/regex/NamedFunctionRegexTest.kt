@@ -1,23 +1,21 @@
 package com.jetbrains.edu.jarvis.regex
 
-import com.jetbrains.edu.jarvis.DescriptionErrorAnnotator.Companion.namedFunctionRegex
+import com.jetbrains.edu.jarvis.TestGenerator.generateIdentifier
+import com.jetbrains.edu.jarvis.TestGenerator.generateNamedFunction
+import com.jetbrains.edu.jarvis.models.NamedFunction
 import com.jetbrains.edu.jarvis.regex.RegexTest.Companion.MAX_IDENTIFIER_NAME_LENGTH
 import com.jetbrains.edu.jarvis.regex.RegexTest.Companion.MAX_NUMBER_OF_ARGS
 import com.jetbrains.edu.jarvis.regex.RegexTest.Companion.MIN_IDENTIFIER_NAME_LENGTH
 import com.jetbrains.edu.jarvis.regex.RegexTest.Companion.MIN_NUMBER_OF_ARGS
 import com.jetbrains.edu.jarvis.regex.RegexTest.Companion.NUMBER_OF_RUNS
-import com.jetbrains.edu.jarvis.regex.RegexTest.Companion.generateIdentifier
-import com.jetbrains.edu.jarvis.regex.RegexTest.Companion.generateNamedFunction
 import com.jetbrains.edu.learning.EduTestCase
 
 class NamedFunctionRegexTest: RegexTest, EduTestCase() {
 
-  override val regex = namedFunctionRegex
-
-
-  override fun shouldMatchGroup(): List<TestAnswer> = emptyList()
+  override val regex = NamedFunction.namedFunctionRegex
 
   override fun shouldMatch() =
+    // Generated smoke tests
     List(NUMBER_OF_RUNS) {
       generateNamedFunction(
         (MIN_IDENTIFIER_NAME_LENGTH..MAX_IDENTIFIER_NAME_LENGTH).random(),
@@ -26,31 +24,29 @@ class NamedFunctionRegexTest: RegexTest, EduTestCase() {
         }
       )
   } + listOf(
-    "foo(1, abc, 2)",
-    "bar()",
-    "buzz(\"hi\")",
-    "test1(a1,b1,c1)",
-    "test2(a2)",
-    "_test3(\"string\", variable, 123)",
+    "foo(1, abc, 2)", // multiple parameters
+    "bar()", // simple function
+    "buzz(\"hi\")", // function with a string parameter
+    "_test3(\"string\", 33.13, 123)", // function with complex parameters
   )
 
   override fun shouldNotMatch(): List<String> =
     listOf(
-    "123test()",
-    "test (a, b, c",
-    "test(a,b,)",
-    "test(a b c)",
-    "test(a,,b,c)",
-    "test(a,b c)",
-    "test",
-    "(test)",
-    "(test",
-    "test)",
-    "()",
-    "test!(2)"
+    "123test()", // invalid identifier name
+    "test (a, b, c", // parentheses aren't closed
+    "test(a,b,)", // trailing separator
+    "test(a b c)", // no separators
+    "test(a,,b,c)", // missing argument
+    "test(a,b c)", // missing separator
+    "test", // no parentheses
+    "(test)", // no identifier name
+    "(test", // parentheses aren't closed, no identifier name
+    "test)", // parentheses aren't closed, no identifier name
+    "()", // no identifier name
+    "test!(2)" // invalid identifier name
   )
 
-  fun testValidNamedFunctions() = testShouldMatch()
-  fun testInvalidNamedFunctions() = testShouldNotMatch()
+  fun `test valid named functions`() = runTestShouldMatch()
+  fun `test invalid named functions`() = runTestShouldNotMatch()
 
 }
