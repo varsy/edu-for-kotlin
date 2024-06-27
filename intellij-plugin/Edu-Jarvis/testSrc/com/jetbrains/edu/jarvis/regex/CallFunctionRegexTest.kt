@@ -6,6 +6,7 @@ import com.jetbrains.edu.jarvis.regex.RegexTest.Companion.MAX_IDENTIFIER_NAME_LE
 import com.jetbrains.edu.jarvis.regex.RegexTest.Companion.MIN_IDENTIFIER_NAME_LENGTH
 import com.jetbrains.edu.jarvis.regex.RegexTest.Companion.NUMBER_OF_RUNS
 import com.jetbrains.edu.learning.EduTestCase
+import org.junit.Test
 
 class CallFunctionRegexTest : RegexTest, EduTestCase() {
 
@@ -64,8 +65,10 @@ class CallFunctionRegexTest : RegexTest, EduTestCase() {
     "invoke the `foo", // no closing backticks
   )
 
-
+  @Test
   fun `test valid function call sentences`() = runTestShouldMatch()
+
+  @Test
   fun `test invalid function call sentences`() = runTestShouldNotMatch()
 
 }
