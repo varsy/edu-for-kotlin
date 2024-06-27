@@ -14,11 +14,6 @@ interface RegexTest {
   val regex: Regex
 
   /**
-   * Returns a [Collection] of test cases that should match with the `regex`.
-   */
-  fun shouldMatch(): Collection<String> = emptyList()
-
-  /**
    * Returns a [Collection] of test cases that should **not** match with the `regex`.
    */
   fun shouldNotMatch(): Collection<String> = emptyList()
@@ -26,16 +21,13 @@ interface RegexTest {
   /**
    * Returns a [Collection] of test cases that should match with the `regex` and have the required capturing groups.
    */
-  fun shouldMatchGroup(): Collection<TestAnswer> = emptyList()
-
-  fun runTestShouldMatch() =
-    shouldMatch().forEach { assertTrue(regex.matches(it)) }
+  fun shouldMatch(): Collection<TestAnswer> = emptyList()
 
   fun runTestShouldNotMatch() =
     shouldNotMatch().forEach { assertFalse(regex.matches(it)) }
 
-  fun runTestShouldMatchGroup() =
-    shouldMatchGroup().forEach { assertTrue(regex.find(it.input)!!.groups.values() == it.answer) }
+  fun runTestShouldMatch() =
+    shouldMatch().forEach { assertTrue(regex.find(it.input)!!.groups.values() == it.answer) }
 
   fun MatchGroupCollection.values() = this.mapNotNull { it?.value }.drop(1)
 
@@ -44,9 +36,6 @@ interface RegexTest {
 
     const val MIN_IDENTIFIER_NAME_LENGTH = 4
     const val MAX_IDENTIFIER_NAME_LENGTH = 30
-
-    const val MIN_NUMBER_OF_ARGS = 0
-    const val MAX_NUMBER_OF_ARGS = 10
 
   }
 

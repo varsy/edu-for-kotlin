@@ -2,10 +2,8 @@ package com.jetbrains.edu.kotlin.jarvis.psi
 
 import com.intellij.psi.PsiElement
 import com.jetbrains.edu.jarvis.DescriptionErrorAnnotator
-import com.jetbrains.edu.jarvis.ErrorProcessor
 import com.jetbrains.edu.jarvis.models.NamedFunction
 import com.jetbrains.edu.jarvis.models.NamedVariable
-import com.jetbrains.edu.kotlin.KtErrorProcessor
 import com.jetbrains.edu.kotlin.jarvis.utils.isDescriptionBlock
 import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.psi.psiUtil.getChildOfType
@@ -40,8 +38,6 @@ class KtDescriptionErrorAnnotator : DescriptionErrorAnnotator {
 
   override fun getNamedVariableClasses(): Array<KClass<out PsiElement>> = arrayOf(KtProperty::class, KtParameter::class)
   override fun getNamedFunctionClasses(): Array<KClass<out PsiElement>> = arrayOf(KtNamedFunction::class)
-  override fun getProcessor(visibleFunctions: MutableSet<NamedFunction>, visibleVariables: MutableSet<NamedVariable>): ErrorProcessor =
-    KtErrorProcessor(visibleFunctions, visibleVariables)
 
   override fun getDescriptionContentOrNull(element: PsiElement): PsiElement? = element.getChildOfType<KtValueArgumentList>()
 }

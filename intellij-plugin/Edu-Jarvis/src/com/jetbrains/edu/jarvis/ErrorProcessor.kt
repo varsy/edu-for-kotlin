@@ -8,61 +8,46 @@ import com.jetbrains.edu.jarvis.models.NamedVariable
 /**
  * Returns an [AnnotatorParametrizedError] associated with the relevant context.
  */
-interface ErrorProcessor {
-
-  val visibleFunctions: MutableCollection<NamedFunction>
-  val visibleVariables: MutableCollection<NamedVariable>
+class ErrorProcessor(
+  private val visibleFunctions: Collection<NamedFunction>, val visibleVariables: MutableCollection<NamedVariable>
+) {
 
   /**
-   * Processes the provided `target` string as a named function and
-   * returns the associated [AnnotatorParametrizedError].
+   * Processes the provided [NamedFunction].
+   * Returns the associated [AnnotatorParametrizedError].
    */
-  fun processNamedFunction(target: String, arguments: String? = null): AnnotatorParametrizedError {
-    val namedFunction = target.toNamedFunction(arguments)
-    return when {
-      visibleFunctions.none { it.name == namedFunction.name } ->
-        AnnotatorParametrizedError(
-          AnnotatorError.UNKNOWN_FUNCTION,
-          arrayOf(namedFunction.name)
-        )
+  fun processNamedFunction(namedFunction: NamedFunction): AnnotatorParametrizedError {
 
-      namedFunction !in visibleFunctions ->
-        AnnotatorParametrizedError(
-          AnnotatorError.WRONG_NUMBER_OF_ARGUMENTS,
-          arrayOf(namedFunction.name, namedFunction.numberOfArguments)
-        )
+    return when {
+      visibleFunctions.none { it.name == namedFunction.name } -> AnnotatorParametrizedError(
+        AnnotatorError.UNKNOWN_FUNCTION, arrayOf(namedFunction.name)
+      )
+
+      namedFunction !in visibleFunctions -> AnnotatorParametrizedError(
+        AnnotatorError.WRONG_NUMBER_OF_ARGUMENTS, arrayOf(namedFunction.name, namedFunction.numberOfArguments)
+      )
 
       else -> AnnotatorParametrizedError.NO_ERROR
+
     }
   }
 
   /**
-   * Processes the provided `target` as a named variable and
-   * returns the associated [AnnotatorParametrizedError].
+   * Processes the provided [NamedVariable].
+   * Returns the associated [AnnotatorParametrizedError].
    */
-  fun processNamedVariable(target: String): AnnotatorParametrizedError {
-    val namedVariable = target.toNamedVariable()
+  fun processNamedVariable(namedVariable: NamedVariable): AnnotatorParametrizedError {
     return if (namedVariable !in visibleVariables) {
       AnnotatorParametrizedError(
-        AnnotatorError.UNKNOWN_VARIABLE,
-        arrayOf(namedVariable.name)
+        AnnotatorError.UNKNOWN_VARIABLE, arrayOf(namedVariable.name)
       )
     }
     else AnnotatorParametrizedError.NO_ERROR
   }
 
-  /**
-   * Casts a [String] to a [NamedFunction]
-   */
-  fun String.toNamedFunction(arguments: String? = null): NamedFunction
-
-  /**
-   * Casts a [String] to a [NamedVariable]
-   */
-  fun String.toNamedVariable(): NamedVariable
-
   companion object {
     const val AND = "and"
+    const val ARGUMENT_SEPARATOR = ','
   }
 
 }
