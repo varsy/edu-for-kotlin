@@ -6,6 +6,7 @@ import com.jetbrains.edu.jarvis.regex.RegexTest.Companion.MAX_IDENTIFIER_NAME_LE
 import com.jetbrains.edu.jarvis.regex.RegexTest.Companion.MIN_IDENTIFIER_NAME_LENGTH
 import com.jetbrains.edu.jarvis.regex.RegexTest.Companion.NUMBER_OF_RUNS
 import com.jetbrains.edu.learning.EduTestCase
+import org.junit.Test
 
 class CreateVariableRegexTest : RegexTest, EduTestCase() {
 
@@ -32,7 +33,6 @@ class CreateVariableRegexTest : RegexTest, EduTestCase() {
       TestAnswer("declare the variable `buzz`", listOf("buzz")), // test the optional `variable` word
       TestAnswer("create the variable called `foo`", listOf("foo")), // test the optional `called` word
 
-
       TestAnswer("deClaRe THE STrinG `buzz`", listOf("buzz")), // case-insensitive (1)
       TestAnswer("CREaTe A `buzz`", listOf("buzz")), // case-insensitive (2)
       TestAnswer("DeClArE `foo`", listOf("foo")), // test case-insensitive (3)
@@ -54,7 +54,10 @@ class CreateVariableRegexTest : RegexTest, EduTestCase() {
     "set up the something `foo`", // invalid grammar
   )
 
+  @Test
   fun `test valid create variable sentences`() = runTestShouldMatch()
+
+  @Test
   fun `test invalid create variable sentences`() = runTestShouldNotMatch()
 
 }
