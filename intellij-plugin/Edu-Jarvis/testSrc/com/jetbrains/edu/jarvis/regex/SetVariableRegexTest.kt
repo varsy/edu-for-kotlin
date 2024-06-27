@@ -2,6 +2,7 @@ package com.jetbrains.edu.jarvis.regex
 
 import com.jetbrains.edu.jarvis.highlighting.AnnotatorRule
 import com.jetbrains.edu.learning.EduTestCase
+import org.junit.Test
 
 class SetVariableRegexTest : RegexTest, EduTestCase() {
 
@@ -42,7 +43,10 @@ class SetVariableRegexTest : RegexTest, EduTestCase() {
       "se bar", // invalid grammar
     )
 
+  @Test
   fun `test valid set variable sentences`() = runTestShouldMatch()
+
+  @Test
   fun `test invalid set variable sentences`() = runTestShouldNotMatch()
 
 }
