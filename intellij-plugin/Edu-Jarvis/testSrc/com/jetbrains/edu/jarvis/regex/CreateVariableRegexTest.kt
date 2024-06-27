@@ -11,21 +11,36 @@ class CreateVariableRegexTest : RegexTest, EduTestCase() {
 
   override val regex = AnnotatorRule.CREATE_VARIABLE.regex
 
-  override fun shouldMatchGroup() =
+  override fun shouldMatch() =
     // Generated smoke tests
     List(NUMBER_OF_RUNS) {
       generateCreateVariable(
         (MIN_IDENTIFIER_NAME_LENGTH..MAX_IDENTIFIER_NAME_LENGTH).random()
       )
     } + listOf(
-      // Test all CREATE synonyms:
-      TestAnswer("Create `foo`", listOf("foo")),
-      TestAnswer("declare `bar`", listOf("bar")),
-      TestAnswer("set up `buz`", listOf("buz")),
-      // Test more complex sentences, different articles:
-      TestAnswer("CreaTe the Variable `test1`", listOf("test1")),
-      TestAnswer("set up  an empty string `bar`", listOf("bar")),
-      TestAnswer("Create a random   string called `testMe` ", listOf("testMe"))
+      TestAnswer("declare `foo`", listOf("foo")), // test the `declare` verb
+      TestAnswer("set up `foo`", listOf("foo")), // test the `set up` verb
+      TestAnswer("create `bar`", listOf("bar")), // test the `create` verb
+
+      TestAnswer("create the `buzz`", listOf("buzz")), // test the `the` article
+      TestAnswer("create a `buzz`", listOf("buzz")), // test the `a` article
+      TestAnswer("declare an `apple`", listOf("apple")), // test the `an` article
+
+      TestAnswer("declare the string `buzz`", listOf("buzz")), // test the optional `string` word
+      TestAnswer("declare the random string `buzz`", listOf("buzz")), // test the optional `random string` word
+      TestAnswer("set up the empty string `myString`", listOf("myString")), // test the optional `empty string` word
+      TestAnswer("declare the variable `buzz`", listOf("buzz")), // test the optional `variable` word
+      TestAnswer("create the variable called `foo`", listOf("foo")), // test the optional `called` word
+
+
+      TestAnswer("deClaRe THE STrinG `buzz`", listOf("buzz")), // case-insensitive (1)
+      TestAnswer("CREaTe A `buzz`", listOf("buzz")), // case-insensitive (2)
+      TestAnswer("DeClArE `foo`", listOf("foo")), // test case-insensitive (3)
+      TestAnswer("cREatE thE vArIabLe cAlLed `foo`", listOf("foo")), // test case-insensitive (4)
+
+      TestAnswer("declare   the  string   `buzz`", listOf("buzz")), // test spacing (1)
+      TestAnswer("set   up  the empty string      `myString`", listOf("myString")), // test spacing (2)
+      TestAnswer("create    the    variable   called   `foo`", listOf("foo")), // test spacing (3)
     )
 
   override fun shouldNotMatch() =
@@ -39,7 +54,7 @@ class CreateVariableRegexTest : RegexTest, EduTestCase() {
     "set up the something `foo`", // invalid grammar
   )
 
-  fun `test valid create variable sentences`() = runTestShouldMatchGroup()
+  fun `test valid create variable sentences`() = runTestShouldMatch()
   fun `test invalid create variable sentences`() = runTestShouldNotMatch()
 
 }

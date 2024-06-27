@@ -4,6 +4,9 @@ package com.jetbrains.edu.jarvis.highlighting
  * Regex representation of the grammar.
  */
 object GrammarRegex {
+  private const val REGEX_DISJUNCTION = "|"
+
+  private const val RESULT = "result"
   private const val SEPARATOR = ","
   private const val ARTICLE = "a|an|the"
   private const val MODIFIED = "multiplied|divided|incremented|decremented"
@@ -31,10 +34,11 @@ object GrammarRegex {
   private const val CALLED = "called|named"
   private const val FUNCTION = "fun|function"
   private const val PRINT = "print|prints|output|outputs|display|displays"
-  private const val STORE = "store|stored|stores"
-  private const val CALL = "call|calls|invoke|invokes|run|execute"
+  private const val STORE = "store|stored"
+  private const val CALL = "call|invoke|run|execute"
   private const val IN = "in"
-  private const val CREATE = "declare|set up|create"
+  private const val UP = "up"
+  private const val CREATE = "declare|set|create"
   private const val BOOL = "true|false"
   private const val ADD = "add|adds|append|appends"
   private const val EQUAL = "equal|equals"
@@ -46,13 +50,12 @@ object GrammarRegex {
   private const val STRING = "\"[^\\r\\n]+\""
   private const val IDENTIFIER = "`([A-Za-z_][A-Za-z0-9_]*)`"
   private const val NO_CAPTURE_IDENTIFIER = "`[A-Za-z_][A-Za-z0-9_]*`"
-  private const val NO_CAPTURE_CODE = "`[^`\\r\\n]+`"
-  private const val CODE = "`([^`\\r\\n]+)`"
+  private const val CODE = "`[^`\\r\\n]+`"
 
   val value = listOf(
+    RESULT,
     NUMBER,
     STRING,
-    NO_CAPTURE_CODE,
     NO_CAPTURE_IDENTIFIER,
     BOOL
   ).joinToString("|")
@@ -80,7 +83,6 @@ object GrammarRegex {
     FUNCTION,
     PRINT,
     IN,
-    BOOL,
     REPEAT,
     UNTIL,
     ADD,
@@ -97,7 +99,7 @@ object GrammarRegex {
     "(?:$RANDOM\\s+$STRING_WORD)",
     "(?:$EMPTY\\s+$STRING_WORD)",
     NUMBER,
-    NO_CAPTURE_CODE,
+    CODE,
   ).joinToString("|")
 
 
@@ -106,16 +108,19 @@ object GrammarRegex {
    */
   val storeVariable = ("(?i)(?:$STORE)(?:\\s+(?:$ARTICLE))?(?:\\s+(?:$VALUE))?\\s+(?:$value)(?:\\s+(?:$arbitraryText))*\\s+$IN" +
                        "(?:\\s+(?:$ARTICLE))?(?:\\s+(?:$VARIABLE))?\\s+$IDENTIFIER").toRegex()
+
   /**
    * Regex that matches variable creation. Example: ``Create an empty string `foo` ``.
    */
-  val createVariable = ("(?i)(?:$CREATE)(?:\\s+(?:$ARTICLE))?(?:\\s+(?:$word))?(?:\\s+(?:$VARIABLE))?" +
+  val createVariable = ("(?i)(?:$CREATE)(?:\\s+$UP)?(?:\\s+(?:$ARTICLE))?(?:\\s+(?:$word))?(?:\\s+(?:$VARIABLE))?" +
                         "(?:\\s+(?:$CALLED))?(?:\\s+(?:$IDENTIFIER))").toRegex()
+
   /**
    * Regex that matches variable initialization. Example: "Set the variable `foo` to 3".
    */
   val setVariable = ("(?i)(?:$SET)(?:\\s+(?:$ARTICLE))?(?:\\s+(?:$VARIABLE))?(?:\\s+(?:$CALLED))?(?-i)\\s+" +
                      IDENTIFIER).toRegex()
+
   /**
    * Regex that matches a function call. Example: "Call the function `foo` with 1 and 3".
    */
@@ -125,9 +130,9 @@ object GrammarRegex {
   /**
    * Regex that matches an isolated code in the text. Example: "`foo123`".
    */
-  val isolatedCode = CODE.toRegex()
+  val isolatedCode = IDENTIFIER.toRegex()
 
-  fun getCallSynonyms() = CALL.split("|")
-  fun getFunctionSynonyms() = FUNCTION.split("|")
-  fun getCreateSynonyms() = CREATE.split("|")
+  fun getCallSynonyms() = CALL.split(REGEX_DISJUNCTION)
+  fun getFunctionSynonyms() = FUNCTION.split(REGEX_DISJUNCTION)
+  fun getCreateSynonyms() = CREATE.split(REGEX_DISJUNCTION)
 }
