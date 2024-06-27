@@ -10,9 +10,7 @@ import com.intellij.refactoring.suggested.startOffset
 import com.jetbrains.edu.jarvis.highlighting.*
 import com.jetbrains.edu.jarvis.messages.EduJarvisBundle
 import com.jetbrains.edu.jarvis.models.NamedFunction
-import com.jetbrains.edu.jarvis.models.NamedFunction.Companion.isNamedFunction
 import com.jetbrains.edu.jarvis.models.NamedVariable
-import com.jetbrains.edu.jarvis.models.NamedVariable.Companion.isNamedVariable
 import kotlin.reflect.KClass
 
 /**
@@ -55,7 +53,7 @@ interface DescriptionErrorAnnotator : Annotator {
   fun getIncorrectParts(context: PsiElement): Collection<IncorrectPart> {
     val visibleFunctions = getVisibleEntities(context, *getNamedFunctionClasses()) { it.toNamedFunctionOrNull() }
     val visibleVariables = getVisibleEntities(context, *getNamedVariableClasses()) { it.toNamedVariableOrNull() }
-    val processor = getProcessor(visibleFunctions, visibleVariables)
+    val processor = ErrorProcessor(visibleFunctions, visibleVariables)
     return AnnotatorRule.values().asSequence()
       .flatMap { rule ->
         getAnnotatorRuleMatches(context.text, rule)
@@ -85,7 +83,7 @@ interface DescriptionErrorAnnotator : Annotator {
    */
   private fun MatchResult.toAnnotatorRuleMatch(rule: AnnotatorRule): AnnotatorRuleMatch {
     val identifier = groups[1] ?: error("Invalid regular expression. There should be at least one non-null capturing group.")
-    val arguments = if(groups.size > 2) groups[2]?.value else null
+    val arguments = if (groups.size > 2) groups[2]?.value else null
     return AnnotatorRuleMatch(rule, identifier, arguments)
   }
 
@@ -116,15 +114,11 @@ interface DescriptionErrorAnnotator : Annotator {
       }
 
       AnnotatorRule.CALL_FUNCTION -> {
-        processor.processNamedFunction(target.identifier.value, target.arguments)
+        processor.processNamedFunction(NamedFunction(target))
       }
 
       AnnotatorRule.ISOLATED_CODE -> {
-        when {
-          target.identifier.value.isNamedFunction() -> processor.processNamedFunction(target.identifier.value)
-          target.identifier.value.isNamedVariable() -> processor.processNamedVariable(target.identifier.value)
-          else -> AnnotatorParametrizedError.NO_ERROR
-        }
+        processor.processNamedVariable(NamedVariable(target))
       }
     }
   }
@@ -145,11 +139,6 @@ interface DescriptionErrorAnnotator : Annotator {
    * Returns the classes of PSI elements that represent named functions.
    */
   fun getNamedFunctionClasses(): Array<KClass<out PsiElement>>
-
-  /**
-   * Returns the [ErrorProcessor] for analyzing and finding the errors.
-   */
-  fun getProcessor(visibleFunctions: MutableSet<NamedFunction>, visibleVariables: MutableSet<NamedVariable>): ErrorProcessor
 
   /**
    * Returns the [PsiElement] representing the description block.

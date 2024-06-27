@@ -7,17 +7,28 @@ class SetVariableRegexTest : RegexTest, EduTestCase() {
 
   override val regex = AnnotatorRule.SET_VARIABLE.regex
 
-  override fun shouldMatchGroup() =
+  override fun shouldMatch() =
     listOf(
-      // Test all SET synonyms
-      TestAnswer("Set `foo` to 3", listOf("foo")),
-      TestAnswer("assign `foo` to 3", listOf("foo")),
-      TestAnswer("Give the variable `bar`", listOf("bar")),
-      TestAnswer("initIalize `bar` to \"Hello world", listOf("bar")),
-      // Test more complex sentences, different articles:
-      TestAnswer("set the variable  called `myVar` to `foo` multiplied by 2", listOf("myVar")),
-      TestAnswer("initialize `myVar` to `foo` multiplied by `bar`", listOf("myVar")),
-      TestAnswer("initialize a variable `test` to \"this is a test\"", listOf("test")),
+      TestAnswer("set `foo`", listOf("foo")), // test the `set` verb
+      TestAnswer("assign `foo`", listOf("foo")), // test the `assign` verb
+      TestAnswer("give `bar`", listOf("bar")), // test the `give` verb
+      TestAnswer("initialize `bar`", listOf("bar")), // test the `initialize` verb
+
+      TestAnswer("set the `buzz`", listOf("buzz")), // test the `the` article
+      TestAnswer("set a `buzz`", listOf("buzz")), // test the `a` article
+      TestAnswer("set an `apple`", listOf("apple")), // test the `an` article
+
+      TestAnswer("initialize the variable `buzz`", listOf("buzz")), // test the optional `variable` word
+      TestAnswer("set the variable called `buzz`", listOf("buzz")), // test the optional `called` word
+
+      TestAnswer("SET `foo`", listOf("foo")), // case-insensitive (1)
+      TestAnswer("Set The `buzz`", listOf("buzz")), // case-insensitive (2)
+      TestAnswer("iNiTIAliZe tHE varIaBLe `buzz`", listOf("buzz")), // test case-insensitive (3)
+      TestAnswer("SEt THE vaRiABLE cALlEd `buzz`", listOf("buzz")), // test case-insensitive (4)
+
+      TestAnswer("give   `bar`", listOf("bar")), // test spacing (1)
+      TestAnswer("set  a   `buzz`", listOf("buzz")), // test spacing (2)
+      TestAnswer("set   the   variable    called `buzz`", listOf("buzz")), // test spacing (3)
       )
 
   override fun shouldNotMatch() =
@@ -31,7 +42,7 @@ class SetVariableRegexTest : RegexTest, EduTestCase() {
       "se bar", // invalid grammar
     )
 
-  fun `test valid set variable sentences`() = runTestShouldMatchGroup()
+  fun `test valid set variable sentences`() = runTestShouldMatch()
   fun `test invalid set variable sentences`() = runTestShouldNotMatch()
 
 }

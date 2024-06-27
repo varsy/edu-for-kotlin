@@ -23,10 +23,5 @@ fun findBlock(
 internal fun PsiElement.isDescriptionBlock() = text.startsWith(DESCRIPTION) &&
                                                JarvisDslPackageCallChecker.isCallFromJarvisDslPackage(this, this.language)
 
-
-const val EMPTY_STRING = ""
 const val DRAFT = "draft"
 const val DESCRIPTION = "description"
-const val ARGUMENT_SEPARATOR = ','
-const val OPEN_PARENTHESIS = "("
-const val CLOSE_PARENTHESIS = ")"
