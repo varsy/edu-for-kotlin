@@ -199,6 +199,11 @@ allprojects {
     implementationWithoutKotlin(rootProject.libs.converter.jackson)
     implementationWithoutKotlin(rootProject.libs.kotlin.css.jvm)
 
+    implementationWithoutKotlin(rootProject.libs.educational.ml.library.core)
+    implementationWithoutKotlin(rootProject.libs.educational.ml.library.theory.lookup)
+    implementationWithoutKotlin(rootProject.libs.stanford.corenlp)
+    implementation(variantOf(rootProject.libs.stanford.corenlp) { classifier("models") })
+
     testImplementation(rootProject.libs.junit)
     testImplementation(rootProject.libs.openTest4J)
     testImplementation(rootProject.libs.classgraph)

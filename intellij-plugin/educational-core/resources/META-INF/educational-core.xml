@@ -346,6 +346,8 @@
     <postStartupActivity implementation="com.jetbrains.edu.learning.EduStartupActivity"/>
     <postStartupActivity implementation="com.jetbrains.edu.learning.agreement.UserAgreementProjectActivity"/>
 
+    <postStartupActivity implementation="com.jetbrains.edu.learning.theoryLookup.TermsProcessorActivity"/>
+
     <registryKey key="edu.task.description.update.delay"
                  description="The delay in ms before loading page by Task Description view. \nRequires project reopening"
                  defaultValue="300"/>

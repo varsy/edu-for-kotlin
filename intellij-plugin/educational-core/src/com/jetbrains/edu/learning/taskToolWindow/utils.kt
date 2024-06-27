@@ -249,6 +249,12 @@ fun useDarkSrcCustomAttributeIfPresent(element: Element): Boolean {
   }
 }
 
+fun getDashedUnderlineElement(document: Document, text: String): Element =
+  document.createElement(SPAN_ATTRIBUTE).apply {
+    attr(STYLE_ATTRIBUTE, "border-bottom: 1px dashed gray;")
+    appendText(text)
+  }
+
 fun getPictureSize(fontSize: Int): String {
   return if (isSwing()) {
     fontSize
