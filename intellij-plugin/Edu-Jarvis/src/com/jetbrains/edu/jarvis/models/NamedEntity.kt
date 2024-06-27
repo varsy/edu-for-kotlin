@@ -5,4 +5,5 @@ package com.jetbrains.edu.jarvis.models
  */
 interface NamedEntity {
   val name: String
+
 }
