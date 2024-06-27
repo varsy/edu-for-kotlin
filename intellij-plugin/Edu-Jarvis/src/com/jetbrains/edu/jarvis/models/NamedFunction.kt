@@ -9,13 +9,20 @@ data class NamedFunction(override val name: String, val numberOfArguments: Int) 
   constructor(target: AnnotatorRuleMatch)
     : this(
       target.identifier.value,
-      getNumberOfParameters(target.arguments ?: "")
+      getNumberOfArguments(target.arguments ?: "")
     )
 
   companion object {
 
-    fun getNumberOfParameters(parameters: String) = if (parameters.isNotBlank()) {
-      parameters.count { it == ARGUMENT_SEPARATOR } + parameters.containsAndInt() + 1
+    /**
+     * Calculates the number of arguments from the `arguments` string.
+     * Examples:
+     * - `arguments = "1, 2 and 3"` -> one separator, presence of the word 'and' -> returns three
+     * - `arguments = "1, 2, 3, 4"` -> three separators, no presence of the word 'and' -> returns four
+     * - `arguments = ""` -> a blank string -> return zero
+     */
+    fun getNumberOfArguments(arguments: String) = if (arguments.isNotBlank()) {
+      arguments.count { it == ARGUMENT_SEPARATOR } + arguments.containsAndInt() + 1
     }
     else 0
 
