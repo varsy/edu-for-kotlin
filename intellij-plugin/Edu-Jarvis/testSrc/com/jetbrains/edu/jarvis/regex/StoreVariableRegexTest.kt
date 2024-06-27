@@ -2,6 +2,7 @@ package com.jetbrains.edu.jarvis.regex
 
 import com.jetbrains.edu.jarvis.highlighting.AnnotatorRule
 import com.jetbrains.edu.learning.EduTestCase
+import org.junit.Test
 
 class StoreVariableRegexTest : RegexTest, EduTestCase() {
 
@@ -32,7 +33,6 @@ class StoreVariableRegexTest : RegexTest, EduTestCase() {
       TestAnswer("store `foo` multiplied by 3 in `buzz`", listOf("buzz")), // test arbitrary text (1)
       TestAnswer("store the result divided by `divisor` in `foo`", listOf("foo")), // test arbitrary text (2)
 
-
       TestAnswer("SToRe tHe ResUlT iN `foo`", listOf("foo")), // case-insensitive (1)
       TestAnswer("sToRE THE VALUe 3 IN `buzz`", listOf("buzz")), // case-insensitive (2)
       TestAnswer("STOred 3 In `foo`", listOf("foo")), // test case-insensitive (3)
@@ -53,7 +53,10 @@ class StoreVariableRegexTest : RegexTest, EduTestCase() {
       "store the knowledge in `foo`", // invalid grammar
     )
 
+  @Test
   fun `test valid store variable sentences`() = runTestShouldMatch()
+
+  @Test
   fun `test invalid store variable sentences`() = runTestShouldNotMatch()
 
 }
