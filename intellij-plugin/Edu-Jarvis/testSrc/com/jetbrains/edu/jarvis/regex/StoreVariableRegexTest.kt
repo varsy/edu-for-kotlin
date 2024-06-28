@@ -20,27 +20,27 @@ class StoreVariableRegexTest : RegexTest, EduTestCase() {
       TestAnswer("store true in `foo`", listOf("foo")), // test true value
       TestAnswer("store false in `foo`", listOf("foo")), // test false value
 
-      TestAnswer("store the result in `buzz`", listOf("buzz")), // test the `the` article (1)
-      TestAnswer("store a `pear` in `buzz`", listOf("buzz")), // test the `a` article (1)
-      TestAnswer("store an `apple` in `buzz`", listOf("buzz")), // test the `an` article (1)
-      TestAnswer("store 3 in the `buzz`", listOf("buzz")), // test the `the` article (2)
-      TestAnswer("store 3 in a `buzz`", listOf("buzz")), // test the `a` article (2)
-      TestAnswer("store 3 in an `apple`", listOf("apple")), // test the `an` article (2)
+      TestAnswer("store the result in `buzz`", listOf("buzz")), // test the `the` article, before the value
+      TestAnswer("store a `pear` in `buzz`", listOf("buzz")), // test the `a` article, before the value
+      TestAnswer("store an `apple` in `buzz`", listOf("buzz")), // test the `an` article, before the value
+      TestAnswer("store 3 in the `buzz`", listOf("buzz")), // test the `the` article, before the variable name
+      TestAnswer("store 3 in a `buzz`", listOf("buzz")), // test the `a` article, before the variable name
+      TestAnswer("store 3 in an `apple`", listOf("apple")), // test the `an` article, before the variable name
 
       TestAnswer("store the value 3 in `buzz`", listOf("buzz")), // test the optional `value` word
       TestAnswer("store 3 in the variable `buzz`", listOf("buzz")), // test the optional `variable` word
 
-      TestAnswer("store `foo` multiplied by 3 in `buzz`", listOf("buzz")), // test arbitrary text (1)
-      TestAnswer("store the result divided by `divisor` in `foo`", listOf("foo")), // test arbitrary text (2)
+      TestAnswer("store `foo` multiplied by 3 in `buzz`", listOf("buzz")), // test arbitrary text
+      TestAnswer("store the result divided by `divisor` in `foo`", listOf("foo")), // test arbitrary text
 
-      TestAnswer("SToRe tHe ResUlT iN `foo`", listOf("foo")), // case-insensitive (1)
-      TestAnswer("sToRE THE VALUe 3 IN `buzz`", listOf("buzz")), // case-insensitive (2)
-      TestAnswer("STOred 3 In `foo`", listOf("foo")), // test case-insensitive (3)
-      TestAnswer("sTORED tHE REsUlT DIVideD bY `divisor` IN `foo`", listOf("foo")), // test case-insensitive (4)
+      TestAnswer("SToRe tHe ResUlT iN `foo`", listOf("foo")), // test case-insensitive
+      TestAnswer("sToRE THE VALUe 3 IN `buzz`", listOf("buzz")), // test case-insensitive
+      TestAnswer("STOred 3 In `foo`", listOf("foo")), // test case-insensitive
+      TestAnswer("sTORED tHE REsUlT DIVideD bY `divisor` IN `foo`", listOf("foo")), // test case-insensitive
 
-      TestAnswer("store     `foo`   multiplied    by  3    in     `buzz`", listOf("buzz")), // test spacing (1)
-      TestAnswer("STOred     3      In    `foo`", listOf("foo")), // test spacing (2)
-      TestAnswer("store     an  `apple`   in  `buzz`", listOf("buzz")), // test spacing (3)
+      TestAnswer("store     `foo`   multiplied    by  3    in     `buzz`", listOf("buzz")), // test spacing
+      TestAnswer("STOred     3      In    `foo`", listOf("foo")), // test spacing
+      TestAnswer("store     an  `apple`   in  `buzz`", listOf("buzz")), // test spacing
     )
 
   override fun shouldNotMatch() =
