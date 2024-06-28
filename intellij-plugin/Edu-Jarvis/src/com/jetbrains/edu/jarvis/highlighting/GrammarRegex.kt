@@ -6,6 +6,9 @@ package com.jetbrains.edu.jarvis.highlighting
 object GrammarRegex {
   private const val REGEX_DISJUNCTION = "|"
 
+  private const val ARGUMENT = "argument|arguments"
+  private const val TO = "to"
+  private const val SAVE = "save"
   private const val RESULT = "result"
   private const val SEPARATOR = ","
   private const val ARTICLE = "a|an|the"
@@ -102,7 +105,6 @@ object GrammarRegex {
     CODE,
   ).joinToString("|")
 
-
   /**
    * Regex that matches variable storing. Example: ``Store 3 in the variable `foo` ``.
    */
@@ -118,14 +120,20 @@ object GrammarRegex {
   /**
    * Regex that matches variable initialization. Example: "Set the variable `foo` to 3".
    */
-  val setVariable = ("(?i)(?:$SET)(?:\\s+(?:$ARTICLE))?(?:\\s+(?:$VARIABLE))?(?:\\s+(?:$CALLED))?(?-i)\\s+" +
+  val setVariable = ("(?i)(?:$SET)(?:\\s+(?:$ARTICLE))?(?:\\s+(?:$VARIABLE))?(?:\\s+(?:$CALLED))?\\s+" +
                      IDENTIFIER).toRegex()
+
+  /**
+   * Regex that matches variable saving. Example: ``Save 3 to the variable `foo` ``.
+   */
+  val saveVariable = ("(?i)(?:$SAVE)(?:\\s+(?:$ARTICLE))?(?:\\s+(?:$VALUE))?\\s+(?:$value)(?:\\s+(?:$arbitraryText))*\\s+$TO" +
+                       "(?:\\s+(?:$ARTICLE))?(?:\\s+(?:$VARIABLE))?\\s+$IDENTIFIER").toRegex()
 
   /**
    * Regex that matches a function call. Example: "Call the function `foo` with 1 and 3".
    */
   val callFunction = ("(?i)(?:$CALL)(?:\\s+(?:$ARTICLE))?(?:\\s+(?:$FUNCTION))?\\s+$IDENTIFIER" +
-                      "(\\s+$WITH\\s+(?:$value)(?:(?:\\s*$SEPARATOR\\s*(?:$value))*(?:\\s+$AND\\s+(?:$value))?)?)?").toRegex()
+                      "(\\s+$WITH(?:\\s+(?:$ARTICLE))?(?:\\s+(?:$ARGUMENT))?\\s+(?:$value)(?:(?:\\s*$SEPARATOR\\s*(?:$value))*(?:\\s+$AND\\s+(?:$value))?)?)?").toRegex()
 
   /**
    * Regex that matches an isolated code in the text. Example: "`foo123`".
