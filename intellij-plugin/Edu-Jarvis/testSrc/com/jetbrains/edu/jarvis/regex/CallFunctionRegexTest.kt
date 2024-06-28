@@ -24,15 +24,27 @@ class CallFunctionRegexTest : RegexTest, EduTestCase() {
       TestAnswer("run `bar`", listOf("bar")), // test the `run` verb
       TestAnswer("execute `buzz`", listOf("buzz")), // test the `execute` verb
 
-      TestAnswer("call the `buzz`", listOf("buzz")), // test the `the` article
-      TestAnswer("call a `buzz`", listOf("buzz")), // test the `a` article
-      TestAnswer("invoke an `apple`", listOf("apple")), // test the `an` article
+      TestAnswer("call the `buzz`", listOf("buzz")), // test the `the` article (1)
+      TestAnswer("call a `buzz`", listOf("buzz")), // test the `a` article (1)
+      TestAnswer("invoke an `apple`", listOf("apple")), // test the `an` article (1)
 
       TestAnswer("call the function `buzz`", listOf("buzz")), // test the optional `function` word
 
       TestAnswer("call the function `foo` with 2", listOf("foo", " with 2")), // test single argument capturing
       TestAnswer("call the function `foo` with 2, 3, 4", listOf("foo", " with 2, 3, 4")), // test multiple arguments capturing
       TestAnswer("call `buzz` with 2 and 1", listOf("buzz", " with 2 and 1")), // test the `and` word
+
+      TestAnswer("call the function `foo` with the 2", listOf("foo", " with the 2")), // test the `the` article (2)
+      TestAnswer("call a `buzz` with a `fuzz`", listOf("buzz", " with a `fuzz`")), // test the `a` article (2)
+      TestAnswer("invoke an `apple` with an `apple2`", listOf("apple", " with an `apple2`")), // test the `an` article (2)
+
+      TestAnswer("call the function `foo` with the argument 2", listOf("foo", " with the argument 2")), // test the `argument` word
+      TestAnswer(
+        "call the function `foo` with the arguments 2, 3 and `bar`",
+        listOf("foo", " with the arguments 2, 3 and `bar`")
+      ), // test the `argument` word
+
+
       TestAnswer(
         "call the function `foo` with `bar`, `myVar` and `buzz`",
         listOf("foo", " with `bar`, `myVar` and `buzz`")
