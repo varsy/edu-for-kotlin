@@ -108,7 +108,8 @@ interface DescriptionErrorAnnotator : Annotator {
     target: AnnotatorRuleMatch
   ): AnnotatorParametrizedError {
     return when (rule) {
-      AnnotatorRule.STORE_VARIABLE, AnnotatorRule.CREATE_VARIABLE, AnnotatorRule.SET_VARIABLE -> {
+      AnnotatorRule.STORE_VARIABLE, AnnotatorRule.CREATE_VARIABLE,
+      AnnotatorRule.SET_VARIABLE, AnnotatorRule.SAVE_VARIABLE -> {
         processor.visibleVariables.add(NamedVariable(target.identifier.value))
         AnnotatorParametrizedError.NO_ERROR
       }
