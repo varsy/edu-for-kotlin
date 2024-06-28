@@ -33,14 +33,14 @@ class CreateVariableRegexTest : RegexTest, EduTestCase() {
       TestAnswer("declare the variable `buzz`", listOf("buzz")), // test the optional `variable` word
       TestAnswer("create the variable called `foo`", listOf("foo")), // test the optional `called` word
 
-      TestAnswer("deClaRe THE STrinG `buzz`", listOf("buzz")), // case-insensitive (1)
-      TestAnswer("CREaTe A `buzz`", listOf("buzz")), // case-insensitive (2)
-      TestAnswer("DeClArE `foo`", listOf("foo")), // test case-insensitive (3)
-      TestAnswer("cREatE thE vArIabLe cAlLed `foo`", listOf("foo")), // test case-insensitive (4)
+      TestAnswer("deClaRe THE STrinG `buzz`", listOf("buzz")), // test case-insensitive
+      TestAnswer("CREaTe A `buzz`", listOf("buzz")), // test case-insensitive
+      TestAnswer("DeClArE `foo`", listOf("foo")), // test case-insensitive
+      TestAnswer("cREatE thE vArIabLe cAlLed `foo`", listOf("foo")), // test case-insensitive
 
-      TestAnswer("declare   the  string   `buzz`", listOf("buzz")), // test spacing (1)
-      TestAnswer("set   up  the empty string      `myString`", listOf("myString")), // test spacing (2)
-      TestAnswer("create    the    variable   called   `foo`", listOf("foo")), // test spacing (3)
+      TestAnswer("declare   the  string   `buzz`", listOf("buzz")), // test spacing
+      TestAnswer("set   up  the empty string      `myString`", listOf("myString")), // test spacing
+      TestAnswer("create    the    variable   called   `foo`", listOf("foo")), // test spacing
     )
 
   override fun shouldNotMatch() =
