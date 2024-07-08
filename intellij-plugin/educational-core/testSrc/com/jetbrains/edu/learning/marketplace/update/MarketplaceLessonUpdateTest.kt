@@ -375,7 +375,7 @@ class MarketplaceLessonUpdateTest : LessonUpdateTestBase<EduCourse>() {
     }
     val remoteCourse = toRemoteCourse {
       val section = sections.first()
-      section.getLesson(1)?.getTask(1)?.name = updatedNameForTask1
+      section.getLessonById(1)?.getTaskById(1)?.name = updatedNameForTask1
       section.addLesson(newLesson)
       newLesson.parent = section
     }
@@ -384,7 +384,7 @@ class MarketplaceLessonUpdateTest : LessonUpdateTestBase<EduCourse>() {
     updateLessons(remoteCourse, firstLocalSection, remoteCourse.sections.first())
 
 
-    val actualTaskName = firstLocalSection.getLesson(1)?.getTask(1)?.name
+    val actualTaskName = firstLocalSection.getLessonById(1)?.getTaskById(1)?.name
     assertEquals("Task name not updated", updatedNameForTask1, actualTaskName)
     assertEquals("Lesson hasn't been added", 2, firstLocalSection.lessons.size)
 

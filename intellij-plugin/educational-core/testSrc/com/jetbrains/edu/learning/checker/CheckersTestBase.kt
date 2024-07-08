@@ -69,7 +69,7 @@ abstract class CheckersTestBase<Settings : EduProjectSettings> : HeavyPlatformTe
 
     protected fun doCodeforcesTest(expectedOutput: String) {
         val course = project.course ?: error("Course was not found")
-        val task = course.getLesson(0)?.getTask(0) as? CodeforcesTask ?: error("Codeforces task was not found")
+        val task = course.getLessonById(0)?.getTaskById(0) as? CodeforcesTask ?: error("Codeforces task was not found")
         val inputTaskFile = task.taskFiles["${CodeforcesNames.TEST_DATA_FOLDER}/1/${task.inputFileName}"]
                             ?: error("Unable to find input file")
         val virtualFile = inputTaskFile.getVirtualFile(project) ?: error("Unable to find virtual file for input file")

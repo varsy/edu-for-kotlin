@@ -19,7 +19,8 @@ class HyperskillCourse : Course {
   var hyperskillProject: HyperskillProject? = null
     set(value) {
       field = value
-      id = value?.id ?: 0
+      val intId = value?.id ?: 0
+      id = "" + intId
     }
 
   var selectedStage: Int? = null
@@ -32,7 +33,7 @@ class HyperskillCourse : Course {
     this.languageId = languageId
     this.languageVersion = languageVersion
     this.environment = environment
-    id = hyperskillProject.id
+    id = "" + hyperskillProject.id
   }
 
   constructor(languageName: String, languageId: String, languageVersion: String?) {
@@ -97,7 +98,7 @@ class HyperskillCourse : Course {
 
   fun getProblem(id: Int): Task? {
     getTopicsSection()?.lessons?.forEach { lesson ->
-      lesson.getTask(id)?.let {
+      lesson.getTaskById(id)?.let {
         return it
       }
     }

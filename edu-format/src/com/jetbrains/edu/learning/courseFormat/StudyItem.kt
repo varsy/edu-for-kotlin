@@ -20,7 +20,7 @@ abstract class StudyItem() {
   var index: Int = -1
   var name: String = ""
   var updateDate: Date = Date(0)
-  var id: Int = 0 // id on remote resource (Stepik, CheckIO, Codeforces, Marketplace)
+  var id: String = "0" // id on remote resource (Stepik, CheckIO, Codeforces, Marketplace)
   var contentTags: List<String> = listOf()
 
   @Transient
@@ -50,8 +50,8 @@ abstract class StudyItem() {
   abstract fun init(parentItem: ItemContainer, isRestarted: Boolean)
 
   fun generateId() {
-    if (id == 0) {
-      id = System.identityHashCode(this)
+    if (id == "0") {
+      id = "" + UUID.randomUUID()
     }
   }
 }

@@ -36,7 +36,7 @@ open class CodeforcesCourse : Course {
   }
 
   private fun setContestParameters(contestParameters: ContestParameters) {
-    id = contestParameters.id
+    id = "" + contestParameters.id
     languageId = contestParameters.languageId
     languageVersion = contestParameters.languageVersion
     languageCode = contestParameters.locale

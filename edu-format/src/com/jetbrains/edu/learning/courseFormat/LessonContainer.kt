@@ -10,7 +10,11 @@ abstract class LessonContainer : ItemContainer() {
     return getLesson { it.name == name }
   }
 
-  fun getLesson(id: Int): Lesson? {
+  fun getLessonById(id: Int): Lesson? {
+    return getLesson("" + id)
+  }
+
+  fun getLessonById(id: String): Lesson? {
     return getLesson { id == it.id }
   }
 

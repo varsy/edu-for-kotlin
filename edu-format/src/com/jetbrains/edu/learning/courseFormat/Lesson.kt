@@ -44,7 +44,11 @@ open class Lesson : ItemContainer() {
     return getItem(name) as? Task
   }
 
-  fun getTask(id: Int): Task? {
+  fun getTaskById(id: Int): Task? {
+    return getTaskById("" + id)
+  }
+
+  fun getTaskById(id: String): Task? {
     return taskList.firstOrNull { it.id == id }
   }
 

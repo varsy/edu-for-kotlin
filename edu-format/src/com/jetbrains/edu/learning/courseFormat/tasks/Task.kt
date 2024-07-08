@@ -70,7 +70,7 @@ abstract class Task : StudyItem {
 
   constructor() // used for deserialization
   constructor(name: String) : super(name)
-  constructor(name: String, id: Int, position: Int, updateDate: Date, status: CheckStatus) : super(name) {
+  constructor(name: String, id: String, position: Int, updateDate: Date, status: CheckStatus) : super(name) {
     this.id = id
     this.index = position
     this.updateDate = updateDate

@@ -15,7 +15,7 @@ fun loadAndFillLessonAdditionalInfo(lesson: Lesson, course: Course? = null) {
 
   lesson.customPresentableName = lessonInfo.customName
   lessonInfo.tasksInfo.forEach { (id, task) ->
-    lesson.getTask(id)?.apply {
+    lesson.getTaskById(id)?.apply {
       name = task.name
       customPresentableName = task.customName
       taskFiles = task.taskFiles.associateBy(TaskFile::name) { it }

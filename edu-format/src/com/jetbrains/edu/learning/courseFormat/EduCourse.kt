@@ -31,10 +31,10 @@ open class EduCourse : Course() {
   var formatVersion: Int = JSON_FORMAT_VERSION
 
   override val isStepikRemote: Boolean
-    get() = id != 0 && !isMarketplace
+    get() = id != "0" && !isMarketplace
 
   val isMarketplaceRemote: Boolean
-    get() = id != 0 && isMarketplace
+    get() = id != "0" && isMarketplace
 
   fun convertToLocal() {
     if (isMarketplace) {
@@ -45,7 +45,7 @@ open class EduCourse : Course() {
       sectionIds = emptyList()
       instructors = emptyList()
     }
-    id = 0
+    id = "0"
     updateDate = Date(0)
   }
 

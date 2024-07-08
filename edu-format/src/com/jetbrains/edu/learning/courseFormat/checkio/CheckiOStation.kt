@@ -9,7 +9,7 @@ class CheckiOStation : Lesson() {
   }
 
   fun getMission(id: Int): CheckiOMission? {
-    val task = getTask(id)
+    val task = getTaskById(id)
     return if (task is CheckiOMission) task else null
   }
 
@@ -26,7 +26,7 @@ class CheckiOStation : Lesson() {
     return id == station.id
   }
 
-  override fun hashCode(): Int = id
+  override fun hashCode(): Int = id.hashCode()
 
   override fun toString(): String {
     return "missions=[" + missions.joinToString("\n") { it.toString() } + "]"

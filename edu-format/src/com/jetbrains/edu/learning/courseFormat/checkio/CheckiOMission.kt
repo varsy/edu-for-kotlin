@@ -40,7 +40,7 @@ class CheckiOMission : EduTask() {
   }
 
   override fun hashCode(): Int {
-    return id
+    return id.hashCode()
   }
 
   override fun toString(): String {

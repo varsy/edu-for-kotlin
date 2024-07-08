@@ -86,7 +86,7 @@ object HyperskillOpenInIdeRequestHandler : OpenInIdeRequestHandler<HyperskillOpe
   private fun getTask(course: Course, stepId: Int): Task? {
     val taskRef = Ref<Task>()
     course.visitLessons { lesson: Lesson ->
-      val task = lesson.getTask(stepId) ?: return@visitLessons
+      val task = lesson.getTaskById(stepId) ?: return@visitLessons
       taskRef.set(task)
     }
     return taskRef.get()
@@ -222,7 +222,7 @@ object HyperskillOpenInIdeRequestHandler : OpenInIdeRequestHandler<HyperskillOpe
 
   private fun Lesson.addProblems(stepSources: List<HyperskillStepSource>): Result<List<Task>, String> {
     val existingTasksIds = items.map { it.id }
-    val stepsSourceForAdding = stepSources.filter { it.id !in existingTasksIds }
+    val stepsSourceForAdding = stepSources.filter { "" + it.id !in existingTasksIds }
 
     val tasks = HyperskillConnector.getTasks(course, this, stepsSourceForAdding)
     tasks.forEach(this::addTask)
