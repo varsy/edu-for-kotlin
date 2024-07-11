@@ -26,7 +26,9 @@ abstract class GradleCourseBuilderBase : EduCourseBuilder<JdkProjectSettings> {
   )
 
   open fun templateVariables(projectName: String): Map<String, Any> {
-    return mapOf(PROJECT_NAME to GeneratorUtils.gradleSanitizeName(projectName)) + getKotlinTemplateVariables()
+    return mapOf(PROJECT_NAME to GeneratorUtils.gradleSanitizeName(projectName)) +
+           getKotlinTemplateVariables() +
+           getJarvisTemplateVariables()
   }
 
   override fun refreshProject(project: Project, cause: RefreshCause) {
@@ -50,5 +52,9 @@ abstract class GradleCourseBuilderBase : EduCourseBuilder<JdkProjectSettings> {
         "KOTLIN_VERSION" to kotlinVersion.version
       )
     }
+
+    fun getJarvisTemplateVariables() = mapOf(
+      "isJarvis" to System.getProperty("is.jarvis.mode", "isJarvis").toBoolean()
+    )
   }
 }
