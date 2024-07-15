@@ -32,7 +32,18 @@ class DescriptionExecutorAction(private val element: PsiElement) : AnAction() {
         .notify(project)
       return
     }
-    parse(descriptionExpression.prompt)
+    try {
+      parse(descriptionExpression.prompt)
+    } catch (e: Throwable) {
+      println(descriptionExpression.prompt)
+      EduNotificationManager.create(
+        ERROR,
+        EduJarvisBundle.message("action.not.run.due.to.incorrect.grammar.title"),
+        EduJarvisBundle.message("action.not.run.due.to.incorrect.grammar.text")
+      ).notify(project)
+      return
+    }
+
 
     // TODO: get the generated code with errors
     val generatedCode = descriptionExpression.codeBlock

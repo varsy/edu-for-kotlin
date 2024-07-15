@@ -12,7 +12,12 @@ import org.antlr.v4.runtime.TokenStream
  * @param input The student prompt from the description block.
  */
 fun parse(input: String) {
-  input.lines().joinToString("").lowercase().split(DOT).forEach { parseSentence(it) }
+  input.lines()
+    .joinToString("")
+    .lowercase()
+    .split(DOT)
+    .filter { it.isNotBlank() }
+    .forEach { parseSentence(it) }
 }
 
 fun parseSentence(sentence: String): ProblemSolvingLanguageParser.SentenceContext? {
@@ -20,12 +25,7 @@ fun parseSentence(sentence: String): ProblemSolvingLanguageParser.SentenceContex
   val tokens: TokenStream = CommonTokenStream(lexer)
   val parser = ProblemSolvingLanguageParser(tokens)
   parser.addErrorListener(ThrowingErrorListener.INSTANCE)
-  return try {
-    parser.sentence()
-  } catch (e: AssertionError) {
-    // TODO: log
-    null
-  }
+  return parser.sentence()
 }
 
 private const val DOT = "."
