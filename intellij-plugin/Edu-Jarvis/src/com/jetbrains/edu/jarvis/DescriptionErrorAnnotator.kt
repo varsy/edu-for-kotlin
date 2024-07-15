@@ -5,19 +5,17 @@ import com.intellij.lang.annotation.Annotator
 import com.intellij.lang.annotation.HighlightSeverity
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
-import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.refactoring.suggested.startOffset
 import com.jetbrains.edu.jarvis.highlighting.*
 import com.jetbrains.edu.jarvis.messages.EduJarvisBundle
 import com.jetbrains.edu.jarvis.models.NamedFunction
 import com.jetbrains.edu.jarvis.models.NamedVariable
-import kotlin.reflect.KClass
 
 /**
  * Highlights parts containing errors inside the `description` DSL element.
  */
 
-interface DescriptionErrorAnnotator : Annotator {
+interface DescriptionErrorAnnotator<T> : Annotator {
 
   override fun annotate(element: PsiElement, holder: AnnotationHolder) {
     if (!element.isRelevant()) return
@@ -90,13 +88,11 @@ interface DescriptionErrorAnnotator : Annotator {
   /**
    * Returns visible entities, that is, entities that can be accessed from the `context` scope.
    */
-  fun <T> getVisibleEntities(
+  fun <E> getVisibleEntities(
     context: PsiElement,
-    vararg targetClasses: KClass<out PsiElement>,
-    toEntityOrNull: (PsiElement) -> T?
-  ): MutableSet<T> =
-    targetClasses.map { PsiTreeUtil.collectElementsOfType(context.containingFile, it.java) }.flatten().mapNotNull { toEntityOrNull(it) }
-      .toMutableSet()
+    vararg targetClasses: T,
+    toEntityOrNull: (PsiElement) -> E?
+  ): MutableSet<E>
 
   /**
    * Returns the type of error found in the `target` string.
@@ -134,12 +130,12 @@ interface DescriptionErrorAnnotator : Annotator {
   /**
    * Returns the classes of PSI elements that represent named variables.
    */
-  fun getNamedVariableClasses(): Array<KClass<out PsiElement>>
+  fun getNamedVariableClasses(): Array<T>
 
   /**
    * Returns the classes of PSI elements that represent named functions.
    */
-  fun getNamedFunctionClasses(): Array<KClass<out PsiElement>>
+  fun getNamedFunctionClasses(): Array<T>
 
   /**
    * Returns the [PsiElement] representing the description block.
