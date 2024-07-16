@@ -39,6 +39,7 @@ import com.jetbrains.edu.learning.courseFormat.EduFormatNames.DEFAULT_ENVIRONMEN
 import com.jetbrains.edu.learning.enablePlugins
 import com.jetbrains.edu.learning.feedback.CourseFeedbackInfoData
 import com.jetbrains.edu.learning.getDisabledPlugins
+import com.jetbrains.edu.learning.jarvis.utils.JarvisTemplateVariablesProvider
 import com.jetbrains.edu.learning.messages.EduCoreBundle
 import com.jetbrains.edu.learning.newproject.EduProjectSettings
 import com.jetbrains.edu.learning.newproject.ui.courseSettings.CourseSettingsPanel
@@ -172,6 +173,11 @@ class CCNewCoursePanel(
             setFocusTraversalKeys(forwardTraversalKey, keyboardFocusManager.getDefaultFocusTraversalKeys(forwardTraversalKey))
             setFocusTraversalKeys(backwardTraversalKey, keyboardFocusManager.getDefaultFocusTraversalKeys(backwardTraversalKey))
           }.component
+      }
+      row {
+        checkBox(EduCoreBundle.message("cc.new.course.jarvis.mode")).onChanged {
+          JarvisTemplateVariablesProvider.setIsJarvisVariable(it.isSelected)
+        }
       }
       val feedbackPanel = createFeedbackPanel()
       row {
