@@ -11,7 +11,7 @@ value: NUMBER | STRING | CODE | IDENTIFIER | BOOL;
 contains: value arbitraryText? IN arbitraryText? CODE;
 
 expr: PRINT arbitraryText? (STRING | CODE)?
-    | CALL arbitraryText? FUNCTION? CODE (WITH arbitraryText? value+?)? arbitraryText? (GET arbitraryText? CODE)?
+    | CALL arbitraryText? FUNCTION? CODE (WITH (arbitraryText? value)+?)? arbitraryText? (GET arbitraryText? CODE)?
     | STORE arbitraryText? IN arbitraryText? VARIABLE? CODE
     | CREATE arbitraryText? word? VARIABLE? CALLED? CODE (EQUAL arbitraryText? word)?
     | SET arbitraryText? VALUE? arbitraryText? value
