@@ -7,25 +7,14 @@ import org.antlr.v4.runtime.CommonTokenStream
 import org.antlr.v4.runtime.TokenStream
 
 /**
- * Parses the input string by splitting it into sentences and using a custom lexer and parser.
- *
- * @param input The student prompt from the description block.
+ * Parses the string using a custom lexer and parser.
  */
-fun parse(input: String) {
-  input.lines()
-    .joinToString("")
-    .lowercase()
-    .split(DOT)
-    .filter { it.isNotBlank() }
-    .forEach { parseSentence(it) }
-}
 
-fun parseSentence(sentence: String): ProblemSolvingLanguageParser.SentenceContext? {
-  val lexer = ProblemSolvingLanguageLexer(CharStreams.fromString(sentence))
+fun String.parse(): ProblemSolvingLanguageParser.SentenceContext {
+  val lexer = ProblemSolvingLanguageLexer(CharStreams.fromString(this.lowercase()))
   val tokens: TokenStream = CommonTokenStream(lexer)
   val parser = ProblemSolvingLanguageParser(tokens)
   parser.addErrorListener(ThrowingErrorListener.INSTANCE)
   return parser.sentence()
 }
 
-private const val DOT = "."
