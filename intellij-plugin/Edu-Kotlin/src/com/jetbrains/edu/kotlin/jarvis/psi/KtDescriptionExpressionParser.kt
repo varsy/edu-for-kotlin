@@ -15,9 +15,19 @@ class KtDescriptionExpressionParser : DescriptionExpressionParser {
         existsNestedDescriptionExpressions(descriptionExpression)) {
       return null
     }
+    val descriptionPromptPsi = descriptionExpression.valueArguments.firstOrNull()
+    val descriptionCodeBlockPsi = descriptionExpression.lambdaArguments.firstOrNull()?.getLambdaExpression()
+
+    val descriptionPromptText = descriptionPromptPsi?.text ?: ""
+    val trimmedDescriptionPromptText = descriptionPromptText.trimStart(QUOTE_CHAR).trimStart()
+
+    val trimmedOffset = descriptionPromptText.length - trimmedDescriptionPromptText.length
+
     return DescriptionExpression(
-      descriptionExpression.valueArguments.firstOrNull()?.text?.dropPostfix(TRIM_INDENT_POSTFIX)?.trim(QUOTE_CHAR) ?: "",
-      descriptionExpression.lambdaArguments.firstOrNull()?.getLambdaExpression()?.bodyExpression?.text ?: ""
+      (descriptionPromptPsi?.textOffset ?: 0) + trimmedOffset,
+      trimmedDescriptionPromptText.dropPostfix(TRIM_INDENT_POSTFIX).dropPostfix(QUOTE_POSTFIX),
+      descriptionCodeBlockPsi?.textOffset ?: 0,
+      descriptionCodeBlockPsi?.bodyExpression?.text ?: ""
     )
   }
 
@@ -27,5 +37,6 @@ class KtDescriptionExpressionParser : DescriptionExpressionParser {
   companion object {
     private const val QUOTE_CHAR = '"'
     private const val TRIM_INDENT_POSTFIX = ".trimIndent()"
+    private const val QUOTE_POSTFIX = "\"\"\""
   }
 }
