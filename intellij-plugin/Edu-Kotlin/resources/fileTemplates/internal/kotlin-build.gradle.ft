@@ -40,7 +40,7 @@ subprojects {
     dependencies {
         implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
         #if ($isJarvis)
-        implementation "org.jetbrains.academy.jarvis.dsl:Jarvis-no-code-in-edu:1.0.3"
+        implementation "org.jetbrains.academy.jarvis.dsl:Jarvis-no-code-in-edu:$jarvisDslVersion"
         #end
         testImplementation group: 'junit', name: 'junit', version: '4.12'
     }
