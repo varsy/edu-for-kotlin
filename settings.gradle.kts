@@ -51,10 +51,12 @@ apply(from = "common.gradle.kts")
 
 val secretProperties: String by extra
 val inJetBrainsNetwork: () -> Boolean by extra
+val jarvisProperties: String by extra
 
 val isTeamCity: Boolean get() = System.getenv("TEAMCITY_VERSION") != null
 
 configureSecretProperties()
+configureJarvisProperties()
 
 downloadHyperskillCss()
 
@@ -103,6 +105,16 @@ fun configureSecretProperties() {
   secretProperties.extractAndStore(
     "intellij-plugin/educational-core/resources/lti/lti-auth.properties",
     "ltiServiceToken"
+  )
+}
+
+fun configureJarvisProperties() {
+  val jarvisProperties = loadProperties(jarvisProperties)
+
+  jarvisProperties.extractAndStore(
+    "intellij-plugin/educational-core/resources/jarvisTemplateVariables/jarvis.properties",
+    "isJarvis",
+    "jarvisDslVersion"
   )
 }
 

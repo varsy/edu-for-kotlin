@@ -15,3 +15,5 @@ extra["inJetBrainsNetwork"] = fun(): Boolean {
 }
 
 extra["secretProperties"] = "secret.properties"
+
+extra["jarvisProperties"] = "jarvis.properties"
