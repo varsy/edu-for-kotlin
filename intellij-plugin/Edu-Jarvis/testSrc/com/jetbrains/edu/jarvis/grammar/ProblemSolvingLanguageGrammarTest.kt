@@ -38,6 +38,6 @@ class ProblemSolvingLanguageGrammarTest(private val sentence: String) : BasePlat
 
   @Test
   fun testParse() {
-    assertNotNull(parseSentence(sentence))
+    assertNotNull(sentence.parse())
   }
 }
