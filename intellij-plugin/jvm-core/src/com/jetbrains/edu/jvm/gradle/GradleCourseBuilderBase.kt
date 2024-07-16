@@ -8,6 +8,7 @@ import com.jetbrains.edu.learning.*
 import com.jetbrains.edu.learning.EduNames.PROJECT_NAME
 import com.jetbrains.edu.learning.courseFormat.Course
 import com.jetbrains.edu.learning.courseGeneration.GeneratorUtils
+import com.jetbrains.edu.learning.jarvis.utils.JarvisTemplateVariablesProvider
 import org.jetbrains.annotations.NonNls
 import org.jetbrains.plugins.gradle.util.GradleConstants.DEFAULT_SCRIPT_NAME
 import org.jetbrains.plugins.gradle.util.GradleConstants.SETTINGS_FILE_NAME
@@ -54,7 +55,8 @@ abstract class GradleCourseBuilderBase : EduCourseBuilder<JdkProjectSettings> {
     }
 
     fun getJarvisTemplateVariables() = mapOf(
-      "isJarvis" to System.getProperty("is.jarvis.mode", "isJarvis").toBoolean()
+      "isJarvis" to JarvisTemplateVariablesProvider.getIsJarvisVariable(),
+      "jarvisDslVersion" to JarvisTemplateVariablesProvider.getJarvisDslVersion()
     )
   }
 }
