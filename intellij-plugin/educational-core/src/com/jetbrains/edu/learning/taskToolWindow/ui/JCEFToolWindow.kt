@@ -12,6 +12,7 @@ import com.jetbrains.edu.learning.JavaUILibrary
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
 import com.jetbrains.edu.learning.taskToolWindow.links.JCefToolWindowLinkHandler
 import com.jetbrains.edu.learning.taskToolWindow.ui.jcefSpecificQueries.TaskQueryManager
+import com.jetbrains.edu.learning.taskToolWindow.ui.jcefSpecificQueries.TermsQueryManager
 import org.jetbrains.annotations.TestOnly
 import javax.swing.JComponent
 
@@ -19,6 +20,7 @@ class JCEFToolWindow(project: Project) : TaskToolWindow(project) {
   private val taskInfoJBCefBrowser = JCEFHtmlPanel(true, JBCefApp.getInstance().createClient(), null)
   private val taskSpecificJBCefBrowser = JCEFHtmlPanel(true, JBCefApp.getInstance().createClient(), null)
   private var taskSpecificQueryManager: TaskQueryManager<out Task>? = null
+  private var termsQueryManager: TermsQueryManager? = null
 
   init {
     val jcefLinkInToolWindowHandler = JCefToolWindowLinkHandler(project)
@@ -31,6 +33,8 @@ class JCEFToolWindow(project: Project) : TaskToolWindow(project) {
     taskInfoJBCefBrowser.disableNavigation()
     Disposer.register(this, taskInfoJBCefBrowser)
     Disposer.register(this, taskSpecificJBCefBrowser)
+
+    termsQueryManager = TermsQueryManager(project, taskInfoJBCefBrowser)
 
     ApplicationManager.getApplication().messageBus.connect(this)
       .subscribe(LafManagerListener.TOPIC,
@@ -59,8 +63,12 @@ class JCEFToolWindow(project: Project) : TaskToolWindow(project) {
     taskSpecificQueryManager?.let {
       Disposer.dispose(it)
     }
+    termsQueryManager?.let {
+      Disposer.dispose(it)
+    }
 
     taskSpecificQueryManager = getTaskSpecificQueryManager(task, taskSpecificJBCefBrowser)
+    termsQueryManager = TermsQueryManager(project, taskInfoJBCefBrowser)
 
     taskSpecificJBCefBrowser.component.preferredSize = JBUI.size(Int.MAX_VALUE, 250)
     val html = htmlWithResources(project, taskText, task)
@@ -72,6 +80,9 @@ class JCEFToolWindow(project: Project) : TaskToolWindow(project) {
     super.dispose()
     // Dispose undisposed yet taskSpecificQueryManager
     taskSpecificQueryManager?.let {
+      Disposer.dispose(it)
+    }
+    termsQueryManager?.let {
       Disposer.dispose(it)
     }
   }

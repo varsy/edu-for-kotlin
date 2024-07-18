@@ -1,6 +1,7 @@
 package com.jetbrains.edu.learning.theoryLookup
 
 import com.intellij.openapi.diagnostic.Logger
+import com.jetbrains.educational.ml.theory.lookup.term.Term
 import edu.stanford.nlp.ling.CoreAnnotations
 import edu.stanford.nlp.ling.CoreLabel
 import edu.stanford.nlp.pipeline.*
@@ -16,18 +17,18 @@ import java.util.*
  * 4) the original term and its lemmatized version are put into a map.
  */
 @JvmInline
-value class Lemmatizer(private val termToLemmaList: MutableList<Term>) {
+value class Lemmatizer(private val termToDefinitionAndLemmaMap: MutableMap<String, Pair<String, String>>) {
 
-  constructor(text: String, terms: List<String>) : this(mutableListOf()) {
+  constructor(text: String, terms: List<Term>) : this(mutableMapOf()) {
     try {
       val pipeline = createPipeline()
-      val lemmatizedTerms = terms.map { term -> term.textToTokens(pipeline).map { it.lemmatizeToken() } }
+      val lemmatizedTerms = terms.map { term -> Pair(term.value.textToTokens(pipeline).map { it.lemmatizeToken() }, term.definition) }
 
       val tokens = text.textToTokens(pipeline)
       val originalTokens = tokens.map { it.originalText() }
       val lemmatizedText = tokens.joinToString(SPACE) { it.lemmatizeToken() }
 
-      lemmatizedTerms.forEach { term ->
+      lemmatizedTerms.forEach { (term, definition) ->
         // terms may consist of several tokens
         val joinedTerm = term.joinToString(SPACE)
         // find all occurrences of the term in the text
@@ -37,10 +38,8 @@ value class Lemmatizer(private val termToLemmaList: MutableList<Term>) {
           if (indexOfTerm + term.size < originalTokens.size) {
             // by index of the first token and number of tokens in the term find the original version of the term in the text
             val originalTerm = originalTokens.subList(indexOfTerm, indexOfTerm + term.size).joinToString(SPACE)
-            // the original term and its lemmatized version are put into a list
-            if (termToLemmaList.none { it.original == originalTerm }) {
-              termToLemmaList.add(Term(originalTerm, joinedTerm))
-            }
+            // the original term and its lemmatized version are put into a map
+            termToDefinitionAndLemmaMap[originalTerm] = Pair(definition, joinedTerm)
           }
         }
       }
@@ -49,7 +48,9 @@ value class Lemmatizer(private val termToLemmaList: MutableList<Term>) {
     }
   }
 
-  fun getLemmatizedTermsList(): List<Term> = termToLemmaList
+  fun getTermsAndItsDefinitions(): Map<String, String> = termToDefinitionAndLemmaMap.mapValues { it.value.first }
+
+  fun getLemmatizedTerms(): Map<String, String> = termToDefinitionAndLemmaMap.mapValues { it.value.second }
 
   private fun CoreLabel.lemmatizeToken() =
     get(CoreAnnotations.LemmaAnnotation::class.java).lowercase()

@@ -19,19 +19,19 @@ import java.util.concurrent.ConcurrentHashMap
 class TermsManager(private val project: Project) {
 
   /**
-   * Represents a map of list of terms for each task that may be of potential interest to the user.
+   * Represents a map of terms (value and definition) for each task that may be of potential interest to the user.
    */
-  private val terms = ConcurrentHashMap<Int, List<Term>>()
+  private val terms = ConcurrentHashMap<Int, Map<String, String>>()
 
   suspend fun extractTerms(task: Task) {
     if (terms.containsKey(task.id)) return
     try {
       val text = task.descriptionText
       val termsProvider = TermsProvider()
-      val termsList = termsProvider.findTerms(text)
+      val termsList = termsProvider.findTermsAndDefinitions(text)
       termsList.getOrThrow().takeIf { it.isNotEmpty() }?.let {
         terms.computeIfAbsent(task.id) { _ ->
-          Lemmatizer(text, it.map { term -> term.value }).getLemmatizedTermsList()
+          Lemmatizer(text, it).getTermsAndItsDefinitions()
         }
         notifyTermsChanged(task)
       }
@@ -46,7 +46,7 @@ class TermsManager(private val project: Project) {
     }
   }
 
-  fun getTerms(task: Task) = terms.getOrDefault(task.id, emptyList())
+  fun getTerms(task: Task) = terms.getOrDefault(task.id, emptyMap())
 
   private fun notifyTermsChanged(task: Task) {
     project.messageBus.syncPublisher(TOPIC).termsChanged(task)

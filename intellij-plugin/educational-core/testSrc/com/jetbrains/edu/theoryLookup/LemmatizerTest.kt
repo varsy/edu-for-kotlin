@@ -1,6 +1,7 @@
 package com.jetbrains.edu.theoryLookup
 
 import com.jetbrains.edu.learning.theoryLookup.Lemmatizer
+import com.jetbrains.educational.ml.theory.lookup.term.Term
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
@@ -41,12 +42,12 @@ class LemmatizerTest(private val term: String, private val lemmatizedTerm: Strin
       "be write kotlin",
       "drink coffee",
       "contact instructor"
-    )
-    val termToLemmaList = Lemmatizer(text, terms).getLemmatizedTermsList()
+    ).map { Term(it) }
+    val termToLemmaList = Lemmatizer(text, terms).getLemmatizedTerms()
     assertEquals(
       "Expected lemmatized term did not match actual result. Original term: $term, lemmatized term: $lemmatizedTerm",
       lemmatizedTerm,
-      termToLemmaList.find { it.original == term }?.lemmatisedVersion
+      termToLemmaList[term]
     )
   }
 }

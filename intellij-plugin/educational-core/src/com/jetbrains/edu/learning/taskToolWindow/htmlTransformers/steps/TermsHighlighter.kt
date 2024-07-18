@@ -21,7 +21,7 @@ object TermsHighlighter : HtmlTransformer {
   private fun Element.isValidTag(): Boolean = tagName() !in INVALID_TAGS
 
   override fun transform(html: Document, context: HtmlTransformerContext): Document {
-    TermsManager.getInstance(context.project).getTerms(context.task).forEach { (term, _) ->
+    TermsManager.getInstance(context.project).getTerms(context.task).keys.forEach { term ->
       html.getElementsContainingOwnText(term)
         .flatMap { element ->
           if (!element.isValidTag()) return@flatMap emptyList()
