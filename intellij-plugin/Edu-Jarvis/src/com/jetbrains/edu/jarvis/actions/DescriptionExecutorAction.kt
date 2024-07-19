@@ -4,19 +4,12 @@ import com.intellij.notification.NotificationType.ERROR
 import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
-import com.intellij.openapi.actionSystem.PlatformDataKeys
-import com.intellij.openapi.editor.markup.*
 import com.intellij.psi.PsiElement
-import com.intellij.ui.JBColor
-import com.intellij.util.containers.addIfNotNull
 import com.jetbrains.edu.jarvis.DescriptionExpressionParser
 import com.jetbrains.edu.jarvis.DraftExpressionWriter
-import com.jetbrains.edu.jarvis.grammar.UnparsableSentence
-import com.jetbrains.edu.jarvis.grammar.parse
+import com.jetbrains.edu.jarvis.grammar.GrammarParser
 import com.jetbrains.edu.jarvis.messages.EduJarvisBundle
-import com.jetbrains.edu.learning.courseFormat.jarvis.DescriptionExpression
 import com.jetbrains.edu.learning.notification.EduNotificationManager
-
 
 /**
  * An action class responsible for handling the running of `description` DSL (Domain-Specific Language) elements.
@@ -40,20 +33,10 @@ class DescriptionExecutorAction(private val element: PsiElement) : AnAction() {
       return
     }
 
-    val markupModel = e.getData(PlatformDataKeys.EDITOR)?.markupModel ?: error("Editor was not found")
+    val grammarParser = GrammarParser(project, descriptionExpression)
+    grammarParser.findAndHighlightErrors()
 
-    // TODO: Remove only the highlighters created by this action
-    markupModel.removeAllHighlighters()
-
-    val unparsableSentences = getUnparsableSentences(descriptionExpression)
-
-    val attributes = TextAttributes()
-    attributes.effectColor = JBColor.RED
-    attributes.effectType = EffectType.LINE_UNDERSCORE
-
-    highlightUnparsableSentences(unparsableSentences, markupModel)
-
-    if (unparsableSentences.isNotEmpty()) {
+    if (grammarParser.hasFoundErrors) {
       EduNotificationManager.create(
         ERROR,
         EduJarvisBundle.message("action.not.run.due.to.incorrect.grammar.title"),
@@ -70,65 +53,5 @@ class DescriptionExecutorAction(private val element: PsiElement) : AnAction() {
   }
 
   override fun getActionUpdateThread() = ActionUpdateThread.BGT
-
-  /**
-   * Splits the description into sentences, and for each one returns [UnparsableSentence] if it fails to parse it.
-   */
-  private fun getUnparsableSentences(descriptionExpression: DescriptionExpression): List<UnparsableSentence> {
-    val unparsableSentences = mutableListOf<UnparsableSentence>()
-
-    descriptionExpression.prompt.split(DOT)
-      .fold(descriptionExpression.promptOffset) { currentOffset, sentence ->
-        unparsableSentences.addIfNotNull(getUnparsedSentenceOrNull(sentence, currentOffset))
-        currentOffset + sentence.length + 1
-      }
-
-    return unparsableSentences
-  }
-
-  private fun getUnparsedSentenceOrNull(
-    sentence: String,
-    sentenceOffset: Int
-  ): UnparsableSentence? {
-    if (sentence.isBlank()) return null
-    if (sentence.matchesGrammar()) return null
-    val trimmedLength = sentence.trimStart().length
-    val trimmedOffset = sentence.length - trimmedLength
-
-    return UnparsableSentence(
-      sentenceOffset + trimmedOffset,
-      sentenceOffset + trimmedOffset + sentence.trim().length
-    )
-  }
-
-  private fun highlightUnparsableSentences(sentences: Collection<UnparsableSentence>, markupModel: MarkupModel) {
-    val attributes = TextAttributes()
-    attributes.effectColor = JBColor.RED
-    attributes.effectType = EffectType.LINE_UNDERSCORE
-
-    sentences.forEach {
-      it.highlight(markupModel, attributes)
-    }
-  }
-
-  private fun UnparsableSentence.highlight(markupModel: MarkupModel, attributes: TextAttributes) = markupModel.addRangeHighlighter(
-    start,
-    end,
-    HighlighterLayer.ERROR, attributes, HighlighterTargetArea.EXACT_RANGE
-  )
-
-
-  private fun String.matchesGrammar() = try {
-    this.parse()
-    true
-  }
-  catch (e: Throwable) {
-    // TODO: also check grammar with LLM
-    false
-  }
-
-  companion object {
-    const val DOT = '.'
-  }
 
 }
