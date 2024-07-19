@@ -43,7 +43,7 @@ class DescriptionExecutorAction(private val element: PsiElement) : AnAction() {
 
     parseDescription(descriptionExpression, markupModel)
 
-    if (markupModel.allHighlighters.isNotEmpty()) {
+    if (containsErrors(markupModel)) {
       EduNotificationManager.create(
         ERROR,
         EduJarvisBundle.message("action.not.run.due.to.incorrect.grammar.title"),
@@ -96,6 +96,8 @@ class DescriptionExecutorAction(private val element: PsiElement) : AnAction() {
       HighlighterLayer.ERROR, attributes, HighlighterTargetArea.EXACT_RANGE
     )
   }
+
+  private fun containsErrors(markupModel: MarkupModel): Boolean = markupModel.allHighlighters.isNotEmpty()
 
   private fun String.matchesGrammar() = try {
     this.parse()
