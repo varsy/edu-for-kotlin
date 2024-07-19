@@ -8,8 +8,10 @@ import com.intellij.openapi.actionSystem.PlatformDataKeys
 import com.intellij.openapi.editor.markup.*
 import com.intellij.psi.PsiElement
 import com.intellij.ui.JBColor
+import com.intellij.util.containers.addIfNotNull
 import com.jetbrains.edu.jarvis.DescriptionExpressionParser
 import com.jetbrains.edu.jarvis.DraftExpressionWriter
+import com.jetbrains.edu.jarvis.grammar.UnparsableSentence
 import com.jetbrains.edu.jarvis.grammar.parse
 import com.jetbrains.edu.jarvis.messages.EduJarvisBundle
 import com.jetbrains.edu.learning.courseFormat.jarvis.DescriptionExpression
@@ -39,11 +41,19 @@ class DescriptionExecutorAction(private val element: PsiElement) : AnAction() {
     }
 
     val markupModel = e.getData(PlatformDataKeys.EDITOR)?.markupModel ?: error("Editor was not found")
+
+    // TODO: Remove only the highlighters created by this action
     markupModel.removeAllHighlighters()
 
-    parseDescription(descriptionExpression, markupModel)
+    val unparsableSentences = getUnparsableSentences(descriptionExpression)
 
-    if (containsErrors(markupModel)) {
+    val attributes = TextAttributes()
+    attributes.effectColor = JBColor.RED
+    attributes.effectType = EffectType.LINE_UNDERSCORE
+
+    highlightUnparsableSentences(unparsableSentences, markupModel)
+
+    if (unparsableSentences.isNotEmpty()) {
       EduNotificationManager.create(
         ERROR,
         EduJarvisBundle.message("action.not.run.due.to.incorrect.grammar.title"),
@@ -62,42 +72,51 @@ class DescriptionExecutorAction(private val element: PsiElement) : AnAction() {
   override fun getActionUpdateThread() = ActionUpdateThread.BGT
 
   /**
-   * Parses the description block by splitting it into sentences and highlights those that do not match the grammar.
+   * Splits the description into sentences, and for each one returns [UnparsableSentence] if it fails to parse it.
    */
-  private fun parseDescription(descriptionExpression: DescriptionExpression, markupModel: MarkupModel) {
+  private fun getUnparsableSentences(descriptionExpression: DescriptionExpression): List<UnparsableSentence> {
+    val unparsableSentences = mutableListOf<UnparsableSentence>()
+
+    descriptionExpression.prompt.split(DOT)
+      .fold(descriptionExpression.promptOffset) { currentOffset, sentence ->
+        unparsableSentences.addIfNotNull(getUnparsedSentenceOrNull(sentence, currentOffset))
+        currentOffset + sentence.length + 1
+      }
+
+    return unparsableSentences
+  }
+
+  private fun getUnparsedSentenceOrNull(
+    sentence: String,
+    sentenceOffset: Int
+  ): UnparsableSentence? {
+    if (sentence.isBlank()) return null
+    if (sentence.matchesGrammar()) return null
+    val trimmedLength = sentence.trimStart().length
+    val trimmedOffset = sentence.length - trimmedLength
+
+    return UnparsableSentence(
+      sentenceOffset + trimmedOffset,
+      sentenceOffset + trimmedOffset + sentence.trim().length
+    )
+  }
+
+  private fun highlightUnparsableSentences(sentences: Collection<UnparsableSentence>, markupModel: MarkupModel) {
     val attributes = TextAttributes()
     attributes.effectColor = JBColor.RED
     attributes.effectType = EffectType.LINE_UNDERSCORE
 
-    descriptionExpression.prompt.split(DOT)
-      .fold(descriptionExpression.promptOffset) { currentOffset, sentence ->
-        processSentence(sentence, currentOffset, markupModel, attributes)
-        currentOffset + sentence.length + 1
-      }
+    sentences.forEach {
+      it.highlight(markupModel, attributes)
+    }
   }
 
-  /**
-   * Processes the sentence and determines whether to highlight the sentence or not.
-   */
-  private fun processSentence(
-    sentence: String,
-    sentenceOffset: Int,
-    markupModel: MarkupModel,
-    attributes: TextAttributes
-  ) {
-    if (sentence.isBlank()) return
-    if (sentence.matchesGrammar()) return
-    val trimmedLength = sentence.trimStart().length
-    val trimmedOffset = sentence.length - trimmedLength
+  private fun UnparsableSentence.highlight(markupModel: MarkupModel, attributes: TextAttributes) = markupModel.addRangeHighlighter(
+    start,
+    end,
+    HighlighterLayer.ERROR, attributes, HighlighterTargetArea.EXACT_RANGE
+  )
 
-    markupModel.addRangeHighlighter(
-      sentenceOffset + trimmedOffset,
-      sentenceOffset + trimmedOffset + sentence.trim().length,
-      HighlighterLayer.ERROR, attributes, HighlighterTargetArea.EXACT_RANGE
-    )
-  }
-
-  private fun containsErrors(markupModel: MarkupModel): Boolean = markupModel.allHighlighters.isNotEmpty()
 
   private fun String.matchesGrammar() = try {
     this.parse()
