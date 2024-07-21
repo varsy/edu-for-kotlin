@@ -37,6 +37,7 @@ private const val VIDEO_TAG = "video"
 private const val IFRAME_TAG = "iframe"
 private const val YOUTUBE_VIDEO_ID_LENGTH = 11
 const val A_TAG = "a"
+const val CODE_TAG = "code"
 const val IMG_TAG = "img"
 const val SCRIPT_TAG = "script"
 const val SRC_ATTRIBUTE = "src"

@@ -5,6 +5,7 @@ import com.intellij.lang.Language
 import com.intellij.openapi.fileTypes.PlainTextLanguage
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiFileFactory
+import com.jetbrains.edu.learning.taskToolWindow.CODE_TAG
 import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
 import org.jsoup.nodes.TextNode
@@ -13,7 +14,7 @@ class EduCodeHighlighter {
 
   companion object {
     fun highlightCodeFragments(project: Project, html: Document, defaultLanguage: Language): Document {
-      val codeElements = html.select("code")
+      val codeElements = html.select(CODE_TAG)
 
       for (codeElement in codeElements) {
         val textNode = codeElement.childNodes().singleOrNull() as? TextNode ?: continue

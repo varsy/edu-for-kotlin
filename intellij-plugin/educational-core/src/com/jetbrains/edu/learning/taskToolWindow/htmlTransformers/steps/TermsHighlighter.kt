@@ -23,7 +23,7 @@ object TermsHighlighter : HtmlTransformer {
       val term = it.original
       html.getElementsContainingOwnText(term).forEach { element ->
         // TODO: filter code blocks and other tags
-        if (element.tagName() != "code" && element.tagName() != A_TAG && element.tagName() != IMG_TAG) {
+        if (element.tagName() != CODE_TAG && element.tagName() != A_TAG && element.tagName() != IMG_TAG) {
           val termElement = getDashedUnderlineElement(html, term)
           element.textNodes().filter { textNode -> textNode.text().contains(term) }.forEach { node ->
             var currentNode = node
