@@ -5,6 +5,7 @@ import com.jetbrains.edu.learning.taskToolWindow.htmlTransformers.HtmlTransforme
 import com.jetbrains.edu.learning.taskToolWindow.htmlTransformers.HtmlTransformerContext
 import com.jetbrains.edu.learning.theoryLookup.TermsManager
 import org.jsoup.nodes.Document
+import org.jsoup.nodes.Element
 
 /**
  * Highlights terms in an HTML document by adding dashed underline style to the occurrences of the terms.
@@ -14,6 +15,11 @@ import org.jsoup.nodes.Document
  * @see TermsManager
  */
 object TermsHighlighter : HtmlTransformer {
+  // TODO: filter code blocks and other tags
+  private val INVALID_TAGS = listOf(CODE_TAG, A_TAG, IMG_TAG)
+
+  private fun Element.isValidTag(): Boolean = tagName() !in INVALID_TAGS
+
   override fun transform(html: Document, context: HtmlTransformerContext): Document {
     val task = context.task
     val project = context.project
@@ -21,9 +27,9 @@ object TermsHighlighter : HtmlTransformer {
 
     termsManager.getTerms(task).forEach {
       val term = it.original
-      html.getElementsContainingOwnText(term).forEach { element ->
-        // TODO: filter code blocks and other tags
-        if (element.tagName() != CODE_TAG && element.tagName() != A_TAG && element.tagName() != IMG_TAG) {
+      html.getElementsContainingOwnText(term)
+        .filter { element -> element.isValidTag() }
+        .forEach { element ->
           val termElement = getDashedUnderlineElement(html, term)
           element.textNodes().filter { textNode -> textNode.text().contains(term) }.forEach { node ->
             var currentNode = node
@@ -40,7 +46,6 @@ object TermsHighlighter : HtmlTransformer {
             }
           }
         }
-      }
     }
 
     return html
