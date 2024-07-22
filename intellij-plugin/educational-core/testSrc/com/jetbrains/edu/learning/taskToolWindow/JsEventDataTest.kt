@@ -25,6 +25,15 @@ class JsEventDataTest(private val jsEventDataJson: String) : EduTestCase() {
     @Parameterized.Parameters
     fun testInfos(): Collection<Any> = listOf(
       arrayOf("""{"term":"abc","x":1.23,"y":2.34}"""),
+      arrayOf("""{"term":"abc","x":1.53,"y":2.68}"""),
+      arrayOf("""{"x":1.53, "term":"abc", "y":2.64}"""),
+      arrayOf("""
+        {
+          "x":1.23,
+          "y":2.64,
+          "term":"abc"
+        }
+      """.trimIndent()),
     )
   }
 }

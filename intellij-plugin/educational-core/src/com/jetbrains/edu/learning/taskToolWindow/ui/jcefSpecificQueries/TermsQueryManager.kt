@@ -8,11 +8,13 @@ import com.intellij.ui.GotItTooltip
 import com.intellij.ui.jcef.JBCefBrowserBase
 import com.intellij.ui.jcef.JBCefJSQuery
 import com.jetbrains.edu.learning.selectedTaskFile
+import com.jetbrains.edu.learning.taskToolWindow.TERM_CLASS
 import com.jetbrains.edu.learning.taskToolWindow.ui.JsEventData
 import com.jetbrains.edu.learning.theoryLookup.TermsManager
 import org.cef.browser.CefBrowser
 import org.cef.browser.CefFrame
 import org.cef.handler.CefLoadHandlerAdapter
+import org.jetbrains.annotations.NonNls
 import java.awt.Point
 
 /**
@@ -22,11 +24,13 @@ import java.awt.Point
  * When a user hovers over a term, a tooltip containing the definition of the term is displayed.
  * Also adds a scroll listener to close the tooltip when a user scrolls the page.
  */
+// TODO: Implement an analogue for Swing
 class TermsQueryManager(
   private val project: Project,
   private val taskJBCefBrowser: JBCefBrowserBase
 ) : Disposable {
   private val jsQueryTermListener = JBCefJSQuery.create(taskJBCefBrowser)
+  private val jsQueryTermOutListener = JBCefJSQuery.create(taskJBCefBrowser)
   private val jsQueryScrollListener = JBCefJSQuery.create(taskJBCefBrowser)
   private var gotItTooltip: GotItTooltip? = null
 
@@ -37,16 +41,26 @@ class TermsQueryManager(
 
       browser?.mainFrame?.executeJavaScript(
         """
-          let terms = document.querySelectorAll('span[style*="border-bottom: 1px dashed gray;"]');
+          let terms = document.getElementsByClassName('$TERM_CLASS');
           [].slice.call(terms).forEach(term => {
             term.addEventListener('mouseover', function (event) {
               let boundingRect = term.getBoundingClientRect();
               let data = { 
                 term: term.innerText, 
                 x: event.clientX, 
-                y: boundingRect.top
+                y: event.clientY, 
+                bottomOfTermRect: boundingRect.bottom,
+                topOfTermRect: boundingRect.top
               };
               ${jsQueryTermListener.inject("JSON.stringify(data)")}
+            });
+            term.addEventListener('mouseout', function (event) {
+              let data = { 
+                term: term.innerText, 
+                x: event.clientX, 
+                y: event.clientY
+              };
+              ${jsQueryTermOutListener.inject("JSON.stringify(data)")}
             });
           });
           window.addEventListener('scroll', function() { 
@@ -62,44 +76,59 @@ class TermsQueryManager(
       showDefinitionOfTerm(data)
       null
     }
+    jsQueryTermOutListener.addHandler { data ->
+      closeDefinitionOfTerm(data)
+      null
+    }
     jsQueryScrollListener.addHandler {
-      gotItTooltip?.hidePopup()
-      gotItTooltip = null
+      gotItTooltip?.dispose()
       null
     }
     Disposer.register(this, jsQueryTermListener)
+    Disposer.register(this, jsQueryTermOutListener)
     Disposer.register(this, jsQueryScrollListener)
     taskJBCefBrowser.jbCefClient.addLoadHandler(termListenerLoadHandler, taskJBCefBrowser.cefBrowser)
   }
 
   private fun showDefinitionOfTerm(data: String) {
     if (data.isBlank()) return
-    if (gotItTooltip != null) return
-    try {
-      val parsedData = JsEventData.fromJson(data) ?: return
-      val term = parsedData.term
+    gotItTooltip?.dispose()
+    val parsedData = JsEventData.fromJson(data) ?: return
+    val component = taskJBCefBrowser.component ?: return
+    val term = parsedData.term
 
-      val task = project.selectedTaskFile?.task ?: return
-      val termsManager = TermsManager.getInstance(project)
-      val definition = termsManager.getTerms(task)[term] ?: return
+    val task = project.selectedTaskFile?.task ?: return
+    val definition = TermsManager.getInstance(project).getTerms(task)[term] ?: return
 
-      gotItTooltip = GotItTooltip(term, definition,  this)
-        .withHeader(term)
-        .withPosition(Balloon.Position.above)
-        .withGotItButtonAction {
-          gotItTooltip?.hidePopup()
-          gotItTooltip = null
-        }.apply {
-          taskJBCefBrowser.component?.let {
-            if (this.canShow()) {
-              this.show(it) { _, _ -> Point(parsedData.x, parsedData.y) }
-            }
-          }
+    val isBelowMiddle = parsedData.y < component.height / 2
+    val position = if (isBelowMiddle) Balloon.Position.below else Balloon.Position.above
+    val pointY = if (isBelowMiddle) parsedData.bottomOfTermRect else parsedData.topOfTermRect
+
+    gotItTooltip = GotItTooltip(TOOLTIP_ID, definition, this)
+      .withHeader(term)
+      .withPosition(position)
+      .withGotItButtonAction {
+        gotItTooltip?.dispose()
+      }.apply {
+        if (canShow()) {
+          show(component) { _, _ -> Point(parsedData.x, pointY ?: parsedData.y) }
         }
-    } catch (ignored: NumberFormatException) { }
+      }
+  }
+
+  private fun closeDefinitionOfTerm(data: String) {
+    if (data.isBlank()) return
+    // TODO: keep the gotItTooltip open when the mouse moves towards it
+    gotItTooltip?.dispose()
   }
 
   override fun dispose() {
+    gotItTooltip?.dispose()
     taskJBCefBrowser.jbCefClient.removeLoadHandler(termListenerLoadHandler, taskJBCefBrowser.cefBrowser)
+  }
+
+  companion object {
+    @NonNls
+    private const val TOOLTIP_ID: String = "term.definition"
   }
 }

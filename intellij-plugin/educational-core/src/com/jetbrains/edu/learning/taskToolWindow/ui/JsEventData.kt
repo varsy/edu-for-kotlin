@@ -9,6 +9,8 @@ import com.intellij.openapi.diagnostic.Logger
 private const val TERM = "term"
 private const val X = "x"
 private const val Y = "y"
+private const val BOTTOM = "bottomOfTermRect"
+private const val TOP = "topOfTermRect"
 
 class JsEventData private constructor(
   @JsonProperty(TERM)
@@ -20,7 +22,15 @@ class JsEventData private constructor(
 
   @JsonProperty(Y)
   @JsonDeserialize(contentConverter = DoubleToIntConverter::class)
-  val y: Int
+  val y: Int,
+
+  @JsonProperty(BOTTOM)
+  @JsonDeserialize(contentConverter = DoubleToIntConverter::class)
+  val bottomOfTermRect: Int? = null,
+
+  @JsonProperty(TOP)
+  @JsonDeserialize(contentConverter = DoubleToIntConverter::class)
+  val topOfTermRect: Int? = null
 ) {
   companion object {
     private val LOG: Logger = Logger.getInstance(JsEventData::class.java)

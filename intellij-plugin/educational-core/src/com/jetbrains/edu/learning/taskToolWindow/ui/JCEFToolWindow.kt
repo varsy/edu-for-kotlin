@@ -34,8 +34,6 @@ class JCEFToolWindow(project: Project) : TaskToolWindow(project) {
     Disposer.register(this, taskInfoJBCefBrowser)
     Disposer.register(this, taskSpecificJBCefBrowser)
 
-    termsQueryManager = TermsQueryManager(project, taskInfoJBCefBrowser)
-
     ApplicationManager.getApplication().messageBus.connect(this)
       .subscribe(LafManagerListener.TOPIC,
                  LafManagerListener { TaskToolWindowView.updateAllTabs(project) })
@@ -51,7 +49,15 @@ class JCEFToolWindow(project: Project) : TaskToolWindow(project) {
     get() = JavaUILibrary.JCEF
 
   override fun setText(text: String) {
+    taskInfoJBCefBrowser.component.isVisible = false
+
+    termsQueryManager?.let {
+      Disposer.dispose(it)
+    }
+    termsQueryManager = TermsQueryManager(project, taskInfoJBCefBrowser)
+
     taskInfoJBCefBrowser.loadHTML(text)
+    taskInfoJBCefBrowser.component.isVisible = true
   }
 
   override fun updateTaskSpecificPanel(task: Task?) {
@@ -63,12 +69,8 @@ class JCEFToolWindow(project: Project) : TaskToolWindow(project) {
     taskSpecificQueryManager?.let {
       Disposer.dispose(it)
     }
-    termsQueryManager?.let {
-      Disposer.dispose(it)
-    }
 
     taskSpecificQueryManager = getTaskSpecificQueryManager(task, taskSpecificJBCefBrowser)
-    termsQueryManager = TermsQueryManager(project, taskInfoJBCefBrowser)
 
     taskSpecificJBCefBrowser.component.preferredSize = JBUI.size(Int.MAX_VALUE, 250)
     val html = htmlWithResources(project, taskText, task)
