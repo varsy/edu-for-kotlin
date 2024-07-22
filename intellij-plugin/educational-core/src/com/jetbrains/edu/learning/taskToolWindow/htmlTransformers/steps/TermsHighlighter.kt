@@ -28,22 +28,23 @@ object TermsHighlighter : HtmlTransformer {
     termsManager.getTerms(task).forEach {
       val term = it.original
       html.getElementsContainingOwnText(term)
-        .filter { element -> element.isValidTag() }
-        .forEach { element ->
+        .flatMap { element ->
+          if (!element.isValidTag()) return@flatMap emptyList()
+          element.textNodes().filter { textNode -> textNode.text().contains(term) }
+        }
+        .forEach { node ->
           val termElement = getDashedUnderlineElement(html, term)
-          element.textNodes().filter { textNode -> textNode.text().contains(term) }.forEach { node ->
-            var currentNode = node
-            var text = currentNode.text()
-            while (text.contains(term)) {
-              val startIdx = text.indexOf(term)
-              val endIdx = startIdx + term.length
-              val tail = if (endIdx < text.length) currentNode.splitText(endIdx) else null
-              val middle = currentNode.splitText(startIdx)
-              middle.after(termElement.clone())
-              middle.remove()
-              currentNode = tail ?: break
-              text = currentNode.text()
-            }
+          var currentNode = node
+          var text = currentNode.text()
+          while (text.contains(term)) {
+            val startIdx = text.indexOf(term)
+            val endIdx = startIdx + term.length
+            val tail = if (endIdx < text.length) currentNode.splitText(endIdx) else null
+            val middle = currentNode.splitText(startIdx)
+            middle.after(termElement.clone())
+            middle.remove()
+            currentNode = tail ?: break
+            text = currentNode.text()
           }
         }
     }
