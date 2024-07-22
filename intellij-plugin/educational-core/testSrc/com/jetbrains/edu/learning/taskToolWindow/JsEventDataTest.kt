@@ -1,0 +1,30 @@
+package com.jetbrains.edu.learning.taskToolWindow
+
+import com.jetbrains.edu.learning.EduTestCase
+import com.jetbrains.edu.learning.taskToolWindow.ui.JsEventData
+import org.junit.Test
+import org.junit.runner.RunWith
+import org.junit.runners.Parameterized
+
+@Suppress("Junit4RunWithInspection")
+@RunWith(Parameterized::class)
+class JsEventDataTest(private val jsEventDataJson: String) : EduTestCase() {
+
+  @Test
+  fun `test JsEventData deserialization`() {
+    val jsEventData = JsEventData.fromJson(jsEventDataJson)
+    assertNotNull(jsEventData)
+    jsEventData!!
+    assertEquals(jsEventData.term, "abc")
+    assertEquals(jsEventData.x, 1)
+    assertEquals(jsEventData.y, 2)
+  }
+
+  companion object {
+    @JvmStatic
+    @Parameterized.Parameters
+    fun testInfos(): Collection<Any> = listOf(
+      arrayOf("""{"term":"abc","x":1.23,"y":2.34}"""),
+    )
+  }
+}

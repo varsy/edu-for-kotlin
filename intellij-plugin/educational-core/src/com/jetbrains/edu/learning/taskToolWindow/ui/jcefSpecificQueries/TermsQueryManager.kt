@@ -8,6 +8,7 @@ import com.intellij.ui.GotItTooltip
 import com.intellij.ui.jcef.JBCefBrowserBase
 import com.intellij.ui.jcef.JBCefJSQuery
 import com.jetbrains.edu.learning.selectedTaskFile
+import com.jetbrains.edu.learning.taskToolWindow.ui.JsEventData
 import com.jetbrains.edu.learning.theoryLookup.TermsManager
 import org.cef.browser.CefBrowser
 import org.cef.browser.CefFrame
@@ -75,7 +76,7 @@ class TermsQueryManager(
     if (data.isBlank()) return
     if (gotItTooltip != null) return
     try {
-      val parsedData = parseData(data) ?: return
+      val parsedData = JsEventData.fromJson(data) ?: return
       val term = parsedData.term
 
       val task = project.selectedTaskFile?.task ?: return
@@ -91,7 +92,7 @@ class TermsQueryManager(
         }.apply {
           taskJBCefBrowser.component?.let {
             if (this.canShow()) {
-              this.show(it) { _, _ -> Point(parsedData.x.toInt(), parsedData.y.toInt()) }
+              this.show(it) { _, _ -> Point(parsedData.x, parsedData.y) }
             }
           }
         }
