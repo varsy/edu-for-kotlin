@@ -6,6 +6,8 @@ import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.invokeLater
+import com.intellij.openapi.components.Service
+import com.intellij.openapi.components.service
 import com.intellij.openapi.progress.runBackgroundableTask
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
@@ -16,6 +18,7 @@ import com.jetbrains.edu.jarvis.messages.EduJarvisBundle
 import com.jetbrains.edu.learning.actions.EduActionUtils
 import com.jetbrains.edu.learning.courseFormat.jarvis.DescriptionExpression
 import com.jetbrains.edu.learning.notification.EduNotificationManager
+import java.util.concurrent.atomic.AtomicBoolean
 
 /**
  * An action class responsible for handling the running of `description` DSL (Domain-Specific Language) elements.
@@ -48,6 +51,15 @@ class DescriptionExecutorAction(private val element: PsiElement) : AnAction() {
     EduJarvisBundle.message("action.progress.bar.message"),
     project
   ) { indicator ->
+    if (!CodeGenerationState.getInstance(project).lock()) {
+      EduNotificationManager.create(
+        ERROR,
+        EduJarvisBundle.message("action.not.run.due.to.nested.block.title"),
+        EduJarvisBundle.message("action.not.run.due.to.nested.block.text")
+      ).notify(project)
+      return@runBackgroundableTask
+    }
+
     ApplicationManager.getApplication().executeOnPooledThread { EduActionUtils.showFakeProgress(indicator) }
 
     val grammarParser = GrammarParser(project, descriptionExpression)
@@ -58,8 +70,8 @@ class DescriptionExecutorAction(private val element: PsiElement) : AnAction() {
         ERROR,
         EduJarvisBundle.message("action.not.run.due.to.incorrect.grammar.title"),
         EduJarvisBundle.message("action.not.run.due.to.incorrect.grammar.text")
-      )
-        .notify(project)
+      ).notify(project)
+      CodeGenerationState.getInstance(project).unlock()
       return@runBackgroundableTask
     }
 
@@ -71,4 +83,20 @@ class DescriptionExecutorAction(private val element: PsiElement) : AnAction() {
     }
   }
 
+  @Service(Service.Level.PROJECT)
+  private class CodeGenerationState {
+    private val isBusy = AtomicBoolean(false)
+
+    fun lock(): Boolean {
+      return isBusy.compareAndSet(false, true)
+    }
+
+    fun unlock() {
+      isBusy.set(false)
+    }
+
+    companion object {
+      fun getInstance(project: Project): CodeGenerationState = project.service()
+    }
+  }
 }
