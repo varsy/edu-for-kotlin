@@ -57,6 +57,7 @@ class GrammarParser(project: Project, private val descriptionExpression: Descrip
   private fun List<OffsetSentence>.filterGrammarStatic() = filter { !it.sentence.matchesGrammarStatic() }
   
   private suspend fun List<OffsetSentence>.filterGrammarMl(): List<OffsetSentence> {
+    // TODO: Catch connection errors.
     val mask = DescriptionGrammarChecker.checkGrammar(
       map { it.sentence }
     ).toList()
