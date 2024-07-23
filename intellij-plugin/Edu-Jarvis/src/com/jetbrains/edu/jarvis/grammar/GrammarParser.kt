@@ -1,12 +1,12 @@
 package com.jetbrains.edu.jarvis.grammar
 
-import com.intellij.openapi.editor.markup.EffectType
-import com.intellij.openapi.editor.markup.TextAttributes
+import com.intellij.openapi.editor.colors.CodeInsightColors
+import com.intellij.openapi.editor.colors.EditorColorsManager
+import com.intellij.openapi.progress.runBlockingCancellable
 import com.intellij.openapi.project.Project
-import com.intellij.ui.JBColor
-import com.intellij.util.containers.addIfNotNull
 import com.jetbrains.edu.learning.courseFormat.jarvis.DescriptionExpression
 import com.jetbrains.edu.learning.selectedEditor
+import com.jetbrains.educational.ml.jarvis.core.DescriptionGrammarChecker
 
 /**
  * Parses the provided description.
@@ -22,10 +22,7 @@ class GrammarParser(project: Project, private val descriptionExpression: Descrip
     // TODO: Remove only the highlighters created by this action
     it.removeAllHighlighters()
   }
-  private val attributes = TextAttributes().apply {
-    effectType = EffectType.WAVE_UNDERSCORE
-    effectColor = JBColor.RED
-  }
+  private val attributes = EditorColorsManager.getInstance().globalScheme.getAttributes(CodeInsightColors.WARNINGS_ATTRIBUTES)
 
   /**
    * Splits the description into sentences and tries to parse them. If the parsing fails,
@@ -36,44 +33,38 @@ class GrammarParser(project: Project, private val descriptionExpression: Descrip
       hasFoundErrors = it.isNotEmpty()
     }.forEach { it.highlight(markupModel, attributes) }
 
-  private fun getUnparsableSentences(): List<UnparsableSentence> {
-    val unparsableSentences = mutableListOf<UnparsableSentence>()
+  private fun getUnparsableSentences(): List<OffsetSentence> {
+    val sentences = mutableListOf<OffsetSentence>()
 
     descriptionExpression.prompt.split(DOT)
       .fold(descriptionExpression.promptOffset) { currentOffset, sentence ->
-        unparsableSentences.addIfNotNull(getUnparsableSentenceOrNull(sentence, currentOffset))
+        sentences.add(OffsetSentence(sentence, currentOffset))
         currentOffset + sentence.length + 1
       }
 
-    return unparsableSentences
+    return runBlockingCancellable {
+      sentences.filter { it.sentence.isNotBlank() }.filterGrammarStatic().filterGrammarMl()
+    }
   }
 
-  /**
-   * Returns `null` if the sentence is parsed successfully, otherwise returns [UnparsableSentence].
-   */
-  private fun getUnparsableSentenceOrNull(
-    sentence: String,
-    sentenceOffset: Int
-  ): UnparsableSentence? {
-    if (sentence.isBlank()) return null
-    if (sentence.matchesGrammar()) return null
-    val trimmedLength = sentence.trimStart().length
-    val trimmedOffset = sentence.length - trimmedLength
-
-    return UnparsableSentence(
-      sentenceOffset + trimmedOffset,
-      sentenceOffset + trimmedOffset + sentence.trim().length
-    )
-  }
-
-  private fun String.matchesGrammar() = try {
-    this.parse()
+  private fun String.matchesGrammarStatic() = try {
+    parse()
     true
-  }
-  catch (e: Throwable) {
-    // TODO: also check grammar with LLM
+  } catch (e: Throwable) {
     false
   }
+
+  private fun List<OffsetSentence>.filterGrammarStatic() = filter { !it.sentence.matchesGrammarStatic() }
+  
+  private suspend fun List<OffsetSentence>.filterGrammarMl(): List<OffsetSentence> {
+    val mask = DescriptionGrammarChecker.checkGrammar(
+      map { it.sentence }
+    ).toList()
+    return filterByMask(mask, true)
+  }
+
+  private fun <E> List<E>.filterByMask(mask: List<Boolean>, inverse: Boolean = false): List<E>
+    = filterIndexed { index, _ -> mask[index] xor inverse }
 
   companion object {
     private const val DOT = "."
