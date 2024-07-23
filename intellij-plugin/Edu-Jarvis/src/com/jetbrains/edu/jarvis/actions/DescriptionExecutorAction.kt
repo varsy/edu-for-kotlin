@@ -4,11 +4,17 @@ import com.intellij.notification.NotificationType.ERROR
 import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.application.invokeLater
+import com.intellij.openapi.progress.runBackgroundableTask
+import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
 import com.jetbrains.edu.jarvis.DescriptionExpressionParser
 import com.jetbrains.edu.jarvis.DraftExpressionWriter
 import com.jetbrains.edu.jarvis.grammar.GrammarParser
 import com.jetbrains.edu.jarvis.messages.EduJarvisBundle
+import com.jetbrains.edu.learning.actions.EduActionUtils
+import com.jetbrains.edu.learning.courseFormat.jarvis.DescriptionExpression
 import com.jetbrains.edu.learning.notification.EduNotificationManager
 
 /**
@@ -33,6 +39,17 @@ class DescriptionExecutorAction(private val element: PsiElement) : AnAction() {
       return
     }
 
+    generateCode(project, descriptionExpression)
+  }
+
+  override fun getActionUpdateThread() = ActionUpdateThread.BGT
+
+  private fun generateCode(project: Project, descriptionExpression: DescriptionExpression) = runBackgroundableTask(
+    EduJarvisBundle.message("action.progress.bar.message"),
+    project
+  ) { indicator ->
+    ApplicationManager.getApplication().executeOnPooledThread { EduActionUtils.showFakeProgress(indicator) }
+
     val grammarParser = GrammarParser(project, descriptionExpression)
     grammarParser.findAndHighlightErrors()
 
@@ -43,15 +60,15 @@ class DescriptionExecutorAction(private val element: PsiElement) : AnAction() {
         EduJarvisBundle.message("action.not.run.due.to.incorrect.grammar.text")
       )
         .notify(project)
-      return
+      return@runBackgroundableTask
     }
 
-    // TODO: get the generated code with errors
-    val generatedCode = descriptionExpression.codeBlock
-    // TODO: reformat and improve the generated code
-    DraftExpressionWriter.addDraftExpression(project, element, generatedCode, element.language)
+    invokeLater {
+      // TODO: get the generated code with errors
+      val generatedCode = descriptionExpression.codeBlock
+      // TODO: reformat and improve the generated code
+      DraftExpressionWriter.addDraftExpression(project, element, generatedCode, element.language)
+    }
   }
-
-  override fun getActionUpdateThread() = ActionUpdateThread.BGT
 
 }
