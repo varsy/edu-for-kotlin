@@ -26,7 +26,6 @@ class KtDescriptionExpressionParser : DescriptionExpressionParser {
     return DescriptionExpression(
       (descriptionPromptPsi?.textOffset ?: 0) + trimmedOffset,
       trimmedDescriptionPromptText.dropPostfix(TRIM_INDENT_POSTFIX).dropPostfix(QUOTE_POSTFIX),
-      descriptionCodeBlockPsi?.textOffset ?: 0,
       descriptionCodeBlockPsi?.bodyExpression?.text ?: ""
     )
   }
