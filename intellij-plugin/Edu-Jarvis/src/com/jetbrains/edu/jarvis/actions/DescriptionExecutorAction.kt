@@ -54,8 +54,7 @@ class DescriptionExecutorAction(private val element: PsiElement) : AnAction() {
     if (!CodeGenerationState.getInstance(project).lock()) {
       EduNotificationManager.create(
         ERROR,
-        EduJarvisBundle.message("action.not.run.due.to.nested.block.title"),
-        EduJarvisBundle.message("action.not.run.due.to.nested.block.text")
+        content = EduJarvisBundle.message("action.already.running"),
       ).notify(project)
       return@runBackgroundableTask
     }
@@ -65,13 +64,14 @@ class DescriptionExecutorAction(private val element: PsiElement) : AnAction() {
     val grammarParser = GrammarParser(project, descriptionExpression)
     grammarParser.findAndHighlightErrors()
 
+    CodeGenerationState.getInstance(project).unlock()
+
     if (grammarParser.hasFoundErrors) {
       EduNotificationManager.create(
         ERROR,
         EduJarvisBundle.message("action.not.run.due.to.incorrect.grammar.title"),
         EduJarvisBundle.message("action.not.run.due.to.incorrect.grammar.text")
       ).notify(project)
-      CodeGenerationState.getInstance(project).unlock()
       return@runBackgroundableTask
     }
 
