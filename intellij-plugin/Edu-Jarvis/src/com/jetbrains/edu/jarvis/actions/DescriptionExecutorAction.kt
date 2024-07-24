@@ -33,12 +33,10 @@ class DescriptionExecutorAction(private val element: PsiElement) : AnAction() {
 
     val descriptionExpression = DescriptionExpressionParser.parseDescriptionExpression(element, element.language)
     if (descriptionExpression == null) {
-      EduNotificationManager.create(
-        ERROR,
+      project.notifyError(
         EduJarvisBundle.message("action.not.run.due.to.nested.block.title"),
         EduJarvisBundle.message("action.not.run.due.to.nested.block.text")
       )
-        .notify(project)
       return
     }
 
@@ -52,10 +50,7 @@ class DescriptionExecutorAction(private val element: PsiElement) : AnAction() {
     project
   ) { indicator ->
     if (!CodeGenerationState.getInstance(project).lock()) {
-      EduNotificationManager.create(
-        ERROR,
-        content = EduJarvisBundle.message("action.already.running"),
-      ).notify(project)
+      project.notifyError(content = EduJarvisBundle.message("action.already.running"))
       return@runBackgroundableTask
     }
 
@@ -67,21 +62,25 @@ class DescriptionExecutorAction(private val element: PsiElement) : AnAction() {
     CodeGenerationState.getInstance(project).unlock()
 
     if (grammarParser.hasFoundErrors) {
-      EduNotificationManager.create(
-        ERROR,
+      project.notifyError(
         EduJarvisBundle.message("action.not.run.due.to.incorrect.grammar.title"),
         EduJarvisBundle.message("action.not.run.due.to.incorrect.grammar.text")
-      ).notify(project)
+      )
       return@runBackgroundableTask
     }
 
     invokeLater {
       // TODO: get the generated code with errors
-      val generatedCode = descriptionExpression.codeBlock
+      val generatedCode = descriptionExpression.code
       // TODO: reformat and improve the generated code
       DraftExpressionWriter.addDraftExpression(project, element, generatedCode, element.language)
     }
   }
+
+  private fun Project.notifyError(title: String = "", content: String = "") =
+    EduNotificationManager.create(
+      ERROR, content, title
+    ).notify(this)
 
   @Service(Service.Level.PROJECT)
   private class CodeGenerationState {
