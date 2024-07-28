@@ -47,15 +47,16 @@ abstract class TaskToolWindow(protected val project: Project) : Disposable {
 
   abstract val uiMode: JavaUILibrary
 
+  open fun updateTaskInfoPanel(task: Task?) {}
+
   open fun updateTaskSpecificPanel(task: Task?) {}
 
-  fun setTaskText(project: Project, task: Task?) {
+  fun setTaskText(task: Task?) {
     updateQueue.queue(Update.create(TASK_DESCRIPTION_UPDATE) {
-      setText(getTaskDescription(project, task, uiMode))
+      updateTaskInfoPanel(task)
+      updateTaskSpecificPanel(task)
     })
   }
-
-  protected abstract fun setText(text: String)
 
   override fun dispose() {}
 

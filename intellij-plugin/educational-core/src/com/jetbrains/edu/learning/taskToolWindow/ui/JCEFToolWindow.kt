@@ -18,16 +18,21 @@ import javax.swing.JComponent
 
 class JCEFToolWindow(project: Project) : TaskToolWindow(project) {
   private val taskInfoJBCefBrowser = JCEFHtmlPanel(true, JBCefApp.getInstance().createClient(), null)
+  private var termsQueryManager: TermsQueryManager? = null
+
   private val taskSpecificJBCefBrowser = JCEFHtmlPanel(true, JBCefApp.getInstance().createClient(), null)
   private var taskSpecificQueryManager: TaskQueryManager<out Task>? = null
-  private var termsQueryManager: TermsQueryManager? = null
 
   init {
     val jcefLinkInToolWindowHandler = JCefToolWindowLinkHandler(project)
     val taskInfoRequestHandler = JCEFToolWindowRequestHandler(jcefLinkInToolWindowHandler)
-    taskInfoJBCefBrowser.jbCefClient.addRequestHandler(taskInfoRequestHandler, taskInfoJBCefBrowser.cefBrowser)
     val taskInfoLifeSpanHandler = JCEFTaskInfoLifeSpanHandler(jcefLinkInToolWindowHandler)
-    taskInfoJBCefBrowser.jbCefClient.addLifeSpanHandler(taskInfoLifeSpanHandler, taskInfoJBCefBrowser.cefBrowser)
+    taskInfoJBCefBrowser.jbCefClient.apply {
+      addRequestHandler(taskInfoRequestHandler, taskInfoJBCefBrowser.cefBrowser)
+      addLifeSpanHandler(taskInfoLifeSpanHandler, taskInfoJBCefBrowser.cefBrowser)
+      setProperty(JBCefClient.Properties.JS_QUERY_POOL_SIZE, TASK_INFO_PANEL_JS_QUERY_POOL_SIZE)
+    }
+
     taskSpecificJBCefBrowser.jbCefClient.setProperty(JBCefClient.Properties.JS_QUERY_POOL_SIZE, TASK_SPECIFIC_PANEL_JS_QUERY_POOL_SIZE)
 
     taskInfoJBCefBrowser.disableNavigation()
@@ -48,15 +53,19 @@ class JCEFToolWindow(project: Project) : TaskToolWindow(project) {
   override val uiMode: JavaUILibrary
     get() = JavaUILibrary.JCEF
 
-  override fun setText(text: String) {
+  override fun updateTaskInfoPanel(task: Task?) {
     taskInfoJBCefBrowser.component.isVisible = false
 
+    val taskDescription = getTaskDescription(project, task, uiMode)
+
+    // Dispose termsQueryManager manually because this disposes existing JSQueries and removes them from JS_QUERY_POOL
     termsQueryManager?.let {
       Disposer.dispose(it)
     }
+
     termsQueryManager = TermsQueryManager(project, taskInfoJBCefBrowser)
 
-    taskInfoJBCefBrowser.loadHTML(text)
+    taskInfoJBCefBrowser.loadHTML(taskDescription)
     taskInfoJBCefBrowser.component.isVisible = true
   }
 
@@ -84,12 +93,15 @@ class JCEFToolWindow(project: Project) : TaskToolWindow(project) {
     taskSpecificQueryManager?.let {
       Disposer.dispose(it)
     }
+    // Dispose undisposed yet termsQueryManager
     termsQueryManager?.let {
       Disposer.dispose(it)
     }
   }
 
   companion object {
+    // maximum number of created qs queries in termsQueryManager
+    private const val TASK_INFO_PANEL_JS_QUERY_POOL_SIZE = 3
     // maximum number of created qs queries in taskSpecificQueryManager
     private const val TASK_SPECIFIC_PANEL_JS_QUERY_POOL_SIZE = 2
 
