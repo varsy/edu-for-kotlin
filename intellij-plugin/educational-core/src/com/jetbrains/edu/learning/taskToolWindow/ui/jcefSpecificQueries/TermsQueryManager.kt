@@ -29,8 +29,8 @@ class TermsQueryManager(
   private val project: Project,
   private val taskJBCefBrowser: JBCefBrowserBase
 ) : Disposable {
-  private val jsQueryTermListener = JBCefJSQuery.create(taskJBCefBrowser)
-  private val jsQueryTermOutListener = JBCefJSQuery.create(taskJBCefBrowser)
+  private val jsQueryMouseOverListener = JBCefJSQuery.create(taskJBCefBrowser)
+  private val jsQueryMouseOutListener = JBCefJSQuery.create(taskJBCefBrowser)
   private val jsQueryScrollListener = JBCefJSQuery.create(taskJBCefBrowser)
   private var gotItTooltip: GotItTooltip? = null
 
@@ -52,7 +52,7 @@ class TermsQueryManager(
                 bottomOfTermRect: boundingRect.bottom,
                 topOfTermRect: boundingRect.top
               };
-              ${jsQueryTermListener.inject("JSON.stringify(data)")}
+              ${jsQueryMouseOverListener.inject("JSON.stringify(data)")}
             });
             term.addEventListener('mouseout', function (event) {
               let data = { 
@@ -60,7 +60,7 @@ class TermsQueryManager(
                 x: event.clientX, 
                 y: event.clientY
               };
-              ${jsQueryTermOutListener.inject("JSON.stringify(data)")}
+              ${jsQueryMouseOutListener.inject("JSON.stringify(data)")}
             });
           });
           window.addEventListener('scroll', function() { 
@@ -72,11 +72,11 @@ class TermsQueryManager(
   }
 
   init {
-    jsQueryTermListener.addHandler { data ->
+    jsQueryMouseOverListener.addHandler { data ->
       showDefinitionOfTerm(data)
       null
     }
-    jsQueryTermOutListener.addHandler { data ->
+    jsQueryMouseOutListener.addHandler { data ->
       closeDefinitionOfTerm(data)
       null
     }
@@ -84,9 +84,11 @@ class TermsQueryManager(
       gotItTooltip?.dispose()
       null
     }
-    Disposer.register(this, jsQueryTermListener)
-    Disposer.register(this, jsQueryTermOutListener)
-    Disposer.register(this, jsQueryScrollListener)
+    Disposer.register(this) {
+      Disposer.dispose(jsQueryMouseOverListener)
+      Disposer.dispose(jsQueryMouseOutListener)
+      Disposer.dispose(jsQueryScrollListener)
+    }
     taskJBCefBrowser.jbCefClient.addLoadHandler(termListenerLoadHandler, taskJBCefBrowser.cefBrowser)
   }
 
