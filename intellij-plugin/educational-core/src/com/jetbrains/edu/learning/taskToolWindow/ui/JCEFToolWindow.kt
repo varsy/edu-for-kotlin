@@ -13,6 +13,7 @@ import com.jetbrains.edu.learning.courseFormat.tasks.Task
 import com.jetbrains.edu.learning.taskToolWindow.links.JCefToolWindowLinkHandler
 import com.jetbrains.edu.learning.taskToolWindow.ui.jcefSpecificQueries.TaskQueryManager
 import com.jetbrains.edu.learning.taskToolWindow.ui.jcefSpecificQueries.TermsQueryManager
+import com.jetbrains.edu.learning.taskToolWindow.ui.jcefSpecificQueries.TermsQueryManager.Companion.getTermsQueryManager
 import org.jetbrains.annotations.TestOnly
 import javax.swing.JComponent
 
@@ -63,7 +64,7 @@ class JCEFToolWindow(project: Project) : TaskToolWindow(project) {
       Disposer.dispose(it)
     }
 
-    termsQueryManager = TermsQueryManager(project, taskInfoJBCefBrowser)
+    termsQueryManager = getTermsQueryManager(project, task, taskInfoJBCefBrowser)
 
     taskInfoJBCefBrowser.loadHTML(taskDescription)
     taskInfoJBCefBrowser.component.isVisible = true

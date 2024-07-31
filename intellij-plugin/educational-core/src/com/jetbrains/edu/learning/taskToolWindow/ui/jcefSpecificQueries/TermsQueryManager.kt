@@ -7,6 +7,8 @@ import com.intellij.openapi.util.Disposer
 import com.intellij.ui.GotItTooltip
 import com.intellij.ui.jcef.JBCefBrowserBase
 import com.intellij.ui.jcef.JBCefJSQuery
+import com.jetbrains.edu.learning.courseFormat.tasks.Task
+import com.jetbrains.edu.learning.courseFormat.tasks.TheoryTask
 import com.jetbrains.edu.learning.selectedTaskFile
 import com.jetbrains.edu.learning.taskToolWindow.TERM_CLASS
 import com.jetbrains.edu.learning.taskToolWindow.ui.JsEventData
@@ -25,7 +27,7 @@ import java.awt.Point
  * Also adds a scroll listener to close the tooltip when a user scrolls the page.
  */
 // TODO: Implement an analogue for Swing
-class TermsQueryManager(
+class TermsQueryManager private constructor(
   private val project: Project,
   private val taskJBCefBrowser: JBCefBrowserBase
 ) : Disposable {
@@ -132,5 +134,12 @@ class TermsQueryManager(
   companion object {
     @NonNls
     private const val TOOLTIP_ID: String = "term.definition"
+
+    @JvmStatic
+    fun getTermsQueryManager(project: Project, task: Task?, taskJBCefBrowser: JBCefBrowserBase): TermsQueryManager? =
+      when (task) {
+        is TheoryTask -> TermsQueryManager(project, taskJBCefBrowser)
+        else -> null
+      }
   }
 }
