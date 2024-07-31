@@ -1,10 +1,12 @@
 package com.jetbrains.edu.learning.theoryLookup
 
+import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
 import com.intellij.openapi.diagnostic.thisLogger
 import com.intellij.openapi.project.Project
 import com.intellij.util.messages.Topic
+import com.jetbrains.edu.learning.courseFormat.ext.getTaskTextFromTask
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
 import com.jetbrains.edu.learning.createTopic
 import com.jetbrains.edu.learning.messages.EduCoreBundle
@@ -26,7 +28,7 @@ class TermsManager(private val project: Project) {
   suspend fun extractTerms(task: Task) {
     if (terms.containsKey(task.id)) return
     try {
-      val text = task.descriptionText
+      val text = runReadAction { task.getTaskTextFromTask(project) } ?: return
       val termsProvider = TermsProvider()
       val termsList = termsProvider.findTermsAndDefinitions(text)
       termsList.getOrThrow().takeIf { it.isNotEmpty() }?.let {
