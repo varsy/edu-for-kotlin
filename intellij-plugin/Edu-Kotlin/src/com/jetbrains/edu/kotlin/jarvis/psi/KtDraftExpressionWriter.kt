@@ -9,31 +9,46 @@ import com.jetbrains.edu.kotlin.jarvis.utils.DRAFT
 import com.jetbrains.edu.kotlin.jarvis.utils.findBlock
 import com.jetbrains.edu.learning.courseGeneration.GeneratorUtils
 import org.jetbrains.kotlin.psi.KtCallExpression
+import org.jetbrains.kotlin.psi.KtExpression
 import org.jetbrains.kotlin.psi.KtPsiFactory
 
 class KtDraftExpressionWriter : DraftExpressionWriter {
 
   override fun addDraftExpression(project: Project, element: PsiElement, generatedCode: String) {
-    val draftBlock = findBlock(element, { it.nextSibling }, DRAFT) as? KtCallExpression
-    val draftTemplate = GeneratorUtils.getInternalTemplateText(draftBlock?.let { DRAFT_BODY } ?: DRAFT_BLOCK, mapOf(GENERATED_CODE_KEY to generatedCode))
     val psiFactory = KtPsiFactory(project)
-    val draftExpression = draftBlock?.let { psiFactory.createBlock(draftTemplate) } ?: psiFactory.createExpressionCodeFragment(draftTemplate, null)
+    val draftTemplate = GeneratorUtils.getInternalTemplateText(DRAFT_BLOCK, mapOf(GENERATED_CODE_KEY to generatedCode))
+    val newDraftBlock = psiFactory.createExpression(draftTemplate)
+    val documentManager = PsiDocumentManager.getInstance(project)
     val newLine = psiFactory.createNewLine()
-    val oldDraftBody = draftBlock?.lambdaArguments?.firstOrNull()
+
     WriteCommandAction.runWriteCommandAction(project, null, null, {
-      PsiDocumentManager.getInstance(project).commitAllDocuments()
-      if (oldDraftBody == null && draftBlock == null) {
-        element.addAfter(draftExpression, element)
-        element.addAfter(newLine, element)
-      } else {
-        oldDraftBody?.replace(draftExpression)
+      documentManager.commitAllDocuments()
+      val existingDraftBlock = findBlock(element, PsiElement::getNextSibling, DRAFT) as? KtCallExpression
+      when (val existingDraftBody = getBodyExpression(existingDraftBlock)) {
+        null -> {
+          element.parent.addAfter(newDraftBlock, element)
+          element.parent.addAfter(newLine, element)
+        }
+
+        else -> {
+          val newDraftBody = getBodyExpression(newDraftBlock as? KtCallExpression)
+          newDraftBody?.let {
+            existingDraftBody.replace(it)
+          }
+        }
       }
     })
   }
 
+  private fun getBodyExpression(callExpression: KtCallExpression?): KtExpression? =
+    callExpression
+      ?.lambdaArguments
+      ?.firstOrNull()
+      ?.getLambdaExpression()
+      ?.bodyExpression
+
   companion object {
     const val DRAFT_BLOCK = "DraftBlock.kt"
-    const val DRAFT_BODY = "DraftBody.kt"
     const val GENERATED_CODE_KEY = "code"
   }
 }
