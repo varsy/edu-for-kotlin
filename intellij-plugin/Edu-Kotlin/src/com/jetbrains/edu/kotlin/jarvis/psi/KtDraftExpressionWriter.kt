@@ -40,6 +40,8 @@ class KtDraftExpressionWriter : DraftExpressionWriter {
     })
   }
 
+  override fun getCodeLineOffset(): Int = CODE_LINE_OFFSET
+
   private fun getBodyExpression(callExpression: KtCallExpression?): KtExpression? =
     callExpression
       ?.lambdaArguments
@@ -50,5 +52,6 @@ class KtDraftExpressionWriter : DraftExpressionWriter {
   companion object {
     const val DRAFT_BLOCK = "DraftBlock.kt"
     const val GENERATED_CODE_KEY = "code"
+    const val CODE_LINE_OFFSET = 2
   }
 }

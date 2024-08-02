@@ -12,6 +12,8 @@ import com.intellij.util.concurrency.ThreadingAssertions
 interface DraftExpressionWriter {
   fun addDraftExpression(project: Project, element: PsiElement, generatedCode: String)
 
+  fun getCodeLineOffset(): Int
+
   companion object {
     private val EP_NAME = LanguageExtension<DraftExpressionWriter>("Educational.draftExpressionWriter")
 
@@ -20,5 +22,10 @@ interface DraftExpressionWriter {
       EP_NAME.forLanguage(language)?.addDraftExpression(project, element, generatedCode)
              ?: error("Not supported to provide a draft expression for the ${language.displayName} language")
     }
+
+    fun getCodeLineOffset(language: Language): Int
+      = EP_NAME.forLanguage(language)?.getCodeLineOffset()
+      ?: error("Not supported to provide a draft expression for the ${language.displayName} language")
+
   }
 }
