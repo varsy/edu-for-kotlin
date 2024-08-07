@@ -1,6 +1,6 @@
 package com.jetbrains.edu.jarvis.regex
 
-import com.jetbrains.edu.jarvis.highlighting.AnnotatorRule
+import com.jetbrains.edu.jarvis.highlighting.undefinedidentifier.AnnotatorRule
 import com.jetbrains.edu.learning.EduTestCase
 import org.junit.Test
 

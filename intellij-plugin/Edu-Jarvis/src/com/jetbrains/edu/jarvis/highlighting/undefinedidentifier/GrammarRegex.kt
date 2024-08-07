@@ -1,4 +1,4 @@
-package com.jetbrains.edu.jarvis.highlighting
+package com.jetbrains.edu.jarvis.highlighting.undefinedidentifier
 
 /**
  * Regex representation of the grammar.
@@ -127,7 +127,7 @@ object GrammarRegex {
    * Regex that matches variable saving. Example: ``Save 3 to the variable `foo` ``.
    */
   val saveVariable = ("(?i)(?:$SAVE)(?:\\s+(?:$ARTICLE))?(?:\\s+(?:$VALUE))?\\s+(?:$value)(?:\\s+(?:$arbitraryText))*\\s+$TO" +
-                       "(?:\\s+(?:$ARTICLE))?(?:\\s+(?:$VARIABLE))?\\s+$IDENTIFIER").toRegex()
+                      "(?:\\s+(?:$ARTICLE))?(?:\\s+(?:$VARIABLE))?\\s+$IDENTIFIER").toRegex()
 
   /**
    * Regex that matches a function call. Example: "Call the function `foo` with 1 and 3".
