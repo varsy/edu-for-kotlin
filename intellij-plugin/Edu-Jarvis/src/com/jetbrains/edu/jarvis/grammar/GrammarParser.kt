@@ -1,12 +1,9 @@
 package com.jetbrains.edu.jarvis.grammar
 
-import com.intellij.openapi.editor.colors.CodeInsightColors
-import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.openapi.progress.runBlockingCancellable
 import com.intellij.openapi.project.Project
-import com.jetbrains.edu.jarvis.highlighting.HighlighterManager
 import com.jetbrains.edu.learning.courseFormat.jarvis.DescriptionExpression
-import com.jetbrains.educational.ml.jarvis.core.GrammarCheckerAssistant
+import com.jetbrains.educational.ml.cognifire.core.GrammarCheckerAssistant
 
 /**
  * Parses the provided description.
@@ -15,21 +12,14 @@ import com.jetbrains.educational.ml.jarvis.core.GrammarCheckerAssistant
  */
 class GrammarParser(private val project: Project, private val descriptionExpression: DescriptionExpression) {
 
-  private val attributes = EditorColorsManager.getInstance().globalScheme.getAttributes(CodeInsightColors.WARNINGS_ATTRIBUTES)
-
   /**
-   * Splits the description into sentences and tries to parse them. If the parsing fails,
-   * it means that the sentence contains an error and it gets highlighted.
+   * Retrieves a list of unparsable sentences from the description.
+   * Each sentence is represented by an OffsetSentence object that includes the sentence
+   * and its offset in the file.
+   *
+   * @return The list of unparsable sentences.
    */
-  fun findAndHighlightErrors() {
-    getUnparsableSentences().forEach {
-      HighlighterManager
-        .getInstance(project)
-        .addGrammarHighlighter(it.startOffset, it.endOffset, attributes)
-    }
-  }
-
-  private fun getUnparsableSentences(): List<OffsetSentence> {
+  fun getUnparsableSentences(): List<OffsetSentence> {
     val sentences = mutableListOf<OffsetSentence>()
 
     descriptionExpression.prompt.split(DOT)

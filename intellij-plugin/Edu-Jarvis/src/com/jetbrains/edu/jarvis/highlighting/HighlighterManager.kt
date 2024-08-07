@@ -6,61 +6,44 @@ import com.intellij.openapi.editor.markup.*
 import com.intellij.openapi.project.Project
 import com.jetbrains.edu.learning.selectedEditor
 
+/**
+ * Manages the highlighters in the editor. Allows adding and clearing highlighters for specific ranges and lines of code.
+ *
+ * @param project The project in which the currently edited file is located.
+ */
 @Service(Service.Level.PROJECT)
 class HighlighterManager(private val project: Project) {
-  private val grammarHighlighters = mutableListOf<RangeHighlighter>()
-  private val codeLineHighlighters = mutableListOf<RangeHighlighter>()
-  private var descriptionLineHighlighter: RangeHighlighter? = null
+  private val highlighters = mutableListOf<RangeHighlighter>()
 
   private val markupModel: MarkupModel?
     get() = project.selectedEditor?.markupModel
 
-  fun clearHighlighters() {
-    clearGrammarHighlighters()
-    clearLineHighlighters()
+  fun clearAll() {
+    highlighters.forEach {
+      it.dispose()
+    }
+    highlighters.clear()
   }
 
-  private fun clearGrammarHighlighters() {
-    grammarHighlighters.forEach { it.dispose() }
-    grammarHighlighters.clear()
-  }
-
-  fun clearLineHighlighters() {
-    codeLineHighlighters.forEach { it.dispose() }
-    descriptionLineHighlighter?.dispose()
-    descriptionLineHighlighter = null
-    grammarHighlighters.clear()
-  }
-
-  fun addGrammarHighlighter(startOffset: Int, endOffset: Int, attributes: TextAttributes) {
+  fun addRangeHighlighter(startOffset: Int, endOffset: Int, attributes: TextAttributes): RangeHighlighter? =
     markupModel?.addRangeHighlighter(
       startOffset,
       endOffset,
-      HighlighterLayer.ERROR, attributes, HighlighterTargetArea.EXACT_RANGE
-    )?.let {
-      grammarHighlighters.add(it)
+      HighlighterLayer.ERROR,
+      attributes,
+      HighlighterTargetArea.EXACT_RANGE
+    )?.also {
+      highlighters.add(it)
     }
-  }
 
-  fun addCodeLineHighlighter(lineNumber: Int, attributes: TextAttributes) {
+  fun addLineHighlighter(lineNumber: Int, attributes: TextAttributes): RangeHighlighter? =
     markupModel?.addLineHighlighter(
       lineNumber,
       HighlighterLayer.LAST,
       attributes
-    )?.let {
-      codeLineHighlighters.add(it)
+    )?.also {
+      highlighters.add(it)
     }
-  }
-
-  fun addDescriptionLineHighlighter(lineNumber: Int, attributes: TextAttributes) {
-    descriptionLineHighlighter = markupModel?.addLineHighlighter(
-      lineNumber,
-      HighlighterLayer.LAST,
-      attributes
-    )
-  }
-
-  fun hasGrammarHighlighters(): Boolean = !grammarHighlighters.isEmpty()
 
   companion object {
     fun getInstance(project: Project): HighlighterManager = project.service()
