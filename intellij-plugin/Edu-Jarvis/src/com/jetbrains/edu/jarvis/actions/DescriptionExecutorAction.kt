@@ -14,15 +14,18 @@ import com.intellij.psi.PsiElement
 import com.jetbrains.edu.jarvis.DescriptionExpressionParser
 import com.jetbrains.edu.jarvis.DraftExpressionWriter
 import com.jetbrains.edu.jarvis.grammar.GrammarParser
+import com.jetbrains.edu.jarvis.grammar.OffsetSentence
 import com.jetbrains.edu.jarvis.highlighting.HighlighterManager
-import com.jetbrains.edu.jarvis.highlighting.HighlightingListenerManager
+import com.jetbrains.edu.jarvis.highlighting.ListenerManager
+import com.jetbrains.edu.jarvis.highlighting.descriptiontocode.DescriptionToCodeHighlighter
+import com.jetbrains.edu.jarvis.highlighting.grammar.GrammarHighlighter
 import com.jetbrains.edu.jarvis.messages.EduJarvisBundle
 import com.jetbrains.edu.learning.actions.EduActionUtils
 import com.jetbrains.edu.learning.courseFormat.jarvis.DescriptionExpression
 import com.jetbrains.edu.learning.notification.EduNotificationManager
 import com.jetbrains.educational.ml.core.exception.AiAssistantException
-import com.jetbrains.educational.ml.jarvis.responses.DescriptionToCodeResponse
-import com.jetbrains.educational.ml.jarvis.responses.GeneratedCodeLine
+import com.jetbrains.educational.ml.cognifire.responses.DescriptionToCodeResponse
+import com.jetbrains.educational.ml.cognifire.responses.GeneratedCodeLine
 import java.util.concurrent.atomic.AtomicBoolean
 
 /**
@@ -38,8 +41,8 @@ class DescriptionExecutorAction(private val element: PsiElement) : AnAction() {
 
 
     // TODO: Update highlighters on PsiElement update
-    HighlighterManager.getInstance(project).clearHighlighters()
-    HighlightingListenerManager.getInstance(project).clearMouseMotionListener()
+    HighlighterManager.getInstance(project).clearAll()
+    ListenerManager.getInstance(project).clearAll()
 
 
     val descriptionExpression = DescriptionExpressionParser.parseDescriptionExpression(element, element.language)
@@ -68,17 +71,21 @@ class DescriptionExecutorAction(private val element: PsiElement) : AnAction() {
     ApplicationManager.getApplication().executeOnPooledThread { EduActionUtils.showFakeProgress(indicator) }
 
     val grammarParser = GrammarParser(project, descriptionExpression)
+    val unparsableSentences: List<OffsetSentence>
 
     try {
-      grammarParser.findAndHighlightErrors()
+      unparsableSentences = grammarParser.getUnparsableSentences()
     }
     catch (e: AiAssistantException) {
-      project.notifyError(content = e.message)
+      project.notifyError(content = EduJarvisBundle.message("action.not.run.due.to.ai.assistant.exception"))
+      return@runBackgroundableTask
     }
+
+    GrammarHighlighter(project).highlightAll(unparsableSentences)
 
     CodeGenerationState.getInstance(project).unlock()
 
-    if (HighlighterManager.getInstance(project).hasGrammarHighlighters()) {
+    if (unparsableSentences.isNotEmpty()) {
       project.notifyError(
         EduJarvisBundle.message("action.not.run.due.to.incorrect.grammar.title"),
         EduJarvisBundle.message("action.not.run.due.to.incorrect.grammar.text")
@@ -95,14 +102,14 @@ class DescriptionExecutorAction(private val element: PsiElement) : AnAction() {
         descriptionGroup.value.map { it.codeLineNumber }
       }
 
-    val generatedDraftOffset = element.textOffset + element.text.length
-
     invokeLater {
+      val generatedDraftOffset = element.textOffset + element.text.length
+
       val generatedCode = descriptionToCodeTranslation.joinToString(System.lineSeparator()) { it.generatedCodeLine }
       // TODO: reformat and improve the generated code
       DraftExpressionWriter.addDraftExpression(project, element, generatedCode, element.language)
 
-      HighlightingListenerManager.getInstance(project).setMouseMotionListener(
+      DescriptionToCodeHighlighter(project).setUp(
         descriptionExpression.promptOffset,
         generatedDraftOffset,
         descriptionToCodeLines,
