@@ -23,6 +23,9 @@ interface DraftExpressionWriter {
              ?: error("Not supported to provide a draft expression for the ${language.displayName} language")
     }
 
+    /**
+     * Returns the number of lines before the start of the generated code in the draft expression.
+     */
     fun getCodeLineOffset(language: Language): Int
       = EP_NAME.forLanguage(language)?.getCodeLineOffset()
       ?: error("Not supported to provide a draft expression for the ${language.displayName} language")
