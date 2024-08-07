@@ -2,7 +2,7 @@ package com.jetbrains.edu.jarvis.models
 
 import com.jetbrains.edu.jarvis.ErrorProcessor.Companion.AND
 import com.jetbrains.edu.jarvis.ErrorProcessor.Companion.ARGUMENT_SEPARATOR
-import com.jetbrains.edu.jarvis.highlighting.AnnotatorRuleMatch
+import com.jetbrains.edu.jarvis.highlighting.undefinedidentifier.AnnotatorRuleMatch
 
 data class NamedFunction(override val name: String, val numberOfArguments: Int) : NamedEntity {
 
