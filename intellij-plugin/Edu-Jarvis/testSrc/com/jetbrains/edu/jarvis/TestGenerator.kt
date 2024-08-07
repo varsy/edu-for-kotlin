@@ -1,8 +1,8 @@
 package com.jetbrains.edu.jarvis
 
-import com.jetbrains.edu.jarvis.highlighting.GrammarRegex.getCallSynonyms
-import com.jetbrains.edu.jarvis.highlighting.GrammarRegex.getCreateSynonyms
-import com.jetbrains.edu.jarvis.highlighting.GrammarRegex.getFunctionSynonyms
+import com.jetbrains.edu.jarvis.highlighting.undefinedidentifier.GrammarRegex.getCallSynonyms
+import com.jetbrains.edu.jarvis.highlighting.undefinedidentifier.GrammarRegex.getCreateSynonyms
+import com.jetbrains.edu.jarvis.highlighting.undefinedidentifier.GrammarRegex.getFunctionSynonyms
 import com.jetbrains.edu.jarvis.regex.TestAnswer
 
 object TestGenerator {
