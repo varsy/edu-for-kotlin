@@ -1,7 +1,7 @@
 package com.jetbrains.edu.jarvis
 
-import com.jetbrains.edu.jarvis.highlighting.AnnotatorError
-import com.jetbrains.edu.jarvis.highlighting.AnnotatorParametrizedError
+import com.jetbrains.edu.jarvis.highlighting.undefinedidentifier.AnnotatorError
+import com.jetbrains.edu.jarvis.highlighting.undefinedidentifier.AnnotatorParametrizedError
 import com.jetbrains.edu.jarvis.models.NamedFunction
 import com.jetbrains.edu.jarvis.models.NamedVariable
 

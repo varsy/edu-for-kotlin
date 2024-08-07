@@ -1,7 +1,7 @@
 package com.jetbrains.edu.jarvis.regex
 
 import com.jetbrains.edu.jarvis.TestGenerator.generateNoParenthesesFunction
-import com.jetbrains.edu.jarvis.highlighting.AnnotatorRule
+import com.jetbrains.edu.jarvis.highlighting.undefinedidentifier.AnnotatorRule
 import com.jetbrains.edu.jarvis.regex.RegexTest.Companion.MAX_IDENTIFIER_NAME_LENGTH
 import com.jetbrains.edu.jarvis.regex.RegexTest.Companion.MIN_IDENTIFIER_NAME_LENGTH
 import com.jetbrains.edu.jarvis.regex.RegexTest.Companion.NUMBER_OF_RUNS
