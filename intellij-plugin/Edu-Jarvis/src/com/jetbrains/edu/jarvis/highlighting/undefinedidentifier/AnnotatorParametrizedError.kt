@@ -1,4 +1,4 @@
-package com.jetbrains.edu.jarvis.highlighting
+package com.jetbrains.edu.jarvis.highlighting.undefinedidentifier
 
 /**
  * A parametrized version of [AnnotatorError],

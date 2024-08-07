@@ -1,4 +1,4 @@
-package com.jetbrains.edu.jarvis.highlighting
+package com.jetbrains.edu.jarvis.highlighting.undefinedidentifier
 
 /**
  * Represents a type of error that was found by the [AnnotatorRule].
