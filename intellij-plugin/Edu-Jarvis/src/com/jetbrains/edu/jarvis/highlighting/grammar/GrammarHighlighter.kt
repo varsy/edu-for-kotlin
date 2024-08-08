@@ -6,25 +6,21 @@ import com.intellij.openapi.project.Project
 import com.jetbrains.edu.jarvis.grammar.OffsetSentence
 import com.jetbrains.edu.jarvis.highlighting.HighlighterManager
 
+private val attributes = EditorColorsManager.getInstance().globalScheme.getAttributes(CodeInsightColors.WARNINGS_ATTRIBUTES)
+
 /**
  * Represents a class that highlights sentences that didn't pass the grammar.
- *
- * @property project The project in which the currently edited file is located.
  */
-class GrammarHighlighter(private val project: Project) {
-  fun highlightAll(unparsableSentences: List<OffsetSentence>) {
-    unparsableSentences.forEach { highlightSentence(it) }
+object GrammarHighlighter {
+  fun highlightAll(project: Project, unparsableSentences: List<OffsetSentence>) {
+    unparsableSentences.forEach { highlightSentence(project, it) }
   }
 
-  private fun highlightSentence(sentence: OffsetSentence) {
+  private fun highlightSentence(project: Project, sentence: OffsetSentence) {
     HighlighterManager.getInstance(project).addRangeHighlighter(
       sentence.startOffset,
       sentence.endOffset,
       attributes
     )
-  }
-
-  companion object {
-    private val attributes = EditorColorsManager.getInstance().globalScheme.getAttributes(CodeInsightColors.WARNINGS_ATTRIBUTES)
   }
 }
