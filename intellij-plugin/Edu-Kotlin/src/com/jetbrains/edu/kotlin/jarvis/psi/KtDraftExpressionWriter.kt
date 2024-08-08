@@ -20,7 +20,7 @@ class KtDraftExpressionWriter : DraftExpressionWriter {
     val newDraftBlock = psiFactory.createExpression(draftTemplate)
     val documentManager = PsiDocumentManager.getInstance(project)
     val newLine = psiFactory.createNewLine()
-
+    var draftBlock: KtCallExpression? = null
     WriteCommandAction.runWriteCommandAction(project, null, null, {
       documentManager.commitAllDocuments()
       val existingDraftBlock = findBlock(element, PsiElement::getNextSibling, DRAFT) as? KtCallExpression
@@ -37,9 +37,12 @@ class KtDraftExpressionWriter : DraftExpressionWriter {
           }
         }
       }
+       draftBlock = findBlock(element, { it.nextSibling }, DRAFT) as? KtCallExpression
     })
-    val draftBlock = findBlock(element, { it.nextSibling }, DRAFT) as? KtCallExpression
-    return getBodyExpression(draftBlock)?.textOffset ?: error("Can't find body draft expression")
+
+    return draftBlock?.let {
+      getBodyExpression(draftBlock)?.textOffset
+    } ?: error("Can't find body draft expression")
   }
 
   private fun getBodyExpression(callExpression: KtCallExpression?): KtExpression? =
