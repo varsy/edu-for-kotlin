@@ -103,17 +103,14 @@ class DescriptionExecutorAction(private val element: PsiElement) : AnAction() {
       }
 
     invokeLater {
-      val generatedDraftOffset = element.textOffset + element.text.length
-
       val generatedCode = descriptionToCodeTranslation.joinToString(System.lineSeparator()) { it.generatedCodeLine }
       // TODO: reformat and improve the generated code
-      DraftExpressionWriter.addDraftExpression(project, element, generatedCode, element.language)
+      val draftBodyOffset = DraftExpressionWriter.addDraftExpression(project, element, generatedCode, element.language)
 
       DescriptionToCodeHighlighter(project).setUp(
         descriptionExpression.promptOffset,
-        generatedDraftOffset,
         descriptionToCodeLines,
-        DraftExpressionWriter.getCodeLineOffset(element.language)
+        draftBodyOffset
       )
     }
   }
