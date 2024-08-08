@@ -28,9 +28,8 @@ class DescriptionToCodeHighlighter(private val project: Project) {
 
   fun setUp(
     descriptionOffset: Int,
-    draftOffset: Int,
     descriptionToCodeLines: Map<Int, List<Int>>,
-    codeLineOffset: Int,
+    draftBodyOffset: Int,
   ) = object : EditorMouseMotionListener {
     override fun mouseMoved(e: EditorMouseEvent) {
       val editor = e.editor
@@ -38,11 +37,10 @@ class DescriptionToCodeHighlighter(private val project: Project) {
       val descriptionLineOffset = editor.document.getLineNumber(descriptionOffset)
       val descriptionLine = descriptionLineWithOffset - descriptionLineOffset
       val descriptionLinesWithOffset = listOf(descriptionLineWithOffset)
-
-      val draftLineOffset = editor.document.getLineNumber(draftOffset)
+      val draftLineOffset = editor.document.getLineNumber(draftBodyOffset)
 
       descriptionToCodeLines[descriptionLine]?.map {
-        it + draftLineOffset + codeLineOffset
+        it + draftLineOffset
       }?.let { codeLinesWithOffset ->
         setHighlighters(descriptionLinesWithOffset, codeLinesWithOffset)
       }

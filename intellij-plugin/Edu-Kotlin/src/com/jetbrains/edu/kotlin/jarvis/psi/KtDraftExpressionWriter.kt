@@ -14,7 +14,7 @@ import org.jetbrains.kotlin.psi.KtPsiFactory
 
 class KtDraftExpressionWriter : DraftExpressionWriter {
 
-  override fun addDraftExpression(project: Project, element: PsiElement, generatedCode: String) {
+  override fun addDraftExpression(project: Project, element: PsiElement, generatedCode: String): Int {
     val psiFactory = KtPsiFactory(project)
     val draftTemplate = GeneratorUtils.getInternalTemplateText(DRAFT_BLOCK, mapOf(GENERATED_CODE_KEY to generatedCode))
     val newDraftBlock = psiFactory.createExpression(draftTemplate)
@@ -38,9 +38,9 @@ class KtDraftExpressionWriter : DraftExpressionWriter {
         }
       }
     })
+    val draftBlock = findBlock(element, { it.nextSibling }, DRAFT) as? KtCallExpression
+    return getBodyExpression(draftBlock)?.textOffset ?: error("Can't find body draft expression")
   }
-
-  override fun getCodeLineOffset(): Int = CODE_LINE_OFFSET
 
   private fun getBodyExpression(callExpression: KtCallExpression?): KtExpression? =
     callExpression
@@ -52,6 +52,5 @@ class KtDraftExpressionWriter : DraftExpressionWriter {
   companion object {
     const val DRAFT_BLOCK = "DraftBlock.kt"
     const val GENERATED_CODE_KEY = "code"
-    const val CODE_LINE_OFFSET = 2
   }
 }
