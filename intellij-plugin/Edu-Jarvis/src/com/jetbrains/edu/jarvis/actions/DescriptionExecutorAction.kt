@@ -70,18 +70,17 @@ class DescriptionExecutorAction(private val element: PsiElement) : AnAction() {
 
     ApplicationManager.getApplication().executeOnPooledThread { EduActionUtils.showFakeProgress(indicator) }
 
-    val grammarParser = GrammarParser(project, descriptionExpression)
     val unparsableSentences: List<OffsetSentence>
 
     try {
-      unparsableSentences = grammarParser.getUnparsableSentences()
+      unparsableSentences = GrammarParser.getUnparsableSentences(descriptionExpression)
     }
     catch (e: AiAssistantException) {
       project.notifyError(content = EduJarvisBundle.message("action.not.run.due.to.ai.assistant.exception"))
       return@runBackgroundableTask
     }
 
-    GrammarHighlighter(project).highlightAll(unparsableSentences)
+    GrammarHighlighter.highlightAll(project, unparsableSentences)
 
     CodeGenerationState.getInstance(project).unlock()
 
