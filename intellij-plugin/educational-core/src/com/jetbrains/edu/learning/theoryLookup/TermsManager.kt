@@ -3,15 +3,12 @@ package com.jetbrains.edu.learning.theoryLookup
 import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
-import com.intellij.openapi.diagnostic.thisLogger
 import com.intellij.openapi.project.Project
 import com.intellij.util.messages.Topic
 import com.jetbrains.edu.learning.courseFormat.ext.getDescriptionFile
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
 import com.jetbrains.edu.learning.createTopic
 import com.jetbrains.edu.learning.getTextFromTaskTextFile
-import com.jetbrains.edu.learning.messages.EduCoreBundle
-import com.jetbrains.edu.learning.notification.EduNotificationManager
 import com.jetbrains.educational.ml.theory.lookup.core.TermsProvider
 import java.util.concurrent.ConcurrentHashMap
 
@@ -28,26 +25,16 @@ class TermsManager(private val project: Project) {
 
   suspend fun extractTerms(task: Task) {
     if (terms.containsKey(task.id)) return
-    try {
-      val text = runReadAction {
-        task.getDescriptionFile(project)?.getTextFromTaskTextFile()
-      } ?: return
-      val termsProvider = TermsProvider()
-      val termsList = termsProvider.findTermsAndDefinitions(text)
-      termsList.getOrThrow().takeIf { it.isNotEmpty() }?.let {
-        terms.computeIfAbsent(task.id) { _ ->
-          Lemmatizer(text, it).getTermsAndItsDefinitions()
-        }
-        notifyTermsChanged(task)
+    val text = runReadAction {
+      task.getDescriptionFile(project)?.getTextFromTaskTextFile()
+    } ?: return
+    val termsProvider = TermsProvider()
+    val termsList = termsProvider.findTermsAndDefinitions(text)
+    termsList.getOrThrow().takeIf { it.isNotEmpty() }?.let {
+      terms.computeIfAbsent(task.id) { _ ->
+        Lemmatizer(text, it).getTermsAndItsDefinitions()
       }
-    } catch (e: Exception) {
-      EduNotificationManager.showErrorNotification(
-        project,
-        EduCoreBundle.message("theory.lookup.notification.failed.to.extract.terms.title"),
-        e.message ?:
-        EduCoreBundle.message("theory.lookup.notification.failed.to.extract.terms.text")
-      )
-      thisLogger().error("Terms extracting failed", e)
+      notifyTermsChanged(task)
     }
   }
 
