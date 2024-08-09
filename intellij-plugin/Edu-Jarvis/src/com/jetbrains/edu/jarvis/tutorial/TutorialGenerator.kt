@@ -8,13 +8,17 @@ import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFile
-import com.jetbrains.edu.EducationalCoreIcons
+import com.jetbrains.edu.EducationalCoreIcons.CourseView.Section
 import com.jetbrains.edu.coursecreator.CCUtils
 import com.jetbrains.edu.jarvis.messages.EduJarvisBundle
+import com.jetbrains.edu.jarvis.tutorial.ContentType.MAIN
+import com.jetbrains.edu.jarvis.tutorial.ContentType.TEST
+import com.jetbrains.edu.jarvis.tutorial.TaskType.EDU_TASK
+import com.jetbrains.edu.jarvis.tutorial.TaskType.THEORY_TASK
+import com.jetbrains.edu.jarvis.utils.isJarvisApplicable
 import com.jetbrains.edu.learning.StudyTaskManager
 import com.jetbrains.edu.learning.courseDir
 import com.jetbrains.edu.learning.courseFormat.*
-import com.jetbrains.edu.learning.courseFormat.EduFormatNames.TASK_MD
 import com.jetbrains.edu.learning.courseFormat.ext.configurator
 import com.jetbrains.edu.learning.courseFormat.ext.project
 import com.jetbrains.edu.learning.courseFormat.tasks.EduTask
@@ -23,11 +27,6 @@ import com.jetbrains.edu.learning.courseFormat.tasks.TheoryTask
 import com.jetbrains.edu.learning.courseGeneration.GeneratorUtils
 import com.jetbrains.edu.learning.courseGeneration.GeneratorUtils.joinPaths
 import com.jetbrains.edu.learning.yaml.YamlFormatSynchronizer
-import com.jetbrains.edu.jarvis.tutorial.TaskType.EDU_TASK
-import com.jetbrains.edu.jarvis.tutorial.TaskType.THEORY_TASK
-import com.jetbrains.edu.jarvis.tutorial.ContentType.MAIN
-import com.jetbrains.edu.jarvis.tutorial.ContentType.TEST
-import com.jetbrains.edu.jarvis.utils.isJarvisApplicable
 
 /**
  * TutorialGenerator class is used to generate a tutorial section in a course.
@@ -36,7 +35,7 @@ import com.jetbrains.edu.jarvis.utils.isJarvisApplicable
  */
 // TODO: change the icon
 @Suppress("ComponentNotRegistered")
-class TutorialGenerator : DumbAwareAction(EduJarvisBundle.message("item.tutorial.title"), "", EducationalCoreIcons.Section) {
+class TutorialGenerator : DumbAwareAction(EduJarvisBundle.message("item.tutorial.title"), "", Section) {
   override fun actionPerformed(e: AnActionEvent) {
     val project = e.project ?: return
     val course = StudyTaskManager.getInstance(project).course ?: return
@@ -108,7 +107,13 @@ class TutorialGenerator : DumbAwareAction(EduJarvisBundle.message("item.tutorial
       createTasks(this).forEach { task -> addTask(task) }
     }
 
-  private fun createTask(taskName: String, lesson: ItemContainer, taskIndex: Int, itemType: TaskType, createTaskFiles: (Task) -> List<TaskFile>) =
+  private fun createTask(
+    taskName: String,
+    lesson: ItemContainer,
+    taskIndex: Int,
+    itemType: TaskType,
+    createTaskFiles: (Task) -> List<TaskFile>
+  ) =
     when (itemType) {
       THEORY_TASK -> TheoryTask()
       EDU_TASK -> EduTask()
@@ -117,7 +122,8 @@ class TutorialGenerator : DumbAwareAction(EduJarvisBundle.message("item.tutorial
       index = taskIndex
       customPresentableName = getTaskPresentableName(lesson, taskName)
       parent = lesson
-      descriptionText = getFileContentFromResources(lesson.course, joinPaths(RESOURCE_FOLDER, lesson.name, taskName, TASK_MD))
+      descriptionText =
+        getFileContentFromResources(lesson.course, joinPaths(RESOURCE_FOLDER, lesson.name, taskName, DescriptionFormat.MD.fileName))
       descriptionFormat = DescriptionFormat.MD
       taskFiles = createTaskFiles(this).associateBy { it.name }
     }
@@ -129,19 +135,21 @@ class TutorialGenerator : DumbAwareAction(EduJarvisBundle.message("item.tutorial
     val fileName = getFileName(task.course, contentType)
     return TaskFile().apply {
       name = getPath(task, fileName, contentType)
-      contents = InMemoryTextualContents(getFileContentFromResources(
-        task.course,
-        joinPaths(RESOURCE_FOLDER, task.lesson.name, task.name, fileName)
-      ))
+      contents = InMemoryTextualContents(
+        getFileContentFromResources(
+          task.course,
+          joinPaths(RESOURCE_FOLDER, task.lesson.name, task.name, fileName)
+        )
+      )
       isVisible = contentType.isVisible
       this.task = task
     }
   }
 
   private fun getFileName(course: Course, contentType: ContentType) = when (contentType) {
-      TEST -> course.configurator?.courseBuilder?.testTemplateName(course) ?: error("Test file name not configured")
-      MAIN -> course.configurator?.courseBuilder?.mainTemplateName(course) ?: error("Main file name not configured")
-    }
+    TEST -> course.configurator?.courseBuilder?.testTemplateName(course) ?: error("Test file name not configured")
+    MAIN -> course.configurator?.courseBuilder?.mainTemplateName(course) ?: error("Main file name not configured")
+  }
 
   private fun getPath(task: Task, fileName: String, contentType: ContentType) = when (contentType) {
     TEST -> joinPaths(task.course.configurator?.testDirs?.firstOrNull(), fileName)
@@ -168,18 +176,20 @@ class TutorialGenerator : DumbAwareAction(EduJarvisBundle.message("item.tutorial
     private val capitalLetterRegex = Regex("([A-Z])")
     val tutorialComponents = listOf(
       TutorialLesson("Introduction", listOf(TutorialTask("TutorialIntroduction", THEORY_TASK))),
-      TutorialLesson("DogYears", listOf (
-        TutorialTask("Introduction", THEORY_TASK),
-        TutorialTask("Function", EDU_TASK),
-        TutorialTask("DescriptionBlock", EDU_TASK),
-        TutorialTask("ReceivingUserInput", EDU_TASK),
-        TutorialTask("VariableDeclaration", EDU_TASK),
-        TutorialTask("FunctionCall", EDU_TASK),
-        TutorialTask("IfExpression", EDU_TASK),
-        TutorialTask("Run", EDU_TASK),
-        TutorialTask("Correction", EDU_TASK),
-        TutorialTask("AcceptanceOfCode", EDU_TASK)
-      ))
+      TutorialLesson(
+        "DogYears", listOf(
+          TutorialTask("Introduction", THEORY_TASK),
+          TutorialTask("Function", EDU_TASK),
+          TutorialTask("DescriptionBlock", EDU_TASK),
+          TutorialTask("ReceivingUserInput", EDU_TASK),
+          TutorialTask("VariableDeclaration", EDU_TASK),
+          TutorialTask("FunctionCall", EDU_TASK),
+          TutorialTask("IfExpression", EDU_TASK),
+          TutorialTask("Run", EDU_TASK),
+          TutorialTask("Correction", EDU_TASK),
+          TutorialTask("AcceptanceOfCode", EDU_TASK)
+        )
+      )
     )
   }
 }
