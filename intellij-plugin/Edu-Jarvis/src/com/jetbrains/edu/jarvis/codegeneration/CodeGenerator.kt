@@ -1,7 +1,7 @@
 package com.jetbrains.edu.jarvis.codegeneration
 
 import com.intellij.openapi.progress.runBlockingCancellable
-import com.jetbrains.edu.learning.courseFormat.jarvis.DescriptionExpression
+import com.jetbrains.edu.jarvis.models.DescriptionExpression
 import com.jetbrains.educational.ml.cognifire.responses.DescriptionToCodeResponse
 import com.jetbrains.educational.ml.cognifire.core.DescriptionToCodeAssistant
 
@@ -9,7 +9,7 @@ class CodeGenerator(descriptionExpression: DescriptionExpression) {
   private val enumeratedPromptLines = getEnumeratedPromptLines(descriptionExpression.prompt)
 
   private val descriptionToCodeTranslation: DescriptionToCodeResponse =
-    getDescriptionToCode(descriptionExpression.functionSignature, enumeratedPromptLines)
+    getDescriptionToCode(descriptionExpression.functionSignature.toString(), enumeratedPromptLines)
   val descriptionToCodeLines = descriptionToCodeTranslation
     .groupBy { it.descriptionLineNumber }
     .mapValues { descriptionGroup ->

@@ -1,7 +1,7 @@
 package com.jetbrains.edu.jarvis.grammar
 
 import com.intellij.openapi.progress.runBlockingCancellable
-import com.jetbrains.edu.learning.courseFormat.jarvis.DescriptionExpression
+import com.jetbrains.edu.jarvis.models.DescriptionExpression
 import com.jetbrains.educational.ml.cognifire.core.GrammarCheckerAssistant
 
 private const val DOT = "."
