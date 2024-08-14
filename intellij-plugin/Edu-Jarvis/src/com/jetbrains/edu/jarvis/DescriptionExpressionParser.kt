@@ -4,7 +4,7 @@ import com.intellij.lang.Language
 import com.intellij.lang.LanguageExtension
 import com.intellij.psi.PsiElement
 import com.intellij.util.concurrency.ThreadingAssertions
-import com.jetbrains.edu.learning.courseFormat.jarvis.DescriptionExpression
+import com.jetbrains.edu.jarvis.models.DescriptionExpression
 
 /**
  * Parses a `description` DSL element and returns a [DescriptionExpression] object if successful.

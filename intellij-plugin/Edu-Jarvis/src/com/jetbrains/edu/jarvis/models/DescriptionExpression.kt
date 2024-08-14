@@ -1,7 +1,8 @@
-package com.jetbrains.edu.learning.courseFormat.jarvis
+package com.jetbrains.edu.jarvis.models
+
 
 data class DescriptionExpression(
-  val functionSignature: String,
+  val functionSignature: FunctionSignature,
   val promptOffset: Int,
   val prompt: String,
   val code: String
