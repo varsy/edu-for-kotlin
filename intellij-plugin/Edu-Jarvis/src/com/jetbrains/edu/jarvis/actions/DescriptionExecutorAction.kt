@@ -7,6 +7,7 @@ import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.invokeLater
+import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.runBackgroundableTask
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
@@ -17,7 +18,7 @@ import com.jetbrains.edu.jarvis.grammar.GrammarParser
 import com.jetbrains.edu.jarvis.grammar.OffsetSentence
 import com.jetbrains.edu.jarvis.highlighting.HighlighterManager
 import com.jetbrains.edu.jarvis.highlighting.ListenerManager
-import com.jetbrains.edu.jarvis.highlighting.descriptiontodraft.DescriptionToDraftHighlighter
+import com.jetbrains.edu.jarvis.highlighting.descriptiontocode.DescriptionToCodeHighlighter
 import com.jetbrains.edu.jarvis.highlighting.grammar.GrammarHighlighter
 import com.jetbrains.edu.jarvis.messages.EduJarvisBundle
 import com.jetbrains.edu.learning.actions.EduActionUtils
@@ -56,52 +57,67 @@ class DescriptionExecutorAction(private val element: PsiElement) : AnAction() {
     EduJarvisBundle.message("action.progress.bar.message"),
     project
   ) { indicator ->
-    if (!CodeGenerationState.getInstance(project).lock()) {
+    runLocked(project) {
+      runWithProgressBar(indicator) {
+        val unparsableSentences = checkGrammar(descriptionExpression, project)
+        GrammarHighlighter.highlightAll(project, unparsableSentences)
+        handleCodeGeneration(project, descriptionExpression)
+      }
+    }
+  }
+
+  private fun runLocked(project: Project, execution: () -> Unit) {
+    val codeGenerationState = CodeGenerationState.getInstance(project)
+
+    if (!codeGenerationState.lock()) {
       project.notifyError(content = EduJarvisBundle.message("action.already.running"))
-      return@runBackgroundableTask
+      return
     }
-
-    ApplicationManager.getApplication().executeOnPooledThread { EduActionUtils.showFakeProgress(indicator) }
-
-    val unparsableSentences: List<OffsetSentence>
-
     try {
-      unparsableSentences = GrammarParser.getUnparsableSentences(descriptionExpression)
-    }
-    catch (e: AiAssistantException) {
-      project.notifyError(content = EduJarvisBundle.message("action.not.run.due.to.ai.assistant.exception"))
-      return@runBackgroundableTask
-    }
-    catch (e: Throwable) {
+      execution()
+    } catch (e: AiAssistantException) {
+      project.notifyError(title = EduJarvisBundle.message("action.not.run.due.to.ai.assistant.exception"), content = e.message)
+    } catch (e: Throwable) {
+      CodeGenerationState.getInstance(project).unlock()
       project.notifyError(content = EduJarvisBundle.message("action.not.run.due.to.unknown.exception"))
-      return@runBackgroundableTask
     }
+    finally {
+      CodeGenerationState.getInstance(project).unlock()
+    }
+  }
 
-    GrammarHighlighter.highlightAll(project, unparsableSentences)
+  private fun runWithProgressBar(indicator: ProgressIndicator, execution: () -> Unit) {
+    ApplicationManager.getApplication().executeOnPooledThread { EduActionUtils.showFakeProgress(indicator) }
+    execution()
+  }
+
+  private fun checkGrammar(descriptionExpression: DescriptionExpression, project: Project): List<OffsetSentence> {
+    val unparsableSentences = GrammarParser.getUnparsableSentences(descriptionExpression)
 
     if (unparsableSentences.isNotEmpty()) {
-      CodeGenerationState.getInstance(project).unlock()
       project.notifyError(
         EduJarvisBundle.message("action.not.run.due.to.incorrect.grammar.title"),
         EduJarvisBundle.message("action.not.run.due.to.incorrect.grammar.text")
       )
-      return@runBackgroundableTask
     }
 
+    return unparsableSentences
+  }
 
-    CodeGenerationState.getInstance(project).unlock()
+  private fun handleCodeGeneration(
+    project: Project,
+    descriptionExpression: DescriptionExpression,
+  ) {
     val codeGenerator = CodeGenerator(descriptionExpression)
 
     invokeLater {
       val generatedCode = codeGenerator.generatedCode
       // TODO: reformat and improve the generated code
       val draftBodyOffset = DraftExpressionWriter.addDraftExpression(project, element, generatedCode, element.language)
-
-      DescriptionToDraftHighlighter(project).setUp(
+      DescriptionToCodeHighlighter(project).setUp(
         descriptionExpression.promptOffset,
-        draftBodyOffset,
-        codeGenerator.descriptionToDraftLines,
-        codeGenerator.draftToDescriptionLines
+        codeGenerator.descriptionToCodeLines,
+        draftBodyOffset
       )
     }
   }
