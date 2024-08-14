@@ -10,7 +10,7 @@ import com.intellij.util.concurrency.ThreadingAssertions
  * Adds a `draft` DSL block with the generated code to the code after the given [PsiElement].
  */
 interface DraftExpressionWriter {
-  fun addDraftExpression(project: Project, element: PsiElement, generatedCode: String): Int
+  fun addDraftExpression(project: Project, element: PsiElement, generatedCode: String, returnType: String): Int
 
   companion object {
     private val EP_NAME = LanguageExtension<DraftExpressionWriter>("Educational.draftExpressionWriter")
@@ -20,9 +20,9 @@ interface DraftExpressionWriter {
      * @return the offset of the code inside the draft block
      * @throws IllegalStateException if the language does not support providing a draft expression
      */
-    fun addDraftExpression(project: Project, element: PsiElement, generatedCode: String, language: Language): Int {
+    fun addDraftExpression(project: Project, element: PsiElement, generatedCode: String, returnType: String, language: Language): Int {
       ThreadingAssertions.assertReadAccess()
-      return EP_NAME.forLanguage(language)?.addDraftExpression(project, element, generatedCode)
+      return EP_NAME.forLanguage(language)?.addDraftExpression(project, element, generatedCode, returnType)
              ?: error("Not supported to provide a draft expression for the ${language.displayName} language")
     }
 
