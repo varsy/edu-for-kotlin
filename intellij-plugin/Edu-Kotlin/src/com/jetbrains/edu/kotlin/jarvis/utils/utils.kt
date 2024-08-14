@@ -5,23 +5,20 @@ import com.jetbrains.edu.jarvis.JarvisDslPackageCallChecker
 
 fun findBlock(
   element: PsiElement,
-  nextElement: (PsiElement) -> PsiElement?,
-  blockStartText: String
+  step: (PsiElement) -> PsiElement?,
+  condition: (PsiElement?) -> Boolean
 ): PsiElement? {
   var possibleBlock: PsiElement? = element
-  do {
-    possibleBlock = possibleBlock?.let { nextElement(it) }
+  while(!condition(possibleBlock)) {
+    possibleBlock = possibleBlock?.let { step(it) }
   }
-  while (
-    possibleBlock != null &&
-    !(possibleBlock.text.startsWith(blockStartText) &&
-      JarvisDslPackageCallChecker.isCallFromJarvisDslPackage(possibleBlock, possibleBlock.language))
-  )
   return possibleBlock
 }
+
 
 internal fun PsiElement.isDescriptionBlock() = text.startsWith(DESCRIPTION) &&
                                                JarvisDslPackageCallChecker.isCallFromJarvisDslPackage(this, this.language)
 
-const val DRAFT = "draft"
+const val RETURN_DRAFT = "return draft"
 const val DESCRIPTION = "description"
+const val DRAFT = "draft"

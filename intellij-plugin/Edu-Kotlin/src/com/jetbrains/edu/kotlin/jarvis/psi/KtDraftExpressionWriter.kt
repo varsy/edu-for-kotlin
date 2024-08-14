@@ -5,55 +5,69 @@ import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiElement
 import com.jetbrains.edu.jarvis.DraftExpressionWriter
-import com.jetbrains.edu.kotlin.jarvis.utils.DRAFT
-import com.jetbrains.edu.kotlin.jarvis.utils.findBlock
+import com.jetbrains.edu.kotlin.jarvis.psi.ElementSearch.getDraftBlock
 import com.jetbrains.edu.learning.courseGeneration.GeneratorUtils
 import org.jetbrains.kotlin.psi.KtCallExpression
 import org.jetbrains.kotlin.psi.KtExpression
 import org.jetbrains.kotlin.psi.KtPsiFactory
+import org.jetbrains.kotlin.psi.KtReturnExpression
 
 class KtDraftExpressionWriter : DraftExpressionWriter {
 
-  override fun addDraftExpression(project: Project, element: PsiElement, generatedCode: String): Int {
+  override fun addDraftExpression(project: Project, element: PsiElement, generatedCode: String, returnType: String): Int {
     val psiFactory = KtPsiFactory(project)
-    val draftTemplate = GeneratorUtils.getInternalTemplateText(DRAFT_BLOCK, mapOf(GENERATED_CODE_KEY to generatedCode))
-    val newDraftBlock = psiFactory.createExpression(draftTemplate)
+
+    val returnDraftTemplate = getReturnDraftTemplate(generatedCode, returnType)
+
+    val newReturnDraftBlock = psiFactory.createExpression(returnDraftTemplate)
     val documentManager = PsiDocumentManager.getInstance(project)
     val newLine = psiFactory.createNewLine()
-    var draftBlock: KtCallExpression? = null
+
+    var codeOffset = 0
+
     WriteCommandAction.runWriteCommandAction(project, null, null, {
       documentManager.commitAllDocuments()
-      val existingDraftBlock = findBlock(element, PsiElement::getNextSibling, DRAFT) as? KtCallExpression
-      when (val existingDraftBody = getBodyExpression(existingDraftBlock)) {
-        null -> {
-          element.parent.addAfter(newDraftBlock, element)
-          element.parent.addAfter(newLine, element)
-        }
-
-        else -> {
-          val newDraftBody = getBodyExpression(newDraftBlock as? KtCallExpression)
-          newDraftBody?.let {
-            existingDraftBody.replace(it)
-          }
-        }
-      }
-       draftBlock = findBlock(element, { it.nextSibling }, DRAFT) as? KtCallExpression
+      val existingReturnDraftBlock = ElementSearch.findReturnDraftElement(element)
+      val returnDraftBlock = updateReturnDraftBlock(existingReturnDraftBlock, newReturnDraftBlock, newLine, element) as? KtReturnExpression
+      codeOffset = returnDraftBlock
+        ?.getDraftBlock()
+        ?.getBodyExpression()
+        ?.textOffset ?: 0
     })
-
-    return draftBlock?.let {
-      getBodyExpression(draftBlock)?.textOffset
-    } ?: error("Can't find body draft expression")
+    return codeOffset
   }
 
-  private fun getBodyExpression(callExpression: KtCallExpression?): KtExpression? =
-    callExpression
-      ?.lambdaArguments
-      ?.firstOrNull()
-      ?.getLambdaExpression()
-      ?.bodyExpression
+  private fun KtCallExpression.getBodyExpression(): KtExpression? =
+    lambdaArguments
+    .firstOrNull()
+    ?.getLambdaExpression()
+    ?.bodyExpression
+
+  private fun getReturnDraftTemplate(generatedCode: String, returnType: String): String {
+    return GeneratorUtils.getInternalTemplateText(DRAFT_BLOCK,
+      mapOf(GENERATED_CODE_KEY to generatedCode, RETURN_TYPE_KEY to returnType))
+  }
+
+  private fun updateReturnDraftBlock(
+    existingReturnDraftBlock: KtReturnExpression?,
+    newReturnDraftBlock: KtExpression,
+    newLine: PsiElement,
+    element: PsiElement)
+    = when (existingReturnDraftBlock) {
+      null -> createElementParent(newReturnDraftBlock, newLine, element)
+      else -> existingReturnDraftBlock.replace(newReturnDraftBlock)
+    }
+
+
+  private fun createElementParent(newReturnDraftBlock: KtExpression, newLine: PsiElement, element: PsiElement): PsiElement {
+    element.parent.addAfter(newReturnDraftBlock, element)
+    return element.parent.addAfter(newLine, element)
+  }
 
   companion object {
     const val DRAFT_BLOCK = "DraftBlock.kt"
     const val GENERATED_CODE_KEY = "code"
+    const val RETURN_TYPE_KEY = "returnType"
+
   }
 }
