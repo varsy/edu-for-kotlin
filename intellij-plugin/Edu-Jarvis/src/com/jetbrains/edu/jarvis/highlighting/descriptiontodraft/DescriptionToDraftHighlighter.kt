@@ -1,4 +1,4 @@
-package com.jetbrains.edu.jarvis.highlighting.descriptiontocode
+package com.jetbrains.edu.jarvis.highlighting.descriptiontodraft
 
 import com.intellij.openapi.editor.event.EditorMouseEvent
 import com.intellij.openapi.editor.event.EditorMouseMotionListener
@@ -11,49 +11,79 @@ import com.jetbrains.edu.jarvis.highlighting.ListenerManager
 
 
 /**
- * Class DescriptionToCodeHighlighter is responsible for highlighting the description and code lines
+ * Class DescriptionToDraftHighlighter is responsible for highlighting the description and draft lines
  * in an editor based on the mouse movement.
  *
  * @property project The current project.
  * @property descriptionHighlighters The list of description highlighters.
- * @property codeHighlighters The list of code highlighters.
+ * @property draftHighlighters The list of draft highlighters.
  * @property highlighterManager The instance of HighlighterManager.
  */
-class DescriptionToCodeHighlighter(private val project: Project) {
+class DescriptionToDraftHighlighter(private val project: Project) {
 
   private val descriptionHighlighters = mutableListOf<RangeHighlighter>()
-  private val codeHighlighters = mutableListOf<RangeHighlighter>()
+  private val draftHighlighters = mutableListOf<RangeHighlighter>()
   private val highlighterManager = HighlighterManager.getInstance(project)
-
 
   fun setUp(
     descriptionOffset: Int,
-    descriptionToCodeLines: Map<Int, List<Int>>,
+    descriptionToDraftLines: Map<Int, List<Int>>,
+    draftToDescriptionLines: Map<Int, List<Int>>,
     draftBodyOffset: Int,
   ) = object : EditorMouseMotionListener {
     override fun mouseMoved(e: EditorMouseEvent) {
       val editor = e.editor
-      val descriptionLineWithOffset = editor.xyToLogicalPosition(e.mouseEvent.point).line
+      val selectedLineWithOffset = editor.xyToLogicalPosition(e.mouseEvent.point).line
+
       val descriptionLineOffset = editor.document.getLineNumber(descriptionOffset)
-      val descriptionLine = descriptionLineWithOffset - descriptionLineOffset
-      val descriptionLinesWithOffset = listOf(descriptionLineWithOffset)
       val draftLineOffset = editor.document.getLineNumber(draftBodyOffset)
 
-      descriptionToCodeLines[descriptionLine]?.map {
-        it + draftLineOffset
-      }?.let { codeLinesWithOffset ->
-        setHighlighters(descriptionLinesWithOffset, codeLinesWithOffset)
-      }
+
+      showHighlighters(
+        selectedLineWithOffset - descriptionLineOffset,
+        descriptionLineOffset,
+        draftLineOffset,
+        descriptionToDraftLines,
+        draftToDescriptionLines,
+        true
+      )
+      showHighlighters(
+        selectedLineWithOffset - draftLineOffset,
+        draftLineOffset,
+        descriptionLineOffset,
+        draftToDescriptionLines,
+        descriptionToDraftLines,
+        false
+      )
     }
   }.also {
     ListenerManager.getInstance(project).addListener(it)
   }
 
-  private fun setHighlighters(descriptionLines: List<Int>, codeLines: List<Int>) {
+  private fun showHighlighters(
+    fromLine: Int,
+    fromLineOffset: Int,
+    toLineOffset: Int,
+    fromMap: Map<Int, List<Int>>,
+    toMap: Map<Int, List<Int>>,
+    descriptionToDraft: Boolean
+  ) {
+    fromMap[fromLine]?.map { it + toLineOffset }
+      ?.let { fromLinesWithOffset ->
+        val lines = fromMap[fromLine]?.let { toMap[it.singleOrNull()] }
+                    ?: listOf(fromLine)
+        val toLinesWithOffset = lines.map { it + fromLineOffset }
+        if (descriptionToDraft) setHighlighters(fromLinesWithOffset, toLinesWithOffset)
+        else setHighlighters(toLinesWithOffset, fromLinesWithOffset)
+      }
+  }
+
+
+  private fun setHighlighters(descriptionLines: List<Int>, draftLines: List<Int>) {
     descriptionHighlighters.clearAndDispose()
-    codeHighlighters.clearAndDispose()
+    draftHighlighters.clearAndDispose()
     descriptionHighlighters.addHighlighters(descriptionLines)
-    codeHighlighters.addHighlighters(codeLines)
+    draftHighlighters.addHighlighters(draftLines)
   }
 
   private fun MutableList<RangeHighlighter>.clearAndDispose() {
@@ -67,7 +97,8 @@ class DescriptionToCodeHighlighter(private val project: Project) {
         add(highlighter)
       }
     }
-  } catch (_: IndexOutOfBoundsException) {
+  }
+  catch (_: IndexOutOfBoundsException) {
     // The code hasn't been generated yet.
   }
 
