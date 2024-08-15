@@ -16,7 +16,7 @@ import org.jetbrains.kotlin.psi.KtLiteralStringTemplateEntry
  */
 class JarvisCompletionConfidence : CompletionConfidence() {
   override fun shouldSkipAutopopup(contextElement: PsiElement, psiFile: PsiFile, offset: Int): ThreeState {
-    val descriptionBlock = ElementSearch.findDescriptionElement(contextElement)
+    val descriptionBlock = ElementSearch.findDescriptionElement(contextElement) { it.nextSibling }
     if (descriptionBlock != null && contextElement.parent is KtLiteralStringTemplateEntry) {
       return ThreeState.NO
     }

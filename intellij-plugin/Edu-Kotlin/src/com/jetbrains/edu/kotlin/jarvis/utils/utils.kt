@@ -6,11 +6,11 @@ import com.jetbrains.edu.jarvis.JarvisDslPackageCallChecker
 fun findBlock(
   element: PsiElement,
   step: (PsiElement) -> PsiElement?,
-  condition: (PsiElement?) -> Boolean
+  condition: (PsiElement) -> Boolean
 ): PsiElement? {
   var possibleBlock: PsiElement? = element
-  while(!condition(possibleBlock)) {
-    possibleBlock = possibleBlock?.let { step(it) }
+  while(possibleBlock != null && !condition(possibleBlock)) {
+    possibleBlock = step(possibleBlock)
   }
   return possibleBlock
 }
