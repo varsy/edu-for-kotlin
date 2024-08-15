@@ -6,9 +6,10 @@ import com.intellij.openapi.components.service
 import com.intellij.openapi.diagnostic.thisLogger
 import com.intellij.openapi.project.Project
 import com.intellij.util.messages.Topic
-import com.jetbrains.edu.learning.courseFormat.ext.getTaskTextFromTask
+import com.jetbrains.edu.learning.courseFormat.ext.getDescriptionFile
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
 import com.jetbrains.edu.learning.createTopic
+import com.jetbrains.edu.learning.getTextFromTaskTextFile
 import com.jetbrains.edu.learning.messages.EduCoreBundle
 import com.jetbrains.edu.learning.notification.EduNotificationManager
 import com.jetbrains.educational.ml.theory.lookup.core.TermsProvider
@@ -28,7 +29,9 @@ class TermsManager(private val project: Project) {
   suspend fun extractTerms(task: Task) {
     if (terms.containsKey(task.id)) return
     try {
-      val text = runReadAction { task.getTaskTextFromTask(project) } ?: return
+      val text = runReadAction {
+        task.getDescriptionFile(project)?.getTextFromTaskTextFile()
+      } ?: return
       val termsProvider = TermsProvider()
       val termsList = termsProvider.findTermsAndDefinitions(text)
       termsList.getOrThrow().takeIf { it.isNotEmpty() }?.let {
