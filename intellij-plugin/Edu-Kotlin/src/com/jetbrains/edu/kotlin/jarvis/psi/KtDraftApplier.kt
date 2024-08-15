@@ -5,22 +5,19 @@ import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.jetbrains.edu.jarvis.DraftApplier
-import com.jetbrains.edu.kotlin.jarvis.utils.DESCRIPTION
-import com.jetbrains.edu.kotlin.jarvis.utils.DRAFT
-import com.jetbrains.edu.kotlin.jarvis.utils.findBlock
 import org.jetbrains.kotlin.psi.KtCallExpression
 
 class KtDraftApplier : DraftApplier {
 
   override fun applyCodeDraftToMainCode(project: Project, element: PsiElement, psiFile: PsiFile?) {
-    val draftBlock = findBlock(element, { it.parent }, DRAFT) as? KtCallExpression ?: error("The draft block is not found")
+    val returnDraftBlock = ElementSearch.findReturnDraftElement(element) { it.parent } ?: error("The draft block is not found")
+    val draftBlock = ElementSearch.findDraftElement(element) { it.parent } as? KtCallExpression ?: error("The draft block is not found")
     val lambdaArgument = draftBlock.lambdaArguments.firstOrNull() ?: return
     val lambdaBody = lambdaArgument.getLambdaExpression()?.bodyExpression ?: return
-    val descriptionBlock = findBlock(draftBlock, { it.prevSibling }, DESCRIPTION) ?: error("The description block is not found")
+    val descriptionBlock = ElementSearch.findDescriptionElement(returnDraftBlock) { it.prevSibling } ?: error("The description block is not found")
     WriteCommandAction.runWriteCommandAction(project, null, null, {
       descriptionBlock.replace(lambdaBody)
-      draftBlock.delete()
+      returnDraftBlock.delete()
     }, psiFile)
   }
-
 }

@@ -27,7 +27,7 @@ class KtDraftExpressionWriter : DraftExpressionWriter {
 
     WriteCommandAction.runWriteCommandAction(project, null, null, {
       documentManager.commitAllDocuments()
-      val existingReturnDraftBlock = ElementSearch.findReturnDraftElement(element)
+      val existingReturnDraftBlock = ElementSearch.findReturnDraftElement(element) { it.nextSibling }
       val returnDraftBlock = updateReturnDraftBlock(existingReturnDraftBlock, newReturnDraftBlock, newLine, element) as? KtReturnExpression
       codeOffset = returnDraftBlock
         ?.getDraftBlock()
