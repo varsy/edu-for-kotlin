@@ -17,7 +17,7 @@ import com.jetbrains.edu.jarvis.grammar.GrammarParser
 import com.jetbrains.edu.jarvis.grammar.OffsetSentence
 import com.jetbrains.edu.jarvis.highlighting.HighlighterManager
 import com.jetbrains.edu.jarvis.highlighting.ListenerManager
-import com.jetbrains.edu.jarvis.highlighting.descriptiontocode.DescriptionToCodeHighlighter
+import com.jetbrains.edu.jarvis.highlighting.descriptiontodraft.DescriptionToDraftHighlighter
 import com.jetbrains.edu.jarvis.highlighting.grammar.GrammarHighlighter
 import com.jetbrains.edu.jarvis.messages.EduJarvisBundle
 import com.jetbrains.edu.learning.actions.EduActionUtils
@@ -95,10 +95,16 @@ class DescriptionExecutorAction(private val element: PsiElement) : AnAction() {
     // TODO: get the generated code with errors
     val descriptionToCodeTranslation = getDescriptionToCodeTranslation(descriptionExpression)
 
-    val descriptionToCodeLines = descriptionToCodeTranslation
+    val descriptionToDraftLines = descriptionToCodeTranslation
       .groupBy { it.descriptionLineNumber }
       .mapValues { descriptionGroup ->
         descriptionGroup.value.map { it.codeLineNumber }
+      }
+
+    val draftToDescriptionLines = descriptionToCodeTranslation
+      .groupBy { it.codeLineNumber }
+      .mapValues { codeGroup ->
+        codeGroup.value.map { it.descriptionLineNumber }
       }
 
     invokeLater {
@@ -106,9 +112,10 @@ class DescriptionExecutorAction(private val element: PsiElement) : AnAction() {
       // TODO: reformat and improve the generated code
       val draftBodyOffset = DraftExpressionWriter.addDraftExpression(project, element, generatedCode, element.language)
 
-      DescriptionToCodeHighlighter(project).setUp(
+      DescriptionToDraftHighlighter(project).setUp(
         descriptionExpression.promptOffset,
-        descriptionToCodeLines,
+        descriptionToDraftLines,
+        draftToDescriptionLines,
         draftBodyOffset
       )
     }
