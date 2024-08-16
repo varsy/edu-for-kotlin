@@ -21,6 +21,10 @@
           <option name="issueRegexp" value="EDU-MR-(\d+)" />
           <option name="linkRegexp" value="https://jetbrains.team/p/edu/review/$1" />
         </IssueNavigationLink>
+        <IssueNavigationLink>
+          <option name="issueRegexp" value="ML4SE-A-(\d+)" />
+          <option name="linkRegexp" value="https://youtrack.jetbrains.com/articles/ML4SE-A-$1" />
+        </IssueNavigationLink>
       </list>
     </option>
   </component>
