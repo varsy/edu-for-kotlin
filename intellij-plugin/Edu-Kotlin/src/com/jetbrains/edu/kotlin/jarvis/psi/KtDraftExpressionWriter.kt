@@ -19,7 +19,7 @@ class KtDraftExpressionWriter : DraftExpressionWriter {
 
     val returnDraftTemplate = getReturnDraftTemplate(generatedCode, returnType)
 
-    val newReturnDraftBlock = psiFactory.createExpression(returnDraftTemplate)
+    val newReturnDraftBlock = psiFactory.createExpression(returnDraftTemplate) as? KtReturnExpression ?: error("Failed to create draft block")
     val documentManager = PsiDocumentManager.getInstance(project)
     val newLine = psiFactory.createNewLine()
 
@@ -28,14 +28,14 @@ class KtDraftExpressionWriter : DraftExpressionWriter {
     WriteCommandAction.runWriteCommandAction(project, null, null, {
       documentManager.commitAllDocuments()
       val existingReturnDraftBlock = ElementSearch.findReturnDraftElement(element) { it.nextSibling }
-      val returnDraftBlock = updateReturnDraftBlock(existingReturnDraftBlock, newReturnDraftBlock, newLine, element) as? KtReturnExpression
-      codeOffset = returnDraftBlock
-        ?.getDraftBlock()
-        ?.getBodyExpression()
-        ?.textOffset ?: 0
+      val returnDraftBlock =
+        updateReturnDraftBlock(existingReturnDraftBlock, newReturnDraftBlock, newLine, element)
+      codeOffset = returnDraftBlock.getCodeOffset()
     })
     return codeOffset
   }
+
+  private fun PsiElement.getCodeOffset(): Int = getDraftBlock()?.getBodyExpression()?.textOffset ?: 0
 
   private fun KtCallExpression.getBodyExpression(): KtExpression? =
     lambdaArguments
@@ -60,8 +60,9 @@ class KtDraftExpressionWriter : DraftExpressionWriter {
 
 
   private fun createElementParent(newReturnDraftBlock: KtExpression, newLine: PsiElement, element: PsiElement): PsiElement {
-    element.parent.addAfter(newReturnDraftBlock, element)
-    return element.parent.addAfter(newLine, element)
+    val createdElement = element.parent.addAfter(newReturnDraftBlock, element)
+    element.parent.addAfter(newLine, element)
+    return createdElement
   }
 
   companion object {
