@@ -31,5 +31,5 @@ object ElementSearch {
     && text.startsWith(RETURN_DRAFT)
     && getDraftBlock()?.let { JarvisDslPackageCallChecker.isCallFromJarvisDslPackage(it, it.language) } == true
 
-  fun KtReturnExpression.getDraftBlock() = children.firstOrNull()?.getChildOfType<KtCallExpression>()
+  fun PsiElement.getDraftBlock() = children.firstOrNull()?.getChildOfType<KtCallExpression>()
 }
