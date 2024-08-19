@@ -44,7 +44,7 @@ class KtDescriptionExpressionParser : DescriptionExpressionParser {
         ?.map {
           FunctionArgument(
             it?.name ?: "",
-            it?.typeReference?.name ?: ""
+            it?.typeReference?.text ?: ""
           )
         } ?: emptyList()
 
