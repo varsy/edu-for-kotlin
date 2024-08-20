@@ -5,14 +5,17 @@ import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiElement
 import com.jetbrains.edu.jarvis.DraftExpressionWriter
+import com.jetbrains.edu.jarvis.models.DraftExpression
 import com.jetbrains.edu.learning.courseGeneration.GeneratorUtils
 import org.jetbrains.kotlin.psi.KtCallExpression
 import org.jetbrains.kotlin.psi.KtExpression
 import org.jetbrains.kotlin.psi.KtPsiFactory
+import org.jetbrains.kotlin.psi.psiUtil.endOffset
+import org.jetbrains.kotlin.psi.psiUtil.startOffset
 
 class KtDraftExpressionWriter : DraftExpressionWriter {
 
-  override fun addDraftExpression(project: Project, element: PsiElement, generatedCode: String): Int {
+  override fun addDraftExpression(project: Project, element: PsiElement, generatedCode: String): DraftExpression {
     val psiFactory = KtPsiFactory(project)
 
     val draftTemplate = getDraftTemplate(generatedCode)
@@ -21,16 +24,25 @@ class KtDraftExpressionWriter : DraftExpressionWriter {
     val documentManager = PsiDocumentManager.getInstance(project)
     val newLine = psiFactory.createNewLine()
 
-    var codeOffset = 0
+    var codeOffset = element.startOffset
+    val startOffset = element.startOffset
+    var endOffset = element.endOffset
 
     WriteCommandAction.runWriteCommandAction(project, null, null, {
       documentManager.commitAllDocuments()
       val existingDraftBlock = ElementSearch.findDraftElement(element) { it.nextSibling }
       val resultingDraftBlock =
         updateDraftBlock(existingDraftBlock, newDraftBlock, newLine, element)
+
       codeOffset = resultingDraftBlock.getCodeOffset()
+      endOffset = resultingDraftBlock.endOffset
     })
-    return codeOffset
+    return DraftExpression(
+      generatedCode,
+      codeOffset,
+      startOffset,
+      endOffset
+    )
   }
 
   private fun KtCallExpression.getCodeOffset(): Int = getBodyExpression()?.textOffset ?: 0
