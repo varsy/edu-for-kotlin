@@ -22,8 +22,6 @@ import javax.swing.Icon
  * @see IntentionAction
  * @see Iconable
  */
-
-// TODO: Update to support new DSL
 class DraftIntentionAction : IntentionAction, Iconable {
   override fun startInWriteAction(): Boolean = false
 

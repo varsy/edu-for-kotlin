@@ -21,8 +21,8 @@ import com.jetbrains.edu.jarvis.highlighting.ListenerManager
 import com.jetbrains.edu.jarvis.highlighting.descriptiontocode.DescriptionToCodeHighlighter
 import com.jetbrains.edu.jarvis.highlighting.grammar.GrammarHighlighter
 import com.jetbrains.edu.jarvis.messages.EduJarvisBundle
+import com.jetbrains.edu.jarvis.models.DescriptionExpression
 import com.jetbrains.edu.learning.actions.EduActionUtils
-import com.jetbrains.edu.learning.courseFormat.jarvis.DescriptionExpression
 import com.jetbrains.edu.learning.notification.EduNotificationManager
 import com.jetbrains.educational.ml.core.exception.AiAssistantException
 
