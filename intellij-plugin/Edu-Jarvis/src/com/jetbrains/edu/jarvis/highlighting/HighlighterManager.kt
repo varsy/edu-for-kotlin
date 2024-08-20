@@ -13,19 +13,27 @@ import com.jetbrains.edu.learning.selectedEditor
  */
 @Service(Service.Level.PROJECT)
 class HighlighterManager(private val project: Project) {
-  private val highlighters = mutableListOf<RangeHighlighter>()
+  private val grammarHighlighters = mutableListOf<RangeHighlighter>()
+  private val descriptionToDraftHighlighters = mutableListOf<RangeHighlighter>()
 
   private val markupModel: MarkupModel?
     get() = project.selectedEditor?.markupModel
 
   fun clearAll() {
-    highlighters.forEach {
-      it.dispose()
-    }
-    highlighters.clear()
+    grammarHighlighters.clearAndDispose()
+    descriptionToDraftHighlighters.clearAndDispose()
   }
 
-  fun addRangeHighlighter(startOffset: Int, endOffset: Int, attributes: TextAttributes): RangeHighlighter? =
+  fun clearDescriptionToDraftHighlighters() = descriptionToDraftHighlighters.clearAndDispose()
+
+  private fun MutableList<RangeHighlighter>.clearAndDispose() {
+    forEach {
+      it.dispose()
+    }
+    clear()
+  }
+
+  fun addGrammarHighlighter(startOffset: Int, endOffset: Int, attributes: TextAttributes): RangeHighlighter? =
     markupModel?.addRangeHighlighter(
       startOffset,
       endOffset,
@@ -33,16 +41,16 @@ class HighlighterManager(private val project: Project) {
       attributes,
       HighlighterTargetArea.EXACT_RANGE
     )?.also {
-      highlighters.add(it)
+      grammarHighlighters.add(it)
     }
 
-  fun addLineHighlighter(lineNumber: Int, attributes: TextAttributes): RangeHighlighter? =
+  fun addDescriptionToDraftHighlighter(lineNumber: Int, attributes: TextAttributes): RangeHighlighter? =
     markupModel?.addLineHighlighter(
       lineNumber,
       HighlighterLayer.LAST,
       attributes
     )?.also {
-      highlighters.add(it)
+      descriptionToDraftHighlighters.add(it)
     }
 
   companion object {
