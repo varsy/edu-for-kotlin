@@ -17,7 +17,7 @@ object GrammarHighlighter {
   }
 
   private fun highlightSentence(project: Project, sentence: OffsetSentence) {
-    HighlighterManager.getInstance(project).addRangeHighlighter(
+    HighlighterManager.getInstance(project).addGrammarHighlighter(
       sentence.startOffset,
       sentence.endOffset,
       attributes
