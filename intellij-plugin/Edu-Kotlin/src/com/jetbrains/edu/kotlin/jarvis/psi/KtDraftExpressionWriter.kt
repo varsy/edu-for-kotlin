@@ -5,21 +5,19 @@ import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiElement
 import com.jetbrains.edu.jarvis.DraftExpressionWriter
-import com.jetbrains.edu.kotlin.jarvis.psi.ElementSearch.getDraftBlock
 import com.jetbrains.edu.learning.courseGeneration.GeneratorUtils
 import org.jetbrains.kotlin.psi.KtCallExpression
 import org.jetbrains.kotlin.psi.KtExpression
 import org.jetbrains.kotlin.psi.KtPsiFactory
-import org.jetbrains.kotlin.psi.KtReturnExpression
 
 class KtDraftExpressionWriter : DraftExpressionWriter {
 
-  override fun addDraftExpression(project: Project, element: PsiElement, generatedCode: String, returnType: String): Int {
+  override fun addDraftExpression(project: Project, element: PsiElement, generatedCode: String): Int {
     val psiFactory = KtPsiFactory(project)
 
-    val returnDraftTemplate = getReturnDraftTemplate(generatedCode, returnType)
+    val draftTemplate = getDraftTemplate(generatedCode)
 
-    val newReturnDraftBlock = psiFactory.createExpression(returnDraftTemplate) as? KtReturnExpression ?: error("Failed to create draft block")
+    val newDraftBlock = psiFactory.createExpression(draftTemplate) as? KtCallExpression ?: error("Failed to create draft block")
     val documentManager = PsiDocumentManager.getInstance(project)
     val newLine = psiFactory.createNewLine()
 
@@ -27,15 +25,15 @@ class KtDraftExpressionWriter : DraftExpressionWriter {
 
     WriteCommandAction.runWriteCommandAction(project, null, null, {
       documentManager.commitAllDocuments()
-      val existingReturnDraftBlock = ElementSearch.findReturnDraftElement(element) { it.nextSibling }
-      val returnDraftBlock =
-        updateReturnDraftBlock(existingReturnDraftBlock, newReturnDraftBlock, newLine, element)
-      codeOffset = returnDraftBlock.getCodeOffset()
+      val existingDraftBlock = ElementSearch.findDraftElement(element) { it.nextSibling }
+      val resultingDraftBlock =
+        updateDraftBlock(existingDraftBlock, newDraftBlock, newLine, element)
+      codeOffset = resultingDraftBlock.getCodeOffset()
     })
     return codeOffset
   }
 
-  private fun PsiElement.getCodeOffset(): Int = getDraftBlock()?.getBodyExpression()?.textOffset ?: 0
+  private fun KtCallExpression.getCodeOffset(): Int = getBodyExpression()?.textOffset ?: 0
 
   private fun KtCallExpression.getBodyExpression(): KtExpression? =
     lambdaArguments
@@ -43,24 +41,24 @@ class KtDraftExpressionWriter : DraftExpressionWriter {
     ?.getLambdaExpression()
     ?.bodyExpression
 
-  private fun getReturnDraftTemplate(generatedCode: String, returnType: String): String {
+  private fun getDraftTemplate(generatedCode: String): String {
     return GeneratorUtils.getInternalTemplateText(DRAFT_BLOCK,
-      mapOf(GENERATED_CODE_KEY to generatedCode, RETURN_TYPE_KEY to returnType))
+      mapOf(GENERATED_CODE_KEY to generatedCode))
   }
 
-  private fun updateReturnDraftBlock(
-    existingReturnDraftBlock: KtReturnExpression?,
-    newReturnDraftBlock: KtExpression,
+  private fun updateDraftBlock(
+    existingDraftBlock: KtCallExpression?,
+    newDraftBlock: KtExpression,
     newLine: PsiElement,
     element: PsiElement)
-    = when (existingReturnDraftBlock) {
-      null -> createElementParent(newReturnDraftBlock, newLine, element)
-      else -> existingReturnDraftBlock.replace(newReturnDraftBlock)
-    }
+    = when (existingDraftBlock) {
+      null -> createElementParent(newDraftBlock, newLine, element)
+      else -> existingDraftBlock.replace(newDraftBlock)
+    } as? KtCallExpression ?: error("Failed to create draft block")
 
 
-  private fun createElementParent(newReturnDraftBlock: KtExpression, newLine: PsiElement, element: PsiElement): PsiElement {
-    val createdElement = element.parent.addAfter(newReturnDraftBlock, element)
+  private fun createElementParent(newDraftBlock: KtExpression, newLine: PsiElement, element: PsiElement): PsiElement {
+    val createdElement = element.parent.addAfter(newDraftBlock, element)
     element.parent.addAfter(newLine, element)
     return createdElement
   }
@@ -68,7 +66,5 @@ class KtDraftExpressionWriter : DraftExpressionWriter {
   companion object {
     const val DRAFT_BLOCK = "DraftBlock.kt"
     const val GENERATED_CODE_KEY = "code"
-    const val RETURN_TYPE_KEY = "returnType"
-
   }
 }
