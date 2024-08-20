@@ -1,6 +1,5 @@
 package com.jetbrains.edu.jarvis.models
 
-
 data class DescriptionExpression(
   val functionSignature: FunctionSignature,
   val promptOffset: Int,
