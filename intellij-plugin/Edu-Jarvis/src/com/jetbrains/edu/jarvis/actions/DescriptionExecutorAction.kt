@@ -114,9 +114,9 @@ class DescriptionExecutorAction(private val element: PsiElement) : AnAction() {
 
       DescriptionToDraftHighlighter(project).setUp(
         descriptionExpression.promptOffset,
+        draftBodyOffset,
         descriptionToDraftLines,
         draftToDescriptionLines,
-        draftBodyOffset
       )
     }
   }
