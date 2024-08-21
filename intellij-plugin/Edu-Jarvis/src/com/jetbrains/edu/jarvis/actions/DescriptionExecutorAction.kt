@@ -1,6 +1,5 @@
 package com.jetbrains.edu.jarvis.actions
 
-import com.jetbrains.edu.jarvis.codegeneration.CodeGenerationState
 import com.intellij.notification.NotificationType.ERROR
 import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnAction
@@ -13,6 +12,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
 import com.jetbrains.edu.jarvis.DescriptionExpressionParser
 import com.jetbrains.edu.jarvis.DraftExpressionWriter
+import com.jetbrains.edu.jarvis.codegeneration.CodeGenerationState
 import com.jetbrains.edu.jarvis.codegeneration.CodeGenerator
 import com.jetbrains.edu.jarvis.grammar.GrammarParser
 import com.jetbrains.edu.jarvis.grammar.OffsetSentence
@@ -112,11 +112,15 @@ class DescriptionExecutorAction(private val element: PsiElement) : AnAction() {
 
     invokeLater {
       val generatedCode = codeGenerator.generatedCode
-      // TODO: reformat and improve the generated code
-      val draftBodyOffset = DraftExpressionWriter.addDraftExpression(project, element, generatedCode, element.language)
+      val draftExpression = DraftExpressionWriter.addDraftExpression(
+        project,
+        element,
+        generatedCode,
+        element.language
+      )
       DescriptionToCodeHighlighter(project).setUp(
-        descriptionExpression.promptOffset,
-        draftBodyOffset,
+        descriptionExpression,
+        draftExpression,
         codeGenerator.descriptionToCodeLines,
         codeGenerator.codeToDescriptionLines
       )
