@@ -4,21 +4,30 @@ import com.intellij.ide.util.PropertiesComponent
 import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.openapi.application.invokeAndWaitIfNeeded
+import com.intellij.openapi.application.runWriteAction
+import com.intellij.openapi.command.CommandProcessor
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.registry.Registry
+import com.intellij.openapi.util.text.StringUtil
 import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.openapi.vfs.writeBytes
+import com.intellij.psi.PsiDocumentManager
 import com.intellij.ui.EditorNotificationPanel
 import com.intellij.ui.InlineBanner
 import com.jetbrains.edu.learning.CourseInfoHolder
+import com.jetbrains.edu.learning.EduUtilsKt
 import com.jetbrains.edu.learning.course
 import com.jetbrains.edu.learning.courseDir
-import com.jetbrains.edu.learning.courseFormat.EduCourse
-import com.jetbrains.edu.learning.courseFormat.FrameworkLesson
-import com.jetbrains.edu.learning.courseFormat.Lesson
-import com.jetbrains.edu.learning.courseFormat.LessonContainer
+import com.jetbrains.edu.learning.courseFormat.*
+import com.jetbrains.edu.learning.courseFormat.ext.getDocument
+import com.jetbrains.edu.learning.courseFormat.ext.getVirtualFile
+import com.jetbrains.edu.learning.courseFormat.tasks.EduTask
+import com.jetbrains.edu.learning.courseFormat.tasks.OutputTask
+import com.jetbrains.edu.learning.courseFormat.tasks.Task
 import com.jetbrains.edu.learning.courseFormat.tasks.TheoryTask
 import com.jetbrains.edu.learning.courseGeneration.GeneratorUtils
 import com.jetbrains.edu.learning.github.PostToGithubActionProvider
@@ -61,6 +70,7 @@ class PostMarketplaceProjectToGitHub : DumbAwareAction() {
       val taskList = lesson.taskList
       val currentTask = lesson.currentTask() ?: taskList.first()
       val taskToNavigate = taskList.lastOrNull { it !is TheoryTask && it.isSolved } ?: currentTask
+      generateTests(project, taskToNavigate)
       NavigationUtils.navigateToTask(project, taskToNavigate, currentTask, showDialogIfConflict = false)
     }
     val excludedLessons = course.lessons - frameworkLessons
@@ -130,6 +140,49 @@ class PostMarketplaceProjectToGitHub : DumbAwareAction() {
       README_TEMPLATE_NAME,
       templateVariables
     )
+  }
+
+  private fun generateTests(project: Project, task: Task) { // generate them only for the last step as we push only last step
+    val invisibleTestFiles: List<TaskFile> = task.taskFiles.values.filter {
+      EduUtilsKt.isTestsFile(task, it.name) && !it.isVisible && (task is EduTask || task is OutputTask)
+    }
+    createTests(project, invisibleTestFiles)
+  }
+
+  private fun createTests(project: Project, testFiles: List<TaskFile>) {
+    invokeAndWaitIfNeeded {
+      testFiles.forEach { file ->
+        when (val contents = file.contents) {
+          is BinaryContents -> replaceFileBytes(project, file, contents.bytes)
+          is TextualContents -> replaceFileText(project, file, contents.text)
+          is UndeterminedContents -> replaceFileText(project, file, contents.textualRepresentation)
+        }
+      }
+    }
+  }
+
+  private fun replaceFileBytes(project: Project, file: TaskFile, bytes: ByteArray) {
+    CommandProcessor.getInstance().runUndoTransparentAction {
+      runWriteAction {
+        file.getVirtualFile(project)?.writeBytes(bytes)
+      }
+    }
+  }
+
+  private fun replaceFileText(project: Project, file: TaskFile, newText: String) {
+    val newDocumentText = StringUtil.convertLineSeparators(newText)
+    CommandProcessor.getInstance().runUndoTransparentAction {
+      runWriteAction {
+        val document = file.getDocument(project) ?: return@runWriteAction
+        CommandProcessor.getInstance().executeCommand(
+          project,
+          { document.setText(newDocumentText) },
+          EduCoreBundle.message("action.change.test.text"),
+          "Edu Actions"
+        )
+        PsiDocumentManager.getInstance(project).commitAllDocuments()
+      }
+    }
   }
 
   companion object {
