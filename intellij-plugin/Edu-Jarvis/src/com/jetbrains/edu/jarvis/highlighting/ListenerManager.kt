@@ -3,6 +3,7 @@ package com.jetbrains.edu.jarvis.highlighting
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
 import com.intellij.openapi.editor.Editor
+import com.intellij.openapi.editor.event.DocumentListener
 import com.intellij.openapi.editor.event.EditorMouseMotionListener
 import com.intellij.openapi.project.Project
 import com.jetbrains.edu.learning.selectedEditor
@@ -25,6 +26,7 @@ class ListenerManager(private val project: Project) {
   ) {
     when(listener) {
       is EditorMouseMotionListener -> editor?.addEditorMouseMotionListener(listener)
+      is DocumentListener -> editor?.document?.addDocumentListener(listener)
     }
     listeners.add(listener)
   }
@@ -32,6 +34,7 @@ class ListenerManager(private val project: Project) {
   private fun removeListener(listener: EventListener) {
     when(listener) {
       is EditorMouseMotionListener -> editor?.removeEditorMouseMotionListener(listener)
+      is DocumentListener -> editor?.document?.removeDocumentListener(listener)
     }
   }
 
