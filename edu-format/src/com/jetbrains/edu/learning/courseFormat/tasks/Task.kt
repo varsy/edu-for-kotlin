@@ -1,6 +1,7 @@
 package com.jetbrains.edu.learning.courseFormat.tasks
 
 import com.jetbrains.edu.learning.courseFormat.*
+import com.jetbrains.edu.learning.courseFormat.tasks.cognifire.PromptActions
 import java.util.*
 
 /**
@@ -29,6 +30,11 @@ abstract class Task : StudyItem {
   var descriptionText: String = ""
   var descriptionFormat: DescriptionFormat = DescriptionFormat.MD
   var feedbackLink: String? = null
+
+  /**
+   * Represents a collection of prompt actions.
+   */
+  val promptActions = PromptActions()
 
   /**
    * null means that behaviour for this particular Task hasn't been configured by a user and [Course.solutionsHidden] should be used instead

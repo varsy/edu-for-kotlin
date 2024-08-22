@@ -22,6 +22,7 @@
     <draftExpressionWriter language="kotlin" implementationClass="com.jetbrains.edu.kotlin.jarvis.psi.KtDraftExpressionWriter"/>
     <jarvisDslPackageCallChecker language="kotlin" implementationClass="com.jetbrains.edu.kotlin.jarvis.psi.KtJarvisDslPackageCallChecker"/>
     <draftApplier language="kotlin" implementationClass="com.jetbrains.edu.kotlin.jarvis.psi.KtDraftApplier"/>
+    <generatedCodeParser language="kotlin" implementationClass="com.jetbrains.edu.kotlin.jarvis.psi.KtGeneratedCodeParser"/>
   </extensions>
 
   <extensions defaultExtensionNs="com.intellij">
