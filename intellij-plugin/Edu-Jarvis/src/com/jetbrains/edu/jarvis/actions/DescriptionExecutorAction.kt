@@ -12,6 +12,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
 import com.jetbrains.edu.jarvis.DescriptionExpressionParser
 import com.jetbrains.edu.jarvis.DraftExpressionWriter
+import com.jetbrains.edu.jarvis.GeneratedCodeParser
 import com.jetbrains.edu.jarvis.codegeneration.CodeGenerationState
 import com.jetbrains.edu.jarvis.codegeneration.CodeGenerator
 import com.jetbrains.edu.jarvis.grammar.GrammarParser
@@ -23,7 +24,10 @@ import com.jetbrains.edu.jarvis.highlighting.grammar.GrammarHighlighter
 import com.jetbrains.edu.jarvis.messages.EduJarvisBundle
 import com.jetbrains.edu.jarvis.models.DescriptionExpression
 import com.jetbrains.edu.learning.actions.EduActionUtils
+import com.jetbrains.edu.learning.actions.EduActionUtils.getCurrentTask
+import com.jetbrains.edu.learning.courseFormat.tasks.cognifire.PromptCodeState
 import com.jetbrains.edu.learning.notification.EduNotificationManager
+import com.jetbrains.edu.learning.taskToolWindow.ui.TaskToolWindowView
 import com.jetbrains.educational.ml.core.exception.AiAssistantException
 
 /**
@@ -32,7 +36,7 @@ import com.jetbrains.educational.ml.core.exception.AiAssistantException
  *
  * @param element The PSI element associated with the `description` DSL that this action is supposed to execute.
  */
-class DescriptionExecutorAction(private val element: PsiElement) : AnAction() {
+class DescriptionExecutorAction(private val element: PsiElement, private val id: String) : AnAction() {
   override fun actionPerformed(e: AnActionEvent) {
     val project = e.project ?: error("Project was not found")
 
@@ -99,6 +103,10 @@ class DescriptionExecutorAction(private val element: PsiElement) : AnAction() {
         EduJarvisBundle.message("action.not.run.due.to.incorrect.grammar.title"),
         EduJarvisBundle.message("action.not.run.due.to.incorrect.grammar.text")
       )
+      project.getCurrentTask()?.let {
+        it.promptActions.updateAction(id, PromptCodeState.CodeFailed)
+        TaskToolWindowView.getInstance(project).updateCheckPanel(it)
+      }
     }
 
     return unparsableSentences
@@ -124,6 +132,13 @@ class DescriptionExecutorAction(private val element: PsiElement) : AnAction() {
         codeGenerator.descriptionToCodeLines,
         codeGenerator.codeToDescriptionLines
       )
+
+      val todoStrings = GeneratedCodeParser.parseGeneratedCode(project, generatedCode, element.language)
+      val state = if (todoStrings.isEmpty()) PromptCodeState.CodeSuccess else PromptCodeState.CodeFailed
+      project.getCurrentTask()?.let {
+        it.promptActions.updateAction(id, state)
+        TaskToolWindowView.getInstance(project).updateCheckPanel(it)
+      }
     }
   }
 
