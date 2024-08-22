@@ -151,6 +151,7 @@ class CheckPanel(private val project: Project, private val parentDisposable: Dis
 
   private fun updateCheckButtonWrapper(task: Task) {
     checkButtonWrapper.removeAll()
+    if (!task.promptActions.generatedSuccessfully()) return
     when (task) {
       is DataTask -> updateCheckButtonWrapper(task)
       is TheoryTask -> {}
