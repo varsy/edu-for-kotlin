@@ -13,6 +13,11 @@
                     dynamic="true">
       <with attribute="implementationClass" implements="com.jetbrains.edu.jarvis.DescriptionExpressionParser"/>
     </extensionPoint>
+    <extensionPoint qualifiedName="Educational.generatedCodeParser"
+                    beanClass="com.intellij.lang.LanguageExtensionPoint"
+                    dynamic="true">
+      <with attribute="implementationClass" implements="com.jetbrains.edu.jarvis.GeneratedCodeParser"/>
+    </extensionPoint>
     <extensionPoint qualifiedName="Educational.draftExpressionWriter"
                     beanClass="com.intellij.lang.LanguageExtensionPoint"
                     dynamic="true">
