@@ -1,4 +1,4 @@
-package com.jetbrains.edu.jarvis.highlighting.descriptiontodraft
+package com.jetbrains.edu.jarvis.highlighting.descriptiontocode
 
 import com.intellij.openapi.editor.event.EditorMouseEvent
 import com.intellij.openapi.editor.event.EditorMouseMotionListener
@@ -15,7 +15,7 @@ import com.jetbrains.edu.jarvis.highlighting.ListenerManager
  * @property project The current project.
  * @property highlighterManager The instance of HighlighterManager.
  */
-class DescriptionToDraftHighlighter(private val project: Project) {
+class DescriptionToCodeHighlighter(private val project: Project) {
 
   private val highlighterManager = HighlighterManager.getInstance(project)
 

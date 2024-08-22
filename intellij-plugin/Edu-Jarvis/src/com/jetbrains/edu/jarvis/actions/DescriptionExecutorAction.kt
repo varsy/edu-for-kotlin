@@ -116,8 +116,9 @@ class DescriptionExecutorAction(private val element: PsiElement) : AnAction() {
       val draftBodyOffset = DraftExpressionWriter.addDraftExpression(project, element, generatedCode, element.language)
       DescriptionToCodeHighlighter(project).setUp(
         descriptionExpression.promptOffset,
+        draftBodyOffset,
         codeGenerator.descriptionToCodeLines,
-        draftBodyOffset
+        codeGenerator.codeToDescriptionLines
       )
     }
   }
