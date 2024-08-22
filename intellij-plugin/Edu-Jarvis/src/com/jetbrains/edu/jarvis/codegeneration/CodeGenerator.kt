@@ -15,6 +15,11 @@ class CodeGenerator(descriptionExpression: DescriptionExpression) {
     .mapValues { descriptionGroup ->
       descriptionGroup.value.map { it.codeLineNumber }
     }
+  val codeToDescriptionLines = descriptionToCodeTranslation
+    .groupBy { it.codeLineNumber }
+    .mapValues { descriptionGroup ->
+      descriptionGroup.value.map { it.descriptionLineNumber }
+    }
   val generatedCode =
     descriptionToCodeTranslation
       .distinctBy { it.codeLineNumber }
