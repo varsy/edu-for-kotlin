@@ -22,19 +22,13 @@ data class NamedFunction(override val name: String, val numberOfArguments: Int) 
      * - `arguments = ""` -> a blank string -> return zero
      */
     fun getNumberOfArguments(arguments: String) = if (arguments.isNotBlank()) {
-      arguments.count { it == ARGUMENT_SEPARATOR } + arguments.countAnd() + 1
+      val argumentsWithoutQuotation = arguments.replace(QUOTATION_BLOCK, "X")
+      SEPARATOR_REGEX.findAll(argumentsWithoutQuotation).count() + 1
     }
     else 0
 
-    private fun String.countAnd() = (
-      AND_REGEX.findAll(this).count()
-      - AND_STRING_LITERAL.findAll(this).count()
-      - AND_IDENTIFIER.findAll(this).count()
-      )
-
-    private val AND_REGEX = "(?i)$AND".toRegex()
-    private val AND_STRING_LITERAL = "(?i)\"[^\"]*$AND[^\"]*\"".toRegex()
-    private val AND_IDENTIFIER = "(?i)`[^`]*$AND[^`]*`".toRegex()
+    private val SEPARATOR_REGEX = "(?i)(\\s+$AND\\s+|\\s*$ARGUMENT_SEPARATOR\\s*)+".toRegex()
+    private val QUOTATION_BLOCK = """'[^']*'|"[^"]*"|`[^`]*`""".toRegex()
   }
 
 }
