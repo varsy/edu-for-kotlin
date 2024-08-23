@@ -133,8 +133,11 @@ class DescriptionExecutorAction(private val element: PsiElement, private val id:
         codeGenerator.codeToDescriptionLines
       )
 
-      val todoStrings = GeneratedCodeParser.parseGeneratedCode(project, generatedCode, element.language)
-      val state = if (todoStrings.isEmpty()) PromptCodeState.CodeSuccess else PromptCodeState.CodeFailed
+      val state = if (GeneratedCodeParser.hasErrors(project, generatedCode, element.language)) {
+        PromptCodeState.CodeFailed
+      } else {
+        PromptCodeState.CodeSuccess
+      }
       project.getCurrentTask()?.let {
         it.promptActions.updateAction(id, state)
         TaskToolWindowView.getInstance(project).updateCheckPanel(it)
