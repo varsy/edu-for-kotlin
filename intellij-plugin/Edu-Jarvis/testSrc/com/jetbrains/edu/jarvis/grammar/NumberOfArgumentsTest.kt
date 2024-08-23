@@ -8,26 +8,26 @@ import org.junit.runners.Parameterized
 import kotlin.test.Test
 
 @RunWith(Parameterized::class)
-class NumberOfArgumentsTest(val sentence: String, val expectedNumberOfArguments: Int) : BasePlatformTestCase() {
+class NumberOfArgumentsTest(val sentence: String, val expectedArgumentsList: List<String>) : BasePlatformTestCase() {
   companion object {
     @JvmStatic
     @Parameterized.Parameters
     fun data() = listOf(
-      arrayOf("", 0),
-      arrayOf("1, 2, 3", 3),
-      arrayOf("1, 2 and 3", 3),
-      arrayOf("a,b,c,d", 4),
-      arrayOf("c and 2 and John Doe", 3),
-      arrayOf("""1, "two" and "three"""", 3),
-      arrayOf(""""hello and welcome" and `myVar`""", 2),
-      arrayOf("""mANDatory and Alice""", 2),
-      arrayOf("""A, B, and C""", 3),
-      arrayOf(""""a and b and c", Bob""", 2)
+      arrayOf("", emptyList<String>()),
+      arrayOf("1, 2, 3", listOf("1", "2", "3")),
+      arrayOf("1, 2 and 3", listOf("1", "2", "3")),
+      arrayOf("a,b,c,d", listOf("a", "b", "c", "d")),
+      arrayOf("c and 2 and John Doe", listOf("c", "2", "John Doe")),
+      arrayOf("""1, "two" and "three"""", listOf("1", "\"two\"", "\"three\"")),
+      arrayOf(""""hello and welcome" and `myVar`""", listOf("\"hello and welcome\"", "`myVar`")),
+      arrayOf("""mANDatory and Alice""", listOf("mANDatory", "Alice")),
+      arrayOf("""A, B, and C""", listOf("A", "B", "C")),
+      arrayOf(""""a and b and c", Bob""", listOf("\"a and b and c\"", "Bob")),
     )
   }
 
   @Test
   fun testGetNumberOfArguments() {
-    TestCase.assertEquals(expectedNumberOfArguments, NamedFunction.getNumberOfArguments(sentence))
+    TestCase.assertEquals(expectedArgumentsList, NamedFunction.getArgumentsList(sentence))
   }
 }
