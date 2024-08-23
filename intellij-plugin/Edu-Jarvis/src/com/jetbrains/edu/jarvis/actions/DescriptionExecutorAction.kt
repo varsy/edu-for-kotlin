@@ -103,10 +103,6 @@ class DescriptionExecutorAction(private val element: PsiElement, private val id:
         EduJarvisBundle.message("action.not.run.due.to.incorrect.grammar.title"),
         EduJarvisBundle.message("action.not.run.due.to.incorrect.grammar.text")
       )
-      project.getCurrentTask()?.let {
-        it.promptActions.updateAction(id, PromptCodeState.CodeFailed)
-        TaskToolWindowView.getInstance(project).updateCheckPanel(it)
-      }
     }
 
     return unparsableSentences
