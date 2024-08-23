@@ -9,7 +9,7 @@ import org.jetbrains.kotlin.idea.KotlinLanguage
 import org.jetbrains.kotlin.psi.KtCallExpression
 
 class KtGeneratedCodeParser : GeneratedCodeParser {
-  override fun parseGeneratedCode(project: Project, generatedCode: String): List<String> {
+  override fun hasErrors(project: Project, generatedCode: String): Boolean {
     val psiFactory = PsiFileFactory.getInstance(project)
     val file = psiFactory.createFileFromText("fileName.kt", KotlinLanguage.INSTANCE, generatedCode)
     val todoStrings = mutableListOf<String>()
@@ -23,7 +23,7 @@ class KtGeneratedCodeParser : GeneratedCodeParser {
         super.visitElement(element)
       }
     })
-    return todoStrings
+    return todoStrings.isNotEmpty()
   }
 
   companion object {

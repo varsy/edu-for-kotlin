@@ -7,12 +7,10 @@ package com.jetbrains.edu.learning.courseFormat.tasks.cognifire
  */
 class PromptActions {
 
-  private val actions: MutableSet<Prompt> = mutableSetOf()
+  private val actions: MutableSet<PromptAction> = mutableSetOf()
 
   fun addAction(elementId: String) {
-    if (actions.none { it.elementId == elementId }) {
-      actions.add(Prompt(elementId, PromptCodeState.PromptWritten))
-    }
+    actions.add(PromptAction(elementId, PromptCodeState.PromptWritten))
   }
 
   fun updateAction(elementId: String, state: PromptCodeState) {
@@ -24,7 +22,17 @@ class PromptActions {
   }
 }
 
-data class Prompt(
+data class PromptAction(
   val elementId: String,
   var state: PromptCodeState
-)
+) {
+
+  override fun hashCode(): Int = elementId.hashCode()
+
+  override fun equals(other: Any?): Boolean {
+    if (this === other) return true
+    if (javaClass != other?.javaClass) return false
+    other as PromptAction
+    return elementId == other.elementId
+  }
+}
