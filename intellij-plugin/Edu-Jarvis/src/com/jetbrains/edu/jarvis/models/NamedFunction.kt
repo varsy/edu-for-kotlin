@@ -4,13 +4,15 @@ import com.jetbrains.edu.jarvis.ErrorProcessor.Companion.AND
 import com.jetbrains.edu.jarvis.ErrorProcessor.Companion.ARGUMENT_SEPARATOR
 import com.jetbrains.edu.jarvis.highlighting.undefinedidentifier.AnnotatorRuleMatch
 
-data class NamedFunction(override val name: String, val numberOfArguments: Int) : NamedEntity {
+data class NamedFunction(override val name: String, val numberOfArguments: IntRange) : NamedEntity {
 
   constructor(target: AnnotatorRuleMatch)
     : this(
       target.identifier.value,
       getNumberOfArguments(target.arguments ?: "")
     )
+
+  fun isCompatibleWith(other: NamedFunction): Boolean = name == other.name && numberOfArguments.first >= other.numberOfArguments.first && numberOfArguments.last <= other.numberOfArguments.last
 
   companion object {
 
@@ -23,9 +25,10 @@ data class NamedFunction(override val name: String, val numberOfArguments: Int) 
      */
     fun getNumberOfArguments(arguments: String) = if (arguments.isNotBlank()) {
       val argumentsWithoutQuotation = arguments.replace(QUOTATION_BLOCK, "X")
-      SEPARATOR_REGEX.findAll(argumentsWithoutQuotation).count() + 1
+      val numberOfArguments = SEPARATOR_REGEX.findAll(argumentsWithoutQuotation).count() + 1
+      numberOfArguments..numberOfArguments
     }
-    else 0
+    else 0..0
 
     private val SEPARATOR_REGEX = "(?i)(\\s+$AND\\s+|\\s*$ARGUMENT_SEPARATOR\\s*)+".toRegex()
     private val QUOTATION_BLOCK = """'[^']*'|"[^"]*"|`[^`]*`""".toRegex()
