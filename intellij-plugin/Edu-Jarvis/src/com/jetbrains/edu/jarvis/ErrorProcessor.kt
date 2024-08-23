@@ -23,8 +23,8 @@ class ErrorProcessor(
         AnnotatorError.UNKNOWN_FUNCTION, arrayOf(namedFunction.name)
       )
 
-      namedFunction !in visibleFunctions -> AnnotatorParametrizedError(
-        AnnotatorError.WRONG_NUMBER_OF_ARGUMENTS, arrayOf(namedFunction.name, namedFunction.numberOfArguments)
+      visibleFunctions.none { namedFunction.isCompatibleWith(it) } -> AnnotatorParametrizedError(
+        AnnotatorError.WRONG_NUMBER_OF_ARGUMENTS, arrayOf(namedFunction.name, namedFunction.numberOfArguments.first)
       )
 
       else -> AnnotatorParametrizedError.NO_ERROR

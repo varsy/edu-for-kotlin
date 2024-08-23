@@ -25,9 +25,9 @@ class KtPromptErrorAnnotator : PromptErrorAnnotator<KClass<out PsiElement>> {
   override fun PsiElement.toNamedFunctionOrNull(): NamedFunction? {
     if (this !is KtNamedFunction) return null
     val functionName = name ?: return null
-    // TODO: Handle the case with default arguments
-    val numberOfParameters = getChildOfType<KtParameterList>()?.parameters?.size ?: 0
-    return NamedFunction(functionName, numberOfParameters)
+    val numberOfParameters = valueParameters.size
+    val numberOfDefaultParameters = valueParameters.filter { it.hasDefaultValue() }.size
+    return NamedFunction(functionName, (numberOfParameters-numberOfDefaultParameters)..numberOfParameters)
   }
 
   override fun PsiElement.toNamedVariableOrNull(): NamedVariable? {
