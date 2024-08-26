@@ -1,7 +1,7 @@
 package com.jetbrains.edu.learning.courseFormat.tasks
 
 import com.jetbrains.edu.learning.courseFormat.*
-import com.jetbrains.edu.learning.courseFormat.tasks.cognifire.PromptActions
+import com.jetbrains.edu.learning.courseFormat.tasks.cognifire.PromptActionManager
 import java.util.*
 
 /**
@@ -34,7 +34,7 @@ abstract class Task : StudyItem {
   /**
    * Represents a collection of prompt actions.
    */
-  val promptActions = PromptActions()
+  val promptActionManager = PromptActionManager()
 
   /**
    * null means that behaviour for this particular Task hasn't been configured by a user and [Course.solutionsHidden] should be used instead
