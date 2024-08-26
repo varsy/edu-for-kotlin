@@ -1,11 +1,11 @@
 package com.jetbrains.edu.learning.courseFormat.tasks.cognifire
 
 /**
- * The PromptActions class represents a collection of prompt actions.
+ * The PromptActionManager class represents a collection of prompt actions.
  * Each prompt action is associated with an element ID and a state (PromptWritten, CodeFailed, or CodeSuccess).
  * If all actions are generated successfully, the [generatedSuccessfully] returns true
  */
-class PromptActions {
+class PromptActionManager {
 
   private val actions: MutableSet<PromptAction> = mutableSetOf()
 

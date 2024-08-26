@@ -135,7 +135,7 @@ class DescriptionExecutorAction(private val element: PsiElement, private val id:
         PromptCodeState.CodeSuccess
       }
       project.getCurrentTask()?.let {
-        it.promptActions.updateAction(id, state)
+        it.promptActionManager.updateAction(id, state)
         TaskToolWindowView.getInstance(project).updateCheckPanel(it)
       }
     }
