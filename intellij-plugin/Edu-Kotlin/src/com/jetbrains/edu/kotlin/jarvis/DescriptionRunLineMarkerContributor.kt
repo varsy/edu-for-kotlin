@@ -24,7 +24,7 @@ class DescriptionRunLineMarkerContributor : RunLineMarkerContributor() {
       ) {
       val uniqueId = "${targetElement.containingFile.name}:${targetElement.textOffset}"
       val action = DescriptionExecutorAction(targetElement, uniqueId)
-      task.promptActions.addAction(uniqueId)
+      task.promptActionManager.addAction(uniqueId)
       TaskToolWindowView.getInstance(project).updateCheckPanel(task)
       return Info(
         AllIcons.Actions.Execute,
