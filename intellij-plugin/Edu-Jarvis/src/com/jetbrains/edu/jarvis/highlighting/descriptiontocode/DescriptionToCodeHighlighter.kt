@@ -46,20 +46,20 @@ class DescriptionToCodeHighlighter(private val project: Project) {
   ) {
     ListenerManager.getInstance(project).addListener(
       getMouseMotionListener(
-        descriptionExpression.promptOffset,
-        draftExpression.codeOffset,
+        descriptionExpression,
+        draftExpression,
         descriptionToDraftLines,
         draftToDescriptionLines
       )
     )
     ListenerManager.getInstance(project).addListener(
-      getDocumentListener(draftExpression)
+      getDocumentListener(draftExpression, descriptionExpression)
     )
   }
 
   private fun getMouseMotionListener(
-    descriptionOffset: Int,
-    draftBodyOffset: Int,
+    descriptionExpression: DescriptionExpression,
+    draftExpression: DraftExpression,
     descriptionToDraftLines: Map<Int, List<Int>>,
     draftToDescriptionLines: Map<Int, List<Int>>,
   ) = object : EditorMouseMotionListener {
@@ -67,8 +67,8 @@ class DescriptionToCodeHighlighter(private val project: Project) {
       val editor = e.editor
       val selectedLineWithOffset = editor.xyToLogicalPosition(e.mouseEvent.point).line
 
-      val descriptionLineOffset = editor.document.getLineNumber(descriptionOffset)
-      val draftLineOffset = editor.document.getLineNumber(draftBodyOffset)
+      val descriptionLineOffset = editor.document.getLineNumber(descriptionExpression.promptOffset)
+      val draftLineOffset = editor.document.getLineNumber(draftExpression.codeOffset)
 
       highlighterManager.clearDescriptionToDraftHighlighters()
 
@@ -89,9 +89,14 @@ class DescriptionToCodeHighlighter(private val project: Project) {
     }
   }
 
-  private fun getDocumentListener(draftExpression: DraftExpression) = object: DocumentListener {
+  private fun getDocumentListener(draftExpression: DraftExpression, descriptionExpression: DescriptionExpression) = object: DocumentListener {
     override fun documentChanged(event: DocumentEvent) {
-      if(event.offset !in draftExpression.startOffset..draftExpression.endOffset) return
+      if(event.offset !in draftExpression.startOffset..draftExpression.endOffset) {
+        val delta = event.newLength - event.oldLength
+        draftExpression.shiftOffset(delta)
+        descriptionExpression.shiftOffset(delta)
+        return
+      }
 
       highlighterManager.clearAll()
       listenerManager.clearAll()
