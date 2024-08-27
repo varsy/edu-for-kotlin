@@ -25,7 +25,7 @@ class DescriptionRunLineMarkerContributor : RunLineMarkerContributor() {
         JarvisDslPackageCallChecker.isCallFromJarvisDslPackage(element.parent.parent, element.language)
       ) {
       val function = PsiTreeUtil.getParentOfType(targetElement, KtNamedFunction::class.java) ?: return null
-      val uniqueId = "${targetElement.containingFile.name}:${function.name}"
+      val uniqueId = "${function.fqName}:${function.valueParameters.size}"
       val action = DescriptionExecutorAction(targetElement, uniqueId)
       task.promptActionManager.addAction(uniqueId)
       TaskToolWindowView.getInstance(project).updateCheckPanel(task)
