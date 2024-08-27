@@ -31,8 +31,9 @@ data class PromptAction(
 
   override fun equals(other: Any?): Boolean {
     if (this === other) return true
-    if (javaClass != other?.javaClass) return false
-    other as PromptAction
-    return elementId == other.elementId
+    return when (other as? PromptAction) {
+      null -> false
+      else elementId == other.elementId
+    }
   }
 }
