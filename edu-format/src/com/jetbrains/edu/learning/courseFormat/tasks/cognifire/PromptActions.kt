@@ -33,7 +33,7 @@ data class PromptAction(
     if (this === other) return true
     return when (other as? PromptAction) {
       null -> false
-      else elementId == other.elementId
+      else -> elementId == other.elementId
     }
   }
 }
