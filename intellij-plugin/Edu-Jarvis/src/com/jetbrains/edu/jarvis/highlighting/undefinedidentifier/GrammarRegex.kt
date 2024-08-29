@@ -20,6 +20,8 @@ object GrammarRegex {
   private const val ELSE = "else|otherwise"
   private const val THEN = "then"
   private const val LOOP = "loop|for|iterate"
+  private const val OVER = "over"
+  private const val ELEMENT = "element|elements|item|items|index|indices"
   private const val EACH = "each|every|all"
   private const val REPEAT = "repeat|continue"
   private const val UNTIL = "until"
@@ -134,6 +136,9 @@ object GrammarRegex {
    */
   val callFunction = ("(?i)(?:$CALL)(?:\\s+(?:$ARTICLE))?(?:\\s+(?:$FUNCTION))?\\s+$IDENTIFIER" +
                       "(\\s+$WITH(?:\\s+(?:$ARTICLE))?(?:\\s+(?:$ARGUMENT))?\\s+(?:$value)(?:(?:\\s*$SEPARATOR\\s*(?:$value))*(?:\\s+$AND\\s+(?:$value))?)?)?").toRegex()
+
+  val forLoop = ("(?i)(?:$LOOP)(?:\\s+(?:$OVER))?(?:\\s+(?:$EACH))?(?:\\s+(?:$ELEMENT))?\\s+(?:$IDENTIFIER)(?:\\s+(?:$IN))" +
+                "\\s+(?:$IDENTIFIER)(?:\\s+(?:$ARTICLE))?(?:\\s+(?:$DO))").toRegex()
 
   /**
    * Regex that matches an isolated code in the text. Example: "`foo123`".
