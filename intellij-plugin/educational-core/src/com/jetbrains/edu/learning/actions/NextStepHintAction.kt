@@ -54,9 +54,13 @@ import javax.swing.JComponent
 import javax.swing.JPanel
 
 class NextStepHintAction : ActionWithProgressIcon(), DumbAware {
+
   var actionTargetParent: JPanel? = null
+
   private var nextStepHintNotificationPanel: JComponent? = null
+
   private var highlighter: RangeHighlighter? = null
+
   private var getHintTask: GetHintTask? = null
 
   init {
@@ -111,7 +115,7 @@ class NextStepHintAction : ActionWithProgressIcon(), DumbAware {
         EduCoreBundle.message("action.Educational.NextStepHint.solution.after.changes")
       )
       val diffRequestChain = SimpleDiffRequestChain(request)
-      diffRequestChain.putUserData(ApplyCodeAction.VIRTUAL_FILE_PATH_LIST, listOf(virtualFile.path))
+      diffRequestChain.putUserData(ApplyCodeActionBase.VIRTUAL_FILE_PATH_LIST, listOf(virtualFile.path))
       diffRequestChain.putUserData(NEXT_STEP_HINT_DIFF_FLAG, true)
       DiffManager.getInstance().showDiff(project, diffRequestChain, DiffDialogHints.FRAME)
       createDiffCloseListener(project, diffRequestChain)
@@ -280,11 +284,14 @@ class NextStepHintAction : ActionWithProgressIcon(), DumbAware {
 
   companion object {
     @NonNls
-    const val ACTION_ID = "Educational.NextStepHint"
-    private const val PROCESS_MESSAGE = "Getting hint in progress"
-    private val HIGHLIGHTER_COLOR = JBColor(0xEFE5FF, 0x433358)
+    const val ACTION_ID: String = "Educational.NextStepHint"
 
     val NEXT_STEP_HINT_DIFF_FLAG: Key<Boolean> = Key.create("nextStepHintDiffFlag")
+
     val IS_ACCEPTED_HINT: Key<Boolean> = Key.create("isAcceptedHint")
+
+    private val HIGHLIGHTER_COLOR: JBColor = JBColor(0xEFE5FF, 0x433358)
+
+    private const val PROCESS_MESSAGE: String = "Getting hint in progress"
   }
 }
