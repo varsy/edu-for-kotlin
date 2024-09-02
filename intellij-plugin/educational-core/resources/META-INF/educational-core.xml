@@ -295,11 +295,6 @@
             class="com.jetbrains.edu.learning.actions.AcceptHintAction">
       <add-to-group group-id="Diff.ViewerToolbar" anchor="before" relative-to-action="Educational.Assistant.CancelHint"/>
     </action>
-    <action id="Educational.Assistant.CancelHint"
-            class="com.jetbrains.edu.learning.actions.CancelHintAction">
-      <add-to-group group-id="Diff.ViewerToolbar" anchor="last"/>
-    </action>
-
     <group id="Educational.CourseView.SecondaryActions">
       <action id="Educational.HideSolvedLessons"
               class="com.jetbrains.edu.learning.projectView.CourseViewPane$HideSolvedLessonsAction"/>

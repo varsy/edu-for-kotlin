@@ -66,7 +66,7 @@ open class CompareWithAnswerAction : DumbAwareAction() {
       return
     }
     val diffRequestChain = SimpleDiffRequestChain(requests)
-    diffRequestChain.putUserData(ApplyCodeAction.VIRTUAL_FILE_PATH_LIST, solutionFilePaths)
+    diffRequestChain.putUserData(ApplyCodeActionBase.VIRTUAL_FILE_PATH_LIST, solutionFilePaths)
     showSolution(state.project, diffRequestChain)
     EduCounterUsageCollector.solutionPeeked()
   }
