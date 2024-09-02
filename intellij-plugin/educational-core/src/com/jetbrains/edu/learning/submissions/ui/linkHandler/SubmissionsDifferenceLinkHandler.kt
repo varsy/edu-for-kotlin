@@ -11,7 +11,7 @@ import com.intellij.openapi.application.runInEdt
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.project.Project
 import com.intellij.ui.ColorUtil
-import com.jetbrains.edu.learning.actions.ApplyCodeAction
+import com.jetbrains.edu.learning.actions.ApplyCodeActionBase
 import com.jetbrains.edu.learning.courseFormat.ext.getVirtualFile
 import com.jetbrains.edu.learning.courseFormat.ext.isTestFile
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
@@ -87,7 +87,7 @@ class SubmissionsDifferenceLinkHandler(
       }
     }
     val diffRequestChain = SimpleDiffRequestChain(requests)
-    diffRequestChain.putUserData(ApplyCodeAction.VIRTUAL_FILE_PATH_LIST, submissionTaskFilePaths)
+    diffRequestChain.putUserData(ApplyCodeActionBase.VIRTUAL_FILE_PATH_LIST, submissionTaskFilePaths)
     if (project.isMarketplaceCourse() && isCommunity) {
       diffRequestChain.putCommunitySolution(task, submission)
       EduCounterUsageCollector.communitySolutionDiffOpened()

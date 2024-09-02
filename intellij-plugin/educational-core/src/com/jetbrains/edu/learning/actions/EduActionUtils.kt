@@ -1,9 +1,8 @@
 package com.jetbrains.edu.learning.actions
 
-import com.intellij.openapi.actionSystem.ActionManager
-import com.intellij.openapi.actionSystem.AnAction
-import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.actionSystem.PlatformDataKeys.LAST_ACTIVE_FILE_EDITOR
+import com.intellij.openapi.actionSystem.ex.ActionUtil
 import com.intellij.openapi.command.UndoConfirmationPolicy
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.command.undo.UndoManager
@@ -27,6 +26,7 @@ import java.util.concurrent.ExecutionException
 import java.util.concurrent.Future
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeoutException
+import javax.swing.JComponent
 
 object EduActionUtils {
   /**
@@ -116,6 +116,15 @@ object EduActionUtils {
       }
       catch (ignored: TimeoutException) {
       }
+    }
+  }
+
+  fun performAction(action: AnAction, component: JComponent, place: String, presentation: Presentation) {
+    val dataContext = ActionToolbar.getDataContextFor(component)
+    val event = AnActionEvent.createFromInputEvent(null, place, presentation, dataContext)
+
+    if (ActionUtil.lastUpdateAndCheckDumb(action, event, true)) {
+      ActionUtil.performActionDumbAwareWithCallbacks(action, event)
     }
   }
 
