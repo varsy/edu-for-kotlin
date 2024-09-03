@@ -1,34 +1,34 @@
 package com.jetbrains.edu.jarvis.codegeneration
 
 import com.intellij.openapi.progress.runBlockingCancellable
-import com.jetbrains.edu.jarvis.models.DescriptionExpression
-import com.jetbrains.educational.ml.cognifire.responses.DescriptionToCodeResponse
-import com.jetbrains.educational.ml.cognifire.core.DescriptionToCodeAssistant
+import com.jetbrains.edu.jarvis.models.PromptExpression
+import com.jetbrains.educational.ml.cognifire.core.PromptToCodeAssistant
+import com.jetbrains.educational.ml.cognifire.responses.PromptToCodeResponse
 
-class CodeGenerator(descriptionExpression: DescriptionExpression) {
-  private val enumeratedPromptLines = getEnumeratedPromptLines(descriptionExpression.prompt)
+class CodeGenerator(promptExpression: PromptExpression) {
+  private val enumeratedPromptLines = getEnumeratedPromptLines(promptExpression.prompt)
 
-  private val descriptionToCodeTranslation: DescriptionToCodeResponse =
-    getDescriptionToCode(descriptionExpression.functionSignature.toString(), enumeratedPromptLines)
-  val descriptionToCodeLines = descriptionToCodeTranslation
-    .groupBy { it.descriptionLineNumber }
-    .mapValues { descriptionGroup ->
-      descriptionGroup.value.map { it.codeLineNumber }
+  private val promptToCodeTranslation: PromptToCodeResponse =
+    getCodeFromPrompt(promptExpression.functionSignature.toString(), enumeratedPromptLines)
+  val promptToCodeLines = promptToCodeTranslation
+    .groupBy { it.promptLineNumber }
+    .mapValues { promptGroup ->
+      promptGroup.value.map { it.codeLineNumber }
     }
-  val codeToDescriptionLines = descriptionToCodeTranslation
+  val codeToPromptLines = promptToCodeTranslation
     .groupBy { it.codeLineNumber }
-    .mapValues { descriptionGroup ->
-      descriptionGroup.value.map { it.descriptionLineNumber }
+    .mapValues { promptGroup ->
+      promptGroup.value.map { it.promptLineNumber }
     }
   val generatedCode =
-    descriptionToCodeTranslation
+    promptToCodeTranslation
       .distinctBy { it.codeLineNumber }
       .joinToString(System.lineSeparator()) {
         it.generatedCodeLine
       }
 
-  private fun getDescriptionToCode(functionSignature: String, enumeratedPromptLines: String) = runBlockingCancellable {
-    DescriptionToCodeAssistant.generateCode(
+  private fun getCodeFromPrompt(functionSignature: String, enumeratedPromptLines: String) = runBlockingCancellable {
+    PromptToCodeAssistant.generateCode(
       enumeratedPromptLines,
       functionSignature
     )

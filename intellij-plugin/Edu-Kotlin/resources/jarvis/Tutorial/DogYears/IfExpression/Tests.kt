@@ -25,9 +25,9 @@ class Test : BaseIjTestClass() {
         setUp()
         myFixture.configureByText("Task.kt", sourceText)
 
-        val argument = getMethodCallArguments("description")?.firstOrNull()
+        val argument = getMethodCallArguments("prompt")?.firstOrNull()
         Assertions.assertNotNull(argument) {
-            "Please, create a description block."
+            "Please, create a prompt block."
         }
         Assertions.assertTrue(argument?.contains("if", true) == true) {
             "You can use the word 'if' when you want to indicate what should happen depending on the returned value."

@@ -21,12 +21,12 @@ class Test : BaseIjTestClass() {
     }
 
     @Test
-    fun testDescriptionBlock() {
+    fun testPromptBlock() {
         setUp()
         myFixture.configureByText("Task.kt", sourceText)
 
-        Assertions.assertNotNull(getMethodCallArguments("description")) {
-            "Please, create a description block."
+        Assertions.assertNotNull(getMethodCallArguments("prompt")) {
+            "Please, create a prompt block."
         }
     }
 }
