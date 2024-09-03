@@ -1,27 +1,27 @@
 package com.jetbrains.edu.jarvis.grammar
 
 import com.intellij.openapi.progress.runBlockingCancellable
-import com.jetbrains.edu.jarvis.models.DescriptionExpression
+import com.jetbrains.edu.jarvis.models.PromptExpression
 import com.jetbrains.educational.ml.cognifire.core.GrammarCheckerAssistant
 
 private const val DOT = "."
 
 /**
- * Parses the provided description.
+ * Parses provided Prompt.
  */
 object GrammarParser {
 
   /**
-   * Returns a list of OffsetSentences that are unparsable from the given DescriptionExpression.
+   * Returns a list of OffsetSentences that are unparsable from the given [PromptExpression].
    *
-   * @param descriptionExpression The DescriptionExpression containing the promptOffset and prompt.
+   * @param promptExpression The [PromptExpression] containing the promptOffset and prompt.
    * @return The list of unparsable OffsetSentences.
    */
-  fun getUnparsableSentences(descriptionExpression: DescriptionExpression): List<OffsetSentence> {
+  fun getUnparsableSentences(promptExpression: PromptExpression): List<OffsetSentence> {
     val sentences = mutableListOf<OffsetSentence>()
 
-    descriptionExpression.prompt.split(DOT)
-      .fold(descriptionExpression.promptOffset) { currentOffset, sentence ->
+    promptExpression.prompt.split(DOT)
+      .fold(promptExpression.contentOffset) { currentOffset, sentence ->
         sentences.add(OffsetSentence(sentence, currentOffset))
         currentOffset + sentence.length + 1
       }

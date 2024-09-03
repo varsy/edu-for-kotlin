@@ -16,8 +16,8 @@ fun findBlock(
 }
 
 
-internal fun PsiElement.isDescriptionBlock() = text.startsWith(DESCRIPTION) &&
-                                               JarvisDslPackageCallChecker.isCallFromJarvisDslPackage(this, this.language)
+internal fun PsiElement.isPromptBlock() = text.startsWith(PROMPT) &&
+                                          JarvisDslPackageCallChecker.isCallFromJarvisDslPackage(this, this.language)
 
-const val DESCRIPTION = "description"
-const val DRAFT = "draft"
+const val PROMPT = "prompt"
+const val CODE = "code"

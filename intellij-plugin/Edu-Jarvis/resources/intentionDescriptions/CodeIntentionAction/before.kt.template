@@ -1,0 +1,6 @@
+prompt("...") {
+    ...
+}
+code {
+    [generated code]
+}

@@ -10,8 +10,8 @@ import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.runBackgroundableTask
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
-import com.jetbrains.edu.jarvis.DescriptionExpressionParser
-import com.jetbrains.edu.jarvis.DraftExpressionWriter
+import com.jetbrains.edu.jarvis.PromptExpressionParser
+import com.jetbrains.edu.jarvis.CodeExpressionWriter
 import com.jetbrains.edu.jarvis.GeneratedCodeParser
 import com.jetbrains.edu.jarvis.codegeneration.CodeGenerationState
 import com.jetbrains.edu.jarvis.codegeneration.CodeGenerator
@@ -19,10 +19,10 @@ import com.jetbrains.edu.jarvis.grammar.GrammarParser
 import com.jetbrains.edu.jarvis.grammar.OffsetSentence
 import com.jetbrains.edu.jarvis.highlighting.HighlighterManager
 import com.jetbrains.edu.jarvis.highlighting.ListenerManager
-import com.jetbrains.edu.jarvis.highlighting.descriptiontocode.DescriptionToCodeHighlighter
+import com.jetbrains.edu.jarvis.highlighting.prompttocode.PromptToCodeHighlighter
 import com.jetbrains.edu.jarvis.highlighting.grammar.GrammarHighlighter
 import com.jetbrains.edu.jarvis.messages.EduJarvisBundle
-import com.jetbrains.edu.jarvis.models.DescriptionExpression
+import com.jetbrains.edu.jarvis.models.PromptExpression
 import com.jetbrains.edu.learning.actions.EduActionUtils
 import com.jetbrains.edu.learning.actions.EduActionUtils.getCurrentTask
 import com.jetbrains.edu.learning.courseFormat.tasks.cognifire.PromptCodeState
@@ -31,12 +31,12 @@ import com.jetbrains.edu.learning.taskToolWindow.ui.TaskToolWindowView
 import com.jetbrains.educational.ml.core.exception.AiAssistantException
 
 /**
- * An action class responsible for handling the running of `description` DSL (Domain-Specific Language) elements.
- * The main task is to parse the `description` DSL, generate code, process the code, and then append a `draft` DSL block with the generated code.
+ * An action class responsible for handling the running of `prompt` DSL (Domain-Specific Language) elements.
+ * The main task is to parse the `prompt` DSL, generate code, process the code, and then append a `code` DSL block with the generated code.
  *
- * @param element The PSI element associated with the `description` DSL that this action is supposed to execute.
+ * @param element The PSI element associated with the `prompt` DSL that this action is supposed to execute.
  */
-class DescriptionExecutorAction(private val element: PsiElement, private val id: String) : AnAction() {
+class PromptExecutorAction(private val element: PsiElement, private val id: String) : AnAction() {
   override fun actionPerformed(e: AnActionEvent) {
     val project = e.project ?: error("Project was not found")
 
@@ -45,27 +45,27 @@ class DescriptionExecutorAction(private val element: PsiElement, private val id:
     HighlighterManager.getInstance(project).clearAll()
     ListenerManager.getInstance(project).clearAll()
 
-    val descriptionExpression = DescriptionExpressionParser.parseDescriptionExpression(element, element.language)
-    if (descriptionExpression == null) {
+    val promptExpression = PromptExpressionParser.parsePromptExpression(element, element.language)
+    if (promptExpression == null) {
       project.notifyError(
         EduJarvisBundle.message("action.not.run.due.to.nested.block.title"),
         EduJarvisBundle.message("action.not.run.due.to.nested.block.text")
       )
       return
     }
-    executeAction(project, descriptionExpression)
+    executeAction(project, promptExpression)
   }
 
   override fun getActionUpdateThread() = ActionUpdateThread.BGT
-  private fun executeAction(project: Project, descriptionExpression: DescriptionExpression) = runBackgroundableTask(
+  private fun executeAction(project: Project, promptExpression: PromptExpression) = runBackgroundableTask(
     EduJarvisBundle.message("action.progress.bar.message"),
     project
   ) { indicator ->
     runLocked(project) {
       runWithProgressBar(indicator) {
-        val unparsableSentences = checkGrammar(descriptionExpression, project)
+        val unparsableSentences = checkGrammar(promptExpression, project)
         GrammarHighlighter.highlightAll(project, unparsableSentences)
-        handleCodeGeneration(project, descriptionExpression)
+        handleCodeGeneration(project, promptExpression)
       }
     }
   }
@@ -95,8 +95,8 @@ class DescriptionExecutorAction(private val element: PsiElement, private val id:
     execution()
   }
 
-  private fun checkGrammar(descriptionExpression: DescriptionExpression, project: Project): List<OffsetSentence> {
-    val unparsableSentences = GrammarParser.getUnparsableSentences(descriptionExpression)
+  private fun checkGrammar(promptExpression: PromptExpression, project: Project): List<OffsetSentence> {
+    val unparsableSentences = GrammarParser.getUnparsableSentences(promptExpression)
 
     if (unparsableSentences.isNotEmpty()) {
       project.notifyError(
@@ -110,23 +110,23 @@ class DescriptionExecutorAction(private val element: PsiElement, private val id:
 
   private fun handleCodeGeneration(
     project: Project,
-    descriptionExpression: DescriptionExpression,
+    promptExpression: PromptExpression,
   ) {
-    val codeGenerator = CodeGenerator(descriptionExpression)
+    val codeGenerator = CodeGenerator(promptExpression)
 
     invokeLater {
       val generatedCode = codeGenerator.generatedCode
-      val draftExpression = DraftExpressionWriter.addDraftExpression(
+      val codeExpression = CodeExpressionWriter.addCodeExpression(
         project,
         element,
         generatedCode,
         element.language
       )
-      DescriptionToCodeHighlighter(project).setUp(
-        descriptionExpression,
-        draftExpression,
-        codeGenerator.descriptionToCodeLines,
-        codeGenerator.codeToDescriptionLines
+      PromptToCodeHighlighter(project).setUp(
+        promptExpression,
+        codeExpression,
+        codeGenerator.promptToCodeLines,
+        codeGenerator.codeToPromptLines
       )
 
       val state = if (GeneratedCodeParser.hasErrors(project, generatedCode, element.language)) {
