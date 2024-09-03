@@ -4,8 +4,8 @@ import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiElement
-import com.jetbrains.edu.jarvis.DraftExpressionWriter
-import com.jetbrains.edu.jarvis.models.DraftExpression
+import com.jetbrains.edu.jarvis.CodeExpressionWriter
+import com.jetbrains.edu.jarvis.models.CodeExpression
 import com.jetbrains.edu.learning.courseGeneration.GeneratorUtils
 import org.jetbrains.kotlin.psi.KtCallExpression
 import org.jetbrains.kotlin.psi.KtExpression
@@ -13,14 +13,14 @@ import org.jetbrains.kotlin.psi.KtPsiFactory
 import org.jetbrains.kotlin.psi.psiUtil.endOffset
 import org.jetbrains.kotlin.psi.psiUtil.startOffset
 
-class KtDraftExpressionWriter : DraftExpressionWriter {
+class KtCodeExpressionWriter : CodeExpressionWriter {
 
-  override fun addDraftExpression(project: Project, element: PsiElement, generatedCode: String): DraftExpression {
+  override fun addCodeExpression(project: Project, element: PsiElement, generatedCode: String): CodeExpression {
     val psiFactory = KtPsiFactory(project)
 
-    val draftTemplate = getDraftTemplate(generatedCode)
+    val codeTemplate = getCodeTemplate(generatedCode)
 
-    val newDraftBlock = psiFactory.createExpression(draftTemplate) as? KtCallExpression ?: error("Failed to create draft block")
+    val newCodeBlock = psiFactory.createExpression(codeTemplate) as? KtCallExpression ?: error("Failed to create code block")
     val documentManager = PsiDocumentManager.getInstance(project)
     val newLine = psiFactory.createNewLine()
 
@@ -30,14 +30,14 @@ class KtDraftExpressionWriter : DraftExpressionWriter {
 
     WriteCommandAction.runWriteCommandAction(project, null, null, {
       documentManager.commitAllDocuments()
-      val existingDraftBlock = ElementSearch.findDraftElement(element) { it.nextSibling }
-      val resultingDraftBlock =
-        updateDraftBlock(existingDraftBlock, newDraftBlock, newLine, element)
+      val existingCodeBlock = ElementSearch.findCodeElement(element) { it.nextSibling }
+      val resultingCodeBlock =
+        updateCodeBlock(existingCodeBlock, newCodeBlock, newLine, element)
 
-      codeOffset = resultingDraftBlock.getCodeOffset()
-      endOffset = resultingDraftBlock.endOffset
+      codeOffset = resultingCodeBlock.getCodeOffset()
+      endOffset = resultingCodeBlock.endOffset
     })
-    return DraftExpression(
+    return CodeExpression(
       generatedCode,
       codeOffset,
       startOffset,
@@ -53,30 +53,30 @@ class KtDraftExpressionWriter : DraftExpressionWriter {
     ?.getLambdaExpression()
     ?.bodyExpression
 
-  private fun getDraftTemplate(generatedCode: String): String {
-    return GeneratorUtils.getInternalTemplateText(DRAFT_BLOCK,
+  private fun getCodeTemplate(generatedCode: String): String {
+    return GeneratorUtils.getInternalTemplateText(CODE_BLOCK,
       mapOf(GENERATED_CODE_KEY to generatedCode))
   }
 
-  private fun updateDraftBlock(
-    existingDraftBlock: KtCallExpression?,
-    newDraftBlock: KtExpression,
+  private fun updateCodeBlock(
+    existingCodeBlock: KtCallExpression?,
+    newCodeBlock: KtExpression,
     newLine: PsiElement,
     element: PsiElement)
-    = when (existingDraftBlock) {
-      null -> createElementParent(newDraftBlock, newLine, element)
-      else -> existingDraftBlock.replace(newDraftBlock)
-    } as? KtCallExpression ?: error("Failed to create draft block")
+    = when (existingCodeBlock) {
+      null -> createElementParent(newCodeBlock, newLine, element)
+      else -> existingCodeBlock.replace(newCodeBlock)
+    } as? KtCallExpression ?: error("Failed to create code block")
 
 
-  private fun createElementParent(newDraftBlock: KtExpression, newLine: PsiElement, element: PsiElement): PsiElement {
-    val createdElement = element.parent.addAfter(newDraftBlock, element)
+  private fun createElementParent(newCodeBlock: KtExpression, newLine: PsiElement, element: PsiElement): PsiElement {
+    val createdElement = element.parent.addAfter(newCodeBlock, element)
     element.parent.addAfter(newLine, element)
     return createdElement
   }
 
   companion object {
-    const val DRAFT_BLOCK = "DraftBlock.kt"
+    const val CODE_BLOCK = "CodeBlock.kt"
     const val GENERATED_CODE_KEY = "code"
   }
 }

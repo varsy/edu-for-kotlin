@@ -25,9 +25,9 @@ class Test : BaseIjTestClass() {
         setUp()
         myFixture.configureByText("Task.kt", sourceText)
 
-        val argument = getMethodCallArguments("description")?.firstOrNull()
+        val argument = getMethodCallArguments("prompt")?.firstOrNull()
         Assertions.assertNotNull(argument) {
-            "Please, create a description block."
+            "Please, create a prompt block."
         }
         val values = Regex("`[^`]*`").findAll(argument!!).map { it.value }
         Assertions.assertNotNull(values.find { it == "`verifyHumanYearsInput`" }) {

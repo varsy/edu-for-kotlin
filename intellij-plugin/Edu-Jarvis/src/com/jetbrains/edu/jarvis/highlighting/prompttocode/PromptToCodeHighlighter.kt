@@ -1,4 +1,4 @@
-package com.jetbrains.edu.jarvis.highlighting.descriptiontocode
+package com.jetbrains.edu.jarvis.highlighting.prompttocode
 
 import com.intellij.openapi.editor.event.DocumentEvent
 import com.intellij.openapi.editor.event.DocumentListener
@@ -9,11 +9,11 @@ import com.intellij.openapi.project.Project
 import com.intellij.ui.JBColor
 import com.jetbrains.edu.jarvis.highlighting.HighlighterManager
 import com.jetbrains.edu.jarvis.highlighting.ListenerManager
-import com.jetbrains.edu.jarvis.models.DescriptionExpression
-import com.jetbrains.edu.jarvis.models.DraftExpression
+import com.jetbrains.edu.jarvis.models.PromptExpression
+import com.jetbrains.edu.jarvis.models.CodeExpression
 
 /**
- * Class DescriptionToDraftHighlighter is responsible for highlighting the description and draft lines
+ * Class [PromptToCodeHighlighter] is responsible for highlighting the prompt and code lines
  * in an editor based on the mouse movement.
  *
  * @property project The current project.
@@ -21,7 +21,7 @@ import com.jetbrains.edu.jarvis.models.DraftExpression
  * @property listenerManager The instance of [ListenerManager].
  *
  */
-class DescriptionToCodeHighlighter(private val project: Project) {
+class PromptToCodeHighlighter(private val project: Project) {
 
   private val highlighterManager = HighlighterManager.getInstance(project)
   private val listenerManager = ListenerManager.getInstance(project)
@@ -31,70 +31,70 @@ class DescriptionToCodeHighlighter(private val project: Project) {
    * The method creates an anonymous class implementation of the EditorMouseMotionListener interface
    *  and registers it with the ListenerManager. The listener handles the logic for highlighting lines of code based on the mouse position.
    *
-   * @param descriptionExpression Represents the `description` block.
-   * @param draftExpression Represents the `draft` block.
-   * @param descriptionToDraftLines A map that contains the line numbers in the description section as the keys
-   * and a list of corresponding line numbers in the draft section as the values.
-   * @param draftToDescriptionLines A map that contains the line numbers in the draft section as the keys
-   * and a list of corresponding line numbers in the description section as the values.
+   * @param promptExpression Represents the `prompt` block.
+   * @param codeExpression Represents the `code` block.
+   * @param promptToCodeLines A map that contains the line numbers in the prompt section as the keys
+   * and a list of corresponding line numbers in the code section as the values.
+   * @param codeToPromptLines A map that contains the line numbers in the code section as the keys
+   * and a list of corresponding line numbers in the prompt section as the values.
    */
   fun setUp(
-    descriptionExpression: DescriptionExpression,
-    draftExpression: DraftExpression,
-    descriptionToDraftLines: Map<Int, List<Int>>,
-    draftToDescriptionLines: Map<Int, List<Int>>
+    promptExpression: PromptExpression,
+    codeExpression: CodeExpression,
+    promptToCodeLines: Map<Int, List<Int>>,
+    codeToPromptLines: Map<Int, List<Int>>
   ) {
     ListenerManager.getInstance(project).addListener(
       getMouseMotionListener(
-        descriptionExpression,
-        draftExpression,
-        descriptionToDraftLines,
-        draftToDescriptionLines
+        promptExpression,
+        codeExpression,
+        promptToCodeLines,
+        codeToPromptLines
       )
     )
     ListenerManager.getInstance(project).addListener(
-      getDocumentListener(draftExpression, descriptionExpression)
+      getDocumentListener(codeExpression, promptExpression)
     )
   }
 
   private fun getMouseMotionListener(
-    descriptionExpression: DescriptionExpression,
-    draftExpression: DraftExpression,
-    descriptionToDraftLines: Map<Int, List<Int>>,
-    draftToDescriptionLines: Map<Int, List<Int>>,
+    promptExpression: PromptExpression,
+    codeExpression: CodeExpression,
+    promptToCodeLines: Map<Int, List<Int>>,
+    codeToPromptLines: Map<Int, List<Int>>,
   ) = object : EditorMouseMotionListener {
     override fun mouseMoved(e: EditorMouseEvent) {
       val editor = e.editor
       val selectedLineWithOffset = editor.xyToLogicalPosition(e.mouseEvent.point).line
 
-      val descriptionLineOffset = editor.document.getLineNumber(descriptionExpression.promptOffset)
-      val draftLineOffset = editor.document.getLineNumber(draftExpression.codeOffset)
+      val promptLineOffset = editor.document.getLineNumber(promptExpression.contentOffset)
+      val codeLineOffset = editor.document.getLineNumber(codeExpression.contentOffset)
 
-      highlighterManager.clearDescriptionToDraftHighlighters()
+      highlighterManager.clearPromptToCodeHighlighters()
 
-      if(selectedLineWithOffset - descriptionLineOffset in descriptionToDraftLines.keys) showHighlighters(
-        selectedLineWithOffset - descriptionLineOffset,
-        descriptionLineOffset,
-        draftLineOffset,
-        descriptionToDraftLines,
-        draftToDescriptionLines
+      if(selectedLineWithOffset - promptLineOffset in promptToCodeLines.keys) showHighlighters(
+        selectedLineWithOffset - promptLineOffset,
+        promptLineOffset,
+        codeLineOffset,
+        promptToCodeLines,
+        codeToPromptLines
       )
-      else if (selectedLineWithOffset - draftLineOffset in draftToDescriptionLines.keys) showHighlighters(
-        selectedLineWithOffset - draftLineOffset,
-        draftLineOffset,
-        descriptionLineOffset,
-        draftToDescriptionLines,
-        descriptionToDraftLines
+      else if (selectedLineWithOffset - codeLineOffset in codeToPromptLines.keys) showHighlighters(
+        selectedLineWithOffset - codeLineOffset,
+        codeLineOffset,
+        promptLineOffset,
+        codeToPromptLines,
+        promptToCodeLines
       )
     }
   }
 
-  private fun getDocumentListener(draftExpression: DraftExpression, descriptionExpression: DescriptionExpression) = object: DocumentListener {
+  private fun getDocumentListener(codeExpression: CodeExpression, promptExpression: PromptExpression) = object: DocumentListener {
     override fun documentChanged(event: DocumentEvent) {
-      if(event.offset !in draftExpression.startOffset..draftExpression.endOffset) {
+      if(event.offset !in codeExpression.startOffset..codeExpression.endOffset) {
         val delta = event.newLength - event.oldLength
-        draftExpression.shiftOffset(delta)
-        descriptionExpression.shiftOffset(delta)
+        codeExpression.shiftOffset(delta)
+        promptExpression.shiftOffset(delta)
         return
       }
 
@@ -120,7 +120,7 @@ class DescriptionToCodeHighlighter(private val project: Project) {
 
   private fun addHighlighters(lines: List<Int>) = try {
     lines.forEach { line ->
-      highlighterManager.addDescriptionToDraftHighlighter(line, attributes)
+      highlighterManager.addPromptToCodeHighlighter(line, attributes)
     }
   }
   catch (_: IndexOutOfBoundsException) {

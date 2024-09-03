@@ -17,7 +17,7 @@ interface JarvisDslPackageCallChecker {
     fun isCallFromJarvisDslPackage(element: PsiElement, language: Language): Boolean {
       ThreadingAssertions.assertReadAccess()
       return EP_NAME.forLanguage(language)?.isCallFromJarvisDslPackage(element)
-      ?: error("Not supported to provide a draft expression for the ${language.displayName} language")
+      ?: error("Not supported to provide a `code` expression for the ${language.displayName} language")
     }
   }
 }

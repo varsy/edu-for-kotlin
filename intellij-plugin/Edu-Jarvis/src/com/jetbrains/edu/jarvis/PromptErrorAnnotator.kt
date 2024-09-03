@@ -12,28 +12,28 @@ import com.jetbrains.edu.jarvis.models.NamedFunction
 import com.jetbrains.edu.jarvis.models.NamedVariable
 
 /**
- * Highlights parts containing errors inside the `description` DSL element.
+ * Highlights parts containing errors inside the `prompt` DSL element.
  */
 
-interface DescriptionErrorAnnotator<T> : Annotator {
+interface PromptErrorAnnotator<T> : Annotator {
 
   override fun annotate(element: PsiElement, holder: AnnotationHolder) {
     if (!element.isRelevant()) return
-    val descriptionContent = getDescriptionContentOrNull(element) ?: return
-    applyAnnotation(descriptionContent, holder)
+    val promptContent = getPromptContentOrNull(element) ?: return
+    applyAnnotation(promptContent, holder)
   }
 
   /**
-   * Highlights incorrect parts found in the `descriptionContent`.
+   * Highlights incorrect parts found in the `promptContent`.
    */
   fun applyAnnotation(
-    descriptionContent: PsiElement,
+    promptContent: PsiElement,
     holder: AnnotationHolder
   ) =
-    getIncorrectParts(descriptionContent).forEach {
+    getIncorrectParts(promptContent).forEach {
       val errorRange = TextRange(
-        descriptionContent.startOffset + it.range.first,
-        descriptionContent.startOffset + it.range.last + 1
+        promptContent.startOffset + it.range.first,
+        promptContent.startOffset + it.range.last + 1
       )
       holder
         .newAnnotation(
@@ -138,9 +138,9 @@ interface DescriptionErrorAnnotator<T> : Annotator {
   fun getNamedFunctionClasses(): Array<T>
 
   /**
-   * Returns the [PsiElement] representing the description block.
-   * May return `null` if there is no description.
+   * Returns the [PsiElement] representing the prompt block.
+   * May return `null` if there is no prompt.
    */
-  fun getDescriptionContentOrNull(element: PsiElement): PsiElement?
+  fun getPromptContentOrNull(element: PsiElement): PsiElement?
 
 }

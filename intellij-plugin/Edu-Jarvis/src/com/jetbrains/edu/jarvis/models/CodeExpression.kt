@@ -1,15 +1,15 @@
 package com.jetbrains.edu.jarvis.models
 
-class DraftExpression (
+class CodeExpression (
   val code: String,
-  private val baseCodeOffset: Int,
+  private val baseContentOffset: Int,
   private val baseStartOffset: Int,
   private val baseEndOffset: Int
 ): CognifireExpression {
   override var dynamicOffset: Int = 0
 
-  val codeOffset: Int
-    get() = baseCodeOffset + dynamicOffset
+  override val contentOffset: Int
+    get() = baseContentOffset + dynamicOffset
 
   val startOffset: Int
     get() = baseStartOffset + dynamicOffset

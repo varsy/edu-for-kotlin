@@ -25,11 +25,11 @@ class Test : BaseIjTestClass() {
         setUp()
         myFixture.configureByText("Task.kt", sourceText)
 
-        Assertions.assertNull(getMethodCallArguments("description")) {
+        Assertions.assertNull(getMethodCallArguments("prompt")) {
             "Please, accept the suggested code by clicking on the bulb."
         }
 
-        Assertions.assertNull(getMethodCallArguments("draft")) {
+        Assertions.assertNull(getMethodCallArguments("code")) {
             "Please, accept the suggested code by clicking on the bulb."
         }
     }

@@ -414,6 +414,14 @@ tasks {
     customRunIdeTask(DataSpell)
     customRunIdeTask(Rider, riderVersion)
   }
+
+  clean {
+    delete("generated-src")
+  }
+
+  compileTestKotlin {
+    dependsOn("generateTestGrammarSource")
+  }
 }
 
 /**
@@ -1074,6 +1082,12 @@ project("Edu-Jarvis") {
       arguments = listOf("-visitor", "-package", "com.jetbrains.edu.jarvis.grammar.generated")
       outputDirectory = file("src/com/jetbrains/edu/jarvis/grammar/generated")
       source = fileTree("src/main/antlr")
+    }
+
+    generateTestGrammarSource {
+      maxHeapSize = "128m"
+      arguments = listOf("-visitor", "-package", "com.jetbrains.edu.jarvis.grammar.generated")
+      outputDirectory = file("generated-src/antlr/test")
     }
 
     compileKotlin {
