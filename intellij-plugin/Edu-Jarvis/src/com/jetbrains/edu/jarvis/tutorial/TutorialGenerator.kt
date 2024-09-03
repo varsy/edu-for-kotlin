@@ -180,7 +180,7 @@ class TutorialGenerator : DumbAwareAction(EduJarvisBundle.message("item.tutorial
         "DogYears", listOf(
           TutorialTask("Introduction", THEORY_TASK),
           TutorialTask("Function", EDU_TASK),
-          TutorialTask("DescriptionBlock", EDU_TASK),
+          TutorialTask("PromptBlock", EDU_TASK),
           TutorialTask("ReceivingUserInput", EDU_TASK),
           TutorialTask("VariableDeclaration", EDU_TASK),
           TutorialTask("FunctionCall", EDU_TASK),

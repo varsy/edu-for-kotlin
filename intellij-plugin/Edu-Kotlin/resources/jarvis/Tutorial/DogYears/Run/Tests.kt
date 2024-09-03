@@ -21,11 +21,11 @@ class Test : BaseIjTestClass() {
     }
 
     @Test
-    fun testDraftBlock() {
+    fun testCodeBlock() {
         setUp()
         myFixture.configureByText("Task.kt", sourceText)
 
-        Assertions.assertNotNull(getMethodCallArguments("draft")) {
+        Assertions.assertNotNull(getMethodCallArguments("code")) {
             "Please, run the function by clicking on the Run button."
         }
     }

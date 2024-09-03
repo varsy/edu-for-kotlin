@@ -18,17 +18,17 @@
     <!-- Hyperskill -->
     <configurator implementationClass="com.jetbrains.edu.kotlin.hyperskill.KtHyperskillConfigurator" language="kotlin" courseType="Hyperskill"/>
 
-    <descriptionExpressionParser language="kotlin" implementationClass="com.jetbrains.edu.kotlin.jarvis.psi.KtDescriptionExpressionParser"/>
-    <draftExpressionWriter language="kotlin" implementationClass="com.jetbrains.edu.kotlin.jarvis.psi.KtDraftExpressionWriter"/>
+    <promptExpressionParser language="kotlin" implementationClass="com.jetbrains.edu.kotlin.jarvis.psi.KtPromptExpressionParser"/>
+    <codeExpressionWriter language="kotlin" implementationClass="com.jetbrains.edu.kotlin.jarvis.psi.KtCodeExpressionWriter"/>
     <jarvisDslPackageCallChecker language="kotlin" implementationClass="com.jetbrains.edu.kotlin.jarvis.psi.KtJarvisDslPackageCallChecker"/>
-    <draftApplier language="kotlin" implementationClass="com.jetbrains.edu.kotlin.jarvis.psi.KtDraftApplier"/>
+    <codeApplier language="kotlin" implementationClass="com.jetbrains.edu.kotlin.jarvis.psi.KtCodeApplier"/>
     <generatedCodeParser language="kotlin" implementationClass="com.jetbrains.edu.kotlin.jarvis.psi.KtGeneratedCodeParser"/>
   </extensions>
 
   <extensions defaultExtensionNs="com.intellij">
-    <runLineMarkerContributor language="kotlin" implementationClass="com.jetbrains.edu.kotlin.jarvis.DescriptionRunLineMarkerContributor"/>
+    <runLineMarkerContributor language="kotlin" implementationClass="com.jetbrains.edu.kotlin.jarvis.PromptRunLineMarkerContributor"/>
     <completion.confidence language="kotlin" implementationClass="com.jetbrains.edu.kotlin.jarvis.completion.JarvisCompletionConfidence" id="kotlinStrings" order="first"/>
     <completion.contributor language="kotlin" implementationClass="com.jetbrains.edu.kotlin.jarvis.completion.JarvisCompletionContributor"/>
-    <annotator language="kotlin" implementationClass="com.jetbrains.edu.kotlin.jarvis.psi.KtDescriptionErrorAnnotator"/>
+    <annotator language="kotlin" implementationClass="com.jetbrains.edu.kotlin.jarvis.psi.KtPromptErrorAnnotator"/>
   </extensions>
 </idea-plugin>
