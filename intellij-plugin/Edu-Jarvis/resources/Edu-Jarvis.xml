@@ -8,39 +8,39 @@
   <resource-bundle>messages.EduJarvisBundle</resource-bundle>
 
   <extensionPoints>
-    <extensionPoint qualifiedName="Educational.descriptionExpressionParser"
+    <extensionPoint qualifiedName="Educational.promptExpressionParser"
                     beanClass="com.intellij.lang.LanguageExtensionPoint"
                     dynamic="true">
-      <with attribute="implementationClass" implements="com.jetbrains.edu.jarvis.DescriptionExpressionParser"/>
+      <with attribute="implementationClass" implements="com.jetbrains.edu.jarvis.PromptExpressionParser"/>
     </extensionPoint>
     <extensionPoint qualifiedName="Educational.generatedCodeParser"
                     beanClass="com.intellij.lang.LanguageExtensionPoint"
                     dynamic="true">
       <with attribute="implementationClass" implements="com.jetbrains.edu.jarvis.GeneratedCodeParser"/>
     </extensionPoint>
-    <extensionPoint qualifiedName="Educational.draftExpressionWriter"
+    <extensionPoint qualifiedName="Educational.codeExpressionWriter"
                     beanClass="com.intellij.lang.LanguageExtensionPoint"
                     dynamic="true">
-      <with attribute="implementationClass" implements="com.jetbrains.edu.jarvis.DraftExpressionWriter"/>
+      <with attribute="implementationClass" implements="com.jetbrains.edu.jarvis.CodeExpressionWriter"/>
     </extensionPoint>
     <extensionPoint qualifiedName="Educational.jarvisDslPackageCallChecker"
                     beanClass="com.intellij.lang.LanguageExtensionPoint"
                     dynamic="true">
       <with attribute="implementationClass" implements="com.jetbrains.edu.jarvis.JarvisDslPackageCallChecker"/>
     </extensionPoint>
-    <extensionPoint qualifiedName="Educational.draftApplier"
+    <extensionPoint qualifiedName="Educational.codeApplier"
                     beanClass="com.intellij.lang.LanguageExtensionPoint"
                     dynamic="true">
-      <with attribute="implementationClass" implements="com.jetbrains.edu.jarvis.DraftApplier"/>
+      <with attribute="implementationClass" implements="com.jetbrains.edu.jarvis.CodeApplier"/>
     </extensionPoint>
   </extensionPoints>
 
   <extensions defaultExtensionNs="com.intellij">
     <intentionAction>
       <language>kotlin</language>
-      <className>com.jetbrains.edu.jarvis.actions.DraftIntentionAction</className>
+      <className>com.jetbrains.edu.jarvis.actions.CodeIntentionAction</className>
       <categoryKey>jarvis.intention.category.name</categoryKey>
-      <descriptionDirectoryName>DraftIntentionAction</descriptionDirectoryName>
+      <descriptionDirectoryName>CodeIntentionAction</descriptionDirectoryName>
     </intentionAction>
   </extensions>
 

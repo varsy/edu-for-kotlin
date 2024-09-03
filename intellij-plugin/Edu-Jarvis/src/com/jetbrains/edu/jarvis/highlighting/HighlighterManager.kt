@@ -14,17 +14,17 @@ import com.jetbrains.edu.learning.selectedEditor
 @Service(Service.Level.PROJECT)
 class HighlighterManager(private val project: Project) {
   private val grammarHighlighters = mutableListOf<RangeHighlighter>()
-  private val descriptionToDraftHighlighters = mutableListOf<RangeHighlighter>()
+  private val promptToCodeHighlighters = mutableListOf<RangeHighlighter>()
 
   private val markupModel: MarkupModel?
     get() = project.selectedEditor?.markupModel
 
   fun clearAll() {
     grammarHighlighters.clearAndDispose()
-    descriptionToDraftHighlighters.clearAndDispose()
+    promptToCodeHighlighters.clearAndDispose()
   }
 
-  fun clearDescriptionToDraftHighlighters() = descriptionToDraftHighlighters.clearAndDispose()
+  fun clearPromptToCodeHighlighters() = promptToCodeHighlighters.clearAndDispose()
 
   private fun MutableList<RangeHighlighter>.clearAndDispose() {
     forEach {
@@ -44,13 +44,13 @@ class HighlighterManager(private val project: Project) {
       grammarHighlighters.add(it)
     }
 
-  fun addDescriptionToDraftHighlighter(lineNumber: Int, attributes: TextAttributes): RangeHighlighter? =
+  fun addPromptToCodeHighlighter(lineNumber: Int, attributes: TextAttributes): RangeHighlighter? =
     markupModel?.addLineHighlighter(
       lineNumber,
       HighlighterLayer.LAST,
       attributes
     )?.also {
-      descriptionToDraftHighlighters.add(it)
+      promptToCodeHighlighters.add(it)
     }
 
   companion object {

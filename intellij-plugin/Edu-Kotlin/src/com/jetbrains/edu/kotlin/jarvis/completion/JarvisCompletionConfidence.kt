@@ -10,14 +10,14 @@ import org.jetbrains.kotlin.psi.KtLiteralStringTemplateEntry
 
 /**
  * Decides whether the autocomplete functionality should be skipped or not within a given context for the Jarvis application.
- * If the current element is part of a string literal in a `description` method call, the autocomplete functionality shouldn't be skipped.
+ * If the current element is part of a string literal in a `prompt` method call, the autocomplete functionality shouldn't be skipped.
  *
  * @see CompletionConfidence
  */
 class JarvisCompletionConfidence : CompletionConfidence() {
   override fun shouldSkipAutopopup(contextElement: PsiElement, psiFile: PsiFile, offset: Int): ThreeState {
-    val descriptionBlock = ElementSearch.findDescriptionElement(contextElement) { it.parent }
-    if (descriptionBlock != null && contextElement.parent is KtLiteralStringTemplateEntry) {
+    val promptBlock = ElementSearch.findPromptElement(contextElement) { it.parent }
+    if (promptBlock != null && contextElement.parent is KtLiteralStringTemplateEntry) {
       return ThreeState.NO
     }
 
