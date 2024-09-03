@@ -222,7 +222,11 @@ class NextStepHintAction : ActionWithProgressIcon(), DumbAware {
       )
       task.status = CheckStatus.Unchecked
       TaskToolWindowView.getInstance(project).updateCheckPanel(task)
-      val nextStepHintNotification = NextStepHintNotificationFrame(textToShow, action, actionTargetParent) { rejectHint(task) }
+      val nextStepHintNotification = NextStepHintNotificationFrame(textToShow, action, actionTargetParent).apply {
+        onClosed {
+          rejectHint(task)
+        }
+      }
       nextStepHintNotificationPanel = nextStepHintNotification.rootPane
       nextStepHintNotificationPanel?.let { actionTargetParent?.add(it, BorderLayout.NORTH) }
     }
