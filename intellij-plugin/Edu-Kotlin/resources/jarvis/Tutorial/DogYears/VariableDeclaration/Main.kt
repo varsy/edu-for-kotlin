@@ -1,9 +1,9 @@
 package jetbrains.course.tutorial.dog.years
 
-import org.jetbrains.academy.jarvis.dsl.description
+import org.jetbrains.academy.jarvis.dsl.*
 
 fun calculateDogAgeInDogYears() {
-  description("""
+  prompt("""
         Get the user input and save the result to a variable named `humanYears`.
     """.trimIndent())
 }

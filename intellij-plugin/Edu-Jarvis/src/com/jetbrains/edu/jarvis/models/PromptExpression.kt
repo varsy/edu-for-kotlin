@@ -1,15 +1,15 @@
 package com.jetbrains.edu.jarvis.models
 
-class DescriptionExpression(
+class PromptExpression(
   val functionSignature: FunctionSignature,
-  private val basePromptOffset: Int,
+  private val baseContentOffset: Int,
   val prompt: String,
   val code: String
 ) : CognifireExpression {
   override var dynamicOffset: Int = 0
 
-  val promptOffset: Int
-    get() = basePromptOffset + dynamicOffset
+  override val contentOffset: Int
+    get() = baseContentOffset + dynamicOffset
 
   override fun shiftOffset(delta: Int) {
     dynamicOffset += delta
