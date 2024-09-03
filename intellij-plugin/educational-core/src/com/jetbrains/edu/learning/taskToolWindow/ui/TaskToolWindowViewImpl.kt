@@ -280,6 +280,14 @@ class TaskToolWindowViewImpl(project: Project) : TaskToolWindowView(project), Da
     tabManager.descriptionTab.addInlineBanner(inlineBanner)
   }
 
+  override fun addInlineBannerToCheckPanel(inlineBanner: InlineBanner) {
+    checkPanel.addHint(inlineBanner)
+  }
+
+  override fun removeInlineBannerFromCheckPanel(inlineBanner: InlineBanner) {
+    checkPanel.removeHint(inlineBanner)
+  }
+
   override fun dispose() {}
 
   companion object {

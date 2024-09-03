@@ -40,6 +40,8 @@ abstract class TaskToolWindowView(val project: Project) : LightTestAware {
   abstract fun checkStarted(task: Task, startSpinner: Boolean = false)
   abstract fun checkFinished(task: Task, checkResult: CheckResult)
   abstract fun addInlineBanner(inlineBanner: InlineBanner)
+  abstract fun addInlineBannerToCheckPanel(inlineBanner: InlineBanner)
+  abstract fun removeInlineBannerFromCheckPanel(inlineBanner: InlineBanner)
 
   @TestOnly
   override fun cleanUpState() {

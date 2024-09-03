@@ -31,4 +31,6 @@ class MockTaskToolWindowView(project: Project) : TaskToolWindowView(project) {
   override fun checkStarted(task: Task, startSpinner: Boolean) {}
   override fun checkFinished(task: Task, checkResult: CheckResult) {}
   override fun addInlineBanner(inlineBanner: InlineBanner) {}
+  override fun addInlineBannerToCheckPanel(inlineBanner: InlineBanner) {}
+  override fun removeInlineBannerFromCheckPanel(inlineBanner: InlineBanner) {}
 }
