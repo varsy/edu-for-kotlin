@@ -22,13 +22,14 @@ class KtPromptErrorAnnotator : PromptErrorAnnotator<KClass<out PsiElement>> {
 
   override fun PsiElement.isRelevant() = isPromptBlock()
 
-  override fun PsiElement.toNamedFunctionOrNull(): NamedFunction? {
-    if (this !is KtNamedFunction) return null
-    val functionName = name ?: return null
-    val numberOfParameters = valueParameters.size
-    val numberOfDefaultParameters = valueParameters.filter { it.hasDefaultValue() }.size
-    return NamedFunction(functionName, (numberOfParameters-numberOfDefaultParameters)..numberOfParameters)
-  }
+  override fun PsiElement.toNamedFunctionOrNull() =
+    (this as? KtNamedFunction)?.let {
+      NamedFunction(
+        name ?: return null,
+        valueParameters.filter { it.hasDefaultValue() }.size..valueParameters.size,
+        valueParameters.map { it.name ?: it.text }
+      )
+    }
 
   override fun PsiElement.toNamedVariableOrNull(): NamedVariable? {
     return when (this) {
