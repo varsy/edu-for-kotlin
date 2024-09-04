@@ -8,7 +8,7 @@ import org.junit.runners.Parameterized
 import kotlin.test.Test
 
 @RunWith(Parameterized::class)
-class NumberOfArgumentsTest(val sentence: String, val expectedArgumentsList: List<String>) : BasePlatformTestCase() {
+class NumberOfArgumentsTest(private val sentence: String, private val expectedArgumentsList: List<String>) : BasePlatformTestCase() {
   companion object {
     @JvmStatic
     @Parameterized.Parameters
@@ -28,6 +28,6 @@ class NumberOfArgumentsTest(val sentence: String, val expectedArgumentsList: Lis
 
   @Test
   fun testGetNumberOfArguments() {
-    TestCase.assertEquals(expectedArgumentsList, NamedFunction.getArgumentsList(sentence))
+    TestCase.assertEquals(expectedArgumentsList, NamedFunction.getArguments(sentence))
   }
 }

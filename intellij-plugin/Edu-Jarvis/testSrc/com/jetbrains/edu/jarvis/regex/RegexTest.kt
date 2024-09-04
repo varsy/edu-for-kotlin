@@ -1,7 +1,7 @@
 package com.jetbrains.edu.jarvis.regex
 
 import org.junit.Assert.assertFalse
-import org.junit.Assert.assertTrue
+import kotlin.test.assertEquals
 
 /**
  * Base class for testing regular expressions.
@@ -27,7 +27,7 @@ interface RegexTest {
     shouldNotMatch().forEach { assertFalse(regex.matches(it)) }
 
   fun runTestShouldMatch() =
-    shouldMatch().forEach { assertTrue(regex.find(it.input)!!.groups.values() == it.answer) }
+    shouldMatch().forEach { assertEquals(it.answer, regex.find(it.input)!!.groups.values()) }
 
   fun MatchGroupCollection.values() = this.mapNotNull { it?.value }.drop(1)
 
@@ -38,6 +38,4 @@ interface RegexTest {
     const val MAX_IDENTIFIER_NAME_LENGTH = 30
 
   }
-
-
 }
