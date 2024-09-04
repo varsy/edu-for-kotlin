@@ -27,6 +27,7 @@ import com.jetbrains.edu.learning.statistics.EduCounterUsageCollector
 import com.jetbrains.edu.learning.stepik.hyperskill.HYPERSKILL_SOLUTIONS_ANCHOR
 import com.jetbrains.edu.learning.stepik.hyperskill.hyperskillTaskLink
 import org.jetbrains.annotations.NonNls
+import org.jetbrains.annotations.VisibleForTesting
 import java.util.*
 
 open class CompareWithAnswerAction : DumbAwareAction() {
@@ -70,6 +71,7 @@ open class CompareWithAnswerAction : DumbAwareAction() {
     EduCounterUsageCollector.solutionPeeked()
   }
 
+  @VisibleForTesting
   protected open fun showSolution(project: Project, diffRequestChain: SimpleDiffRequestChain) {
     DiffManager.getInstance().showDiff(project, diffRequestChain, DiffDialogHints.FRAME)
   }
