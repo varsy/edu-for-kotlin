@@ -142,5 +142,4 @@ interface PromptErrorAnnotator<T> : Annotator {
    * May return `null` if there is no prompt.
    */
   fun getPromptContentOrNull(element: PsiElement): PsiElement?
-
 }
