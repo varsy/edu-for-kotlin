@@ -52,7 +52,7 @@ object GrammarRegex {
   private const val WITH = "with"
   private const val GET = "get|gets|receive|receives|obtain|obtains"
   private const val NUMBER = "[0-9]+"
-  private const val STRING = "\"[^\\r\\n]+\""
+  private const val STRING = "\"[^\\r\\n\"]+\""
   private const val IDENTIFIER = "`([A-Za-z_][A-Za-z0-9_]*)`"
   private const val NO_CAPTURE_IDENTIFIER = "`[A-Za-z_][A-Za-z0-9_]*`"
   private const val CODE = "`[^`\\r\\n]+`"
@@ -63,7 +63,7 @@ object GrammarRegex {
     STRING,
     NO_CAPTURE_IDENTIFIER,
     BOOL
-  ).joinToString("|")
+  ).joinToString("|", prefix = "(?:", postfix = ")")
 
   private val arbitraryText = listOf(
     ARTICLE,
@@ -134,11 +134,16 @@ object GrammarRegex {
   /**
    * Regex that matches a function call. Example: "Call the function `foo` with 1 and 3".
    */
-  val callFunction = ("(?i)(?:$CALL)(?:\\s+(?:$ARTICLE))?(?:\\s+(?:$FUNCTION))?\\s+$IDENTIFIER" +
-                      "(\\s+$WITH(?:\\s+(?:$ARTICLE))?(?:\\s+(?:$ARGUMENT))?\\s+(?:$value)(?:(?:\\s*$SEPARATOR\\s*(?:$value))*(?:\\s+$AND\\s+(?:$value))?)?)?").toRegex()
+  val callFunction = (
+    "(?i)(?:$CALL)(?:\\s+(?:$ARTICLE))?(?:\\s+(?:$FUNCTION))?\\s+$IDENTIFIER" +
+    "(?:(?:\\s+$WITH(?:\\s+(?:$ARTICLE))?(?:\\s+(?:$ARGUMENT))?)?\\s+($value(?:(?:\\s+$AND\\s+|\\s*$SEPARATOR\\s*)$value)*))?"
+                     ).toRegex()
 
+  /**
+   * Regex that matches a loop expression. Example: ``For each `i` in the `array` ``.
+   */
   val forLoop = ("(?i)(?:$LOOP)(?:\\s+(?:$OVER))?(?:\\s+(?:$EACH))?(?:\\s+(?:$ELEMENT))?\\s+(?:$IDENTIFIER)(?:\\s+(?:$IN))" +
-                "\\s+(?:$IDENTIFIER)(?:\\s+(?:$ARTICLE))?(?:\\s+(?:$DO))").toRegex()
+                 "\\s+(?:$IDENTIFIER)(?:\\s+(?:$ARTICLE))?(?:\\s+(?:$DO))").toRegex()
 
   /**
    * Regex that matches an isolated code in the text. Example: "`foo123`".
