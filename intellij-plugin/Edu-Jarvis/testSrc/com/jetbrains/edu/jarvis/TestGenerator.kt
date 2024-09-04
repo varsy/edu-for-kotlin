@@ -2,7 +2,12 @@ package com.jetbrains.edu.jarvis
 
 import com.jetbrains.edu.jarvis.highlighting.undefinedidentifier.GrammarRegex.getCallSynonyms
 import com.jetbrains.edu.jarvis.highlighting.undefinedidentifier.GrammarRegex.getCreateSynonyms
+import com.jetbrains.edu.jarvis.highlighting.undefinedidentifier.GrammarRegex.getDataStructureSynonyms
+import com.jetbrains.edu.jarvis.highlighting.undefinedidentifier.GrammarRegex.getEachSynonyms
+import com.jetbrains.edu.jarvis.highlighting.undefinedidentifier.GrammarRegex.getElementSynonyms
 import com.jetbrains.edu.jarvis.highlighting.undefinedidentifier.GrammarRegex.getFunctionSynonyms
+import com.jetbrains.edu.jarvis.highlighting.undefinedidentifier.GrammarRegex.getLoopSynonyms
+import com.jetbrains.edu.jarvis.highlighting.undefinedidentifier.GrammarRegex.getOverSynonyms
 import com.jetbrains.edu.jarvis.regex.TestAnswer
 
 object TestGenerator {
@@ -49,4 +54,21 @@ object TestGenerator {
       listOf(functionName)
     )
   }
+
+  /**
+   * Generates a sentence interpreted as a loop expression.
+   * Example of a generated string: ``For each `i` in the `array` ``.
+   */
+  fun generateLoopExpression(nameLength: Int): TestAnswer {
+    val identifier = generateIdentifier(nameLength)
+    val data = generateIdentifier(nameLength)
+    return TestAnswer(
+      "${getLoopSynonyms().random()} ${getOverSynonyms().withEmptyStringAndRandom()}" +
+      " ${getEachSynonyms().withEmptyStringAndRandom()} ${getElementSynonyms().withEmptyStringAndRandom()}" +
+      " `$identifier` in ${listOf(EMPTY_STRING, THE).random()} ${getDataStructureSynonyms().withEmptyStringAndRandom()} `${data}`",
+      listOf(identifier, data)
+    )
+  }
+
+  private fun List<String>.withEmptyStringAndRandom(): String = (this + EMPTY_STRING).random()
 }

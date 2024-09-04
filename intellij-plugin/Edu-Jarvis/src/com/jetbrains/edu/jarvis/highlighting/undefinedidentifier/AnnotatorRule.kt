@@ -2,7 +2,7 @@ package com.jetbrains.edu.jarvis.highlighting.undefinedidentifier
 
 import com.jetbrains.edu.jarvis.highlighting.undefinedidentifier.GrammarRegex.callFunction
 import com.jetbrains.edu.jarvis.highlighting.undefinedidentifier.GrammarRegex.createVariable
-import com.jetbrains.edu.jarvis.highlighting.undefinedidentifier.GrammarRegex.forLoop
+import com.jetbrains.edu.jarvis.highlighting.undefinedidentifier.GrammarRegex.loopExpression
 import com.jetbrains.edu.jarvis.highlighting.undefinedidentifier.GrammarRegex.isolatedCode
 import com.jetbrains.edu.jarvis.highlighting.undefinedidentifier.GrammarRegex.saveVariable
 import com.jetbrains.edu.jarvis.highlighting.undefinedidentifier.GrammarRegex.setVariable
@@ -18,6 +18,6 @@ enum class AnnotatorRule(val regex: Regex) {
   SET_VARIABLE(setVariable),
   SAVE_VARIABLE(saveVariable),
   CALL_FUNCTION(callFunction),
-  FOR_LOOP(forLoop),
+  LOOP_EXPRESSION(loopExpression),
   ISOLATED_CODE(isolatedCode),
 }

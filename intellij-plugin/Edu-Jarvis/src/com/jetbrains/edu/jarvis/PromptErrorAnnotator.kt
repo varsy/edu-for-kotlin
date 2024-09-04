@@ -105,7 +105,7 @@ interface PromptErrorAnnotator<T> : Annotator {
   ): AnnotatorParametrizedError {
     return when (rule) {
       AnnotatorRule.STORE_VARIABLE, AnnotatorRule.CREATE_VARIABLE,
-      AnnotatorRule.SET_VARIABLE, AnnotatorRule.SAVE_VARIABLE, AnnotatorRule.FOR_LOOP -> {
+      AnnotatorRule.SET_VARIABLE, AnnotatorRule.SAVE_VARIABLE, AnnotatorRule.LOOP_EXPRESSION -> {
         processor.visibleVariables.add(NamedVariable(target.identifier.value))
         AnnotatorParametrizedError.NO_ERROR
       }
