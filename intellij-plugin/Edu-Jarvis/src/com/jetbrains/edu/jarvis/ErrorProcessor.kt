@@ -24,9 +24,9 @@ class ErrorProcessor(
       )
 
       visibleFunctions.none { namedFunction.isCompatibleWith(it) } -> {
-        val commaSeparatedArgs = namedFunction.arguments?.joinToString(", ")?.let { ": $it" } ?: ""
         AnnotatorParametrizedError(
-          AnnotatorError.WRONG_NUMBER_OF_ARGUMENTS, arrayOf(namedFunction.name, namedFunction.numberOfArguments.first, commaSeparatedArgs)
+          AnnotatorError.WRONG_NUMBER_OF_ARGUMENTS,
+          arrayOf(namedFunction.name, namedFunction.numberOfArguments.first, namedFunction.argumentsToString())
         )
       }
 
