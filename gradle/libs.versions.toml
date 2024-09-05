@@ -22,10 +22,10 @@ kotlin-stdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib", versio
 kotlinx-serialization = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version = "1.6.2" }
 educational-ml-library-core = { group = "com.jetbrains.educational.ml", name = "educational-ml-library-core", version.ref = "educational-ml-library" }
 educational-ml-library-theory-lookup = { group = "com.jetbrains.educational.ml", name = "educational-ml-library-theory-lookup", version.ref = "educational-ml-library" }
+languagetool = { group = "org.languagetool", name = "language-en", version = "6.4" }
 logging-interceptor = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "okhttp" }
 okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp" }
 retrofit = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" }
-stanford-corenlp = { group = "edu.stanford.nlp", name = "stanford-corenlp", version = "4.5.7" }
 twitter4j-core = { group = "org.twitter4j", name = "twitter4j-core", version = "4.0.7" }
 twitter4j-v2 = { group = "io.github.takke", name = "jp.takke.twitter4j-v2", version = "1.4.2" }
 

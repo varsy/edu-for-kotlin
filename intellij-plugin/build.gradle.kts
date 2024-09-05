@@ -201,8 +201,12 @@ allprojects {
 
     implementationWithoutKotlin(rootProject.libs.educational.ml.library.core)
     implementationWithoutKotlin(rootProject.libs.educational.ml.library.theory.lookup)
-    implementationWithoutKotlin(rootProject.libs.stanford.corenlp)
-    implementation(variantOf(rootProject.libs.stanford.corenlp) { classifier("models") })
+    implementation(rootProject.libs.languagetool) {
+      excludeKotlinDeps()
+      exclude(group = "net.java.dev.jna", module = "jna")
+      exclude(group = "net.java.dev.jna", module = "jna-platform")
+      exclude(group = "it.unimi.dsi", module = "fastutil-core")
+    }
 
     testImplementation(rootProject.libs.junit)
     testImplementation(rootProject.libs.openTest4J)
