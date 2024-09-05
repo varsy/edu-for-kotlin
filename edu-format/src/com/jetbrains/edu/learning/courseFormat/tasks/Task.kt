@@ -1,7 +1,6 @@
 package com.jetbrains.edu.learning.courseFormat.tasks
 
 import com.jetbrains.edu.learning.courseFormat.*
-import com.jetbrains.edu.learning.courseFormat.eduAssistant.AiAssistantState
 import com.jetbrains.edu.learning.courseFormat.eduAssistant.AuthorSolutionContext
 import java.util.*
 
@@ -35,7 +34,6 @@ abstract class Task : StudyItem {
    * Stores a context created by the author's solution, if any
    */
   var authorSolutionContext: AuthorSolutionContext? = null
-  var aiAssistantState: AiAssistantState = AiAssistantState.NotInitialized
   /**
    * Counts the number of hints that the student can reject before solution steps are regenerated.
    */
