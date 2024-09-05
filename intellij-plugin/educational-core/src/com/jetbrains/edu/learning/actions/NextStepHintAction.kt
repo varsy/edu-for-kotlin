@@ -40,7 +40,6 @@ import com.jetbrains.edu.learning.courseFormat.eduAssistant.AiAssistantState
 import com.jetbrains.edu.learning.courseFormat.ext.getVirtualFile
 import com.jetbrains.edu.learning.courseFormat.tasks.EduTask
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
-import com.jetbrains.edu.learning.eduAssistant.errors.NextStepHintError
 import com.jetbrains.edu.learning.eduAssistant.log.Logger
 import com.jetbrains.edu.learning.eduAssistant.processors.TaskProcessorImpl
 import com.jetbrains.edu.learning.eduAssistant.ui.NextStepHintNotificationFrame
@@ -176,7 +175,7 @@ class NextStepHintAction : ActionWithProgressIcon(), DumbAware {
 
     override fun run(indicator: ProgressIndicator) {
       if (!GetHintTaskState.getInstance(project).isLocked) {
-        showHintWindow(NextStepHintError.UnlockedError.errorMessage)
+        showHintWindow(EduCoreBundle.message("action.Educational.NextStepHint.error.unlocked"))
         return
       }
 
@@ -194,7 +193,7 @@ class NextStepHintAction : ActionWithProgressIcon(), DumbAware {
         }
         val assistantHint = response.getOrNull()
         assistantHint?.textHint ?: run {
-          showHintWindow(NextStepHintError.UnknownError.errorMessage)
+          showHintWindow(EduCoreBundle.message("action.Educational.NextStepHint.error.unknown"))
           return@runBlockingCancellable
         }
 
