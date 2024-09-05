@@ -67,7 +67,7 @@ abstract class ExternalResourcesTest(private val lessonName: String, private val
   protected fun getHint(taskProcessor: TaskProcessorImpl, userCode: String? = null): AiAssistantHint =
     ProgressManager.getInstance().run(object : com.intellij.openapi.progress.Task.WithResult<AiAssistantHint, Exception>(
       project,
-      EduCoreBundle.message("progress.title.getting.hint"),
+      EduCoreBundle.message("action.Educational.NextStepHint.progress.short.text"),
       true
     ) {
       override fun compute(indicator: ProgressIndicator): AiAssistantHint? {

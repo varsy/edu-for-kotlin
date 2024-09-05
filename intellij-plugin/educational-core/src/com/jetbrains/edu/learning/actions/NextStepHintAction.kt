@@ -43,6 +43,7 @@ import com.jetbrains.edu.learning.courseFormat.tasks.Task
 import com.jetbrains.edu.learning.eduAssistant.log.Logger
 import com.jetbrains.edu.learning.eduAssistant.processors.TaskProcessorImpl
 import com.jetbrains.edu.learning.eduAssistant.ui.NextStepHintNotificationFrame
+import com.jetbrains.edu.learning.invokeLater
 import com.jetbrains.edu.learning.messages.EduCoreBundle
 import com.jetbrains.edu.learning.selectedTaskFile
 import com.jetbrains.edu.learning.taskToolWindow.ui.TaskToolWindowView
@@ -62,12 +63,9 @@ class NextStepHintAction : ActionWithProgressIcon(), DumbAware {
 
   private var highlighter: RangeHighlighter? = null
 
-  private var getHintTask: GetHintTask? = null
-
   init {
-    // TODO: should we customize it?
     templatePresentation.text = EduCoreBundle.message("action.Educational.Hint.text")
-    setUpSpinnerPanel(PROCESS_MESSAGE)
+    setUpSpinnerPanel(EduCoreBundle.message("action.Educational.NextStepHint.progress.text"))
   }
 
   override fun actionPerformed(e: AnActionEvent) {
@@ -86,7 +84,7 @@ class NextStepHintAction : ActionWithProgressIcon(), DumbAware {
       return
     }
 
-    getHintTask = GetHintTask(project, task).also {
+    GetHintTask(project, task).also {
       ProgressManager.getInstance().run(it)
     }
   }
@@ -103,7 +101,7 @@ class NextStepHintAction : ActionWithProgressIcon(), DumbAware {
   @Suppress("DialogTitleCapitalization")
   private fun showNextStepHint(project: Project, taskFile: TaskFile, codeHint: String) =
     object : AnAction(EduCoreBundle.message("action.Educational.NextStepHint.show.code.text")) {
-    override fun actionPerformed(p0: AnActionEvent) {
+    override fun actionPerformed(e: AnActionEvent) {
       highlighter?.dispose()
       val virtualFile = taskFile.getVirtualFile(project) ?: error("VirtualFile for ${taskFile.name} not found")
       val solutionContent = DiffContentFactory.getInstance().create(VfsUtil.loadText(virtualFile), virtualFile.fileType)
@@ -128,28 +126,22 @@ class NextStepHintAction : ActionWithProgressIcon(), DumbAware {
     val task = project.getCurrentTask() ?: error("Can't get current task")
     val myEditorChangeListener = object : FileEditorManagerListener {
       override fun fileClosed(source: FileEditorManager, file: VirtualFile) {
-        if (file.name == EduCoreBundle.message("action.Educational.Diff.text")) {
           if (diffRequestChain.getUserData(NEXT_STEP_HINT_DIFF_FLAG) == true) {
-            when (diffRequestChain.getUserData(IS_ACCEPTED_HINT)) {
-              null, false -> {
-                if (actionTargetParent?.components?.contains(nextStepHintNotificationPanel) == true) {
-                  rejectHint(task)
-                }
-              }
-              true -> {
-                Logger.eduAssistantLogger.info(
-                  """Lesson id: ${task.lesson.id}    Task id: ${task.id}
+            if (diffRequestChain.getUserData(IS_ACCEPTED_HINT) == true) {
+              Logger.eduAssistantLogger.info(
+                """Lesson id: ${task.lesson.id}    Task id: ${task.id}
                   |User response: accepted code hint
                   |
                 """.trimMargin()
-                )
-              }
+              )
+            }
+            else if (actionTargetParent?.components?.contains(nextStepHintNotificationPanel) == true) {
+              rejectHint(task)
             }
             closeNextStepHintNotificationPanel()
             diffRequestChain.putUserData(IS_ACCEPTED_HINT, false)
             connection.disconnect()
           }
-        }
         super.fileClosed(source, file)
       }
     }
@@ -169,9 +161,7 @@ class NextStepHintAction : ActionWithProgressIcon(), DumbAware {
   override fun getActionUpdateThread() = ActionUpdateThread.BGT
 
   private inner class GetHintTask(private val project: Project, private val task: Task)
-    : com.intellij.openapi.progress.Task.Backgroundable(project, EduCoreBundle.message("progress.title.getting.hint"), true) {
-
-    var progressIndicator: ProgressIndicator? = null
+    : com.intellij.openapi.progress.Task.Backgroundable(project, EduCoreBundle.message("action.Educational.NextStepHint.progress.short.text"), true) {
 
     override fun run(indicator: ProgressIndicator) {
       if (!GetHintTaskState.getInstance(project).isLocked) {
@@ -181,31 +171,23 @@ class NextStepHintAction : ActionWithProgressIcon(), DumbAware {
 
       processStarted()
       ApplicationManager.getApplication().executeOnPooledThread { EduActionUtils.showFakeProgress(indicator) }
-      progressIndicator = indicator
 
       val taskProcessor = TaskProcessorImpl(task)
       runBlockingCancellable {
         task.aiAssistantState = AiAssistantState.HelpAsked
-        val response = AiHintsAssistant.getAssistant(taskProcessor).getHint()
-        response.exceptionOrNull()?.let {
-          showHintWindow(it.message ?: it.localizedMessage)
+        val assistantHint = AiHintsAssistant.getAssistant(taskProcessor).getHint().getOrElse {
+          showHintWindow(it.message ?: EduCoreBundle.message("action.Educational.NextStepHint.error.unknown"))
           return@runBlockingCancellable
         }
-        val assistantHint = response.getOrNull()
-        assistantHint?.textHint ?: run {
-          showHintWindow(EduCoreBundle.message("action.Educational.NextStepHint.error.unknown"))
+        val codeHint = assistantHint.codeHint?.value
+        if (codeHint != null) {
+          val taskFile = taskProcessor.currentTaskFile ?: project.selectedTaskFile ?: error("Can't get task file")
+          highlighter = highlightFirstCodeDiffPositionOrNull(taskFile, codeHint, indicator)
+          val action = showNextStepHint(project, taskFile, codeHint)
+          showHintWindow(assistantHint.textHint.value, action)
           return@runBlockingCancellable
         }
-
-        val taskFile = taskProcessor.currentTaskFile ?: project.selectedTaskFile ?: error("Can't get task file")
-        highlighter = assistantHint.codeHint?.value?.let {
-          highlightFirstCodeDiffPositionOrNull(taskFile, it, indicator)
-        }
-
-        val action = assistantHint.codeHint?.value?.let {
-          showNextStepHint(project, taskFile, it)
-        }
-        showHintWindow(assistantHint.textHint.value, action)
+        showHintWindow(assistantHint.textHint.value)
       }
     }
 
@@ -222,16 +204,18 @@ class NextStepHintAction : ActionWithProgressIcon(), DumbAware {
       """.trimMargin()
       )
       task.status = CheckStatus.Unchecked
-      TaskToolWindowView.getInstance(project).updateCheckPanel(task)
-      val nextStepHintNotification = NextStepHintNotificationFrame(textToShow, action, actionTargetParent).apply {
-        onClosed {
-          rejectHint(task)
-        }
-      }
-      nextStepHintNotificationPanel = nextStepHintNotification.rootPane
-      nextStepHintNotificationPanel?.let { actionTargetParent?.add(it, BorderLayout.NORTH) }
-    }
+      project.invokeLater {
+        TaskToolWindowView.getInstance(project).updateCheckPanel(task)
 
+        val nextStepHintNotification = NextStepHintNotificationFrame(textToShow, action, actionTargetParent).apply {
+          onClosed {
+            rejectHint(task)
+          }
+        }
+        nextStepHintNotificationPanel = nextStepHintNotification.rootPane
+        nextStepHintNotificationPanel?.let { actionTargetParent?.add(it, BorderLayout.NORTH) }
+      }
+    }
 
     /**
      * Highlights the first code difference position between the student's code in the task file and a given code hint.
@@ -299,10 +283,8 @@ class NextStepHintAction : ActionWithProgressIcon(), DumbAware {
 
     val NEXT_STEP_HINT_DIFF_FLAG: Key<Boolean> = Key.create("nextStepHintDiffFlag")
 
-    val IS_ACCEPTED_HINT: Key<Boolean> = Key.create("isAcceptedHint")
+    val IS_ACCEPTED_HINT: Key<Boolean> = Key.create("isHintAccepted")
 
     private val HIGHLIGHTER_COLOR: JBColor = JBColor(0xEFE5FF, 0x433358)
-
-    private const val PROCESS_MESSAGE: String = "Getting hint in progress"
   }
 }
