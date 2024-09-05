@@ -8,6 +8,7 @@ import com.jetbrains.edu.learning.courseFormat.eduAssistant.FunctionSignature
 import com.jetbrains.edu.learning.courseFormat.eduAssistant.SignatureSource
 
 interface FunctionSignaturesProvider {
+
   fun getFunctionSignatures(psiFile: PsiFile, signatureSource: SignatureSource): List<FunctionSignature>
 
   companion object {
