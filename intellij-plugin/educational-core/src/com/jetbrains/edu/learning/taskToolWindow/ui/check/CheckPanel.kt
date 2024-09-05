@@ -20,7 +20,6 @@ import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
 import com.jetbrains.edu.learning.courseFormat.tasks.DataTask
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
 import com.jetbrains.edu.learning.courseFormat.tasks.TheoryTask
-import com.jetbrains.edu.learning.eduAssistant.utils.isGetHintButtonShown
 import com.jetbrains.edu.learning.marketplace.actions.RateMarketplaceCourseAction
 import com.jetbrains.edu.learning.messages.EduCoreBundle
 import com.jetbrains.edu.learning.navigation.NavigationUtils
@@ -153,7 +152,7 @@ class CheckPanel(private val project: Project, private val parentDisposable: Dis
   private fun updateGetHintButtonWrapper(task: Task) {
     getHintButtonWrapper.removeAll()
 
-    if (isGetHintButtonShown(task)) {
+    if (NextStepHintAction.isAvailable(task)) {
       val action = ActionManager.getInstance().getAction(NextStepHintAction.ACTION_ID) as NextStepHintAction
       val nextStepHintButton = CheckPanelButtonComponent(action = action)
       action.actionTargetParent = checkDetailsPlaceholder

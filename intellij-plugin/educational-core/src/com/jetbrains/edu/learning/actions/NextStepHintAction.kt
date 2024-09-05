@@ -34,9 +34,11 @@ import com.intellij.util.messages.MessageBusConnection
 import com.jetbrains.edu.learning.EduUtilsKt.showPopup
 import com.jetbrains.edu.learning.actions.EduActionUtils.getCurrentTask
 import com.jetbrains.edu.learning.courseFormat.CheckStatus
+import com.jetbrains.edu.learning.courseFormat.CourseMode
 import com.jetbrains.edu.learning.courseFormat.TaskFile
 import com.jetbrains.edu.learning.courseFormat.eduAssistant.AiAssistantState
 import com.jetbrains.edu.learning.courseFormat.ext.getVirtualFile
+import com.jetbrains.edu.learning.courseFormat.tasks.EduTask
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
 import com.jetbrains.edu.learning.eduAssistant.errors.NextStepHintError
 import com.jetbrains.edu.learning.eduAssistant.log.Logger
@@ -287,6 +289,12 @@ class NextStepHintAction : ActionWithProgressIcon(), DumbAware {
   }
 
   companion object {
+
+    // Only for the Kotlin Onboarding Introduction: https://plugins.jetbrains.com/plugin/21067-kotlin-onboarding-introduction and for Edu tasks
+    fun isNextStepHintApplicable(task: Task) = task.course.id == 21067 && task is EduTask
+
+    fun isAvailable(task: Task) = isNextStepHintApplicable(task) && task.course.courseMode == CourseMode.STUDENT && task.status == CheckStatus.Failed // TODO: when should we show this button?
+
     @NonNls
     const val ACTION_ID: String = "Educational.NextStepHint"
 
