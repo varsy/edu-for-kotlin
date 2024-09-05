@@ -36,7 +36,6 @@ import com.jetbrains.edu.learning.actions.EduActionUtils.getCurrentTask
 import com.jetbrains.edu.learning.courseFormat.CheckStatus
 import com.jetbrains.edu.learning.courseFormat.CourseMode
 import com.jetbrains.edu.learning.courseFormat.TaskFile
-import com.jetbrains.edu.learning.courseFormat.eduAssistant.AiAssistantState
 import com.jetbrains.edu.learning.courseFormat.ext.getVirtualFile
 import com.jetbrains.edu.learning.courseFormat.tasks.EduTask
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
@@ -174,7 +173,6 @@ class NextStepHintAction : ActionWithProgressIcon(), DumbAware {
 
       val taskProcessor = TaskProcessorImpl(task)
       runBlockingCancellable {
-        task.aiAssistantState = AiAssistantState.HelpAsked
         val assistantHint = AiHintsAssistant.getAssistant(taskProcessor).getHint().getOrElse {
           showHintWindow(it.message ?: EduCoreBundle.message("action.Educational.NextStepHint.error.unknown"))
           return@runBlockingCancellable
