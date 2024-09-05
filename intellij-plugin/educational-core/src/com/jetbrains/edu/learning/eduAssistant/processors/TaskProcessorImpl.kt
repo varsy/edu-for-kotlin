@@ -111,7 +111,7 @@ class TaskProcessorImpl(val task: Task) : TaskProcessor {
         val virtualFile = file.getVirtualFile(project) ?: return@flatMap emptyList()
         runReadAction {
           val psiFile = PsiManager.getInstance(project).findFile(virtualFile) ?: return@runReadAction emptyList()
-          StringExtractor.getFunctionsToStringsMap(psiFile, language).values.flatten()
+          StringExtractor.getFunctionsToStringsMap(psiFile, language).value.values.flatten()
         }.also {
           file.usedStrings = it
         }
