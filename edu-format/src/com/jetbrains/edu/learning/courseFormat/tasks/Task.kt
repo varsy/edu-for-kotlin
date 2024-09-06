@@ -27,17 +27,10 @@ abstract class Task : StudyItem {
     }
 
   /**
-   * Stores a summary of the theory from the previous steps.
-   */
-  var theorySummary: String? = null
-  /**
    * Stores a context created by the author's solution, if any
    */
   var authorSolutionContext: AuthorSolutionContext? = null
-  /**
-   * Counts the number of hints that the student can reject before solution steps are regenerated.
-   */
-  var rejectedHintsCount: Int = 0
+
   /**
    * Stores a map of task file full names (including path) to functions that can be changed.
    * This map stores only task files in which changes have been made in the author's solution.
