@@ -41,7 +41,7 @@ include(
   "intellij-plugin:features:ai-hints-core",
   "intellij-plugin:features:ai-hints-kotlin",
   "intellij-plugin:features:ai-hints-python",
-  "intellij-plugin:Edu-Jarvis"
+  "intellij-plugin:Edu-Cognifire"
 )
 
 if (settings.providers.gradleProperty("fleetIntegration").get().toBoolean()) {
@@ -52,12 +52,12 @@ apply(from = "common.gradle.kts")
 
 val secretProperties: String by extra
 val inJetBrainsNetwork: () -> Boolean by extra
-val jarvisProperties: String by extra
+val cognifireProperties: String by extra
 
 val isTeamCity: Boolean get() = System.getenv("TEAMCITY_VERSION") != null
 
 configureSecretProperties()
-configureJarvisProperties()
+configureCognifireProperties()
 
 downloadHyperskillCss()
 
@@ -109,12 +109,12 @@ fun configureSecretProperties() {
   )
 }
 
-fun configureJarvisProperties() {
-  val jarvisProperties = loadProperties(jarvisProperties)
+fun configureCognifireProperties() {
+  val cognifireProperties = loadProperties(cognifireProperties)
 
-  jarvisProperties.extractAndStore(
-    "intellij-plugin/educational-core/resources/jarvisTemplateVariables/jarvis.properties",
-    "jarvisDslVersion"
+  cognifireProperties.extractAndStore(
+    "intellij-plugin/educational-core/resources/cognifireTemplateVariables/cognifire.properties",
+    "cognifireDslVersion"
   )
 }
 
@@ -183,6 +183,8 @@ pluginManagement {
         }
       }
     }
-    maven("https://packages.jetbrains.team/maven/p/edu/jarvis")
+    maven("https://packages.jetbrains.team/maven/p/edu/cognifire")
   }
 }
+include("intellij-plugin:Edu-Cognifire")
+findProject(":intellij-plugin:Edu-Cognifire")?.name = "Edu-Cognifire"

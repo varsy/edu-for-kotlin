@@ -39,7 +39,7 @@ import com.jetbrains.edu.learning.courseFormat.EduFormatNames.DEFAULT_ENVIRONMEN
 import com.jetbrains.edu.learning.enablePlugins
 import com.jetbrains.edu.learning.feedback.CourseFeedbackInfoData
 import com.jetbrains.edu.learning.getDisabledPlugins
-import com.jetbrains.edu.learning.jarvis.utils.JarvisTemplateVariablesProvider
+import com.jetbrains.edu.learning.cognifire.utils.CognifireTemplateVariablesProvider
 import com.jetbrains.edu.learning.messages.EduCoreBundle
 import com.jetbrains.edu.learning.newproject.EduProjectSettings
 import com.jetbrains.edu.learning.newproject.ui.courseSettings.CourseSettingsPanel
@@ -175,8 +175,8 @@ class CCNewCoursePanel(
           }.component
       }
       row {
-        checkBox(EduCoreBundle.message("cc.new.course.jarvis.mode")).onChanged {
-          JarvisTemplateVariablesProvider.setIsJarvisVariable(it.isSelected)
+        checkBox(EduCoreBundle.message("cc.new.course.cognifire.mode")).onChanged {
+          CognifireTemplateVariablesProvider.setIsCognifireVariable(it.isSelected)
         }
       }
       val feedbackPanel = createFeedbackPanel()

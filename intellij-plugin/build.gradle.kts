@@ -321,7 +321,7 @@ dependencies {
     pluginModule(implementation(project("features:ai-hints-kotlin")))
     pluginModule(implementation(project("features:ai-hints-python")))
     pluginModule(implementation(project("localization")))
-    pluginModule(implementation(project("Edu-Jarvis")))
+    pluginModule(implementation(project("Edu-Cognifire")))
 
     testFramework(TestFrameworkType.Bundled)
   }
@@ -642,11 +642,11 @@ project("Edu-Kotlin") {
 
     implementation(project(":intellij-plugin:educational-core"))
     implementation(project(":intellij-plugin:jvm-core"))
-    implementation(project(":intellij-plugin:Edu-Jarvis"))
+    implementation(project(":intellij-plugin:Edu-Cognifire"))
 
     testImplementation(project(":intellij-plugin:educational-core", "testOutput"))
     testImplementation(project(":intellij-plugin:jvm-core", "testOutput"))
-    testImplementation(project(":intellij-plugin:Edu-Jarvis", "testOutput"))
+    testImplementation(project(":intellij-plugin:Edu-Cognifire", "testOutput"))
   }
 }
 
@@ -1036,22 +1036,13 @@ project("features:ai-hints-python") {
   }
 }
 
-project("Edu-Jarvis") {
+project("Edu-Cognifire") {
   apply {
     plugin("antlr")
   }
   dependencies {
     intellijPlatform {
-      // Kotlin plugin cannot be found in 242 builds because of https://github.com/JetBrains/intellij-platform-gradle-plugin/issues/1652,
-      // and as a result, it's impossible to build the module with Kotlin plugin dependency.
-      // As a temporary workaround, let's build the module with old IDE version.
-      // Should be fixed as part of https://youtrack.jetbrains.com/issue/EDU-6934
-      val ideVersion = if (environmentName.toInt() == 242) {
-        "IU-2024.1"
-      }
-      else {
-        if (!isJvmCenteredIDE) ideaVersion else baseVersion
-      }
+      val ideVersion = if (!isJvmCenteredIDE) ideaVersion else baseVersion
 
       intellijIde(project, ideVersion)
 
@@ -1060,12 +1051,13 @@ project("Edu-Jarvis") {
     }
 
     implementation(project(":intellij-plugin:educational-core"))
+    implementation(rootProject.libs.freemarker)
     api(rootProject.libs.educational.ml.library.core) {
       excludeKotlinDeps()
       excludeKotlinSerializationDeps()
       exclude(group = "net.java.dev.jna")
     }
-    api(rootProject.libs.educational.ml.library.jarvis) {
+    api(rootProject.libs.educational.ml.library.cognifire) {
       excludeKotlinDeps()
       excludeKotlinSerializationDeps()
       exclude(group = "net.java.dev.jna")
@@ -1079,14 +1071,14 @@ project("Edu-Jarvis") {
   tasks {
     generateGrammarSource {
       maxHeapSize = "128m"
-      arguments = listOf("-visitor", "-package", "com.jetbrains.edu.jarvis.grammar.generated")
-      outputDirectory = file("src/com/jetbrains/edu/jarvis/grammar/generated")
+      arguments = listOf("-visitor", "-package", "com.jetbrains.edu.cognifire.grammar.generated")
+      outputDirectory = file("src/com/jetbrains/edu/cognifire/grammar/generated")
       source = fileTree("src/main/antlr")
     }
 
     generateTestGrammarSource {
       maxHeapSize = "128m"
-      arguments = listOf("-visitor", "-package", "com.jetbrains.edu.jarvis.grammar.generated")
+      arguments = listOf("-visitor", "-package", "com.jetbrains.edu.cognifire.grammar.generated")
       outputDirectory = file("generated-src/antlr/test")
     }
 
