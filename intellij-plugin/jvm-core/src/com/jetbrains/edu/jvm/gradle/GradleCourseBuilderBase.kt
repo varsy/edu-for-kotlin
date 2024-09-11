@@ -8,7 +8,7 @@ import com.jetbrains.edu.learning.*
 import com.jetbrains.edu.learning.EduNames.PROJECT_NAME
 import com.jetbrains.edu.learning.courseFormat.Course
 import com.jetbrains.edu.learning.courseGeneration.GeneratorUtils
-import com.jetbrains.edu.learning.jarvis.utils.JarvisTemplateVariablesProvider
+import com.jetbrains.edu.learning.cognifire.utils.CognifireTemplateVariablesProvider
 import org.jetbrains.annotations.NonNls
 import org.jetbrains.plugins.gradle.util.GradleConstants.DEFAULT_SCRIPT_NAME
 import org.jetbrains.plugins.gradle.util.GradleConstants.SETTINGS_FILE_NAME
@@ -29,7 +29,7 @@ abstract class GradleCourseBuilderBase : EduCourseBuilder<JdkProjectSettings> {
   open fun templateVariables(projectName: String): Map<String, Any> {
     return mapOf(PROJECT_NAME to GeneratorUtils.gradleSanitizeName(projectName)) +
            getKotlinTemplateVariables() +
-           getJarvisTemplateVariables()
+           getCognifireTemplateVariables()
   }
 
   override fun refreshProject(project: Project, cause: RefreshCause) {
@@ -54,9 +54,9 @@ abstract class GradleCourseBuilderBase : EduCourseBuilder<JdkProjectSettings> {
       )
     }
 
-    fun getJarvisTemplateVariables() = mapOf(
-      "isJarvis" to JarvisTemplateVariablesProvider.getIsJarvisVariable(),
-      "jarvisDslVersion" to JarvisTemplateVariablesProvider.getJarvisDslVersion()
+    fun getCognifireTemplateVariables() = mapOf(
+      "isCognifire" to CognifireTemplateVariablesProvider.getIsCognifireVariable(),
+      "cognifireDslVersion" to CognifireTemplateVariablesProvider.getCognifireDslVersion()
     )
   }
 }
