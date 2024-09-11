@@ -1,0 +1,53 @@
+<idea-plugin package="com.jetbrains.edu.cognifire">
+  <!--suppress PluginXmlValidity -->
+  <dependencies>
+    <plugin id="org.jetbrains.plugins.gradle"/>
+    <plugin id="JUnit"/>
+  </dependencies>
+
+  <resource-bundle>messages.EduCognifireBundle</resource-bundle>
+
+  <extensionPoints>
+    <extensionPoint qualifiedName="Educational.promptExpressionParser"
+                    beanClass="com.intellij.lang.LanguageExtensionPoint"
+                    dynamic="true">
+      <with attribute="implementationClass" implements="com.jetbrains.edu.cognifire.PromptExpressionParser"/>
+    </extensionPoint>
+    <extensionPoint qualifiedName="Educational.generatedCodeParser"
+                    beanClass="com.intellij.lang.LanguageExtensionPoint"
+                    dynamic="true">
+      <with attribute="implementationClass" implements="com.jetbrains.edu.cognifire.GeneratedCodeParser"/>
+    </extensionPoint>
+    <extensionPoint qualifiedName="Educational.codeExpressionWriter"
+                    beanClass="com.intellij.lang.LanguageExtensionPoint"
+                    dynamic="true">
+      <with attribute="implementationClass" implements="com.jetbrains.edu.cognifire.CodeExpressionWriter"/>
+    </extensionPoint>
+    <extensionPoint qualifiedName="Educational.cognifireDslPackageCallChecker"
+                    beanClass="com.intellij.lang.LanguageExtensionPoint"
+                    dynamic="true">
+      <with attribute="implementationClass" implements="com.jetbrains.edu.cognifire.CognifireDslPackageCallChecker"/>
+    </extensionPoint>
+    <extensionPoint qualifiedName="Educational.codeApplier"
+                    beanClass="com.intellij.lang.LanguageExtensionPoint"
+                    dynamic="true">
+      <with attribute="implementationClass" implements="com.jetbrains.edu.cognifire.CodeApplier"/>
+    </extensionPoint>
+  </extensionPoints>
+
+  <extensions defaultExtensionNs="com.intellij">
+    <intentionAction>
+      <language>kotlin</language>
+      <className>com.jetbrains.edu.cognifire.actions.CodeIntentionAction</className>
+      <categoryKey>cognifire.intention.category.name</categoryKey>
+      <descriptionDirectoryName>CodeIntentionAction</descriptionDirectoryName>
+    </intentionAction>
+  </extensions>
+
+  <actions>
+    <action id="Educational.Educator.CreateTutorial"
+            class="com.jetbrains.edu.cognifire.tutorial.TutorialGenerator">
+      <add-to-group group-id="Educational.Educator.NewFile" anchor="first"/>
+    </action>
+  </actions>
+</idea-plugin>
