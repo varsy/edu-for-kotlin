@@ -13,7 +13,7 @@ inspections:
       # Also, IDE integration doesn't know well about the new layout of localized resources yet.
       # So, let's not check them by Qodana for now
       - "intellij-plugin/localization/resources/localization/**"
-      - "intellij-plugin/Edu-Jarvis/resources/**"
+      - "intellij-plugin/Edu-Cognifire/resources/**"
       - "intellij-plugin/Edu-Kotlin/resources/**"
   - group: "category:Proofreading"
     enabled: false

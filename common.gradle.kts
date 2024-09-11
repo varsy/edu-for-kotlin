@@ -16,4 +16,4 @@ extra["inJetBrainsNetwork"] = fun(): Boolean {
 
 extra["secretProperties"] = "secret.properties"
 
-extra["jarvisProperties"] = "jarvis.properties"
+extra["cognifireProperties"] = "cognifire.properties"
