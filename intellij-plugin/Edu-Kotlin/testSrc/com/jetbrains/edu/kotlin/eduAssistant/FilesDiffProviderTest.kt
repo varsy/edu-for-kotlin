@@ -12,7 +12,7 @@ import com.jetbrains.edu.learning.courseFormat.ext.authorSolutionContext
 import com.jetbrains.edu.learning.courseFormat.TaskFile
 import com.jetbrains.edu.learning.courseFormat.ext.getDocument
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
-import com.jetbrains.edu.learning.eduAssistant.context.createAuthorSolutionContext
+import com.jetbrains.edu.learning.eduAssistant.context.AuthorSolutionContext
 import com.jetbrains.edu.learning.eduAssistant.processors.TaskProcessorImpl
 import com.jetbrains.edu.learning.findTask
 import com.jetbrains.edu.learning.testAction
@@ -110,7 +110,7 @@ class FilesDiffProviderTest : JdkCheckerTestBase() {
 
   private fun initCourseAndGetTaskForTests(): Task {
     val task = myCourse.findTask("lesson1", "task2")
-    task.authorSolutionContext = createAuthorSolutionContext(task)
+    task.authorSolutionContext = AuthorSolutionContext.create(task)
     return task
   }
 
