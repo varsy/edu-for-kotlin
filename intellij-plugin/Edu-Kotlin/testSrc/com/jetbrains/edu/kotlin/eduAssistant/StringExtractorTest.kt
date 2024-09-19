@@ -3,7 +3,7 @@ package com.jetbrains.edu.kotlin.eduAssistant
 import com.jetbrains.edu.jvm.slow.checker.JdkCheckerTestBase
 import com.jetbrains.edu.kotlin.eduAssistant.courses.createKotlinCourse
 import com.jetbrains.edu.learning.courseFormat.Course
-import com.jetbrains.edu.learning.eduAssistant.context.buildAuthorSolutionContext
+import com.jetbrains.edu.learning.eduAssistant.context.createAuthorSolutionContext
 import com.jetbrains.edu.learning.eduAssistant.processors.TaskProcessorImpl
 import com.jetbrains.edu.learning.findTask
 import org.junit.Test
@@ -13,7 +13,7 @@ class StringExtractorTest : JdkCheckerTestBase() {
   @Test
   fun testStringsFromSolution() {
     val task = myCourse.findTask("lesson1", "task2")
-    val context = task.buildAuthorSolutionContext() ?: error("Cannot build the author solution context")
+    val context = createAuthorSolutionContext(task) ?: error("Cannot build the author solution context")
     val strings = context.functionsToStringMap.values.flatten()
     assertEquals(stringsFromMainAndHiddenFile, strings)
   }

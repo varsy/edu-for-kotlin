@@ -5,9 +5,10 @@ import com.jetbrains.edu.jvm.slow.checker.JdkCheckerTestBase
 import com.jetbrains.edu.kotlin.eduAssistant.courses.createKotlinCourse
 import com.jetbrains.edu.learning.actions.NextTaskAction
 import com.jetbrains.edu.learning.courseFormat.Course
+import com.jetbrains.edu.learning.courseFormat.ext.authorSolutionContext
 import com.jetbrains.edu.learning.courseFormat.ext.updateContent
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
-import com.jetbrains.edu.learning.eduAssistant.context.buildAuthorSolutionContext
+import com.jetbrains.edu.learning.eduAssistant.context.createAuthorSolutionContext
 import com.jetbrains.edu.learning.eduAssistant.processors.TaskProcessorImpl
 import com.jetbrains.edu.learning.findTask
 import com.jetbrains.edu.learning.testAction
@@ -105,7 +106,7 @@ class FilesDiffProviderTest : JdkCheckerTestBase() {
 
   private fun initCourseAndGetTaskForTests(): Task {
     val task = myCourse.findTask("lesson1", "task2")
-    task.authorSolutionContext = task.buildAuthorSolutionContext()
+    task.authorSolutionContext = createAuthorSolutionContext(task)
     return task
   }
 
