@@ -1,6 +1,5 @@
 package com.jetbrains.edu.learning.courseFormat
 
-import com.jetbrains.edu.learning.courseFormat.eduAssistant.FunctionSignature
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
 
 /**
@@ -36,28 +35,6 @@ class TaskFile : EduFile {
   private var _answerPlaceholders = mutableListOf<AnswerPlaceholder>()
   @Transient
   private var _task: Task? = null
-
-  /**
-   * Represents function signatures used in the task file.
-   */
-  var functionSignatures: List<FunctionSignature>? = null
-  /**
-   * Represents the snapshot hash of the task file since the last time the function signatures in the file were updated.
-   */
-  var functionSignaturesSnapshotHash: Int? = null
-  /**
-   * Represents the hash of the task file content at the last snapshot.
-   * The snapshot file hash is used to determine whether a file has been changed or not.
-   */
-  var snapshotFileHash: Int? = null
-  /**
-   * Represents a list of strings that have been used in the task file.
-   */
-  var usedStrings: List<String>? = null
-  /**
-   * Represents the snapshot hash of the task file since the last time the used strings in the file were updated.
-   */
-  var usedStringsSnapshotHash: Int? = null
 
   var task: Task
     get() = _task ?: error("Task is null for TaskFile $name")
