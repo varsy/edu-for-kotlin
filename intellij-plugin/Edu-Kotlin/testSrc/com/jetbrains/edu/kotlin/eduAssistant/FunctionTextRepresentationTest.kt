@@ -3,8 +3,10 @@ package com.jetbrains.edu.kotlin.eduAssistant
 import com.jetbrains.edu.jvm.slow.checker.JdkCheckerTestBase
 import com.jetbrains.edu.kotlin.eduAssistant.courses.createKotlinCourse
 import com.jetbrains.edu.learning.courseFormat.Course
+import com.jetbrains.edu.learning.courseFormat.ext.authorSolutionContext
+import com.jetbrains.edu.learning.courseFormat.ext.functionSignatures
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
-import com.jetbrains.edu.learning.eduAssistant.context.buildAuthorSolutionContext
+import com.jetbrains.edu.learning.eduAssistant.context.createAuthorSolutionContext
 import com.jetbrains.edu.learning.eduAssistant.processors.TaskProcessorImpl
 import com.jetbrains.edu.learning.findTask
 import org.junit.Test
@@ -37,7 +39,7 @@ class FunctionTextRepresentationTest : JdkCheckerTestBase() {
   fun testFunctionsSetTextRepresentationFromTaskAndSolution() {
     val task = getTaskAndCheckFunctions("lesson2", "task2", listOf(MAIN_FUNCTION))
     val expectedFromSolution = listOf(MY_PRINT_FUNCTION, MAIN_FUNCTION)
-    task.authorSolutionContext = task.buildAuthorSolutionContext()
+    task.authorSolutionContext = createAuthorSolutionContext(task)
     val authorSolutionContext = task.authorSolutionContext ?: error("Cannot build the author context")
     val actualFromSolution = authorSolutionContext.functionSignatures.map{ it.toString() }
     assertEquals(expectedFromSolution, actualFromSolution)
