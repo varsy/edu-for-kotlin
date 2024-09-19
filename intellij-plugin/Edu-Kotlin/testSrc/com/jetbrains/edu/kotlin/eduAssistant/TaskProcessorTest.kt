@@ -5,8 +5,9 @@ import com.jetbrains.edu.kotlin.eduAssistant.courses.createKotlinCourse
 import com.jetbrains.edu.learning.RefreshCause
 import com.jetbrains.edu.learning.course
 import com.jetbrains.edu.learning.courseFormat.Course
+import com.jetbrains.edu.learning.courseFormat.ext.authorSolutionContext
 import com.jetbrains.edu.learning.courseFormat.ext.configurator
-import com.jetbrains.edu.learning.eduAssistant.context.buildAuthorSolutionContext
+import com.jetbrains.edu.learning.eduAssistant.context.createAuthorSolutionContext
 import com.jetbrains.edu.learning.eduAssistant.processors.TaskProcessorImpl
 import com.jetbrains.edu.learning.eduState
 import com.jetbrains.edu.learning.findTask
@@ -70,7 +71,7 @@ It's time to write your first program in Kotlin! Task Change the output text int
     val state = project.eduState ?: error("State was not found")
     NavigationUtils.navigateToTask(project, task, state.task)
     val taskProcessor = TaskProcessorImpl(task)
-    task.authorSolutionContext = task.buildAuthorSolutionContext()
+    task.authorSolutionContext = createAuthorSolutionContext(task)
     val generatedCode = """
       fun greet(name: String) = "Hello, \${'$'}\{name\}!"
     """.trimIndent()

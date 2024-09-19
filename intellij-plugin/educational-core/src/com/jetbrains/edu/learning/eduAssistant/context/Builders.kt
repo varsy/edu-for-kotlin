@@ -4,10 +4,7 @@ import com.intellij.openapi.application.runReadAction
 import com.jetbrains.edu.learning.actions.NextStepHintAction.Companion.isNextStepHintApplicable
 import com.jetbrains.edu.learning.courseFormat.Course
 import com.jetbrains.edu.learning.courseFormat.eduAssistant.AuthorSolutionContext
-import com.jetbrains.edu.learning.courseFormat.ext.allTasks
-import com.jetbrains.edu.learning.courseFormat.ext.isTestFile
-import com.jetbrains.edu.learning.courseFormat.ext.languageById
-import com.jetbrains.edu.learning.courseFormat.ext.project
+import com.jetbrains.edu.learning.courseFormat.ext.*
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
 
 // todo: Enhance by Encapsulating Logic of AuthorSolutionContext
