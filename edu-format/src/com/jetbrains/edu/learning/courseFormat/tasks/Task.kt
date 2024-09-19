@@ -1,8 +1,6 @@
 package com.jetbrains.edu.learning.courseFormat.tasks
 
 import com.jetbrains.edu.learning.courseFormat.*
-import com.jetbrains.edu.learning.yaml.YamlDeserializer.deserializeTask
-import com.jetbrains.edu.learning.courseFormat.eduAssistant.AuthorSolutionContext
 import java.util.*
 
 /**
