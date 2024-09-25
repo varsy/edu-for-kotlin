@@ -7,7 +7,7 @@ import com.intellij.psi.impl.source.tree.LeafPsiElement
 import com.intellij.psi.util.PsiTreeUtil
 import com.jetbrains.edu.cognifire.CognifireDslPackageCallChecker
 import com.jetbrains.edu.cognifire.actions.PromptExecutorAction
-import com.jetbrains.edu.kotlin.cognifire.utils.PROMPT
+import com.jetbrains.edu.cognifire.utils.PROMPT
 import com.jetbrains.edu.kotlin.messages.EduKotlinBundle
 import com.jetbrains.edu.learning.actions.EduActionUtils.getCurrentTask
 import com.jetbrains.edu.learning.taskToolWindow.ui.TaskToolWindowView
