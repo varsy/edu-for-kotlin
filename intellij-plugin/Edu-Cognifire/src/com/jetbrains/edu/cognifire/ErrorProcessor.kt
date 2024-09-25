@@ -1,5 +1,6 @@
 package com.jetbrains.edu.cognifire
 
+import com.intellij.psi.PsiElement
 import com.jetbrains.edu.cognifire.highlighting.undefinedidentifier.AnnotatorError
 import com.jetbrains.edu.cognifire.highlighting.undefinedidentifier.AnnotatorParametrizedError
 import com.jetbrains.edu.cognifire.models.NamedFunction
@@ -43,6 +44,18 @@ class ErrorProcessor(
     return if (namedVariable !in visibleVariables) {
       AnnotatorParametrizedError(
         AnnotatorError.UNKNOWN_VARIABLE, arrayOf(namedVariable.name)
+      )
+    }
+    else AnnotatorParametrizedError.NO_ERROR
+  }
+
+  /**
+   * Returns the associated [AnnotatorParametrizedError] if there is the [codePromptContent] and the [NamedVariable].
+   */
+  fun processVariableDeclaration(namedVariable: NamedVariable, codePromptContent: PsiElement?): AnnotatorParametrizedError {
+    return if (codePromptContent != null) {
+      AnnotatorParametrizedError(
+        AnnotatorError.VARIABLE_DECLARATION, arrayOf(namedVariable.name)
       )
     }
     else AnnotatorParametrizedError.NO_ERROR
