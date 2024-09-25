@@ -29,6 +29,8 @@ import com.jetbrains.edu.learning.courseFormat.tasks.cognifire.PromptCodeState
 import com.jetbrains.edu.learning.notification.EduNotificationManager
 import com.jetbrains.edu.learning.taskToolWindow.ui.TaskToolWindowView
 import com.jetbrains.educational.ml.core.exception.AiAssistantException
+import com.jetbrains.edu.cognifire.log.Logger
+import com.jetbrains.edu.learning.courseFormat.tasks.Task
 
 /**
  * An action class responsible for handling the running of `prompt` DSL (Domain-Specific Language) elements.
@@ -36,7 +38,7 @@ import com.jetbrains.educational.ml.core.exception.AiAssistantException
  *
  * @param element The PSI element associated with the `prompt` DSL that this action is supposed to execute.
  */
-class PromptExecutorAction(private val element: PsiElement, private val id: String) : AnAction() {
+class PromptExecutorAction(private val element: PsiElement, private val id: String, private val task: Task) : AnAction() {
   override fun actionPerformed(e: AnActionEvent) {
     val project = e.project ?: error("Project was not found")
 
@@ -99,7 +101,8 @@ class PromptExecutorAction(private val element: PsiElement, private val id: Stri
     if (unparsableSentences.isNotEmpty()) {
       project.notifyError(
         EduCognifireBundle.message("action.not.run.due.to.incorrect.grammar.title"),
-        EduCognifireBundle.message("action.not.run.due.to.incorrect.grammar.text")
+        EduCognifireBundle.message("action.not.run.due.to.incorrect.grammar.text"),
+        promptExpression
       )
     }
 
@@ -132,10 +135,20 @@ class PromptExecutorAction(private val element: PsiElement, private val id: Stri
       } else {
         PromptCodeState.CodeSuccess
       }
+      var unparsableSentences = emptyList<OffsetSentence>()
       if (state == PromptCodeState.CodeFailed) {
-        val unparsableSentences = checkGrammar(promptExpression, project)
+        unparsableSentences = checkGrammar(promptExpression, project)
         GrammarHighlighter.highlightAll(project, unparsableSentences)
       }
+      Logger.cognifireLogger.info(
+        """Lesson id: ${task.lesson.id}    Task id: ${task.id}    Action id: $id
+           | Text prompt: ${promptExpression.prompt}
+           | Code prompt: ${promptExpression.code}
+           | Generated code: $generatedCode
+           | Has TODO blocks: ${state == PromptCodeState.CodeFailed}
+           | Has unparsable sentences - ${unparsableSentences.isNotEmpty()}: ${unparsableSentences.map { it.sentence }}
+        """.trimMargin()
+      )
       project.getCurrentTask()?.let {
         it.promptActionManager.updateAction(id, state)
         TaskToolWindowView.getInstance(project).updateCheckPanel(it)
@@ -143,9 +156,27 @@ class PromptExecutorAction(private val element: PsiElement, private val id: Stri
     }
   }
 
-  private fun Project.notifyError(title: String = "", content: String) =
+  private fun Project.notifyError(title: String = "", content: String, promptExpression: PromptExpression? = null) =
     EduNotificationManager.create(
       ERROR, content, title
-    ).notify(this)
+    ).notify(this).also {
+      promptExpression?.let {
+        Logger.cognifireLogger.info(
+          """Lesson id: ${task.lesson.id}    Task id: ${task.id}    Action id: $id
+           | Error: $title
+           | ErrorMessage: $content
+           | Text prompt: ${it.prompt}
+           | Code prompt: ${it.code}
+        """.trimMargin()
+        )
+      } ?: run {
+        Logger.cognifireLogger.info(
+          """Lesson id: ${task.lesson.id}    Task id: ${task.id}    Action id: $id
+           | Error: $title
+           | ErrorMessage: $content
+        """.trimMargin()
+        )
+      }
+    }
 
 }
