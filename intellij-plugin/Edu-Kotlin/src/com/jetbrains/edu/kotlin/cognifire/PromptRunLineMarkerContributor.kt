@@ -26,7 +26,7 @@ class PromptRunLineMarkerContributor : RunLineMarkerContributor() {
     ) {
       val function = PsiTreeUtil.getParentOfType(targetElement, KtNamedFunction::class.java) ?: return null
       val uniqueId = "${function.fqName}:${function.valueParameters.size}"
-      val action = PromptExecutorAction(targetElement, uniqueId)
+      val action = PromptExecutorAction(targetElement, uniqueId, task)
       task.promptActionManager.addAction(uniqueId)
       TaskToolWindowView.getInstance(project).updateCheckPanel(task)
       return Info(
