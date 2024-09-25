@@ -11,10 +11,10 @@ class CodeExpression (
   override val contentOffset: Int
     get() = baseContentOffset + dynamicOffset
 
-  val startOffset: Int
+  override val startOffset: Int
     get() = baseStartOffset + dynamicOffset
 
-  val endOffset: Int
+  override val endOffset: Int
     get() = baseEndOffset + dynamicOffset
 
   override fun shiftOffset(delta: Int) {
