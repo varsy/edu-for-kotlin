@@ -12,6 +12,7 @@ import com.jetbrains.edu.cognifire.messages.EduCognifireBundle
 import javax.swing.Icon
 import com.jetbrains.edu.cognifire.CognifireDslPackageCallChecker
 import com.jetbrains.edu.cognifire.CodeApplier
+import com.jetbrains.edu.cognifire.utils.CODE
 
 /**
  * Represents an intention action for `code` DSL elements.
@@ -43,8 +44,4 @@ class CodeIntentionAction : IntentionAction, Iconable {
   }
 
   override fun getIcon(flags: Int): Icon = AllIcons.Actions.IntentionBulb
-
-  companion object {
-    private const val CODE = "code"
-  }
 }

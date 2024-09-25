@@ -2,8 +2,8 @@ package com.jetbrains.edu.kotlin.cognifire.psi
 
 import com.intellij.psi.PsiElement
 import com.jetbrains.edu.cognifire.CognifireDslPackageCallChecker
-import com.jetbrains.edu.kotlin.cognifire.utils.PROMPT
-import com.jetbrains.edu.kotlin.cognifire.utils.CODE
+import com.jetbrains.edu.cognifire.utils.CODE
+import com.jetbrains.edu.cognifire.utils.PROMPT
 import com.jetbrains.edu.kotlin.cognifire.utils.findBlock
 import org.jetbrains.kotlin.psi.KtCallExpression
 
