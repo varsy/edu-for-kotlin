@@ -11,6 +11,8 @@ import com.jetbrains.edu.cognifire.models.FunctionArgument
 import com.jetbrains.edu.cognifire.utils.isPromptBlock
 import org.jetbrains.kotlin.psi.KtCallExpression
 import org.jetbrains.kotlin.psi.KtNamedFunction
+import org.jetbrains.kotlin.psi.psiUtil.startOffset
+import org.jetbrains.kotlin.psi.psiUtil.endOffset
 
 class KtPromptExpressionParser : PromptExpressionParser {
   override fun parsePromptExpression(promptExpression: PsiElement): PromptExpression? {
@@ -33,6 +35,8 @@ class KtPromptExpressionParser : PromptExpressionParser {
     return PromptExpression(
       getFunctionSignature(containingFunction),
       (promptPromptPsi?.textOffset ?: 0) + trimmedOffset,
+      promptExpression.startOffset,
+      promptExpression.endOffset,
       trimmedPromptPromptText.dropPostfix(TRIM_INDENT_POSTFIX).dropPostfix(QUOTE_POSTFIX),
       promptCodeBlockPsi?.bodyExpression?.text ?: ""
     )

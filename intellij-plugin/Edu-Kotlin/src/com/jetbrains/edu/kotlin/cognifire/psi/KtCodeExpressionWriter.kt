@@ -25,7 +25,7 @@ class KtCodeExpressionWriter : CodeExpressionWriter {
     val newLine = psiFactory.createNewLine()
 
     var codeOffset = element.startOffset
-    val startOffset = element.startOffset
+    var startOffset = element.startOffset
     var endOffset = element.endOffset
 
     WriteCommandAction.runWriteCommandAction(project, null, null, {
@@ -35,6 +35,7 @@ class KtCodeExpressionWriter : CodeExpressionWriter {
         updateCodeBlock(existingCodeBlock, newCodeBlock, newLine, element)
 
       codeOffset = resultingCodeBlock.getCodeOffset()
+      startOffset = resultingCodeBlock.startOffset
       endOffset = resultingCodeBlock.endOffset
     })
     return CodeExpression(
