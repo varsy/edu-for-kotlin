@@ -9,6 +9,7 @@ import com.jetbrains.edu.cognifire.highlighting.undefinedidentifier.*
 import com.jetbrains.edu.cognifire.messages.EduCognifireBundle
 import com.jetbrains.edu.cognifire.models.NamedFunction
 import com.jetbrains.edu.cognifire.models.NamedVariable
+import com.jetbrains.edu.cognifire.utils.isPromptBlock
 
 /**
  * Highlights parts containing errors inside the `prompt` DSL element.
@@ -18,9 +19,25 @@ interface PromptErrorAnnotator<T> : Annotator {
 
   override fun annotate(element: PsiElement, holder: AnnotationHolder) {
     if (!element.isRelevant()) return
+    checkSinglePromptCall(element, holder)
     val promptContent = getPromptContentOrNull(element) ?: return
     val codePromptContent = getCodePromptContentOrNull(element)
     applyAnnotation(promptContent, codePromptContent, holder)
+  }
+
+  /**
+   * Checks that the given `element` belongs to a function where at most one prompt block exists.
+   * If more than one prompt block is found, an error annotation is created.
+   * Nested prompts count as one.
+   */
+  private fun checkSinglePromptCall(element: PsiElement, holder: AnnotationHolder) {
+    val parentFunctionBody = getParentFunctionBodyOrNull(element) ?: return
+    if (parentFunctionBody.children.count { it.isPromptBlock() } > 1) {
+      holder.newAnnotation(
+        HighlightSeverity.ERROR,
+        EduCognifireBundle.message("prompt.one.per.function.error")
+      ).range(TextRange(element.getStartOffset(), element.getEndOffset())).create()
+    }
   }
 
   /**
@@ -151,5 +168,11 @@ interface PromptErrorAnnotator<T> : Annotator {
    */
   fun getCodePromptContentOrNull(element: PsiElement): PsiElement?
 
+  /**
+   * Finds the parent function of the given PSI element, if it exists.
+   */
+  fun getParentFunctionBodyOrNull(element: PsiElement): PsiElement?
+
   fun PsiElement.getStartOffset(): Int
+  fun PsiElement.getEndOffset(): Int
 }

@@ -1,7 +1,6 @@
 package com.jetbrains.edu.kotlin.cognifire.utils
 
 import com.intellij.psi.PsiElement
-import com.jetbrains.edu.cognifire.CognifireDslPackageCallChecker
 
 fun findBlock(
   element: PsiElement,
@@ -14,10 +13,3 @@ fun findBlock(
   }
   return possibleBlock
 }
-
-
-internal fun PsiElement.isPromptBlock() = text.startsWith(PROMPT) &&
-                                          CognifireDslPackageCallChecker.isCallFromCognifireDslPackage(this, this.language)
-
-const val PROMPT = "prompt"
-const val CODE = "code"
