@@ -6,7 +6,7 @@ import com.jetbrains.educational.ml.cognifire.core.PromptToCodeAssistant
 import com.jetbrains.educational.ml.cognifire.responses.PromptToCodeResponse
 
 class CodeGenerator(promptExpression: PromptExpression) {
-  private val enumeratedPromptLines = getEnumeratedPromptLines(promptExpression.prompt)
+  private val enumeratedPromptLines = getEnumeratedPromptLines(promptExpression)
 
   private val promptToCodeTranslation: PromptToCodeResponse =
     getCodeFromPrompt(promptExpression.functionSignature.toString(), enumeratedPromptLines)
@@ -35,6 +35,7 @@ class CodeGenerator(promptExpression: PromptExpression) {
       .getOrThrow()
   }
 
-  private fun getEnumeratedPromptLines(prompt: String) =
-    prompt.lines().mapIndexed { index, line -> "$index: $line" }.joinToString(System.lineSeparator())
+  private fun getEnumeratedPromptLines(promptExpression: PromptExpression) =
+    listOf(promptExpression.prompt, promptExpression.code).joinToString(System.lineSeparator())
+      .lines().mapIndexed { index, line -> "$index: $line" }.joinToString(System.lineSeparator())
 }
