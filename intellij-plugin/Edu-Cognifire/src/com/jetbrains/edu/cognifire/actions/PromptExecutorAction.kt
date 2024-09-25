@@ -63,8 +63,6 @@ class PromptExecutorAction(private val element: PsiElement, private val id: Stri
   ) { indicator ->
     runLocked(project) {
       runWithProgressBar(indicator) {
-        val unparsableSentences = checkGrammar(promptExpression, project)
-        GrammarHighlighter.highlightAll(project, unparsableSentences)
         handleCodeGeneration(project, promptExpression)
       }
     }
@@ -81,7 +79,7 @@ class PromptExecutorAction(private val element: PsiElement, private val id: Stri
       execution()
     } catch (e: AiAssistantException) {
       project.notifyError(title = EduCognifireBundle.message("action.not.run.due.to.ai.assistant.exception"), content = e.message)
-    } catch (e: Throwable) {
+    } catch (_: Throwable) {
       CodeGenerationState.getInstance(project).unlock()
       project.notifyError(content = EduCognifireBundle.message("action.not.run.due.to.unknown.exception"))
     }
@@ -110,7 +108,7 @@ class PromptExecutorAction(private val element: PsiElement, private val id: Stri
 
   private fun handleCodeGeneration(
     project: Project,
-    promptExpression: PromptExpression,
+    promptExpression: PromptExpression
   ) {
     val codeGenerator = CodeGenerator(promptExpression)
 
@@ -133,6 +131,10 @@ class PromptExecutorAction(private val element: PsiElement, private val id: Stri
         PromptCodeState.CodeFailed
       } else {
         PromptCodeState.CodeSuccess
+      }
+      if (state == PromptCodeState.CodeFailed) {
+        val unparsableSentences = checkGrammar(promptExpression, project)
+        GrammarHighlighter.highlightAll(project, unparsableSentences)
       }
       project.getCurrentTask()?.let {
         it.promptActionManager.updateAction(id, state)

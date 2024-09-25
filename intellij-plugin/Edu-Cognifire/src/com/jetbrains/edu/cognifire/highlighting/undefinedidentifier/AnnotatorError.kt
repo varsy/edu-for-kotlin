@@ -8,4 +8,5 @@ enum class AnnotatorError(val message: String) {
   UNKNOWN_FUNCTION("prompt.annotator.unknown.function.error"),
   WRONG_NUMBER_OF_ARGUMENTS("prompt.annotator.wrong.number.of.args.error"),
   UNKNOWN_VARIABLE("prompt.annotator.unknown.variable.error"),
+  VARIABLE_DECLARATION("prompt.annotator.variable.declaration.error"),
 }

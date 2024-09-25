@@ -8,6 +8,7 @@ import com.jetbrains.edu.cognifire.models.NamedVariable
 import com.jetbrains.edu.kotlin.cognifire.utils.isPromptBlock
 import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.psi.psiUtil.getChildOfType
+import org.jetbrains.kotlin.psi.psiUtil.startOffset
 import kotlin.reflect.KClass
 
 class KtPromptErrorAnnotator : PromptErrorAnnotator<KClass<out PsiElement>> {
@@ -51,4 +52,7 @@ class KtPromptErrorAnnotator : PromptErrorAnnotator<KClass<out PsiElement>> {
   override fun getNamedFunctionClasses(): Array<KClass<out PsiElement>> = arrayOf(KtNamedFunction::class)
 
   override fun getPromptContentOrNull(element: PsiElement): PsiElement? = element.getChildOfType<KtValueArgumentList>()
+  override fun getCodePromptContentOrNull(element: PsiElement): PsiElement? = element.getChildOfType<KtLambdaArgument>()
+
+  override fun PsiElement.getStartOffset() = startOffset
 }
