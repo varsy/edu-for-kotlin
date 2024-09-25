@@ -5,11 +5,13 @@ import com.intellij.psi.util.PsiTreeUtil
 import com.jetbrains.edu.cognifire.PromptErrorAnnotator
 import com.jetbrains.edu.cognifire.models.NamedFunction
 import com.jetbrains.edu.cognifire.models.NamedVariable
-import com.jetbrains.edu.kotlin.cognifire.utils.isPromptBlock
 import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.psi.psiUtil.getChildOfType
-import org.jetbrains.kotlin.psi.psiUtil.startOffset
 import kotlin.reflect.KClass
+import com.jetbrains.edu.cognifire.utils.isPromptBlock
+import org.jetbrains.kotlin.psi.psiUtil.getParentOfType
+import org.jetbrains.kotlin.psi.psiUtil.startOffset
+import org.jetbrains.kotlin.psi.psiUtil.endOffset
 
 class KtPromptErrorAnnotator : PromptErrorAnnotator<KClass<out PsiElement>> {
   override fun <T> getVisibleEntities(
@@ -54,5 +56,9 @@ class KtPromptErrorAnnotator : PromptErrorAnnotator<KClass<out PsiElement>> {
   override fun getPromptContentOrNull(element: PsiElement): PsiElement? = element.getChildOfType<KtValueArgumentList>()
   override fun getCodePromptContentOrNull(element: PsiElement): PsiElement? = element.getChildOfType<KtLambdaArgument>()
 
+  override fun getParentFunctionBodyOrNull(element: PsiElement): PsiElement? =
+    element.getParentOfType<KtNamedFunction>(true)?.bodyExpression
+
   override fun PsiElement.getStartOffset() = startOffset
+  override fun PsiElement.getEndOffset() = endOffset
 }
