@@ -5,7 +5,6 @@ import com.intellij.lang.annotation.Annotator
 import com.intellij.lang.annotation.HighlightSeverity
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
-import org.jetbrains.kotlin.psi.psiUtil.startOffset
 import com.jetbrains.edu.cognifire.highlighting.undefinedidentifier.*
 import com.jetbrains.edu.cognifire.messages.EduCognifireBundle
 import com.jetbrains.edu.cognifire.models.NamedFunction
@@ -20,7 +19,8 @@ interface PromptErrorAnnotator<T> : Annotator {
   override fun annotate(element: PsiElement, holder: AnnotationHolder) {
     if (!element.isRelevant()) return
     val promptContent = getPromptContentOrNull(element) ?: return
-    applyAnnotation(promptContent, holder)
+    val codePromptContent = getCodePromptContentOrNull(element)
+    applyAnnotation(promptContent, codePromptContent, holder)
   }
 
   /**
@@ -28,12 +28,13 @@ interface PromptErrorAnnotator<T> : Annotator {
    */
   fun applyAnnotation(
     promptContent: PsiElement,
+    codePromptContent: PsiElement?,
     holder: AnnotationHolder
   ) =
-    getIncorrectParts(promptContent).forEach {
+    getIncorrectParts(promptContent, codePromptContent).forEach {
       val errorRange = TextRange(
-        promptContent.startOffset + it.range.first,
-        promptContent.startOffset + it.range.last + 1
+        promptContent.getStartOffset() + it.range.first,
+        promptContent.getStartOffset() + it.range.last + 1
       )
       holder
         .newAnnotation(
@@ -48,7 +49,7 @@ interface PromptErrorAnnotator<T> : Annotator {
    * Returns a sequence of [IncorrectPart] which contains parts of
    * `context` to be highlighted and the type of error that the corresponding part contains.
    */
-  fun getIncorrectParts(context: PsiElement): Collection<IncorrectPart> {
+  fun getIncorrectParts(context: PsiElement, codePromptContent: PsiElement?): Collection<IncorrectPart> {
     val visibleFunctions = getVisibleEntities(context, *getNamedFunctionClasses()) { it.toNamedFunctionOrNull() }
     val visibleVariables = getVisibleEntities(context, *getNamedVariableClasses()) { it.toNamedVariableOrNull() }
     val processor = ErrorProcessor(visibleFunctions, visibleVariables)
@@ -61,7 +62,7 @@ interface PromptErrorAnnotator<T> : Annotator {
         match.identifier.range.first
       }.map { match ->
         IncorrectPart(
-          match.identifier.range, getError(match.rule, processor, match)
+          match.identifier.range, getError(match.rule, processor, match, codePromptContent)
         )
       }.filter { it.parametrizedError.errorType != AnnotatorError.NONE }
       .toList()
@@ -101,13 +102,14 @@ interface PromptErrorAnnotator<T> : Annotator {
   fun getError(
     rule: AnnotatorRule,
     processor: ErrorProcessor,
-    target: AnnotatorRuleMatch
+    target: AnnotatorRuleMatch,
+    codePromptContent: PsiElement?,
   ): AnnotatorParametrizedError {
     return when (rule) {
       AnnotatorRule.STORE_VARIABLE, AnnotatorRule.CREATE_VARIABLE,
       AnnotatorRule.SET_VARIABLE, AnnotatorRule.SAVE_VARIABLE, AnnotatorRule.LOOP_EXPRESSION -> {
         processor.visibleVariables.add(NamedVariable(target.identifier.value))
-        AnnotatorParametrizedError.NO_ERROR
+        processor.processVariableDeclaration(NamedVariable(target), codePromptContent)
       }
 
       AnnotatorRule.CALL_FUNCTION -> {
@@ -142,4 +144,12 @@ interface PromptErrorAnnotator<T> : Annotator {
    * May return `null` if there is no prompt.
    */
   fun getPromptContentOrNull(element: PsiElement): PsiElement?
+
+  /**
+   * Returns the [PsiElement] representing the code prompt block.
+   * May return `null` if there is no code prompt block.
+   */
+  fun getCodePromptContentOrNull(element: PsiElement): PsiElement?
+
+  fun PsiElement.getStartOffset(): Int
 }
