@@ -6,9 +6,9 @@ import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.psi.util.findParentOfType
 import com.jetbrains.edu.cognifire.PromptExpressionParser
 import com.jetbrains.edu.cognifire.models.FunctionSignature
-import com.jetbrains.edu.kotlin.cognifire.utils.isPromptBlock
 import com.jetbrains.edu.cognifire.models.PromptExpression
 import com.jetbrains.edu.cognifire.models.FunctionArgument
+import com.jetbrains.edu.cognifire.utils.isPromptBlock
 import org.jetbrains.kotlin.psi.KtCallExpression
 import org.jetbrains.kotlin.psi.KtNamedFunction
 
