@@ -2,6 +2,7 @@ package com.jetbrains.edu.learning.marketplace
 
 import com.intellij.execution.process.ProcessIOExecutorService
 import com.intellij.openapi.project.Project
+import com.jetbrains.edu.learning.actions.LeaveInIdeFeedbackAction
 import com.jetbrains.edu.learning.checker.CheckListener
 import com.jetbrains.edu.learning.courseFormat.CheckResult
 import com.jetbrains.edu.learning.courseFormat.EduCourse
@@ -29,6 +30,7 @@ class MarketplaceCheckListener : CheckListener {
     if (result.isSolved) {
       PostMarketplaceProjectToGitHub.promptToPostProject(project)
       SolutionSharingInlineBanners.promptToEnableSolutionSharing(project, task)
+      LeaveInIdeFeedbackAction.promptToLeaveInIdeFeedback(project)
     }
   }
 
