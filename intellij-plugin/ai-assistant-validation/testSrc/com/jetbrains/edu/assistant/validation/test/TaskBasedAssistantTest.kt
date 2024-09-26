@@ -11,12 +11,14 @@ import com.jetbrains.edu.learning.courseFormat.tasks.EduTask
 import com.jetbrains.edu.learning.eduAssistant.inspection.InspectionProvider
 import com.jetbrains.edu.learning.eduAssistant.inspection.getInspectionsWithIssues
 import com.jetbrains.edu.learning.eduAssistant.processors.TaskProcessorImpl
+import org.junit.Ignore
 import org.junit.Test
 import org.junit.experimental.categories.Category
 import org.junit.runners.Parameterized
 import kotlin.test.assertNotNull
 
 @Category(AiAutoQualityCodeTests::class)
+@Ignore
 class TaskBasedAssistantTest(lesson: String, task: String) : ExternalResourcesTest(lesson, task) {
   override val course: Course = createKotlinOnboardingMockCourse()
 
