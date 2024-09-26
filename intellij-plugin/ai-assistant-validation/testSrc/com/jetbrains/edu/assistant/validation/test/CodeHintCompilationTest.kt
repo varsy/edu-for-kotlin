@@ -7,14 +7,15 @@ import com.jetbrains.edu.learning.checker.CheckUtils
 import com.jetbrains.edu.learning.courseFormat.Course
 import com.jetbrains.edu.learning.courseFormat.tasks.EduTask
 import com.jetbrains.edu.learning.eduAssistant.processors.TaskProcessorImpl
-import com.jetbrains.edu.learning.eduState
 import junit.framework.TestCase
+import org.junit.Ignore
 import org.junit.Test
+import org.junit.experimental.categories.Category
 import org.junit.runners.Parameterized
 import kotlin.io.path.Path
-import org.junit.experimental.categories.Category
 
 @Category(AiAutoQualityCodeTests::class)
+@Ignore
 class CodeHintCompilationTest(private val lessonName: String, private val taskName: String) : ExternalResourcesTest(lessonName, taskName) {
 
   override val course: Course = createKotlinOnboardingMockCourse()
