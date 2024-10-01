@@ -165,5 +165,7 @@ public final class EducationalCoreIcons {
     public static final Icon NavigationMapTheoryTask = load("/icons/com/jetbrains/edu/eduNavigationMapTheoryTask.svg");
   }
 
+  public static final Icon aiAssistant = load("/icons/com/jetbrains/edu/learning/aiAssistantToolWindow.svg");
+
   public static final Icon DOT = load("/icons/com/jetbrains/edu/learning/dot.svg"); // 3x3
 }
