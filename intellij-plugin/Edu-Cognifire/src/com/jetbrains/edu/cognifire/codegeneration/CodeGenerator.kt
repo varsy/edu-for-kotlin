@@ -35,7 +35,16 @@ class CodeGenerator(promptExpression: PromptExpression) {
       .getOrThrow()
   }
 
-  private fun getEnumeratedPromptLines(promptExpression: PromptExpression) =
-    listOf(promptExpression.prompt, promptExpression.code).joinToString(System.lineSeparator())
-      .lines().mapIndexed { index, line -> "$index: $line" }.joinToString(System.lineSeparator())
+  private fun getEnumeratedPromptLines(promptExpression: PromptExpression): String {
+    val promptLines = promptExpression.prompt.lines()
+    val codeLines = promptExpression.code.lines()
+
+    return promptLines.enumerate(0) + System.lineSeparator() +
+           codeLines.enumerate(promptLines.size + 1)
+  }
+
+  private fun List<String>.enumerate(startIndex: Int): String {
+    return mapIndexed { index, line -> "${index + startIndex}: $line" }
+      .joinToString(System.lineSeparator())
+  }
 }
