@@ -4,7 +4,6 @@ import com.intellij.openapi.application.runReadAction
 import com.intellij.util.concurrency.annotations.RequiresReadLock
 import com.jetbrains.edu.learning.actions.NextStepHintAction.Companion.isNextStepHintApplicable
 import com.jetbrains.edu.learning.courseFormat.Course
-import com.jetbrains.edu.learning.courseFormat.eduAssistant.FunctionSignature
 import com.jetbrains.edu.learning.courseFormat.ext.*
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
 

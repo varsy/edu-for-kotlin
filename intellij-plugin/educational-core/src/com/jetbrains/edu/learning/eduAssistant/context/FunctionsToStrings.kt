@@ -4,7 +4,6 @@ import com.intellij.lang.Language
 import com.intellij.openapi.project.Project
 import com.intellij.util.concurrency.annotations.RequiresReadLock
 import com.jetbrains.edu.learning.courseFormat.TaskFile
-import com.jetbrains.edu.learning.courseFormat.eduAssistant.FunctionSignature
 import com.jetbrains.edu.learning.courseFormat.ext.getSolution
 import com.jetbrains.edu.learning.eduAssistant.context.function.signatures.createPsiFileForSolution
 

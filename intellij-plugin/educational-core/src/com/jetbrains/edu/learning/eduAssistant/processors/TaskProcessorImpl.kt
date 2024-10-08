@@ -9,10 +9,10 @@ import com.intellij.psi.PsiManager
 import com.jetbrains.edu.learning.checker.CheckUtils.COMPILATION_FAILED_MESSAGE
 import com.jetbrains.edu.learning.courseFormat.CheckStatus
 import com.jetbrains.edu.learning.courseFormat.TaskFile
-import com.jetbrains.edu.learning.courseFormat.eduAssistant.SignatureSource
 import com.jetbrains.edu.learning.courseFormat.ext.*
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
 import com.jetbrains.edu.learning.courseFormat.tasks.TheoryTask
+import com.jetbrains.edu.learning.eduAssistant.context.SignatureSource
 import com.jetbrains.edu.learning.eduAssistant.context.StringExtractor
 import com.jetbrains.edu.learning.eduAssistant.context.differ.FilesDiffer
 import com.jetbrains.edu.learning.eduAssistant.context.differ.FunctionDiffReducer

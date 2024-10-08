@@ -4,9 +4,9 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiRecursiveElementVisitor
 import com.intellij.util.containers.addIfNotNull
-import com.jetbrains.edu.learning.courseFormat.eduAssistant.FunctionParameter
-import com.jetbrains.edu.learning.courseFormat.eduAssistant.FunctionSignature
-import com.jetbrains.edu.learning.courseFormat.eduAssistant.SignatureSource
+import com.jetbrains.edu.learning.eduAssistant.context.FunctionParameter
+import com.jetbrains.edu.learning.eduAssistant.context.FunctionSignature
+import com.jetbrains.edu.learning.eduAssistant.context.SignatureSource
 import com.jetbrains.edu.learning.eduAssistant.context.function.signatures.FunctionSignaturesProvider
 import org.jetbrains.kotlin.idea.caches.resolve.analyzeWithContentAndGetResult
 import org.jetbrains.kotlin.psi.KtNamedFunction
