@@ -10,7 +10,6 @@ include(
   "edu-format",
   "intellij-plugin",
   "intellij-plugin:educational-core",
-  "intellij-plugin:ai-assistant-validation",
   "intellij-plugin:code-insight",
   "intellij-plugin:code-insight:html",
   "intellij-plugin:code-insight:markdown",

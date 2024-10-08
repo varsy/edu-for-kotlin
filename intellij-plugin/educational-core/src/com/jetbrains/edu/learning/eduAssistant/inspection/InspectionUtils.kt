@@ -31,7 +31,7 @@ private fun PsiFile.applyLocalInspection(inspection: LocalInspectionTool): List<
   return problems
 }
 
-@Suppress("unused") // Used for ai-assistant-validation module
+@Suppress("unused") // Used for AI-Hints validation
 fun PsiFile.getInspectionsWithIssues(inspections: List<LocalInspectionTool>): List<LocalInspectionTool> = inspections.flatMap { inspection ->
   this.applyLocalInspection(inspection).map { inspection }
 }

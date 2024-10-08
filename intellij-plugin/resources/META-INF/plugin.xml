@@ -32,7 +32,6 @@
     <module name="Edu-Php"/>
     <module name="Edu-Shell"/>
     <module name="Edu-Python"/>
-    <module name="ai-assistant-validation"/>
     <module name="sql-core"/>
     <module name="sql-jvm"/>
     <module name="github"/>

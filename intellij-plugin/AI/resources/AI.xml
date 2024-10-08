@@ -9,6 +9,32 @@
     <action id="Educational.GetCourseTranslation"
             class="com.jetbrains.edu.ai.translation.action.GetCourseTranslation"
             internal="true"/>
+
+    <action id="Validation.AutoCompilationErrorHintValidation"
+            class="com.jetbrains.edu.ai.hints.validation.actions.next.step.hint.AutoCompilationErrorHintValidationAction"
+            internal="true">
+      <add-to-group group-id="ToolsMenu"/>
+    </action>
+    <action id="Validation.AutoHintValidation"
+            class="com.jetbrains.edu.ai.hints.validation.actions.next.step.hint.AutoHintValidationAction"
+            internal="true">
+      <add-to-group group-id="ToolsMenu"/>
+    </action>
+    <action id="Validation.CodeHintValidation"
+            class="com.jetbrains.edu.ai.hints.validation.actions.next.step.hint.code.CodeHintValidationAction"
+            internal="true">
+      <add-to-group group-id="ToolsMenu"/>
+    </action>
+    <action id="Validation.SequentialCodeHintValidation"
+            class="com.jetbrains.edu.ai.hints.validation.actions.next.step.hint.code.sequential.SequentialCodeHintValidationAction"
+            internal="true">
+      <add-to-group group-id="ToolsMenu"/>
+    </action>
+    <action id="Validation.SequentialCodeWithCompilationErrorsValidation"
+            class="com.jetbrains.edu.ai.hints.validation.actions.next.step.hint.code.sequential.SequentialCodeWithCompilationErrorsValidationAction"
+            internal="true">
+      <add-to-group group-id="ToolsMenu"/>
+    </action>
   </actions>
 
   <extensionPoints>
