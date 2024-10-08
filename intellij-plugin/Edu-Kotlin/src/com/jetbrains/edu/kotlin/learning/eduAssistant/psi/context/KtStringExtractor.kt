@@ -2,14 +2,14 @@ package com.jetbrains.edu.kotlin.learning.eduAssistant.psi.context
 
 import com.intellij.psi.PsiFile
 import com.intellij.psi.util.PsiTreeUtil
-import com.jetbrains.edu.learning.eduAssistant.context.StringExtractor
-import org.jetbrains.kotlin.psi.KtNamedFunction
-import org.jetbrains.kotlin.psi.KtStringTemplateExpression
-import com.jetbrains.edu.learning.courseFormat.eduAssistant.SignatureSource
 import com.jetbrains.edu.learning.eduAssistant.context.FunctionsToStrings
+import com.jetbrains.edu.learning.eduAssistant.context.SignatureSource
+import com.jetbrains.edu.learning.eduAssistant.context.StringExtractor
 import org.jetbrains.kotlin.idea.references.mainReference
+import org.jetbrains.kotlin.psi.KtNamedFunction
 import org.jetbrains.kotlin.psi.KtProperty
 import org.jetbrains.kotlin.psi.KtReferenceExpression
+import org.jetbrains.kotlin.psi.KtStringTemplateExpression
 
 class KtStringExtractor : StringExtractor {
 

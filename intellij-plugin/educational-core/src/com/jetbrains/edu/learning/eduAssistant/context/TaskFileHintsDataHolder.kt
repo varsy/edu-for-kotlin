@@ -4,7 +4,6 @@ import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
 import com.jetbrains.edu.learning.courseFormat.TaskFile
-import com.jetbrains.edu.learning.courseFormat.eduAssistant.FunctionSignature
 import com.jetbrains.edu.learning.courseFormat.ext.project
 
 @Service(Service.Level.PROJECT)

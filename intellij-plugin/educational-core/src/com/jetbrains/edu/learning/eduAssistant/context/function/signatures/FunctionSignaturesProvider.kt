@@ -4,8 +4,8 @@ import com.intellij.lang.Language
 import com.intellij.lang.LanguageExtension
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.psi.PsiFile
-import com.jetbrains.edu.learning.courseFormat.eduAssistant.FunctionSignature
-import com.jetbrains.edu.learning.courseFormat.eduAssistant.SignatureSource
+import com.jetbrains.edu.learning.eduAssistant.context.FunctionSignature
+import com.jetbrains.edu.learning.eduAssistant.context.SignatureSource
 
 interface FunctionSignaturesProvider {
 

@@ -4,9 +4,9 @@ import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiManager
-import com.jetbrains.edu.learning.courseFormat.eduAssistant.SignatureSource
 import com.jetbrains.edu.learning.courseFormat.ext.*
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
+import com.jetbrains.edu.learning.eduAssistant.context.SignatureSource
 import com.jetbrains.edu.learning.eduAssistant.context.function.signatures.FunctionSignatureResolver
 import com.jetbrains.edu.learning.eduAssistant.context.function.signatures.FunctionSignaturesProvider
 import com.jetbrains.edu.learning.eduAssistant.context.function.signatures.createPsiFileForSolution
