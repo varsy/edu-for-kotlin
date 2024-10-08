@@ -3,9 +3,9 @@ package com.jetbrains.edu.kotlin.eduAssistant
 import com.jetbrains.edu.jvm.slow.checker.JdkCheckerTestBase
 import com.jetbrains.edu.kotlin.eduAssistant.courses.createKotlinCourse
 import com.jetbrains.edu.learning.courseFormat.Course
-import com.jetbrains.edu.learning.courseFormat.eduAssistant.FunctionParameter
-import com.jetbrains.edu.learning.courseFormat.eduAssistant.FunctionSignature
-import com.jetbrains.edu.learning.courseFormat.eduAssistant.SignatureSource
+import com.jetbrains.edu.learning.eduAssistant.context.FunctionParameter
+import com.jetbrains.edu.learning.eduAssistant.context.FunctionSignature
+import com.jetbrains.edu.learning.eduAssistant.context.SignatureSource
 import com.jetbrains.edu.learning.eduAssistant.context.function.signatures.FunctionSignatureResolver
 import com.jetbrains.edu.learning.eduAssistant.context.function.signatures.createPsiFileForSolution
 import org.junit.Test

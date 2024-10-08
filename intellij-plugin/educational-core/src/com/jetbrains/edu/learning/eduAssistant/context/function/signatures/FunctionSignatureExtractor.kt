@@ -7,10 +7,10 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiFileFactory
 import com.intellij.psi.PsiManager
 import com.jetbrains.edu.learning.courseFormat.TaskFile
-import com.jetbrains.edu.learning.courseFormat.eduAssistant.FunctionSignature
-import com.jetbrains.edu.learning.courseFormat.eduAssistant.SignatureSource
 import com.jetbrains.edu.learning.courseFormat.ext.*
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
+import com.jetbrains.edu.learning.eduAssistant.context.FunctionSignature
+import com.jetbrains.edu.learning.eduAssistant.context.SignatureSource
 
 
 fun isFileUnchanged(file: TaskFile, project: Project): Boolean {

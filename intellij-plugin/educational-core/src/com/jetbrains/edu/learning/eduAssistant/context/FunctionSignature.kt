@@ -1,14 +1,7 @@
-package com.jetbrains.edu.learning.courseFormat.eduAssistant
+package com.jetbrains.edu.learning.eduAssistant.context
 
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.jetbrains.edu.learning.courseFormat.eduAssistant.FunctionParameterJsonNames.PARAMETER_NAME
-import com.jetbrains.edu.learning.courseFormat.eduAssistant.FunctionParameterJsonNames.TYPE
-import com.jetbrains.edu.learning.courseFormat.eduAssistant.FunctionSignatureJsonNames.BODY_LINE_COUNT
-import com.jetbrains.edu.learning.courseFormat.eduAssistant.FunctionSignatureJsonNames.PARAMETERS
-import com.jetbrains.edu.learning.courseFormat.eduAssistant.FunctionSignatureJsonNames.RETURN_TYPE
-import com.jetbrains.edu.learning.courseFormat.eduAssistant.FunctionSignatureJsonNames.SIGNATURE_NAME
-import com.jetbrains.edu.learning.courseFormat.eduAssistant.FunctionSignatureJsonNames.SIGNATURE_SOURCE
 
 data class FunctionSignature
 @JsonCreator constructor(
@@ -41,6 +34,12 @@ data class FunctionSignature
   }
 
   companion object {
+    const val SIGNATURE_NAME = "name"
+    const val PARAMETERS = "parameters"
+    const val RETURN_TYPE = "returnType"
+    const val SIGNATURE_SOURCE = "signatureSource"
+    const val BODY_LINE_COUNT = "bodyLineCount"
+
     private const val NAME_ARGS_SEPARATOR = "("
     private const val ARGS_RETURN_TYPE_SEPARATOR = "): "
     private const val ARGS_SEPARATOR = ", "
@@ -55,6 +54,9 @@ data class FunctionParameter
   override fun toString() = "${name}$NAME_TYPE_SEPARATOR$type"
 
   companion object {
+    const val PARAMETER_NAME = "name"
+    const val TYPE = "type"
+
     private const val NAME_TYPE_SEPARATOR = ": "
   }
 }
@@ -64,17 +66,4 @@ enum class SignatureSource {
   VISIBLE_FILE,
   MODEL_SOLUTION,
   GENERATED_SOLUTION
-}
-
-object FunctionSignatureJsonNames {
-  const val SIGNATURE_NAME = "name"
-  const val PARAMETERS = "parameters"
-  const val RETURN_TYPE = "returnType"
-  const val SIGNATURE_SOURCE = "signatureSource"
-  const val BODY_LINE_COUNT = "bodyLineCount"
-}
-
-object FunctionParameterJsonNames {
-  const val PARAMETER_NAME = "name"
-  const val TYPE = "type"
 }
