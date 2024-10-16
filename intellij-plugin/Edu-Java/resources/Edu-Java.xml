@@ -10,6 +10,7 @@
   </dependencies>
 
   <xi:include href="/META-INF/Hyperskill-Java.xml" xpointer="xpointer(/idea-plugin/*)"/>
+  <xi:include href="/META-INF/AIDebugger-Java.xml" xpointer="xpointer(/idea-plugin/*)"/>
 
   <extensions defaultExtensionNs="Educational">
     <configurator language="JAVA" implementationClass="com.jetbrains.edu.java.JConfigurator"/>

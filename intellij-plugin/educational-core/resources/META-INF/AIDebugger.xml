@@ -1,0 +1,17 @@
+<idea-plugin>
+  <extensionPoints>
+    <extensionPoint qualifiedName="Educational.BreakpointTypeManager"
+                    beanClass="com.intellij.lang.LanguageExtensionPoint"
+                    dynamic="true">
+      <with attribute="implementationClass"
+            implements="com.jetbrains.edu.learning.aiDebugging.breakpoint.BreakpointTypeManager"/>
+    </extensionPoint>
+  </extensionPoints>
+  <actions>
+    <action id="Educational.AIDebug"
+            class="com.jetbrains.edu.learning.aiDebugging.actions.DebugAction">
+      <add-to-group group-id="EditorPopupMenu" anchor="last"/>
+    </action>
+  </actions>
+  <resource-bundle>messages.EduCoreBundle</resource-bundle>
+</idea-plugin>

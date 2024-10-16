@@ -528,4 +528,5 @@
 
   <xi:include href="/META-INF/Hyperskill.xml" xpointer="xpointer(/idea-plugin/*)"/>
   <xi:include href="/META-INF/Marketplace.xml" xpointer="xpointer(/idea-plugin/*)"/>
+  <xi:include href="/META-INF/AIDebugger.xml" xpointer="xpointer(/idea-plugin/*)"/>
 </idea-plugin>
