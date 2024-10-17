@@ -4,10 +4,8 @@ import com.intellij.debugger.engine.DebugProcessImpl
 import com.intellij.debugger.engine.JavaBreakpointHandler
 import com.intellij.debugger.engine.JavaBreakpointHandlerFactory
 
-class AIDebuggerBreakpointHandlerFactory : JavaBreakpointHandlerFactory {
+class JAIDebuggerBreakpointHandlerFactory : JavaBreakpointHandlerFactory {
   override fun createHandler(process: DebugProcessImpl): JavaBreakpointHandler {
-    return AIDebuggerBreakpointHandler(process)
+    return JavaBreakpointHandler(JAIDebuggerBreakpointType::class.java, process)
   }
 }
-
-class AIDebuggerBreakpointHandler(process: DebugProcessImpl) : JavaBreakpointHandler(AIDebuggerBreakpointType::class.java, process)

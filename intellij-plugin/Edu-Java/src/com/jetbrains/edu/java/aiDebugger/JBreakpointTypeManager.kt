@@ -5,8 +5,8 @@ import com.intellij.xdebugger.breakpoints.XLineBreakpointType
 import com.jetbrains.edu.learning.aiDebugging.breakpoint.BreakpointTypeManager
 
 @Suppress("UNCHECKED_CAST")
-class BreakpointTypeManagerJava : BreakpointTypeManager {
+class JBreakpointTypeManager : BreakpointTypeManager {
   override fun getBreakPointType(): XLineBreakpointType<XBreakpointProperties<*>> {
-    return AIDebuggerBreakpointType() as XLineBreakpointType<XBreakpointProperties<*>>
+    return JAIDebuggerBreakpointType() as XLineBreakpointType<XBreakpointProperties<*>>
   }
 }
