@@ -265,21 +265,13 @@ class MarketplaceSubmissionsList {
   lateinit var submissions: List<MarketplaceSubmission>
 }
 
-class MarketplaceStateOnCloseList {
-  @JsonProperty(HAS_NEXT)
-  var hasNext: Boolean = false
+data class MarketplaceStateOnCloseList(
+  @JsonProperty(HAS_NEXT) val hasNext: Boolean = false,
+  @JsonProperty(STATES_ON_CLOSE) val states: List<MarketplaceStateOnClose>
+)
 
-  @JsonProperty(STATES_ON_CLOSE)
-  lateinit var states: List<MarketplaceStateOnClose>
-}
-
-class MarketplaceStateOnClosePost(id: Int, solutionText: String, format: Int = JSON_FORMAT_VERSION) {
-  @JsonProperty(TASK_ID)
-  val taskId: Int = id
-
-  @JsonProperty(SOLUTION)
-  val solution: String = solutionText
-
-  @JsonProperty(FORMAT_VERSION)
-  val formatVersion: Int = format
-}
+data class MarketplaceStateOnClosePost(
+  @JsonProperty(TASK_ID) val taskId: Int,
+  @JsonProperty(SOLUTION) val solution: String,
+  @JsonProperty(FORMAT_VERSION) val formatVersion: Int = JSON_FORMAT_VERSION
+)
