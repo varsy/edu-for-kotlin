@@ -1,6 +1,6 @@
 <idea-plugin>
   <extensions defaultExtensionNs="com.intellij">
-    <xdebugger.breakpointType implementation="com.jetbrains.edu.java.aiDebugger.AIDebuggerBreakpoint"/>
+    <xdebugger.breakpointType implementation="com.jetbrains.edu.java.aiDebugger.AIDebuggerBreakpointType"/>
     <debugger.javaBreakpointHandlerFactory implementation="com.jetbrains.edu.java.aiDebugger.AIDebuggerBreakpointHandlerFactory"/>
   </extensions>
   <extensions defaultExtensionNs="Educational">

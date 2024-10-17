@@ -10,4 +10,4 @@ class AIDebuggerBreakpointHandlerFactory : JavaBreakpointHandlerFactory {
   }
 }
 
-class AIDebuggerBreakpointHandler(process: DebugProcessImpl) : JavaBreakpointHandler(AIDebuggerBreakpoint::class.java, process)
+class AIDebuggerBreakpointHandler(process: DebugProcessImpl) : JavaBreakpointHandler(AIDebuggerBreakpointType::class.java, process)
