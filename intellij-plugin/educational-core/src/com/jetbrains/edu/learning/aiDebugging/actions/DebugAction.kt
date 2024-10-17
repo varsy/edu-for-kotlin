@@ -21,11 +21,8 @@ class DebugAction : AnAction() {
 
 private fun getLineBreakpointPosition(e: AnActionEvent): Int? {
   val editor = e.getData(CommonDataKeys.EDITOR)
-  if (editor != null) {
-    val caretModel: CaretModel = editor.caretModel
-    val logicalPosition = caretModel.logicalPosition
-    val lineNumber = logicalPosition.line
-    return lineNumber
-  }
-  return null
+  if (editor == null) return null
+  val caretModel: CaretModel = editor.caretModel
+  val logicalPosition = caretModel.logicalPosition
+  return logicalPosition.line
 }
