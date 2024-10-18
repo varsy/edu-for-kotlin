@@ -6,9 +6,10 @@ import com.intellij.openapi.actionSystem.Presentation
 import com.intellij.openapi.actionSystem.ex.CustomComponentAction
 import com.intellij.openapi.project.DumbAwareAction
 import com.jetbrains.edu.learning.EduUtilsKt.isStudentProject
-import com.jetbrains.edu.learning.actions.ApplyCodeActionBase.Companion.closeDiffWindow
 import com.jetbrains.edu.learning.actions.ApplyCodeActionBase.Companion.getDiffRequestChain
 import com.jetbrains.edu.learning.actions.ApplyCodeActionBase.Companion.isNextStepHintDiff
+import com.jetbrains.edu.learning.actions.EduActionUtils.closeLastActiveFileEditor
+import com.jetbrains.edu.learning.invokeLater
 import org.jetbrains.annotations.NonNls
 import javax.swing.JButton
 
@@ -25,7 +26,9 @@ class CancelHintAction : DumbAwareAction(), CustomComponentAction {
     diffRequestChain.putUserData(NextStepHintAction.IS_ACCEPTED_HINT, false)
 
     val project = e.project ?: return
-    project.closeDiffWindow(e)
+    project.invokeLater {
+      project.closeLastActiveFileEditor(e)
+    }
   }
 
   override fun getActionUpdateThread() = ActionUpdateThread.BGT
