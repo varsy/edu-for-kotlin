@@ -13,12 +13,13 @@ import org.jetbrains.kotlinx.dataframe.api.toDataFrame
 @Suppress("ComponentNotRegistered")
 class SequentialCodeWithCompilationErrorsValidationAction : SequentialCodeValidationAction<MultipleCodeHintWithErrorDataframeRecord>() {
   override val outputFilePrefixName: String = "multipleCodeWithCompilationErrors"
-  override val name: String = EduAIBundle.message("action.Validation.SequentialCodeWithCompilationErrorsValidation.name")
+  override val progressText: String
+    get() = EduAIBundle.message("action.Validation.SequentialCodeWithCompilationErrorsValidation.progress.text")
   override val isNavigationRequired: Boolean = true
   override val pathToLabelledDataset = null
 
   init {
-    setUpSpinnerPanel(name)
+    setUpSpinnerPanel(progressText)
   }
 
   override fun CSVRecord.toDataframeRecord() = MultipleCodeHintWithErrorDataframeRecord.buildFrom(this)

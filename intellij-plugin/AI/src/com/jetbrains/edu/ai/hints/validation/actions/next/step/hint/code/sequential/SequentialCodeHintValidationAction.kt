@@ -29,12 +29,13 @@ import org.jetbrains.kotlinx.dataframe.api.toDataFrame
 class SequentialCodeHintValidationAction : SequentialCodeValidationAction<MultipleCodeHintDataframeRecord>() {
 
   override val outputFilePrefixName: String = "multipleCodeHints"
-  override val name: String = EduAIBundle.message("action.Validation.SequentialCodeHintValidation.name")
+  override val progressText: String
+    get() = EduAIBundle.message("action.Validation.SequentialCodeHintValidation.progress.text")
   override val isNavigationRequired: Boolean = true
   override val pathToLabelledDataset = null
 
   init {
-    setUpSpinnerPanel(name)
+    setUpSpinnerPanel(progressText)
   }
 
   override fun CSVRecord.toDataframeRecord() = MultipleCodeHintDataframeRecord.buildFrom(this)

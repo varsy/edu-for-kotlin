@@ -36,13 +36,14 @@ import kotlin.io.path.Path
 class AutoCompilationErrorHintValidationAction : ValidationAction<ValidationOfCompilationErrorHintsDataframeRecord>() {
 
   override val outputFilePrefixName: String = "generatedValidationOfCompilationErrorHints"
-  override val name: String = EduAIBundle.message("action.Validation.AutoCompilationErrorHintValidation.name")
+  override val progressText: String
+    get() = EduAIBundle.message("action.Validation.AutoCompilationErrorHintValidation.progress.text")
   override val isNavigationRequired: Boolean = true
   override val pathToLabelledDataset by lazy { Path(System.getProperty("manual.hint.validation.path")) }
   override val accuracyCalculator = AutoCompilationErrorHintValidationAccuracyCalculator()
 
   init {
-    setUpSpinnerPanel(name)
+    setUpSpinnerPanel(progressText)
   }
 
   override fun MutableList<ValidationOfCompilationErrorHintsDataframeRecord>.convertToDataFrame() = toDataFrame()

@@ -26,12 +26,13 @@ import org.jetbrains.kotlinx.dataframe.api.toDataFrame
 class CodeHintValidationAction : CodeValidationAction<CodeHintDataframeRecord>() {
 
   override val outputFilePrefixName: String = "codeHints"
-  override val name: String = EduAIBundle.message("action.Validation.CodeHintValidation.name")
+  override val progressText: String
+    get() = EduAIBundle.message("action.Validation.CodeHintValidation.progress.text")
   override val isNavigationRequired: Boolean = true
   override val pathToLabelledDataset = null
 
   init {
-    setUpSpinnerPanel(name)
+    setUpSpinnerPanel(progressText)
   }
 
   override suspend fun buildRecords(task: EduTask, lesson: Lesson): List<CodeHintDataframeRecord> {

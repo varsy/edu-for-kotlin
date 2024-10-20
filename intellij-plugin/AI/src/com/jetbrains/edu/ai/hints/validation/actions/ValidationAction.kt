@@ -50,14 +50,14 @@ import kotlin.io.path.div
  * @param T the type of records generated during validation
  *
  * @property outputFilePrefixName the prefix name of the file where the validation results will be saved
- * @property name the name of the validation action
+ * @property progressText progress indicator text
  *
  * @see ActionWithProgressIcon
  * @see DumbAware
  */
 abstract class ValidationAction<T> : ActionWithProgressIcon(), DumbAware {
   protected abstract val outputFilePrefixName: String
-  protected abstract val name: String
+  protected abstract val progressText: String
   protected abstract val isNavigationRequired: Boolean
   private val validationOutputPath by lazy {
     Path(System.getProperty("validation.output.path", "validationOutput")).also {
@@ -89,7 +89,7 @@ abstract class ValidationAction<T> : ActionWithProgressIcon(), DumbAware {
   inner class ValidationTask(
     project: Project,
     private val course: Course
-  ) : Backgroundable(project, name) {
+  ) : Backgroundable(project, progressText) {
     override fun run(indicator: ProgressIndicator) {
       processStarted()
 
@@ -214,7 +214,7 @@ abstract class ValidationAction<T> : ActionWithProgressIcon(), DumbAware {
       NotificationGroupManager.getInstance().getNotificationGroup("AiEduAssistantValidation")
         .createNotification(EduAIBundle.message(
           "validation.finished",
-          name,
+          progressText,
           validationOutputFile
         ), NotificationType.INFORMATION)
         .notify(project)

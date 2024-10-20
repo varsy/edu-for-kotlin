@@ -36,13 +36,14 @@ import kotlin.io.path.Path
 class AutoHintValidationAction : ValidationAction<ValidationOfHintsDataframeRecord>() {
 
   override val outputFilePrefixName: String = "generatedValidationOfHints"
-  override val name: String = EduAIBundle.message("action.Validation.AutoHintValidation.name")
+  override val progressText: String
+    get() = EduAIBundle.message("action.Validation.AutoHintValidation.progress.text")
   override val isNavigationRequired: Boolean = true
   override val pathToLabelledDataset by lazy { Path(System.getProperty("manual.hint.validation.path")) }
   override val accuracyCalculator = AutoHintValidationAccuracyCalculator()
 
   init {
-    setUpSpinnerPanel(name)
+    setUpSpinnerPanel(progressText)
   }
 
   override fun MutableList<ValidationOfHintsDataframeRecord>.convertToDataFrame() = toDataFrame()
