@@ -130,7 +130,7 @@ class PromptExecutorAction(private val element: PsiElement, private val id: Stri
         codeGenerator.codeToPromptLines
       )
 
-      val state = if (GeneratedCodeParser.hasErrors(project, generatedCode, element.language)) {
+      val state = if (GeneratedCodeParser.hasErrors(project, generatedCode, promptExpression.functionSignature, element.language)) {
         PromptCodeState.CodeFailed
       } else {
         PromptCodeState.CodeSuccess
