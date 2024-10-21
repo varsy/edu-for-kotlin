@@ -9,6 +9,7 @@ import com.jetbrains.edu.cognifire.models.FunctionSignature
 import com.jetbrains.edu.cognifire.models.PromptExpression
 import com.jetbrains.edu.cognifire.models.FunctionArgument
 import com.jetbrains.edu.cognifire.utils.isPromptBlock
+import com.jetbrains.edu.kotlin.cognifire.utils.UNIT_RETURN_VALUE
 import org.jetbrains.kotlin.psi.KtCallExpression
 import org.jetbrains.kotlin.psi.KtNamedFunction
 import org.jetbrains.kotlin.psi.psiUtil.startOffset
@@ -55,7 +56,7 @@ class KtPromptExpressionParser : PromptExpressionParser {
     return FunctionSignature(
       containingFunction.name ?: "",
       containingFunctionParameters,
-      containingFunction.typeReference?.text ?: "Unit"
+      containingFunction.typeReference?.text ?: UNIT_RETURN_VALUE
     )
   }
 
