@@ -2,32 +2,22 @@ package com.jetbrains.edu.kotlin.cognifire.psi
 
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
-import com.intellij.psi.PsiFileFactory
 import com.intellij.psi.PsiRecursiveElementVisitor
 import com.jetbrains.edu.cognifire.GeneratedCodeParser
-import org.jetbrains.kotlin.idea.KotlinLanguage
-import org.jetbrains.kotlin.psi.KtCallExpression
+import com.jetbrains.edu.cognifire.models.FunctionSignature
+import com.jetbrains.edu.kotlin.cognifire.utils.createPsiFile
+import com.jetbrains.edu.kotlin.cognifire.utils.getTodoMessageOrNull
 
 class KtGeneratedCodeParser : GeneratedCodeParser {
-  override fun hasErrors(project: Project, generatedCode: String): Boolean {
-    val psiFactory = PsiFileFactory.getInstance(project)
-    val file = psiFactory.createFileFromText("fileName.kt", KotlinLanguage.INSTANCE, generatedCode)
+  override fun hasErrors(project: Project, generatedCode: String, functionSignature: FunctionSignature): Boolean {
+    val file = createPsiFile(project, functionSignature.toString(), generatedCode)
     val todoStrings = mutableListOf<String>()
     file.accept(object : PsiRecursiveElementVisitor() {
       override fun visitElement(element: PsiElement) {
-        if (element is KtCallExpression && element.calleeExpression?.text == TODO_MARKER) {
-          todoStrings.add(element.valueArguments.firstOrNull()?.getArgumentExpression()?.text ?: EMPTY_TODO)
-        } else if (element.text == TODO_MARKER) {
-          todoStrings.add(EMPTY_TODO)
-        }
+        element.getTodoMessageOrNull()?.let { todoStrings.add(it) }
         super.visitElement(element)
       }
     })
     return todoStrings.isNotEmpty()
-  }
-
-  companion object {
-    private const val TODO_MARKER = "TODO"
-    private const val EMPTY_TODO = ""
   }
 }
