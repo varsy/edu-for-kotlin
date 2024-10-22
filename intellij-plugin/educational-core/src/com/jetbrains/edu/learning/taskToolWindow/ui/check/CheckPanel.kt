@@ -125,12 +125,6 @@ class CheckPanel(private val project: Project, private val parentDisposable: Dis
     checkDetailsPlaceholder.add(inlineBanner, BorderLayout.SOUTH)
   }
 
-  fun removeHint(inlineBanner: InlineBanner) {
-    checkDetailsPlaceholder.remove(inlineBanner)
-    checkDetailsPlaceholder.revalidate()
-    checkDetailsPlaceholder.repaint()
-  }
-
   private fun createRightActionToolbar(): ActionToolbar {
     val actionGroup = ActionManager.getInstance().getAction("Educational.CheckPanel.Right") as ActionGroup
     return ActionToolbarImpl(ACTION_PLACE, actionGroup, true).apply {
