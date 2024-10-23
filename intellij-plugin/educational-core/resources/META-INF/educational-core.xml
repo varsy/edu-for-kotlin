@@ -36,32 +36,32 @@
     <extensionPoint qualifiedName="Educational.functionSignaturesProvider"
                     beanClass="com.intellij.lang.LanguageExtensionPoint"
                     dynamic="true">
-      <with attribute="implementationClass" implements="com.jetbrains.edu.learning.eduAssistant.context.function.signatures.FunctionSignaturesProvider"/>
+      <with attribute="implementationClass" implements="com.jetbrains.edu.learning.hints.FunctionSignaturesProvider"/>
     </extensionPoint>
     <extensionPoint qualifiedName="Educational.functionSignatureResolver"
                     beanClass="com.intellij.lang.LanguageExtensionPoint"
                     dynamic="true">
-      <with attribute="implementationClass" implements="com.jetbrains.edu.learning.eduAssistant.context.function.signatures.FunctionSignatureResolver"/>
+      <with attribute="implementationClass" implements="com.jetbrains.edu.learning.hints.FunctionSignatureResolver"/>
     </extensionPoint>
     <extensionPoint qualifiedName="Educational.filesDiffer"
                     beanClass="com.intellij.lang.LanguageExtensionPoint"
                     dynamic="true">
-      <with attribute="implementationClass" implements="com.jetbrains.edu.learning.eduAssistant.context.differ.FilesDiffer"/>
+      <with attribute="implementationClass" implements="com.jetbrains.edu.learning.hints.FilesDiffer"/>
     </extensionPoint>
     <extensionPoint qualifiedName="Educational.functionDiffReducer"
                     beanClass="com.intellij.lang.LanguageExtensionPoint"
                     dynamic="true">
-      <with attribute="implementationClass" implements="com.jetbrains.edu.learning.eduAssistant.context.differ.FunctionDiffReducer"/>
+      <with attribute="implementationClass" implements="com.jetbrains.edu.learning.hints.FunctionDiffReducer"/>
     </extensionPoint>
     <extensionPoint qualifiedName="Educational.stringExtractor"
                     beanClass="com.intellij.lang.LanguageExtensionPoint"
                     dynamic="true">
-      <with attribute="implementationClass" implements="com.jetbrains.edu.learning.eduAssistant.context.StringExtractor"/>
+      <with attribute="implementationClass" implements="com.jetbrains.edu.learning.hints.StringExtractor"/>
     </extensionPoint>
     <extensionPoint qualifiedName="Educational.inspectionProvider"
                     beanClass="com.intellij.lang.LanguageExtensionPoint"
                     dynamic="true">
-      <with attribute="implementationClass" implements="com.jetbrains.edu.learning.eduAssistant.inspection.InspectionProvider"/>
+      <with attribute="implementationClass" implements="com.jetbrains.edu.learning.hints.InspectionProvider"/>
     </extensionPoint>
     <extensionPoint qualifiedName="Educational.configurator"
                     beanClass="com.jetbrains.edu.learning.configuration.EducationalExtensionPoint"

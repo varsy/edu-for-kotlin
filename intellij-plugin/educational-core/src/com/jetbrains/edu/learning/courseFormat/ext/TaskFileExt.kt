@@ -13,8 +13,8 @@ import com.jetbrains.edu.learning.courseFormat.EduFile.Companion.LOG
 import com.jetbrains.edu.learning.courseFormat.EduFileErrorHighlightLevel
 import com.jetbrains.edu.learning.courseFormat.FrameworkLesson
 import com.jetbrains.edu.learning.courseFormat.TaskFile
-import com.jetbrains.edu.learning.eduAssistant.context.FunctionSignature
-import com.jetbrains.edu.learning.eduAssistant.context.TaskFileHintsDataHolder.Companion.hintData
+import com.jetbrains.edu.learning.hints.context.FunctionSignature
+import com.jetbrains.edu.learning.hints.context.TaskFileHintsDataHolder.Companion.hintData
 import com.jetbrains.edu.learning.yaml.YamlFormatSynchronizer
 
 /**
