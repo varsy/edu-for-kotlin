@@ -7,7 +7,7 @@ import com.intellij.platform.ide.progress.withBackgroundProgress
 import com.jetbrains.edu.ai.hints.ui.HintsBannerManager
 import com.jetbrains.edu.ai.messages.EduAIBundle
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
-import com.jetbrains.edu.learning.eduAssistant.processors.TaskProcessorImpl
+import com.jetbrains.edu.learning.hints.TaskProcessorImpl
 import com.jetbrains.edu.learning.selectedTaskFile
 import com.jetbrains.educational.ml.hints.assistant.AiHintsAssistant
 import kotlinx.coroutines.CoroutineScope

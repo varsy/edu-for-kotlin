@@ -29,8 +29,8 @@ import com.jetbrains.edu.learning.courseFormat.tasks.*
 import com.jetbrains.edu.learning.courseFormat.tasks.choice.ChoiceTask
 import com.jetbrains.edu.learning.courseFormat.tasks.matching.SortingBasedTask
 import com.jetbrains.edu.learning.courseGeneration.GeneratorUtils
-import com.jetbrains.edu.learning.eduAssistant.context.AuthorSolutionContext
-import com.jetbrains.edu.learning.eduAssistant.context.TaskHintsDataHolder.Companion.hintData
+import com.jetbrains.edu.learning.hints.context.AuthorSolutionContext
+import com.jetbrains.edu.learning.hints.context.TaskHintsDataHolder.Companion.hintData
 import com.jetbrains.edu.learning.messages.EduCoreBundle
 import com.jetbrains.edu.learning.taskToolWindow.removeHyperskillTags
 import com.jetbrains.edu.learning.taskToolWindow.replaceActionIDsWithShortcuts
