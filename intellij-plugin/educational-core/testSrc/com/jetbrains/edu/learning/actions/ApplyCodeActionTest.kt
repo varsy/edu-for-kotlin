@@ -33,7 +33,7 @@ class ApplyCodeActionTest : EduActionTestCase() {
   @Test
   fun `test apply code with empty list of virtual file path`() {
     val diffChain = simpleDiffRequestChain(project).apply {
-      putUserData(ApplyCodeActionBase.VIRTUAL_FILE_PATH_LIST, listOf())
+      putUserData(ApplyCodeAction.VIRTUAL_FILE_PATH_LIST, listOf())
     }
     val diffVirtualFile = ChainDiffVirtualFile(diffChain, "")
     val dataContext =
@@ -52,7 +52,7 @@ class ApplyCodeActionTest : EduActionTestCase() {
   @Test
   fun `test apply code with list of wrong virtual file path`() {
     val diffChain = simpleDiffRequestChain(project).apply {
-      putUserData(ApplyCodeActionBase.VIRTUAL_FILE_PATH_LIST, listOf("src/wrong/path/nonExistingFile.kt"))
+      putUserData(ApplyCodeAction.VIRTUAL_FILE_PATH_LIST, listOf("src/wrong/path/nonExistingFile.kt"))
     }
     val diffVirtualFile = ChainDiffVirtualFile(diffChain, "")
     val dataContext =
@@ -79,7 +79,7 @@ class ApplyCodeActionTest : EduActionTestCase() {
     }
     val taskVirtualFile = course.allTasks.first().taskFiles.first().value.getVirtualFile(project) ?: error("No virtual file")
     val diffChain = simpleDiffRequestChain(project, CURRENT_CONTENT, NEW_CONTENT).apply {
-      putUserData(ApplyCodeActionBase.VIRTUAL_FILE_PATH_LIST, listOf(taskVirtualFile.path))
+      putUserData(ApplyCodeAction.VIRTUAL_FILE_PATH_LIST, listOf(taskVirtualFile.path))
     }
     val diffVirtualFile = ChainDiffVirtualFile(diffChain, "Diff")
     val dataContext =

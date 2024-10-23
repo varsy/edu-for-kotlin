@@ -1,4 +1,4 @@
-package com.jetbrains.edu.learning.eduAssistant.ui
+package com.jetbrains.edu.ai.hints.ui
 
 import com.intellij.ui.InlineBanner
 import com.intellij.ui.JBColor
@@ -6,6 +6,7 @@ import com.intellij.ui.NotificationBalloonRoundShadowBorderProvider
 import com.intellij.ui.RoundedLineBorder
 import com.intellij.util.ui.JBUI
 import com.jetbrains.edu.EducationalCoreIcons
+import com.jetbrains.edu.ai.messages.EduAIBundle
 import org.jetbrains.annotations.Nls
 import javax.swing.BorderFactory
 import javax.swing.border.CompoundBorder
@@ -16,6 +17,7 @@ class HintInlineBanner(message: @Nls String) : InlineBanner(message) {
     isOpaque = false
     border = createBorder()
     background = JBColor(BACKGROUND_COLOR_RGB, BACKGROUND_COLOR_DARK_RGB)
+    toolTipText = EduAIBundle.message("hints.label.ai.generated.content.tooltip")
   }
 
   private fun createBorder(): CompoundBorder = BorderFactory.createCompoundBorder(

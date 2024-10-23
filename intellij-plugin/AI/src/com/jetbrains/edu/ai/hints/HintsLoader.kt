@@ -1,13 +1,13 @@
-package com.jetbrains.edu.learning.eduAssistant
+package com.jetbrains.edu.ai.hints
 
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
 import com.intellij.platform.ide.progress.withBackgroundProgress
+import com.jetbrains.edu.ai.hints.ui.HintsBannerManager
+import com.jetbrains.edu.ai.messages.EduAIBundle
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
 import com.jetbrains.edu.learning.eduAssistant.processors.TaskProcessorImpl
-import com.jetbrains.edu.learning.eduAssistant.ui.HintsBannerManager
-import com.jetbrains.edu.learning.messages.EduCoreBundle
 import com.jetbrains.edu.learning.selectedTaskFile
 import com.jetbrains.educational.ml.hints.assistant.AiHintsAssistant
 import kotlinx.coroutines.CoroutineScope
@@ -21,15 +21,15 @@ class HintsLoader(private val project: Project, private val scope: CoroutineScop
   fun getHint(task: Task) = scope.launch(Dispatchers.IO) {
     try {
       if (!lock()) {
-        HintsBannerManager.showTextHintBanner(project, task, EduCoreBundle.message("action.Educational.NextStepHint.error.unlocked"))
+        HintsBannerManager.showTextHintBanner(project, task, EduAIBundle.message("action.Educational.Hints.GetHint.already.in.progress"))
         return@launch
       }
 
       val taskProcessor = TaskProcessorImpl(task)
-      val hint = withBackgroundProgress(project, EduCoreBundle.message("action.Educational.NextStepHint.progress.short.text"), cancellable = true) {
-        AiHintsAssistant.getAssistant(taskProcessor).getHint()
+      val hint = withBackgroundProgress(project, EduAIBundle.message("action.Educational.Hints.GetHint.progress.text"), cancellable = true) {
+        AiHintsAssistant.getAssistant(taskProcessor).getHint(taskProcessor.getSubmissionTextRepresentation() ?: "")
       }.getOrElse {
-        HintsBannerManager.showTextHintBanner(project, task, it.message ?: EduCoreBundle.message("action.Educational.NextStepHint.error.unknown"))
+        HintsBannerManager.showTextHintBanner(project, task, it.message ?: EduAIBundle.message("action.Educational.Hints.GetHint.error.unknown"))
         return@launch
       }
 
