@@ -16,6 +16,8 @@ import com.intellij.openapi.util.NlsContexts
 import com.intellij.util.concurrency.annotations.RequiresEdt
 import com.intellij.util.ui.UIUtil
 import com.jetbrains.edu.learning.checkIsBackgroundThread
+import com.jetbrains.edu.learning.courseFormat.CheckStatus
+import com.jetbrains.edu.learning.courseFormat.tasks.EduTask
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
 import com.jetbrains.edu.learning.getContainingTask
 import com.jetbrains.edu.learning.isUnitTestMode
@@ -29,6 +31,14 @@ import java.util.concurrent.TimeoutException
 import javax.swing.JComponent
 
 object EduActionUtils {
+  /**
+   * @see [com.jetbrains.edu.ai.hints.action.GetHint]
+   */
+  @NonNls
+  const val GET_HINT_ACTION_ID: String = "Educational.Hints.GetHint"
+
+  fun isGetHintAvailable(task: Task) = task.course.isStudy && task is EduTask && task.status == CheckStatus.Failed
+
   fun getAction(@NonNls id: String): AnAction {
     return ActionManager.getInstance().getAction(id) ?: error("Can not find action by id $id")
   }

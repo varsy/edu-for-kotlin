@@ -2,7 +2,7 @@ package com.jetbrains.edu.learning.eduAssistant.context
 
 import com.intellij.openapi.application.runReadAction
 import com.intellij.util.concurrency.annotations.RequiresReadLock
-import com.jetbrains.edu.learning.actions.NextStepHintAction.Companion.isNextStepHintApplicable
+import com.jetbrains.edu.learning.actions.EduActionUtils.isGetHintApplicable
 import com.jetbrains.edu.learning.courseFormat.Course
 import com.jetbrains.edu.learning.courseFormat.ext.*
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
@@ -28,7 +28,7 @@ data class AuthorSolutionContext(
     @JvmStatic
     fun create(course: Course) = runReadAction {
       course.allTasks.forEach { task ->
-        if (isNextStepHintApplicable(task) && task.authorSolutionContext == null) {
+        if (isGetHintApplicable(task) && task.authorSolutionContext == null) {
           task.authorSolutionContext = create(task)
         }
       }

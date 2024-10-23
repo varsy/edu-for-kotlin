@@ -134,7 +134,6 @@
   <actions>
     <action id="Educational.ImportLocalCourse" class="com.jetbrains.edu.learning.actions.ImportLocalCourseAction"/>
     <action id="Educational.Check" class="com.jetbrains.edu.learning.actions.CheckAction"/>
-    <action id="Educational.NextStepHint" class="com.jetbrains.edu.learning.actions.NextStepHintAction"/>
     <action id="Educational.Retry" class="com.jetbrains.edu.learning.actions.RetryAction"/>
     <action id="Educational.PrevPlaceholder"
             class="com.jetbrains.edu.learning.actions.PrevPlaceholderAction"
@@ -291,10 +290,7 @@
         first-keystroke="control alt shift A"
       />
     </action>
-    <action id="Educational.Assistant.AcceptHint"
-            class="com.jetbrains.edu.learning.actions.AcceptHintAction">
-      <add-to-group group-id="Diff.ViewerToolbar" anchor="before" relative-to-action="Educational.Assistant.CancelHint"/>
-    </action>
+
     <group id="Educational.CourseView.SecondaryActions">
       <action id="Educational.HideSolvedLessons"
               class="com.jetbrains.edu.learning.projectView.CourseViewPane$HideSolvedLessonsAction"/>

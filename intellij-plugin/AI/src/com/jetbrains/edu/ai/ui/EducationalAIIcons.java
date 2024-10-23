@@ -15,6 +15,7 @@ public final class EducationalAIIcons {
     return IconLoader.getIcon(path, EducationalAIIcons.class);
   }
 
+  public static final Icon Hint = load("/icons/com/jetbrains/edu/ai/actions/hint.svg");
   public static final Icon Translation = load("/icons/com/jetbrains/edu/ai/actions/translation.svg");
   public static final Icon TranslationEnabled = load("/icons/com/jetbrains/edu/ai/actions/translation_enabled.svg");
   public static final Icon TranslationHovered = load("/icons/com/jetbrains/edu/ai/actions/translation_hovered.svg");

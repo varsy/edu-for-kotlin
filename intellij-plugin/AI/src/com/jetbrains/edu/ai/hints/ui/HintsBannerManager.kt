@@ -1,4 +1,4 @@
-package com.jetbrains.edu.learning.eduAssistant.ui
+package com.jetbrains.edu.ai.hints.ui
 
 import com.intellij.diff.DiffContentFactory
 import com.intellij.diff.DiffDialogHints
@@ -17,12 +17,12 @@ import com.intellij.openapi.progress.DumbProgressIndicator
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.ui.JBColor
-import com.jetbrains.edu.learning.actions.ApplyCodeActionBase
-import com.jetbrains.edu.learning.actions.NextStepHintAction.Companion.NEXT_STEP_HINT_DIFF_FLAG
+import com.jetbrains.edu.ai.hints.action.GetHint.Companion.NEXT_STEP_HINT_DIFF_FLAG
+import com.jetbrains.edu.ai.messages.EduAIBundle
+import com.jetbrains.edu.learning.actions.ApplyCodeAction
 import com.jetbrains.edu.learning.courseFormat.TaskFile
 import com.jetbrains.edu.learning.courseFormat.ext.getVirtualFile
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
-import com.jetbrains.edu.learning.messages.EduCoreBundle
 import com.jetbrains.edu.learning.taskToolWindow.ui.TaskToolWindowView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -34,7 +34,7 @@ object HintsBannerManager {
   suspend fun showCodeHintBanner(project: Project, task: Task, taskFile: TaskFile, message: @Nls String, codeHint: String) {
     val highlighter = highlightFirstCodeDiffPositionOrNull(project, taskFile, codeHint)
     val hintBanner = HintInlineBanner(message).apply {
-      addAction(EduCoreBundle.message("action.Educational.NextStepHint.show.code.text")) {
+      addAction(EduAIBundle.message("action.Educational.Hints.GetHint.show.code.text")) {
         showInCodeAction(project, taskFile, codeHint)
       }
       setCloseAction {
@@ -62,14 +62,14 @@ object HintsBannerManager {
     val solutionContent = DiffContentFactory.getInstance().create(VfsUtil.loadText(virtualFile), virtualFile.fileType)
     val solutionAfterChangesContent = DiffContentFactory.getInstance().create(codeHint, virtualFile.fileType)
     val request = SimpleDiffRequest(
-      EduCoreBundle.message("action.Educational.NextStepHint.title"),
+      EduAIBundle.message("action.Educational.Hints.GetHint.diff.title"),
       solutionContent,
       solutionAfterChangesContent,
-      EduCoreBundle.message("action.Educational.NextStepHint.current.solution"),
-      EduCoreBundle.message("action.Educational.NextStepHint.solution.after.changes")
+      EduAIBundle.message("action.Educational.Hints.GetHint.current.solution"),
+      EduAIBundle.message("action.Educational.Hints.GetHint.solution.after.changes")
     )
     val diffRequestChain = SimpleDiffRequestChain(request)
-    diffRequestChain.putUserData(ApplyCodeActionBase.VIRTUAL_FILE_PATH_LIST, listOf(virtualFile.path))
+    diffRequestChain.putUserData(ApplyCodeAction.VIRTUAL_FILE_PATH_LIST, listOf(virtualFile.path))
     diffRequestChain.putUserData(NEXT_STEP_HINT_DIFF_FLAG, true)
     DiffManager.getInstance().showDiff(project, diffRequestChain, DiffDialogHints.FRAME)
   }
