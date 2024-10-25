@@ -1038,6 +1038,9 @@ fun <T : ModuleDependency> T.excludeKotlinDeps() {
   exclude(module = "kotlin-stdlib-jdk7")
   exclude(module = "kotlinx-coroutines-core")
   exclude(module = "kotlinx-coroutines-core-jvm")
+  exclude(group = "net.java.dev.jna", module = "jna")
+  exclude(group = "net.java.dev.jna", module = "jna-platform")
+  exclude(group = "it.unimi.dsi", module = "fastutil-core")
 }
 
 fun loadProperties(path: String): Properties {
