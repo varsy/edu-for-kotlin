@@ -1,10 +1,10 @@
 package com.jetbrains.edu.learning.hints.context
 
-import com.intellij.openapi.application.runReadAction
+import com.intellij.openapi.application.readAction
 import com.intellij.util.concurrency.annotations.RequiresReadLock
-import com.jetbrains.edu.learning.actions.EduActionUtils.isGetHintApplicable
 import com.jetbrains.edu.learning.courseFormat.Course
 import com.jetbrains.edu.learning.courseFormat.ext.*
+import com.jetbrains.edu.learning.courseFormat.tasks.EduTask
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
 
 data class AuthorSolutionContext(
@@ -26,11 +26,10 @@ data class AuthorSolutionContext(
     }
 
     @JvmStatic
-    fun create(course: Course) = runReadAction {
-      course.allTasks.forEach { task ->
-        if (isGetHintApplicable(task) && task.authorSolutionContext == null) {
-          task.authorSolutionContext = create(task)
-        }
+    suspend fun create(course: Course) = readAction {
+      val tasksToInitialize = course.allTasks.filter { it is EduTask && it.authorSolutionContext == null }
+      for (task in tasksToInitialize) {
+        task.authorSolutionContext = create(task)
       }
     }
   }
