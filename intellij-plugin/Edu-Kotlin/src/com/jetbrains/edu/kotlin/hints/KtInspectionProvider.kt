@@ -2,13 +2,15 @@ package com.jetbrains.edu.kotlin.hints
 
 import com.intellij.codeInspection.LocalInspectionEP
 import com.intellij.codeInspection.LocalInspectionTool
-import com.intellij.lang.Language
+import com.intellij.util.asSafely
 import com.jetbrains.edu.learning.hints.InspectionProvider
 import org.jetbrains.kotlin.idea.KotlinLanguage
 
 class KtInspectionProvider : InspectionProvider {
 
-  // https://github.com/jetbrains-academy/kotlin-course-template/blob/main/.idea/inspectionProfiles/README.md
+  /**
+   * @see <a href="https://github.com/jetbrains-academy/kotlin-course-template/blob/main/.idea/inspectionProfiles/README.md">Inspections on Kotlin Courses</a>
+   */
   private val inspectionIds: Set<String> = setOf(
     "AddOperatorModifier",
     "AddVarianceModifier",
@@ -42,8 +44,8 @@ class KtInspectionProvider : InspectionProvider {
     "LoopToCallChain"
   )
 
-  override fun getInspections() = KotlinLanguage.INSTANCE.getAllInspections().filter { it.id in inspectionIds }.toList()
-
-  private fun Language.getAllInspections() = LocalInspectionEP.LOCAL_INSPECTION.extensions.filter { it.language == this.id }
-    .mapNotNull { it.instantiateTool() as? LocalInspectionTool }
+  override fun getInspections(): List<LocalInspectionTool> = LocalInspectionEP.LOCAL_INSPECTION.extensions
+    .filter { it.language == KotlinLanguage.INSTANCE.id }
+    .mapNotNull { it.instantiateTool().asSafely<LocalInspectionTool>() }
+    .filter { it.id in inspectionIds }
 }

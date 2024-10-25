@@ -7,19 +7,16 @@ import com.intellij.psi.PsiElement
 import com.jetbrains.edu.learning.hints.FunctionDiffReducer
 import org.jetbrains.kotlin.psi.*
 
-/**
- * This class implements the FunctionDiffReducer interface to reduce the differences between two Kotlin functions.
- */
 class KtFunctionDiffReducer : FunctionDiffReducer {
 
-  override fun reduceDiffFunctions(function: PsiElement?, modifiedFunction: PsiElement, project: Project): PsiElement =
-    function?.let {
-      reducingReplacementElement(it, modifiedFunction, project, true)
-      it
-    } ?: run {
+  override fun reduceDiffFunctions(function: PsiElement?, modifiedFunction: PsiElement, project: Project): PsiElement {
+    if (function == null) {
       reducingNewElement(modifiedFunction, project, true)
-      modifiedFunction
+      return modifiedFunction
     }
+    reducingReplacementElement(function, modifiedFunction, project, true)
+    return function
+  }
 
   private fun compareAndAmendChildren(
     first: Array<PsiElement>,
@@ -45,7 +42,8 @@ class KtFunctionDiffReducer : FunctionDiffReducer {
           addElement(it, second[first.size], project, needLineBreak = needLineBreak)
           return true
         }
-      } else {
+      }
+      else {
         addElement(first.last(), second[first.size], project, needLineBreak = needLineBreak)
         return true
       }
@@ -55,9 +53,9 @@ class KtFunctionDiffReducer : FunctionDiffReducer {
 
   private fun performWriteAction(project: Project, action: () -> Unit) {
     WriteCommandAction.runWriteCommandAction(project, null, null, {
-        PsiDocumentManager.getInstance(project).commitAllDocuments()
-        action()
-      })
+      PsiDocumentManager.getInstance(project).commitAllDocuments()
+      action()
+    })
   }
 
   private fun addElement(first: PsiElement, second: PsiElement, project: Project, addAfter: Boolean = true, needLineBreak: Boolean = true) {
@@ -70,7 +68,8 @@ class KtFunctionDiffReducer : FunctionDiffReducer {
         if (needLineBreak) {
           parent.addAfter(newLine, first)
         }
-      } else {
+      }
+      else {
         parent.addBefore(second.copy(), first)
         if (needLineBreak) {
           parent.addBefore(newLine, first)
@@ -91,32 +90,42 @@ class KtFunctionDiffReducer : FunctionDiffReducer {
 
   private fun reducingNewElement(element: PsiElement, project: Project, downsize: Boolean = false) {
     val size = element.text?.lines()?.size ?: error("Cannot get the body size of $element")
-    if (size > MAX_BODY_LINES_IN_SHORT_FUNCTION || downsize) {
-      when (element) {
-        // If a new function has been added - leave only the function declaration - change the function body to TODO_EXPRESSION
-        is KtNamedFunction -> {
-          val todoExpression = if (element.hasBlockBody()) {
-            KtPsiFactory(project).createExpression(TODO_BLOCK_EXPRESSION.trimIndent())
-          } else {
-            KtPsiFactory(project).createExpression(TODO_EXPRESSION)
-          }
-          element.bodyExpression?.let { swapElements(it, todoExpression, project) }
+    if (size <= MAX_BODY_LINES_IN_SHORT_FUNCTION && !downsize) return
+
+    when (element) {
+      // If a new function has been added - leave only the function declaration - change the function body to TODO_EXPRESSION
+      is KtNamedFunction -> {
+        val todoExpression = if (element.hasBlockBody()) {
+          KtPsiFactory(project).createExpression(TODO_BLOCK_EXPRESSION.trimIndent())
         }
-        // If a new `while` expression has been added - delete its body - leave only the condition statement
-        is KtWhileExpressionBase -> element.body?.let { swapElements(it, KtPsiFactory(project).createEmptyBody(), project) }
-        // If a new `for` expression has been added - delete its body - leave only the loopRange and loopParameter
-        is KtForExpression -> element.body?.let { swapElements(it, KtPsiFactory(project).createEmptyBody(), project) }
-        // If a new `if` expression has been added - delete its `then` block and `else` block - leave only the condition statement
-        is KtIfExpression -> {
-          element.then?.let { swapElements(it, KtPsiFactory(project).createEmptyBody(), project) }
-          element.`else`?.let { removeElement(it, project) }
-          element.elseKeyword?.let { removeElement(it, project) }
+        else {
+          KtPsiFactory(project).createExpression(TODO_EXPRESSION)
         }
-        // If a new `when` expression has been added - delete its entries - leave only the subjectExpression
-        is KtWhenExpression -> element.entries.forEach { removeElement(it, project) }
-        // If a new `return` expression has been added - move on to the reduction of the return expression
-        is KtReturnExpression -> element.returnedExpression?.let { reducingNewElement(it, project) }
+        element.bodyExpression?.let { swapElements(it, todoExpression, project) }
       }
+
+      // If a new `while` expression has been added - delete its body - leave only the condition statement
+      is KtWhileExpressionBase -> {
+        element.body?.let { swapElements(it, KtPsiFactory(project).createEmptyBody(), project) }
+      }
+
+      // If a new `for` expression has been added - delete its body - leave only the loopRange and loopParameter
+      is KtForExpression -> element.body?.let {
+        swapElements(it, KtPsiFactory(project).createEmptyBody(), project)
+      }
+
+      // If a new `if` expression has been added - delete its `then` block and `else` block - leave only the condition statement
+      is KtIfExpression -> {
+        element.then?.let { swapElements(it, KtPsiFactory(project).createEmptyBody(), project) }
+        element.`else`?.let { removeElement(it, project) }
+        element.elseKeyword?.let { removeElement(it, project) }
+      }
+
+      // If a new `when` expression has been added - delete its entries - leave only the subjectExpression
+      is KtWhenExpression -> element.entries.forEach { removeElement(it, project) }
+
+      // If a new `return` expression has been added - move on to the reduction of the return expression
+      is KtReturnExpression -> element.returnedExpression?.let { reducingNewElement(it, project) }
     }
   }
 
@@ -148,10 +157,17 @@ class KtFunctionDiffReducer : FunctionDiffReducer {
         // Change subjectExpression or entries
         first is KtWhenExpression && second is KtWhenExpression ->
           swapSmallElements(first.subjectExpression, second.subjectExpression, project) ||
-          compareAndAmendChildren(first.entries.toTypedArray(), second.entries.toTypedArray(), project, first.openBrace, needLineBreak = false)
+          compareAndAmendChildren(
+            first.entries.toTypedArray(),
+            second.entries.toTypedArray(),
+            project,
+            first.openBrace,
+            needLineBreak = false
+          )
         // Move on to comparing the returned expressions
         first is KtReturnExpression && second is KtReturnExpression ->
           swapSmallElements(first.returnedExpression, second.returnedExpression, project)
+
         else -> false
       }
     }
@@ -164,7 +180,7 @@ class KtFunctionDiffReducer : FunctionDiffReducer {
     project: Project,
     action: (PsiElement?, PsiElement?, Project) -> Unit
   ): Boolean {
-    if (first != null && second != null && !equalText(first, second, Char::isWhitespace))  {
+    if (first != null && second != null && !equalText(first, second, Char::isWhitespace)) {
       action(first, second, project)
       return true
     }
