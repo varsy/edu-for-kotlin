@@ -8,6 +8,8 @@ import com.jetbrains.edu.ai.hints.ui.HintsBannerManager
 import com.jetbrains.edu.ai.messages.EduAIBundle
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
 import com.jetbrains.edu.learning.hints.TaskProcessorImpl
+import com.jetbrains.edu.learning.hints.generator.AiCodeHintGenerator
+import com.jetbrains.edu.learning.hints.generator.AiTextHintGenerator
 import com.jetbrains.edu.learning.selectedTaskFile
 import com.jetbrains.educational.ml.hints.assistant.AiHintsAssistant
 import kotlinx.coroutines.CoroutineScope
@@ -26,8 +28,9 @@ class HintsLoader(private val project: Project, private val scope: CoroutineScop
       }
 
       val taskProcessor = TaskProcessorImpl(task)
+      val hintsAssistant = AiHintsAssistant.getAssistant(taskProcessor, AiCodeHintGenerator(taskProcessor), AiTextHintGenerator())
       val hint = withBackgroundProgress(project, EduAIBundle.message("action.Educational.Hints.GetHint.progress.text"), cancellable = true) {
-        AiHintsAssistant.getAssistant(taskProcessor).getHint(taskProcessor.getSubmissionTextRepresentation() ?: "")
+        hintsAssistant.getHint(taskProcessor.getSubmissionTextRepresentation() ?: "")
       }.getOrElse {
         HintsBannerManager.showTextHintBanner(project, task, it.message ?: EduAIBundle.message("action.Educational.Hints.GetHint.error.unknown"))
         return@launch
