@@ -38,7 +38,6 @@ import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
 import com.jetbrains.edu.learning.courseFormat.stepik.StepikCourse
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
 import com.jetbrains.edu.learning.courseFormat.tasks.choice.ChoiceTask
-import com.jetbrains.edu.learning.hints.context.AuthorSolutionContext
 import com.jetbrains.edu.learning.handlers.UserCreatedFileListener
 import com.jetbrains.edu.learning.messages.EduCoreBundle
 import com.jetbrains.edu.learning.navigation.NavigationUtils
@@ -106,9 +105,6 @@ class EduStartupActivity : StartupActivity.DumbAware {
         }
 
         EduCounterUsageCollector.eduProjectOpened(course)
-      }
-      ApplicationManager.getApplication().executeOnPooledThread {
-        AuthorSolutionContext.create(course)
       }
     }
   }

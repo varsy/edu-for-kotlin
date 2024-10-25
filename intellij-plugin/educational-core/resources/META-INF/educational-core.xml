@@ -343,6 +343,7 @@
     <!--END of Courseignore lang-->
 
     <postStartupActivity implementation="com.jetbrains.edu.learning.EduStartupActivity"/>
+    <postStartupActivity implementation="com.jetbrains.edu.learning.hints.HintsProjectActivity"/>
 
     <registryKey key="edu.task.description.update.delay"
                  description="The delay in ms before loading page by Task Description view. \nRequires project reopening"
