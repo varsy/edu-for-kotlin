@@ -5,15 +5,15 @@ import com.intellij.ui.JBColor
 import com.intellij.ui.NotificationBalloonRoundShadowBorderProvider
 import com.intellij.ui.RoundedLineBorder
 import com.intellij.util.ui.JBUI
-import com.jetbrains.edu.EducationalCoreIcons
 import com.jetbrains.edu.ai.messages.EduAIBundle
+import com.jetbrains.edu.ai.ui.EducationalAIIcons
 import org.jetbrains.annotations.Nls
 import javax.swing.BorderFactory
 import javax.swing.border.CompoundBorder
 
 class HintInlineBanner(message: @Nls String) : InlineBanner(message) {
   init {
-    setIcon(EducationalCoreIcons.Actions.AiAssistant)
+    setIcon(EducationalAIIcons.Hint)
     isOpaque = false
     border = createBorder()
     background = JBColor(BACKGROUND_COLOR_RGB, BACKGROUND_COLOR_DARK_RGB)
