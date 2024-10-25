@@ -4,12 +4,12 @@ import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
 import com.intellij.platform.ide.progress.withBackgroundProgress
+import com.jetbrains.edu.ai.hints.generator.AiCodeHintGenerator
+import com.jetbrains.edu.ai.hints.generator.AiTextHintGenerator
 import com.jetbrains.edu.ai.hints.ui.HintsBannerManager
 import com.jetbrains.edu.ai.messages.EduAIBundle
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
 import com.jetbrains.edu.learning.hints.TaskProcessorImpl
-import com.jetbrains.edu.learning.hints.generator.AiCodeHintGenerator
-import com.jetbrains.edu.learning.hints.generator.AiTextHintGenerator
 import com.jetbrains.edu.learning.selectedTaskFile
 import com.jetbrains.educational.ml.hints.assistant.AiHintsAssistant
 import kotlinx.coroutines.CoroutineScope
@@ -36,13 +36,13 @@ class HintsLoader(private val project: Project, private val scope: CoroutineScop
         return@launch
       }
 
-      val codeHint = hint.codeHint?.value
+      val codeHint = hint.codeHint?.code
       if (codeHint != null) {
         val taskFile = taskProcessor.currentTaskFile ?: project.selectedTaskFile ?: error("Failed to obtain TaskFile")
-        return@launch HintsBannerManager.showCodeHintBanner(project, task, taskFile, hint.textHint.value, codeHint)
+        return@launch HintsBannerManager.showCodeHintBanner(project, task, taskFile, hint.textHint.text, codeHint)
       }
 
-      HintsBannerManager.showTextHintBanner(project, task, hint.textHint.value)
+      HintsBannerManager.showTextHintBanner(project, task, hint.textHint.text)
     }
     finally {
       unlock()

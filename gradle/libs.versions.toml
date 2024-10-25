@@ -1,15 +1,17 @@
 [versions]
+educational-ml-library = "1.0.26"
 jackson = "2.17.2"
 kotlin = "2.0.0"
 okhttp = "4.12.0"
 retrofit = "2.9.0"
-educational-ml-library = "1.0.25"
 
 [libraries]
 annotations = { group = "org.jetbrains", name = "annotations", version = "23.0.0" }
 clikt-core = { module = "com.github.ajalt.clikt:clikt-core", version = "5.0.1" }
 converter-jackson = { group = "com.squareup.retrofit2", name = "converter-jackson", version.ref = "retrofit" }
 edu-ai-format = { group = "com.jetbrains.edu", name = "edu-ai-format", version = "0.0.6" }
+educational-ml-library-core = { group = "com.jetbrains.educational.ml", name = "educational-ml-library-core", version.ref = "educational-ml-library" }
+educational-ml-library-hints = { group = "com.jetbrains.educational.ml", name = "educational-ml-library-hints", version.ref = "educational-ml-library" }
 jackson-dataformat-yaml = { group = "com.fasterxml.jackson.dataformat", name = "jackson-dataformat-yaml", version.ref = "jackson" }
 jackson-datatype-jsr310 = { group = "com.fasterxml.jackson.datatype", name = "jackson-datatype-jsr310", version.ref = "jackson" }
 jackson-module-kotlin = { group = "com.fasterxml.jackson.module", name = "jackson-module-kotlin", version.ref = "jackson" }
@@ -29,8 +31,6 @@ kotlin-test-junit = { group = "org.jetbrains.kotlin", name = "kotlin-test-junit"
 mockk = { group = "io.mockk", name = "mockk", version = "1.12.0" }
 mockwebserver = { group = "com.squareup.okhttp3", name = "mockwebserver", version.ref = "okhttp" }
 openTest4J = { group = "org.opentest4j", name = "opentest4j", version = "1.3.0" }
-educational-ml-library-core = { group = "com.jetbrains.educational.ml", name = "educational-ml-library-core", version.ref = "educational-ml-library" }
-educational-ml-library-hints = { group = "com.jetbrains.educational.ml", name = "educational-ml-library-hints", version.ref = "educational-ml-library" }
 
 [plugins]
 downloadPlugin = { id = "de.undercouch.download", version = "5.3.0" }
