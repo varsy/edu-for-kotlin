@@ -60,7 +60,6 @@ abstract class MarketplaceAuthConnector : EduLoginConnector<MarketplaceAccount, 
     return postLoginActions.asList() + listOf(requestFocus, showNotification)
   }
 
-  @RequiresBackgroundThread
   override fun isLoggedIn(): Boolean {
     if (RemoteEnvHelper.isRemoteDevServer()) {
       return RemoteEnvHelper.getUserUidToken() != null
