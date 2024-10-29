@@ -7,6 +7,9 @@
             implements="com.jetbrains.edu.learning.aiDebugging.breakpoint.BreakpointTypeManager"/>
     </extensionPoint>
   </extensionPoints>
+  <extensions defaultExtensionNs="com.intellij">
+    <postStartupActivity implementation="com.jetbrains.edu.learning.aiDebugging.breakpoint.AIBreakPointsStartupActivity"/>
+  </extensions>
   <actions>
     <action id="Educational.AIDebug"
             class="com.jetbrains.edu.learning.aiDebugging.actions.DebugAction">
