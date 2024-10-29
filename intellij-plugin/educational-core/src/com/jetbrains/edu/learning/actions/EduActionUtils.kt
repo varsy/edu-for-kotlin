@@ -17,6 +17,7 @@ import com.intellij.util.concurrency.annotations.RequiresEdt
 import com.intellij.util.ui.UIUtil
 import com.jetbrains.edu.learning.checkIsBackgroundThread
 import com.jetbrains.edu.learning.courseFormat.CheckStatus
+import com.jetbrains.edu.learning.courseFormat.EduFormatNames
 import com.jetbrains.edu.learning.courseFormat.tasks.EduTask
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
 import com.jetbrains.edu.learning.getContainingTask
@@ -37,7 +38,10 @@ object EduActionUtils {
   @NonNls
   const val GET_HINT_ACTION_ID: String = "Educational.Hints.GetHint"
 
-  fun isGetHintAvailable(task: Task) = task.course.isStudy && task is EduTask && task.status == CheckStatus.Failed
+  fun isGetHintAvailable(task: Task): Boolean {
+    val course = task.course
+    return course.languageId == EduFormatNames.KOTLIN && course.isStudy && task is EduTask && task.status == CheckStatus.Failed
+  }
 
   fun getAction(@NonNls id: String): AnAction {
     return ActionManager.getInstance().getAction(id) ?: error("Can not find action by id $id")
