@@ -17,9 +17,9 @@ import com.intellij.openapi.progress.DumbProgressIndicator
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.ui.JBColor
-import com.jetbrains.edu.ai.hints.action.GetHint.Companion.NEXT_STEP_HINT_DIFF_FLAG
 import com.jetbrains.edu.ai.messages.EduAIBundle
 import com.jetbrains.edu.learning.actions.ApplyCodeAction
+import com.jetbrains.edu.learning.actions.ApplyCodeAction.Companion.GET_HINT_DIFF
 import com.jetbrains.edu.learning.courseFormat.TaskFile
 import com.jetbrains.edu.learning.courseFormat.ext.getVirtualFile
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
@@ -70,7 +70,7 @@ object HintsBannerManager {
     )
     val diffRequestChain = SimpleDiffRequestChain(request)
     diffRequestChain.putUserData(ApplyCodeAction.VIRTUAL_FILE_PATH_LIST, listOf(virtualFile.path))
-    diffRequestChain.putUserData(NEXT_STEP_HINT_DIFF_FLAG, true)
+    diffRequestChain.putUserData(GET_HINT_DIFF, true)
     DiffManager.getInstance().showDiff(project, diffRequestChain, DiffDialogHints.FRAME)
   }
 

@@ -49,7 +49,7 @@ open class ApplyCodeAction : DumbAwareAction(), CustomComponentAction {
   override fun update(e: AnActionEvent) {
     e.presentation.isEnabledAndVisible = false
     val project = e.project ?: return
-    e.presentation.isEnabledAndVisible = project.isStudentProject() && e.isUserDataPresented()
+    e.presentation.isEnabledAndVisible = project.isStudentProject() && e.isUserDataPresented() && !e.isGetHintDiff()
   }
 
   override fun actionPerformed(e: AnActionEvent) {
@@ -167,5 +167,10 @@ open class ApplyCodeAction : DumbAwareAction(), CustomComponentAction {
       val chainDiffVirtualFile = getData(CommonDataKeys.VIRTUAL_FILE) as? ChainDiffVirtualFile
       return chainDiffVirtualFile?.chain
     }
+
+    val GET_HINT_DIFF: Key<Boolean> = Key.create("getHintDiff")
+
+    fun AnActionEvent.isGetHintDiff(): Boolean =
+      getDiffRequestChain()?.getUserData(GET_HINT_DIFF) == true
   }
 }

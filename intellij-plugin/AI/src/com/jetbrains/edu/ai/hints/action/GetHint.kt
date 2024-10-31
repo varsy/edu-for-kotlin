@@ -5,7 +5,6 @@ import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.ex.ActionUtil
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.project.DumbService
-import com.intellij.openapi.util.Key
 import com.jetbrains.edu.ai.hints.HintsLoader
 import com.jetbrains.edu.ai.messages.EduAIBundle
 import com.jetbrains.edu.learning.EduUtilsKt.showPopup
@@ -38,8 +37,4 @@ class GetHint : ActionWithProgressIcon() {
   }
 
   override fun getActionUpdateThread() = ActionUpdateThread.BGT
-
-  companion object {
-    val NEXT_STEP_HINT_DIFF_FLAG: Key<Boolean> = Key.create("nextStepHintDiffFlag")
-  }
 }

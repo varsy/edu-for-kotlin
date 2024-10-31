@@ -18,7 +18,7 @@ class AcceptHint : ApplyCodeAction() {
   override fun update(e: AnActionEvent) {
     e.presentation.isEnabledAndVisible = false
     val project = e.project ?: return
-    e.presentation.isEnabledAndVisible = project.isStudentProject() && e.isNextStepHintDiff()
+    e.presentation.isEnabledAndVisible = project.isStudentProject() && e.isGetHintDiff()
   }
 
   override fun createCustomComponent(presentation: Presentation, place: String): JComponent = JButton(presentation.text).apply {
@@ -48,8 +48,5 @@ class AcceptHint : ApplyCodeAction() {
   companion object {
     @NonNls
     const val ACTION_ID: String = "Educational.Hints.AcceptHint"
-
-    fun AnActionEvent.isNextStepHintDiff(): Boolean =
-      getDiffRequestChain()?.getUserData(GetHint.NEXT_STEP_HINT_DIFF_FLAG) == true
   }
 }

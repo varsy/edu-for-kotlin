@@ -5,8 +5,8 @@ import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.Presentation
 import com.intellij.openapi.actionSystem.ex.CustomComponentAction
 import com.intellij.openapi.project.DumbAwareAction
-import com.jetbrains.edu.ai.hints.action.AcceptHint.Companion.isNextStepHintDiff
 import com.jetbrains.edu.learning.EduUtilsKt.isStudentProject
+import com.jetbrains.edu.learning.actions.ApplyCodeAction.Companion.isGetHintDiff
 import com.jetbrains.edu.learning.actions.EduActionUtils.closeLastActiveFileEditor
 import com.jetbrains.edu.learning.actions.EduActionUtils.performAction
 import com.jetbrains.edu.learning.invokeLater
@@ -19,7 +19,7 @@ class CancelHint : DumbAwareAction(), CustomComponentAction {
   override fun update(e: AnActionEvent) {
     e.presentation.isEnabledAndVisible = false
     val project = e.project ?: return
-    e.presentation.isEnabledAndVisible = project.isStudentProject() && e.isNextStepHintDiff()
+    e.presentation.isEnabledAndVisible = project.isStudentProject() && e.isGetHintDiff()
   }
 
   override fun actionPerformed(e: AnActionEvent) {
