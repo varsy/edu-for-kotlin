@@ -5,10 +5,11 @@ import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
 import com.jetbrains.edu.learning.courseFormat.ext.project
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
+import com.jetbrains.rd.util.ConcurrentHashMap
 
 @Service(Service.Level.PROJECT)
 class TaskHintsDataHolder {
-  private val data = mutableMapOf<Task, TaskHintData>()
+  private val data = ConcurrentHashMap<Task, TaskHintData>()
 
   private fun getOrCreate(task: Task): TaskHintData = data.getOrPut(task) { TaskHintData() }
 
