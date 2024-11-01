@@ -1,0 +1,16 @@
+<idea-plugin package="com.jetbrains.edu.aiHints.kotlin">
+  <dependencies>
+    <!--suppress PluginXmlValidity -->
+    <module name="ai-hints-core"/>
+    <plugin id="org.jetbrains.kotlin"/>
+  </dependencies>
+
+  <extensions defaultExtensionNs="aiHints">
+    <functionSignaturesProvider language="kotlin" implementationClass="com.jetbrains.edu.aiHints.kotlin.KtFunctionSignaturesProvider"/>
+    <functionSignatureResolver language="kotlin" implementationClass="com.jetbrains.edu.aiHints.kotlin.KtFunctionSignatureResolver"/>
+    <filesDiffer language="kotlin" implementationClass="com.jetbrains.edu.aiHints.kotlin.KtFilesDiffer"/>
+    <functionDiffReducer language="kotlin" implementationClass="com.jetbrains.edu.aiHints.kotlin.KtFunctionDiffReducer"/>
+    <stringExtractor language="kotlin" implementationClass="com.jetbrains.edu.aiHints.kotlin.KtStringExtractor"/>
+    <inspectionProvider language="kotlin" implementationClass="com.jetbrains.edu.aiHints.kotlin.KtInspectionProvider"/>
+  </extensions>
+</idea-plugin>

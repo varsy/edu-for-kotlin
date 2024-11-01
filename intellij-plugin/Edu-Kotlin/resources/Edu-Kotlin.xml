@@ -13,12 +13,6 @@
     <configurator implementationClass="com.jetbrains.edu.kotlin.KtConfigurator" language="kotlin"/>
     <twitterPluginConfigurator implementation="com.jetbrains.edu.kotlin.twitter.KtTwitterConfigurator"/>
     <mainFileProvider language="kotlin" implementationClass="com.jetbrains.edu.kotlin.KtMainFileProvider"/>
-    <functionSignaturesProvider language="kotlin" implementationClass="com.jetbrains.edu.kotlin.hints.KtFunctionSignaturesProvider"/>
-    <functionSignatureResolver language="kotlin" implementationClass="com.jetbrains.edu.kotlin.hints.KtFunctionSignatureResolver"/>
-    <filesDiffer language="kotlin" implementationClass="com.jetbrains.edu.kotlin.hints.KtFilesDiffer"/>
-    <functionDiffReducer language="kotlin" implementationClass="com.jetbrains.edu.kotlin.hints.KtFunctionDiffReducer"/>
-    <stringExtractor language="kotlin" implementationClass="com.jetbrains.edu.kotlin.hints.KtStringExtractor"/>
-    <inspectionProvider language="kotlin" implementationClass="com.jetbrains.edu.kotlin.hints.KtInspectionProvider"/>
 
     <!-- Hyperskill -->
     <configurator implementationClass="com.jetbrains.edu.kotlin.hyperskill.KtHyperskillConfigurator" language="kotlin" courseType="Hyperskill"/>

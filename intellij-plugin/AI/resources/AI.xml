@@ -16,22 +16,6 @@
     <action id="Educational.ResetCourseTranslation"
             class="com.jetbrains.edu.ai.translation.action.ResetCourseTranslation"
             internal="true"/>
-
-    <action id="Educational.Hints.GetHint"
-            class="com.jetbrains.edu.ai.hints.action.GetHint"
-            internal="true"/>
-
-    <action id="Educational.Hints.AcceptHint"
-            class="com.jetbrains.edu.ai.hints.action.AcceptHint"
-            internal="true">
-      <add-to-group group-id="Diff.ViewerToolbar" anchor="before" relative-to-action="Educational.Hints.CancelHint"/>
-    </action>
-
-    <action id="Educational.Hints.CancelHint"
-            class="com.jetbrains.edu.ai.hints.action.CancelHint"
-            internal="true">
-      <add-to-group group-id="Diff.ViewerToolbar" anchor="after" relative-to-action="Educational.Hints.AcceptHint"/>
-    </action>
   </actions>
 
   <extensionPoints>
@@ -54,8 +38,6 @@
     <experimentalFeature id="edu.ai" percentOfUsers="100" internalFeature="true">
       <description>Enables educational AI features</description>
     </experimentalFeature>
-
-    <registryKey defaultValue="true" description="Makes Get Hint action available (Kotlin courses only)" key="ai.get.hint.action"/>
   </extensions>
 
   <extensions defaultExtensionNs="Educational">

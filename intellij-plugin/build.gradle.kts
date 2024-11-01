@@ -200,8 +200,6 @@ allprojects {
     implementationWithoutKotlin(rootProject.libs.retrofit)
     implementationWithoutKotlin(rootProject.libs.converter.jackson)
     implementationWithoutKotlin(rootProject.libs.kotlin.css.jvm)
-    implementationWithoutKotlin(rootProject.libs.educational.ml.library.core)
-    implementationWithoutKotlin(rootProject.libs.educational.ml.library.hints)
 
     testImplementation(rootProject.libs.junit)
     testImplementation(rootProject.libs.openTest4J)
@@ -318,6 +316,9 @@ dependencies {
     pluginModule(implementation(project("github")))
     pluginModule(implementation(project("remote-env")))
     pluginModule(implementation(project("features:command-line")))
+    pluginModule(implementation(project("features:ai-hints")))
+    pluginModule(implementation(project("features:ai-hints:core")))
+    pluginModule(implementation(project("features:ai-hints:kotlin")))
     // BACKCOMPAT: 2024.1
     if (isAtLeast242) {
       // bundled localization resources can be used only since 2024.2,
@@ -970,6 +971,52 @@ project("features:command-line") {
     implementationWithoutKotlin(rootProject.libs.clikt.core)
 
     testImplementation(project(":intellij-plugin:educational-core", "testOutput"))
+  }
+}
+
+project("features:ai-hints") {
+  dependencies {
+    intellijPlatform {
+      intellijIde(baseVersion)
+    }
+
+    implementation(project(":intellij-plugin:educational-core"))
+
+    testImplementation(project(":intellij-plugin:educational-core", "testOutput"))
+  }
+}
+
+project("features:ai-hints:core") {
+  dependencies {
+    intellijPlatform {
+      intellijIde(baseVersion)
+    }
+
+    implementation(project(":intellij-plugin:educational-core"))
+    implementationWithoutKotlin(rootProject.libs.educational.ml.library.core)
+    implementationWithoutKotlin(rootProject.libs.educational.ml.library.hints)
+
+    testImplementation(project(":intellij-plugin:educational-core", "testOutput"))
+  }
+}
+
+project("features:ai-hints:kotlin") {
+  dependencies {
+    intellijPlatform {
+      intellijIde(baseVersion)
+
+      intellijPlugins(kotlinPlugin)
+    }
+
+    implementation(project(":intellij-plugin:educational-core"))
+    implementation(project(":intellij-plugin:jvm-core"))
+    implementation(project(":intellij-plugin:features:ai-hints:core"))
+
+    testImplementation(project(":intellij-plugin:educational-core", "testOutput"))
+    testImplementation(project(":intellij-plugin:jvm-core", "testOutput"))
+    testImplementation(project(":intellij-plugin:features:ai-hints:core", "testOutput"))
+    testImplementationWithoutKotlin(rootProject.libs.educational.ml.library.core)
+    testImplementationWithoutKotlin(rootProject.libs.educational.ml.library.hints)
   }
 }
 

@@ -34,7 +34,7 @@ import javax.swing.JComponent
 
 object EduActionUtils {
   /**
-   * @see [com.jetbrains.edu.ai.hints.action.GetHint]
+   * @see [com.jetbrains.edu.aiHints.core.action.GetHint]
    */
   @NonNls
   const val GET_HINT_ACTION_ID: String = "Educational.Hints.GetHint"

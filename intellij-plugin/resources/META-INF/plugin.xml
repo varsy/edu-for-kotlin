@@ -41,5 +41,7 @@
 
     <!-- feature modules -->
     <module name="command-line"/>
+    <module name="ai-hints-core"/>
+    <module name="ai-hints-kotlin"/>
   </content>
 </idea-plugin>

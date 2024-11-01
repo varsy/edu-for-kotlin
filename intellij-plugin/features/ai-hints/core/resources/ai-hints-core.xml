@@ -1,0 +1,60 @@
+<idea-plugin package="com.jetbrains.edu.aiHints.core">
+  <resource-bundle>messages.EduAIHintsCoreBundle</resource-bundle>
+
+  <actions>
+    <action id="Educational.Hints.GetHint"
+            class="com.jetbrains.edu.aiHints.core.action.GetHint"
+            internal="true"/>
+
+    <action id="Educational.Hints.AcceptHint"
+            class="com.jetbrains.edu.aiHints.core.action.AcceptHint"
+            internal="true">
+      <add-to-group group-id="Diff.ViewerToolbar" anchor="before" relative-to-action="Educational.Hints.CancelHint"/>
+    </action>
+
+    <action id="Educational.Hints.CancelHint"
+            class="com.jetbrains.edu.aiHints.core.action.CancelHint"
+            internal="true">
+      <add-to-group group-id="Diff.ViewerToolbar" anchor="after" relative-to-action="Educational.Hints.AcceptHint"/>
+    </action>
+  </actions>
+
+  <extensions defaultExtensionNs="com.intellij">
+    <postStartupActivity implementation="com.jetbrains.edu.aiHints.core.HintsProjectActivity"/>
+
+    <registryKey defaultValue="true" description="Makes Get Hint action available (Kotlin courses only)" key="ai.get.hint.action"/>
+  </extensions>
+
+  <extensionPoints>
+    <extensionPoint qualifiedName="aiHints.functionSignaturesProvider"
+                    beanClass="com.intellij.lang.LanguageExtensionPoint"
+                    dynamic="true">
+      <with attribute="implementationClass" implements="com.jetbrains.edu.aiHints.core.FunctionSignaturesProvider"/>
+    </extensionPoint>
+    <extensionPoint qualifiedName="aiHints.functionSignatureResolver"
+                    beanClass="com.intellij.lang.LanguageExtensionPoint"
+                    dynamic="true">
+      <with attribute="implementationClass" implements="com.jetbrains.edu.aiHints.core.FunctionSignatureResolver"/>
+    </extensionPoint>
+    <extensionPoint qualifiedName="aiHints.filesDiffer"
+                    beanClass="com.intellij.lang.LanguageExtensionPoint"
+                    dynamic="true">
+      <with attribute="implementationClass" implements="com.jetbrains.edu.aiHints.core.FilesDiffer"/>
+    </extensionPoint>
+    <extensionPoint qualifiedName="aiHints.functionDiffReducer"
+                    beanClass="com.intellij.lang.LanguageExtensionPoint"
+                    dynamic="true">
+      <with attribute="implementationClass" implements="com.jetbrains.edu.aiHints.core.FunctionDiffReducer"/>
+    </extensionPoint>
+    <extensionPoint qualifiedName="aiHints.stringExtractor"
+                    beanClass="com.intellij.lang.LanguageExtensionPoint"
+                    dynamic="true">
+      <with attribute="implementationClass" implements="com.jetbrains.edu.aiHints.core.StringExtractor"/>
+    </extensionPoint>
+    <extensionPoint qualifiedName="aiHints.inspectionProvider"
+                    beanClass="com.intellij.lang.LanguageExtensionPoint"
+                    dynamic="true">
+      <with attribute="implementationClass" implements="com.jetbrains.edu.aiHints.core.InspectionProvider"/>
+    </extensionPoint>
+  </extensionPoints>
+</idea-plugin>

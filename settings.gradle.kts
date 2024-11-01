@@ -36,7 +36,10 @@ include(
   "intellij-plugin:sql:sql-jvm",
   "intellij-plugin:github",
   "intellij-plugin:localization",
-  "intellij-plugin:features:command-line"
+  "intellij-plugin:features:command-line",
+  "intellij-plugin:features:ai-hints",
+  "intellij-plugin:features:ai-hints:core",
+  "intellij-plugin:features:ai-hints:kotlin"
 )
 
 // BACKCOMPAT: 2024.1

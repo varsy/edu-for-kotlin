@@ -33,36 +33,6 @@
   </projectListeners>
 
   <extensionPoints>
-    <extensionPoint qualifiedName="Educational.functionSignaturesProvider"
-                    beanClass="com.intellij.lang.LanguageExtensionPoint"
-                    dynamic="true">
-      <with attribute="implementationClass" implements="com.jetbrains.edu.learning.hints.FunctionSignaturesProvider"/>
-    </extensionPoint>
-    <extensionPoint qualifiedName="Educational.functionSignatureResolver"
-                    beanClass="com.intellij.lang.LanguageExtensionPoint"
-                    dynamic="true">
-      <with attribute="implementationClass" implements="com.jetbrains.edu.learning.hints.FunctionSignatureResolver"/>
-    </extensionPoint>
-    <extensionPoint qualifiedName="Educational.filesDiffer"
-                    beanClass="com.intellij.lang.LanguageExtensionPoint"
-                    dynamic="true">
-      <with attribute="implementationClass" implements="com.jetbrains.edu.learning.hints.FilesDiffer"/>
-    </extensionPoint>
-    <extensionPoint qualifiedName="Educational.functionDiffReducer"
-                    beanClass="com.intellij.lang.LanguageExtensionPoint"
-                    dynamic="true">
-      <with attribute="implementationClass" implements="com.jetbrains.edu.learning.hints.FunctionDiffReducer"/>
-    </extensionPoint>
-    <extensionPoint qualifiedName="Educational.stringExtractor"
-                    beanClass="com.intellij.lang.LanguageExtensionPoint"
-                    dynamic="true">
-      <with attribute="implementationClass" implements="com.jetbrains.edu.learning.hints.StringExtractor"/>
-    </extensionPoint>
-    <extensionPoint qualifiedName="Educational.inspectionProvider"
-                    beanClass="com.intellij.lang.LanguageExtensionPoint"
-                    dynamic="true">
-      <with attribute="implementationClass" implements="com.jetbrains.edu.learning.hints.InspectionProvider"/>
-    </extensionPoint>
     <extensionPoint qualifiedName="Educational.configurator"
                     beanClass="com.jetbrains.edu.learning.configuration.EducationalExtensionPoint"
                     dynamic="true">
@@ -355,7 +325,6 @@
     <!--END of Courseignore lang-->
 
     <postStartupActivity implementation="com.jetbrains.edu.learning.EduStartupActivity"/>
-    <postStartupActivity implementation="com.jetbrains.edu.learning.hints.HintsProjectActivity"/>
 
     <registryKey key="edu.task.description.update.delay"
                  description="The delay in ms before loading page by Task Description view. \nRequires project reopening"
