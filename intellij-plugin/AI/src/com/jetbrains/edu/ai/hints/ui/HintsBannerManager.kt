@@ -15,15 +15,15 @@ import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.progress.DumbProgressIndicator
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.vfs.VfsUtil
-import com.intellij.ui.JBColor
+import com.intellij.openapi.vfs.VirtualFile
 import com.jetbrains.edu.ai.messages.EduAIBundle
 import com.jetbrains.edu.learning.actions.ApplyCodeAction
-import com.jetbrains.edu.learning.actions.ApplyCodeAction.Companion.GET_HINT_DIFF
 import com.jetbrains.edu.learning.courseFormat.TaskFile
 import com.jetbrains.edu.learning.courseFormat.ext.getVirtualFile
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
+import com.jetbrains.edu.learning.getTextFromTaskTextFile
 import com.jetbrains.edu.learning.taskToolWindow.ui.TaskToolWindowView
+import com.jetbrains.edu.learning.ui.EduColors
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.jetbrains.annotations.Nls
@@ -32,10 +32,13 @@ import java.awt.Font
 object HintsBannerManager {
 
   suspend fun showCodeHintBanner(project: Project, task: Task, taskFile: TaskFile, message: @Nls String, codeHint: String) {
-    val highlighter = highlightFirstCodeDiffPositionOrNull(project, taskFile, codeHint)
+    val taskVirtualFile = taskFile.getVirtualFile(project) ?: error("VirtualFile for ${taskFile.name} not found")
+    val taskFileText = taskVirtualFile.getTextFromTaskTextFile() ?: error("TaskFile text for ${taskFile.name} not found")
+
+    val highlighter = highlightFirstCodeDiffPositionOrNull(project, taskVirtualFile, taskFileText, codeHint)
     val hintBanner = HintInlineBanner(message).apply {
       addAction(EduAIBundle.message("action.Educational.Hints.GetHint.show.code.text")) {
-        showInCodeAction(project, taskFile, codeHint)
+        showInCodeAction(project, taskVirtualFile, taskFileText, codeHint)
       }
       setCloseAction {
         highlighter?.dispose()
@@ -56,57 +59,37 @@ object HintsBannerManager {
     taskToolWindow.addInlineBannerToCheckPanel(hintsBanner)
   }
 
-  // TODO: Refactor
-  private fun showInCodeAction(project: Project, taskFile: TaskFile, codeHint: String) {
-    val virtualFile = taskFile.getVirtualFile(project) ?: error("VirtualFile for ${taskFile.name} not found")
-    val solutionContent = DiffContentFactory.getInstance().create(VfsUtil.loadText(virtualFile), virtualFile.fileType)
-    val solutionAfterChangesContent = DiffContentFactory.getInstance().create(codeHint, virtualFile.fileType)
-    val request = SimpleDiffRequest(
-      EduAIBundle.message("action.Educational.Hints.GetHint.diff.title"),
-      solutionContent,
-      solutionAfterChangesContent,
-      EduAIBundle.message("action.Educational.Hints.GetHint.current.solution"),
-      EduAIBundle.message("action.Educational.Hints.GetHint.solution.after.changes")
+  private fun showInCodeAction(project: Project, taskVirtualFile: VirtualFile, taskFileText: String, codeHint: String) {
+    val diffRequestChain = SimpleDiffRequestChain(
+      SimpleDiffRequest(
+        EduAIBundle.message("action.Educational.Hints.GetHint.diff.title"),
+        DiffContentFactory.getInstance().create(taskFileText, taskVirtualFile.fileType),
+        DiffContentFactory.getInstance().create(codeHint, taskVirtualFile.fileType),
+        EduAIBundle.message("action.Educational.Hints.GetHint.current.solution"),
+        EduAIBundle.message("action.Educational.Hints.GetHint.solution.after.changes")
+      )
     )
-    val diffRequestChain = SimpleDiffRequestChain(request)
-    diffRequestChain.putUserData(ApplyCodeAction.VIRTUAL_FILE_PATH_LIST, listOf(virtualFile.path))
-    diffRequestChain.putUserData(GET_HINT_DIFF, true)
+    diffRequestChain.putUserData(ApplyCodeAction.VIRTUAL_FILE_PATH_LIST, listOf(taskVirtualFile.path))
+    diffRequestChain.putUserData(ApplyCodeAction.GET_HINT_DIFF, true)
     DiffManager.getInstance().showDiff(project, diffRequestChain, DiffDialogHints.FRAME)
   }
 
-  /**
-   * Highlights the first code difference position between the student's code in the task file and a given code hint.
-   *
-   * @return The range highlighter indicating the first code difference position, or null
-   * if virtualFile or editor is null or
-   * if the focus is on another file or
-   * if no differences are found.
-   */
-  // TODO: Refactor
-  private fun highlightFirstCodeDiffPositionOrNull(project: Project, taskFile: TaskFile, codeHint: String): RangeHighlighter? {
+  private fun highlightFirstCodeDiffPositionOrNull(
+    project: Project,
+    taskVirtualFile: VirtualFile,
+    taskFileText: String,
+    codeHint: String
+  ): RangeHighlighter? {
     val editor = FileEditorManager.getInstance(project).selectedTextEditor ?: return null
-    val virtualFile = taskFile.getVirtualFile(project) ?: return null
-    val currentFile = FileDocumentManager.getInstance().getFile(editor.document)
-    if (currentFile != virtualFile) {
-      return null
-    }
-    val studentText = VfsUtil.loadText(virtualFile)
-    val fragments = ComparisonManager.getInstance().compareLines(
-      studentText, codeHint, ComparisonPolicy.DEFAULT, DumbProgressIndicator.INSTANCE
-    )
-    return fragments.firstOrNull()?.startLine1?.let { line ->
-      val attributes =
-        TextAttributes(null, JBColor(HIGHLIGHTER_COLOR_RGB, HIGHLIGHTER_COLOR_DARK_RGB), null, EffectType.BOXED, Font.PLAIN)
-      if (line < studentText.lines().size) {
-        editor.markupModel.addLineHighlighter(line, 0, attributes)
-      }
-      else {
-        null
-      }
-    }
+    val currentVirtualFile = FileDocumentManager.getInstance().getFile(editor.document) ?: return null
+    if (currentVirtualFile != taskVirtualFile) return null
+
+    val startLine = ComparisonManager.getInstance().compareLines(
+      taskFileText, codeHint, ComparisonPolicy.DEFAULT, DumbProgressIndicator.INSTANCE
+    ).firstOrNull()?.startLine1 ?: return null
+    if (startLine >= taskFileText.lines().size) return null
+
+    val attributes = TextAttributes(null, EduColors.aiGetHintHighlighterColor, null, EffectType.BOXED, Font.PLAIN)
+    return editor.markupModel.addLineHighlighter(startLine, 0, attributes)
   }
-
-  private const val HIGHLIGHTER_COLOR_RGB: Int = 0xEFE5FF
-
-  private const val HIGHLIGHTER_COLOR_DARK_RGB: Int = 0x433358
 }

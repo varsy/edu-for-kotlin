@@ -139,6 +139,12 @@
       "source" : "com.jetbrains.edu.learning.ui.EduColors"
     },
     {
+      "key" : "AIGetHint.highlighterColor",
+      "description" : "Specifies the highlighter color",
+      "deprecated" : false,
+      "source" : "com.jetbrains.edu.learning.ui.EduColors"
+    },
+    {
       "key" : "AIGetHint.inlineBannersBackgroundColor",
       "description" : "Specifies the background color of inline banners used for showing AI hints",
       "deprecated" : false,
