@@ -50,7 +50,6 @@ class CheckPanel(private val project: Project, private val parentDisposable: Dis
   private val asyncProcessIcon = AsyncProcessIcon("Submitting...")
 
   init {
-    checkActionsPanel.add(checkButtonWrapper, BorderLayout.WEST)
     leftActionsToolbar.add(checkButtonWrapper, BorderLayout.WEST)
     leftActionsToolbar.add(getHintButtonWrapper, BorderLayout.EAST)
     checkActionsPanel.add(leftActionsToolbar, BorderLayout.WEST)
