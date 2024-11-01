@@ -54,6 +54,8 @@
     <experimentalFeature id="edu.ai" percentOfUsers="100" internalFeature="true">
       <description>Enables educational AI features</description>
     </experimentalFeature>
+
+    <registryKey defaultValue="true" description="Makes Get Hint action available (Kotlin courses only)" key="ai.get.hint.action"/>
   </extensions>
 
   <extensions defaultExtensionNs="Educational">

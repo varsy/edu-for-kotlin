@@ -13,6 +13,7 @@ import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.NlsContexts
+import com.intellij.openapi.util.registry.Registry
 import com.intellij.util.concurrency.annotations.RequiresEdt
 import com.intellij.util.ui.UIUtil
 import com.jetbrains.edu.learning.checkIsBackgroundThread
@@ -39,6 +40,7 @@ object EduActionUtils {
   const val GET_HINT_ACTION_ID: String = "Educational.Hints.GetHint"
 
   fun isGetHintAvailable(task: Task): Boolean {
+    if (!Registry.`is`("ai.get.hint.action", true)) return false
     val course = task.course
     return course.languageId == EduFormatNames.KOTLIN && course.isStudy && task is EduTask && task.status == CheckStatus.Failed
   }
