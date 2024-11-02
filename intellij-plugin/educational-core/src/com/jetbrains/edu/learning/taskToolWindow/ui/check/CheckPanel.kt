@@ -31,6 +31,7 @@ import com.jetbrains.edu.learning.taskToolWindow.ui.TaskToolWindowView
 import com.jetbrains.edu.learning.ui.getUICheckLabel
 import java.awt.BorderLayout
 import java.awt.Dimension
+import java.awt.FlowLayout
 import javax.swing.JPanel
 
 class CheckPanel(private val project: Project, private val parentDisposable: Disposable) : JPanel(BorderLayout()) {
@@ -38,17 +39,23 @@ class CheckPanel(private val project: Project, private val parentDisposable: Dis
   private val checkActionsPanel: JPanel = JPanel(BorderLayout())
   private val linkPanel = JPanel(BorderLayout())
   private val checkDetailsPlaceholder: JPanel = JPanel(BorderLayout())
+  private val codeRunnerButtonsWrapper: JPanel = JPanel(FlowLayout(FlowLayout.CENTER, 0, 0))
   private val checkButtonWrapper = JPanel(BorderLayout())
+  private val runButtonWrapper = createRunButton()
   private val rightActionsToolbar: ActionToolbar = createRightActionToolbar()
   private val course = project.course
   private val checkTimeAlarm: Alarm = Alarm(parentDisposable)
   private val asyncProcessIcon = AsyncProcessIcon("Submitting...")
 
   init {
-    checkActionsPanel.add(checkButtonWrapper, BorderLayout.WEST)
+    checkActionsPanel.add(codeRunnerButtonsWrapper, BorderLayout.WEST)
     checkActionsPanel.add(checkFinishedPanel, BorderLayout.CENTER)
     checkActionsPanel.add(rightActionsToolbar.component, BorderLayout.EAST)
     checkActionsPanel.add(linkPanel, BorderLayout.NORTH)
+
+    codeRunnerButtonsWrapper.add(checkButtonWrapper)
+    codeRunnerButtonsWrapper.add(runButtonWrapper)
+
     add(checkActionsPanel, BorderLayout.CENTER)
     add(checkDetailsPlaceholder, BorderLayout.NORTH)
     asyncProcessIcon.border = JBUI.Borders.empty(8, 6, 0, 10)
@@ -69,6 +76,10 @@ class CheckPanel(private val project: Project, private val parentDisposable: Dis
     if (startSpinner) {
       checkFinishedPanel.add(asyncProcessIcon, BorderLayout.WEST)
     }
+  }
+
+  fun createRunButton(): JPanel {
+    return CheckPanelButtonComponent(RunTaskAction())
   }
 
   fun updateCheckDetails(task: Task, result: CheckResult? = null) {

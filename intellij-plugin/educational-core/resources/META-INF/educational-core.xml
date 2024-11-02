@@ -104,6 +104,7 @@
   <actions>
     <action id="Educational.ImportLocalCourse" class="com.jetbrains.edu.learning.actions.ImportLocalCourseAction"/>
     <action id="Educational.Check" class="com.jetbrains.edu.learning.actions.CheckAction"/>
+    <action id="Educational.Run" class="com.jetbrains.edu.learning.actions.RunTaskAction"/>
     <action id="Educational.Retry" class="com.jetbrains.edu.learning.actions.RetryAction"/>
     <action id="Educational.PrevPlaceholder"
             class="com.jetbrains.edu.learning.actions.PrevPlaceholderAction"
