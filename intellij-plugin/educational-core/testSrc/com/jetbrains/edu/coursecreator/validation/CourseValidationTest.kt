@@ -83,7 +83,7 @@ class CourseValidationTest : EduTestCase() {
             - Tests: ignored
         - lesson with solved tasks:
           - theory solved task:
-            - Tests: success
+            - Tests: ignored
           - edu solved task:
             - Tests: success
           - output solved task:
@@ -91,7 +91,7 @@ class CourseValidationTest : EduTestCase() {
         - section with failed tasks:
           - lesson with failed tasks:
             - theory failed task:
-              - Tests: failed
+              - Tests: ignored
             - edu failed task:
               - Tests: failed
             - output failed task:

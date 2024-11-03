@@ -47,6 +47,4 @@ class HyperskillTaskCheckerProvider(private val baseProvider: TaskCheckerProvide
       override fun clearState() = checker.clearState()
     }
   }
-  override fun getTheoryTaskChecker(task: TheoryTask, project: Project): TheoryTaskChecker =
-    baseProvider.getTheoryTaskChecker(task, project)
 }

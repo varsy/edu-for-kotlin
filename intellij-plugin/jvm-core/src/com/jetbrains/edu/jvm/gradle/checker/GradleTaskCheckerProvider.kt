@@ -14,7 +14,4 @@ open class GradleTaskCheckerProvider : TaskCheckerProvider {
 
   override fun getEduTaskChecker(task: EduTask, project: Project): TaskChecker<EduTask> =
     NewGradleEduTaskChecker(task, envChecker, project)
-
-  override fun getTheoryTaskChecker(task: TheoryTask, project: Project): TheoryTaskChecker =
-    GradleTheoryTaskChecker(task, project)
 }

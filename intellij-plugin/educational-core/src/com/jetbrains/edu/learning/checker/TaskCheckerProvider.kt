@@ -19,18 +19,16 @@ interface TaskCheckerProvider {
 
   fun getEduTaskChecker(task: EduTask, project: Project): TaskChecker<EduTask>?
 
-  fun getTheoryTaskChecker(task: TheoryTask, project: Project): TheoryTaskChecker = TheoryTaskChecker(task, project)
-
   // Should not be overloaded by anyone
   fun getTaskChecker(task: Task, project: Project): TaskChecker<*>? {
     return when (task) {
       is RemoteEduTask,
       is StringTask, is NumberTask,
       is MatchingTask, is SortingTask,
-      is CodeTask, is DataTask, is TableTask, is UnsupportedTask -> null
+      is CodeTask, is DataTask, is TableTask,
+      is TheoryTask, is UnsupportedTask -> null
       is EduTask -> getEduTaskChecker(task, project)
       is OutputTask -> OutputTaskChecker(task, envChecker, project, codeExecutor)
-      is TheoryTask -> getTheoryTaskChecker(task, project)
       is ChoiceTask -> if (task.canCheckLocally) ChoiceTaskChecker(task, project) else null
       is IdeTask -> IdeTaskChecker(task, project)
       else -> throw IllegalStateException("Unknown task type: " + task.itemType)

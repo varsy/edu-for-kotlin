@@ -149,7 +149,6 @@ interface EduConfigurator<Settings : EduProjectSettings> {
 
   /**
    * Allows to customize file template used as playground in theory and choice tasks
-   * Template should work along with the according [com.jetbrains.edu.learning.checker.TheoryTaskChecker]
    *
    * @see com.jetbrains.edu.learning.stepik.StepikTaskBuilder
    */
