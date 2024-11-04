@@ -21,6 +21,7 @@ import com.intellij.psi.util.PsiUtilCore
 import com.intellij.util.messages.MessageBusConnection
 import com.intellij.util.text.nullize
 import com.jetbrains.edu.learning.EduNames
+import com.jetbrains.edu.learning.actions.RunTaskAction
 import com.jetbrains.edu.learning.checker.tests.TestResultCollector
 import com.jetbrains.edu.learning.courseDir
 import com.jetbrains.edu.learning.courseFormat.ext.getCodeTaskFile
@@ -81,15 +82,27 @@ object CheckUtils {
     }
   }
 
-  fun getCustomRunConfigurationForChecker(project: Project, task: Task): RunnerAndConfigurationSettings? {
+  private fun getCustomRunConfiguration(project: Project, task: Task, predicate: (VirtualFile) -> Boolean): RunnerAndConfigurationSettings? {
     val taskDir = task.getDir(project.courseDir) ?: error("Failed to find directory of `${task.name}` task")
     val runConfigurationDir = taskDir.findChild(EduNames.RUN_CONFIGURATION_DIR) ?: return null
-    val runConfigurationFile = runConfigurationDir.children.firstOrNull { it.name.endsWith(".run.xml") } ?: return null
+    val runConfigurationFile = runConfigurationDir.children.firstOrNull {
+      predicate(it) && it.name.endsWith(".run.xml")
+    } ?: return null
     val path = runConfigurationFile.path
     return RunManager.getInstance(project).allSettings.find {
       it.pathIfStoredInArbitraryFileInProject == path
     }
   }
+
+  fun getCustomRunConfigurationForChecker(project: Project, task: Task): RunnerAndConfigurationSettings? =
+    getCustomRunConfiguration(project, task) {
+      it.name != RunTaskAction.RUN_CONFIGURATION_FILE_NAME
+    }
+
+  fun getCustomRunConfigurationForRunner(project: Project, task: Task): RunnerAndConfigurationSettings? =
+    getCustomRunConfiguration(project, task) {
+      it.name == RunTaskAction.RUN_CONFIGURATION_FILE_NAME
+    }
 
   fun postProcessOutput(output: String): String {
     return output.replace(System.lineSeparator(), "\n")
