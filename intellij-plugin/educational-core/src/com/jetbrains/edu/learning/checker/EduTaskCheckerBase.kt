@@ -130,7 +130,7 @@ abstract class EduTaskCheckerBase(task: EduTask, private val envChecker: Environ
   protected open fun areTestsFailedToRun(testResults: List<TestResultGroup>): Boolean = testResults.isEmpty()
 
   protected fun createTestConfigurations(): List<RunnerAndConfigurationSettings> {
-    val customConfiguration = CheckUtils.getCustomRunConfiguration(project, task)
+    val customConfiguration = CheckUtils.getCustomRunConfigurationForChecker(project, task)
     return if (customConfiguration != null) {
       listOf(customConfiguration)
     }

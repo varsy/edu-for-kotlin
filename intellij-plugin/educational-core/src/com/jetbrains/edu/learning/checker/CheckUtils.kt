@@ -81,7 +81,7 @@ object CheckUtils {
     }
   }
 
-  fun getCustomRunConfiguration(project: Project, task: Task): RunnerAndConfigurationSettings? {
+  fun getCustomRunConfigurationForChecker(project: Project, task: Task): RunnerAndConfigurationSettings? {
     val taskDir = task.getDir(project.courseDir) ?: error("Failed to find directory of `${task.name}` task")
     val runConfigurationDir = taskDir.findChild(EduNames.RUN_CONFIGURATION_DIR) ?: return null
     val runConfigurationFile = runConfigurationDir.children.firstOrNull { it.name.endsWith(".run.xml") } ?: return null
