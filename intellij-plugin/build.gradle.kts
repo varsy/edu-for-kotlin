@@ -328,6 +328,11 @@ dependencies {
   }
 }
 
+// TODO should be fixed in ml library
+configurations.all {
+  exclude(group = "org.jetbrains.kotlinx", module = "kotlinx-coroutines-core")
+}
+
 tasks {
   val projectName = project.extensionProvider.flatMap { it.projectName }
 
