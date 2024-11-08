@@ -158,7 +158,9 @@ class PromptExecutorAction(private val element: PsiElement, private val id: Stri
 
   private fun Project.notifyError(title: String = "", content: String, promptExpression: PromptExpression? = null) =
     EduNotificationManager.create(
-      ERROR, content, title
+      type = ERROR,
+      title = title,
+      content = content
     ).notify(this).also {
       promptExpression?.let {
         Logger.cognifireLogger.info(
