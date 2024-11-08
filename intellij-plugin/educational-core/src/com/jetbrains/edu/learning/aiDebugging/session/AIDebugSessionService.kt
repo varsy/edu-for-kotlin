@@ -3,10 +3,9 @@ package com.jetbrains.edu.learning.aiDebugging.session
 import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.vfs.readText
 import com.intellij.platform.ide.progress.withModalProgress
-import com.jetbrains.edu.learning.courseFormat.TaskFile
-import com.jetbrains.edu.learning.courseFormat.ext.getVirtualFile
 import com.jetbrains.edu.learning.document
 import com.jetbrains.edu.learning.messages.EduCoreBundle
 import com.jetbrains.edu.learning.notification.EduNotificationManager
@@ -15,17 +14,19 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @Service(Service.Level.PROJECT)
-class LaunchDebugSessionService(private val project: Project, private val coroutineScope: CoroutineScope) {
+class AIDebugSessionService(private val project: Project, private val coroutineScope: CoroutineScope) {
 
-  fun startSession(description: String, selectedTaskFile: TaskFile, testDescription: String) {
+  fun runDebuggingSession(description: String, virtualFiles: List<VirtualFile>, testDescription: String) {
     coroutineScope.launch {
       withModalProgress(project, EduCoreBundle.message("action.Educational.AiDebuggingNotification.modal.session")) {
-        FixCodeForTestAssistant.getCodeFix(description, selectedTaskFile.contents.textualRepresentation, testDescription)
+        FixCodeForTestAssistant.getCodeFix(
+          description,
+          virtualFiles.first().readText(),
+          testDescription
+        ) // TODO change to several files and grab text in a proper way
       }.onSuccess { fixes ->
         runReadAction {
-          val virtualFile =
-            selectedTaskFile.getVirtualFile(project)
-            ?: error("There are no virtual file for the selected task : `$selectedTaskFile`")
+          val virtualFile = virtualFiles.first() // TODO change to several files
           val document = virtualFile.document
           fixes.forEach {
             val offset = virtualFile.readText().indexOf(it.wrongCode)
