@@ -8,6 +8,7 @@ import com.intellij.openapi.editor.CaretModel
 import com.jetbrains.edu.learning.aiDebugging.breakpoint.AIBreakPointService
 
 // TODO temporary class for testing ai breakpoints
+@Suppress("ComponentNotRegistered")
 class DebugAction : AnAction() {
   override fun actionPerformed(e: AnActionEvent) {
     val project = e.project ?: error("Project hasn't been defined")

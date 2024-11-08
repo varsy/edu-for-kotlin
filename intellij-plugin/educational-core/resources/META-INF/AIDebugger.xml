@@ -1,3 +1,4 @@
+<!--suppress PluginXmlValidity -->
 <idea-plugin>
   <extensionPoints>
     <extensionPoint qualifiedName="Educational.BreakpointTypeManager"
