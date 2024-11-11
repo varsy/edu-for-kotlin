@@ -4,8 +4,8 @@ import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiFile
 import com.intellij.psi.util.PsiTreeUtil
-import com.jetbrains.educational.ml.cognifire.responses.GeneratedCodeLine
-import com.jetbrains.educational.ml.cognifire.responses.PromptToCodeResponse
+import com.jetbrains.educational.ml.cognifire.responses.PromptToCodeContent
+import com.jetbrains.educational.ml.cognifire.responses.PromptToCodeResponse.GeneratedCodeLine
 import org.jetbrains.kotlin.idea.base.psi.isOneLiner
 import org.jetbrains.kotlin.idea.intentions.branchedTransformations.intentions.IfToWhenIntention
 import org.jetbrains.kotlin.idea.intentions.branches
@@ -36,7 +36,7 @@ class CascadeIfInspectionProcessing(private val project: Project, private val el
     })
   }
 
-  override fun applyInspection(promptToCode: PromptToCodeResponse, psiFile: PsiFile): PromptToCodeResponse {
+  override fun applyInspection(promptToCode: PromptToCodeContent, psiFile: PsiFile): PromptToCodeContent {
     if (!isApplicable()) return promptToCode
     val conditionElement = runReadAction {
       ((element.condition as? KtBinaryExpression)?.right ?: element.condition)?.text
@@ -66,7 +66,7 @@ class CascadeIfInspectionProcessing(private val project: Project, private val el
     whenExpression: KtWhenExpression,
     newPromptToCode: MutableList<GeneratedCodeLine>,
     codeLineNumber: Int,
-    promptToCode: PromptToCodeResponse,
+    promptToCode: PromptToCodeContent,
     psiFile: PsiFile
   ): Pair<Int, KtIfExpression> = runReadAction {
     var lineNumber = codeLineNumber
@@ -106,7 +106,7 @@ class CascadeIfInspectionProcessing(private val project: Project, private val el
     whenExpression: KtWhenExpression,
     newPromptToCode: MutableList<GeneratedCodeLine>,
     codeLineNumber: Int,
-    promptToCode: PromptToCodeResponse
+    promptToCode: PromptToCodeContent
   ): Int = runReadAction {
     if (currentElement.`else` == null) return@runReadAction codeLineNumber
     var lineNumber = codeLineNumber
@@ -131,7 +131,7 @@ class CascadeIfInspectionProcessing(private val project: Project, private val el
   private fun addEndOfCode(
     newPromptToCode: MutableList<GeneratedCodeLine>,
     codeLineNumber: Int,
-    promptToCode: PromptToCodeResponse,
+    promptToCode: PromptToCodeContent,
     lastIfPromptLine: Int,
     condition: KtExpression?
   ) = runReadAction {

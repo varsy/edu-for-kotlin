@@ -3,8 +3,8 @@ package com.jetbrains.edu.kotlin.cognifire.inspection.processing
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiFile
-import com.jetbrains.educational.ml.cognifire.responses.GeneratedCodeLine
-import com.jetbrains.educational.ml.cognifire.responses.PromptToCodeResponse
+import com.jetbrains.educational.ml.cognifire.responses.PromptToCodeContent
+import com.jetbrains.educational.ml.cognifire.responses.PromptToCodeResponse.GeneratedCodeLine
 import org.jetbrains.kotlin.idea.codeinsight.api.classic.inspections.AbstractApplicabilityBasedInspection
 import org.jetbrains.kotlin.psi.KtBinaryExpression
 import org.jetbrains.kotlin.psi.KtIfExpression
@@ -27,7 +27,7 @@ abstract class IfThenInspectionProcessing(private val project: Project, private 
 
   abstract fun getReplacedExpressionText(psiFile: PsiFile, condition: KtNameReferenceExpression): String?
 
-  override fun applyInspection(promptToCode: PromptToCodeResponse, psiFile: PsiFile): PromptToCodeResponse {
+  override fun applyInspection(promptToCode: PromptToCodeContent, psiFile: PsiFile): PromptToCodeContent {
     if (!isApplicable()) return promptToCode
     val ifPromptLines = element.findIfStatementInResponse(promptToCode)
     val firstIfPromptLine = element.getFirstPromptLineNumber(promptToCode) ?: return promptToCode
