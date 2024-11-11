@@ -8,6 +8,7 @@ import com.jetbrains.edu.cognifire.inspection.InspectionProcessor
 import com.jetbrains.edu.cognifire.models.PromptExpression
 import com.jetbrains.edu.cognifire.utils.toGeneratedCode
 import com.jetbrains.educational.ml.cognifire.core.PromptToCodeAssistant
+import com.jetbrains.educational.ml.cognifire.responses.PromptToCodeContent
 import com.jetbrains.educational.ml.cognifire.responses.PromptToCodeResponse
 
 class CodeGenerator(promptExpression: PromptExpression, project: Project, language: Language) {
@@ -17,9 +18,9 @@ class CodeGenerator(promptExpression: PromptExpression, project: Project, langua
     getCodeFromPrompt(promptExpression.functionSignature.toString(), enumeratedPromptLines)
 
   private val promptToCodeClearedFromWrongTodos =
-    RedundantTodoCleaner.deleteWrongTodo(promptToCodeTranslation, promptExpression.functionSignature)
+    RedundantTodoCleaner.deleteWrongTodo(promptToCodeTranslation.content, promptExpression.functionSignature)
 
-  private val promptToCodeAfterInspections: PromptToCodeResponse =
+  private val promptToCodeAfterInspections: PromptToCodeContent =
     InspectionProcessor.applyInspections(
       promptToCodeClearedFromWrongTodos,
       promptExpression.functionSignature.toString(),

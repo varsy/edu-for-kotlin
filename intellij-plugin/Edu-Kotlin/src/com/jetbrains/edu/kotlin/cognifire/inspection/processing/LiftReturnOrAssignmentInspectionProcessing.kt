@@ -3,7 +3,7 @@ package com.jetbrains.edu.kotlin.cognifire.inspection.processing
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiFile
-import com.jetbrains.educational.ml.cognifire.responses.PromptToCodeResponse
+import com.jetbrains.educational.ml.cognifire.responses.PromptToCodeContent
 import org.jetbrains.kotlin.idea.inspections.LiftReturnOrAssignmentInspection
 import org.jetbrains.kotlin.idea.inspections.LiftReturnOrAssignmentInspection.Util.LiftType.LIFT_ASSIGNMENT_OUT
 import org.jetbrains.kotlin.idea.k2.refactoring.util.BranchedFoldingUtils
@@ -31,7 +31,7 @@ class LiftReturnOrAssignmentInspectionProcessing(private val project: Project, p
     })
   }
 
-  override fun applyInspection(promptToCode: PromptToCodeResponse, psiFile: PsiFile): PromptToCodeResponse {
+  override fun applyInspection(promptToCode: PromptToCodeContent, psiFile: PsiFile): PromptToCodeContent {
     if (!isApplicable()) return promptToCode
     apply()
     return updatePromptToCodeWithoutChangingLines(promptToCode, psiFile)

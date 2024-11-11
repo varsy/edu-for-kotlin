@@ -2,7 +2,7 @@ package com.jetbrains.edu.cognifire.utils
 
 import com.jetbrains.edu.cognifire.models.FunctionSignature
 import com.jetbrains.edu.learning.EduTestCase
-import com.jetbrains.educational.ml.cognifire.responses.GeneratedCodeLine
+import com.jetbrains.educational.ml.cognifire.responses.PromptToCodeResponse.GeneratedCodeLine
 import org.junit.Test
 
 class RedundantTodoCleanerTest : EduTestCase() {
