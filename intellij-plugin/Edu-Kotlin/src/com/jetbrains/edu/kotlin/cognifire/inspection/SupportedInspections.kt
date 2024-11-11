@@ -4,7 +4,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.jetbrains.edu.kotlin.cognifire.inspection.processing.*
-import com.jetbrains.educational.ml.cognifire.responses.GeneratedCodeLine
+import com.jetbrains.educational.ml.cognifire.responses.PromptToCodeContent
 import org.jetbrains.kotlin.psi.KtIfExpression
 import org.jetbrains.kotlin.psi.KtProperty
 import org.jetbrains.kotlin.psi.KtTryExpression
@@ -19,7 +19,7 @@ enum class SupportedInspections {
   JOIN_DECLARATION_AND_ASSIGNMENT,
   LIFT_RETURN_OR_ASSIGNMENT;
 
-  fun applyInspection(project: Project, element: PsiElement, psiFile: PsiFile, promptToCode: List<GeneratedCodeLine>): List<GeneratedCodeLine> =
+  fun applyInspection(project: Project, element: PsiElement, psiFile: PsiFile, promptToCode: PromptToCodeContent): PromptToCodeContent =
     when (element) {
       is KtIfExpression -> when (this) {
         CASCADE_IF -> CascadeIfInspectionProcessing(project, element).applyInspection(promptToCode, psiFile)

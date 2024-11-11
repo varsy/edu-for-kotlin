@@ -5,7 +5,7 @@ import com.jetbrains.edu.cognifire.utils.RedundantTodoCleaner
 import com.jetbrains.edu.cognifire.models.FunctionSignature
 import com.jetbrains.edu.cognifire.utils.toGeneratedCode
 import com.jetbrains.edu.learning.EduTestCase
-import com.jetbrains.educational.ml.cognifire.responses.GeneratedCodeLine
+import com.jetbrains.educational.ml.cognifire.responses.PromptToCodeResponse.GeneratedCodeLine
 import org.jetbrains.kotlin.idea.KotlinLanguage
 import org.junit.Test
 

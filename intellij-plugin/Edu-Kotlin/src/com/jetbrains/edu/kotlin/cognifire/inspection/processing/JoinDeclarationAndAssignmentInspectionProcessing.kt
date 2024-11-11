@@ -4,8 +4,8 @@ import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiFile
 import com.intellij.psi.util.PsiTreeUtil
-import com.jetbrains.educational.ml.cognifire.responses.GeneratedCodeLine
-import com.jetbrains.educational.ml.cognifire.responses.PromptToCodeResponse
+import com.jetbrains.educational.ml.cognifire.responses.PromptToCodeResponse.GeneratedCodeLine
+import com.jetbrains.educational.ml.cognifire.responses.PromptToCodeContent
 import org.jetbrains.kotlin.idea.intentions.JoinDeclarationAndAssignmentIntention
 import org.jetbrains.kotlin.psi.KtBinaryExpression
 import org.jetbrains.kotlin.psi.KtNameReferenceExpression
@@ -27,7 +27,7 @@ class JoinDeclarationAndAssignmentInspectionProcessing(private val project: Proj
     })
   }
 
-  override fun applyInspection(promptToCode: PromptToCodeResponse, psiFile: PsiFile): PromptToCodeResponse {
+  override fun applyInspection(promptToCode: PromptToCodeContent, psiFile: PsiFile): PromptToCodeContent {
     if (!isApplicable()) return promptToCode
     val property = element.copy() as KtProperty
     val definition = promptToCode.find { it.generatedCodeLine == property.text } ?: return promptToCode
