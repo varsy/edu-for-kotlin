@@ -7,6 +7,6 @@ import javax.swing.Icon
 
 class JAIDebuggerBreakpointType : JavaLineBreakpointType("java-line-ai", EduCoreBundle.message("ai.debugger.java.breakpoint.description")) {
   override fun getEnabledIcon(): Icon {
-    return EducationalCoreIcons.AIDebugger.BUG // TODO change to real image
+    return EducationalCoreIcons.AIDebugger.BREAKPOINT
   }
 }

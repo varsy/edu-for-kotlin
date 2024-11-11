@@ -168,6 +168,7 @@ public final class EducationalCoreIcons {
   public static final Icon DOT = load("/icons/com/jetbrains/edu/learning/dot.svg"); // 3x3
 
   public static final class AIDebugger {
-    public static final Icon BUG = load("/icons/com/jetbrains/edu/aiDebugging/bug.svg");
+    @SuppressWarnings("unused") public static final Icon BREAKPOINT_HOVERED = load("/icons/com/jetbrains/edu/aiDebugging/ai_breakpoint_svg");
+    public static final Icon BREAKPOINT = load("/icons/com/jetbrains/edu/aiDebugging/ai_breakpoint.svg");
   }
 }
