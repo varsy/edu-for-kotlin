@@ -7,7 +7,7 @@ import com.intellij.psi.PsiFileFactory
 import com.intellij.psi.PsiRecursiveElementVisitor
 import com.jetbrains.edu.cognifire.inspection.InspectionProcessor
 import com.jetbrains.edu.cognifire.utils.toGeneratedCode
-import com.jetbrains.educational.ml.cognifire.responses.PromptToCodeResponse
+import com.jetbrains.educational.ml.cognifire.responses.PromptToCodeContent
 import org.jetbrains.kotlin.idea.KotlinLanguage
 
 /**
@@ -17,7 +17,7 @@ import org.jetbrains.kotlin.idea.KotlinLanguage
  */
 class KtInspectionProcessor : InspectionProcessor {
 
-  override fun applyInspections(promptToCodeTranslation: PromptToCodeResponse, project: Project, functionSignature: String): PromptToCodeResponse {
+  override fun applyInspections(promptToCodeTranslation: PromptToCodeContent, project: Project, functionSignature: String): PromptToCodeContent {
     var promptToCode = promptToCodeTranslation.map { it.copy() }
     val psiFile = getPsiFile(promptToCodeTranslation, functionSignature, project)
     psiFile.accept(object : PsiRecursiveElementVisitor() {
@@ -31,7 +31,7 @@ class KtInspectionProcessor : InspectionProcessor {
     return promptToCode
   }
 
-  private fun getPsiFile(promptToCode: PromptToCodeResponse, functionSignature: String, project: Project) = runReadAction {
+  private fun getPsiFile(promptToCode: PromptToCodeContent, functionSignature: String, project: Project) = runReadAction {
     PsiFileFactory.getInstance(project).createFileFromText(
       "Main.kt",
       KotlinLanguage.INSTANCE,
