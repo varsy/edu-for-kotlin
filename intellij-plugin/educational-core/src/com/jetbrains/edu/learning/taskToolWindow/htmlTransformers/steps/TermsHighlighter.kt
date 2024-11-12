@@ -21,19 +21,19 @@ object TermsHighlighter : HtmlTransformer {
   private fun Element.isValidTag(): Boolean = tagName() !in INVALID_TAGS
 
   override fun transform(html: Document, context: HtmlTransformerContext): Document {
-    TermsManager.getInstance(context.project).getTerms(context.task).keys.forEach { term ->
-      html.getElementsContainingOwnText(term)
+    TermsManager.getInstance(context.project).getTerms(context.task).map { it.value }.forEach { termTitle ->
+      html.getElementsContainingOwnText(termTitle)
         .flatMap { element ->
           if (!element.isValidTag()) return@flatMap emptyList()
-          element.textNodes().filter { textNode -> textNode.text().contains(term) }
+          element.textNodes().filter { textNode -> textNode.text().contains(termTitle) }
         }
         .forEach { node ->
-          val termElement = getDashedUnderlineElement(html, term)
+          val termElement = getDashedUnderlineElement(html, termTitle)
           var currentNode = node
           var text = currentNode.text()
-          while (text.contains(term)) {
-            val startIdx = text.indexOf(term)
-            val endIdx = startIdx + term.length
+          while (text.contains(termTitle)) {
+            val startIdx = text.indexOf(termTitle)
+            val endIdx = startIdx + termTitle.length
             val tail = if (endIdx < text.length) currentNode.splitText(endIdx) else null
             val middle = currentNode.splitText(startIdx)
             middle.after(termElement.clone())

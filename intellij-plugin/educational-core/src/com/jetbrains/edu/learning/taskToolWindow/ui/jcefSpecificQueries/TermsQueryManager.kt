@@ -99,17 +99,17 @@ class TermsQueryManager private constructor(
     gotItTooltip?.dispose()
     val parsedData = JsEventData.fromJson(data) ?: return
     val component = taskJBCefBrowser.component ?: return
-    val term = parsedData.term
+    val termTitle = parsedData.term
 
     val task = project.selectedTaskFile?.task ?: return
-    val definition = TermsManager.getInstance(project).getTerms(task)[term] ?: return
+    val definition = TermsManager.getInstance(project).getTerms(task).find { it.value == termTitle }?.definition ?: return
 
     val isBelowMiddle = parsedData.y < component.height / 2
     val position = if (isBelowMiddle) Balloon.Position.below else Balloon.Position.above
     val pointY = if (isBelowMiddle) parsedData.bottomOfTermRect else parsedData.topOfTermRect
 
     gotItTooltip = GotItTooltip(TOOLTIP_ID, definition, this)
-      .withHeader(term)
+      .withHeader(termTitle)
       .withPosition(position)
       .withGotItButtonAction {
         gotItTooltip?.dispose()

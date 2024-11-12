@@ -13,8 +13,8 @@ import com.jetbrains.edu.learning.getTextFromTaskTextFile
 import com.jetbrains.edu.learning.messages.EduCoreBundle
 import com.jetbrains.edu.learning.notification.EduNotificationManager
 import com.jetbrains.educational.ml.theory.lookup.core.TermsProvider
+import com.jetbrains.educational.ml.theory.lookup.term.Term
 import kotlinx.coroutines.*
-import java.util.concurrent.ConcurrentHashMap
 import kotlin.coroutines.CoroutineContext
 
 /**
@@ -38,27 +38,25 @@ class TermsManager(private val project: Project) : CoroutineScope {
   override val coroutineContext: CoroutineContext
     get() = Dispatchers.IO + job + exceptionHandler
 
-  /**
-   * Represents a map of terms (value and definition) for each task that may be of potential interest to the user.
-   */
-  private val terms = ConcurrentHashMap<Int, Map<String, String>>()
+  private val termsStorage
+    get() = TheoryLookupTermsStorage.getInstance(project)
 
   suspend fun extractTerms(task: Task) {
-    if (terms.containsKey(task.id)) return
+    if (termsStorage.hasTerms(task)) return
     val text = runReadAction {
       task.getDescriptionFile(project)?.getTextFromTaskTextFile()
     } ?: return
     val termsProvider = TermsProvider()
-    val termsList = termsProvider.findTermsAndDefinitions(text)
-    termsList.getOrThrow().takeIf { it.isNotEmpty() }?.let {
-      terms.computeIfAbsent(task.id) { _ ->
-        Lemmatizer(text, it).getTermsAndItsDefinitions()
-      }
-      notifyTermsChanged(task)
-    }
+    val termsList = termsProvider.findTermsAndDefinitions(text).getOrThrow()
+
+    // TODO(get rid of the lemmatizer in next review)
+    val lemmatizedTerms = Lemmatizer(text, termsList).getTermsAndItsDefinitions().map { Term(it.key, it.value) }
+
+    termsStorage.setTaskTerms(task, lemmatizedTerms)
+    notifyTermsChanged(task)
   }
 
-  fun getTerms(task: Task) = terms.getOrDefault(task.id, emptyMap())
+  fun getTerms(task: Task) = termsStorage.getTaskTerms(task) ?: emptyList()
 
   private fun notifyTermsChanged(task: Task) {
     project.messageBus.syncPublisher(TOPIC).termsChanged(task)
