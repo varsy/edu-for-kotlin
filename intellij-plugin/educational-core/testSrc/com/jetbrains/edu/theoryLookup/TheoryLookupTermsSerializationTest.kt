@@ -27,7 +27,7 @@ class TheoryLookupTermsSerializationTest : EduSettingsServiceTestBase() {
   fun `test storage serialization in framework lesson`() = doTest(initFrameworkCourse())
 
   private fun doTest(course: Course) {
-    val task1 = course.findTask("lesson1", "task1")
+    val task1 = course.findTask("lesson1", "task1").apply { id = 100 }
 
     with(termsStorage) {
       setTaskTerms(task1, listOf(Term("A", "B"), Term("B", "C")))
@@ -35,7 +35,7 @@ class TheoryLookupTermsSerializationTest : EduSettingsServiceTestBase() {
         <TermsState>
           <taskTerms>
             <map>
-              <entry key="lesson1/task1">
+              <entry key="100">
                 <value>
                   <map>
                     <entry key="A" value="B" />
@@ -53,7 +53,7 @@ class TheoryLookupTermsSerializationTest : EduSettingsServiceTestBase() {
         <TermsState>
           <taskTerms>
             <map>
-              <entry key="lesson1/task1">
+              <entry key="100">
                 <value>
                   <map>
                     <entry key="X" value="Y" />
@@ -65,6 +65,8 @@ class TheoryLookupTermsSerializationTest : EduSettingsServiceTestBase() {
           </taskTerms>
         </TermsState>
       """.trimIndent())
+
+      println(state.modificationCount)
 
       cleanUpState()
       checkState("""

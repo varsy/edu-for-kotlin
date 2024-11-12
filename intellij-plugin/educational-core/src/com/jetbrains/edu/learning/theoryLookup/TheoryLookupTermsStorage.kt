@@ -11,36 +11,24 @@ import com.jetbrains.educational.ml.theory.lookup.term.Term
 @State(name = "TheoryLookupTermsStorage", storages = [Storage("theory_lookup.xml", roamingType = RoamingType.DISABLED)])
 class TheoryLookupTermsStorage : SimplePersistentStateComponent<TheoryLookupTermsStorage.TermsState>(TermsState()), LightTestAware {
   fun getTaskTerms(task: Task): List<Term>? {
-    val taskKey = task.pathInCourse
-    return state[taskKey]?.map { Term(it.key, it.value) }
+    val taskKey = task.id
+    return state.taskTerms[taskKey]?.map { Term(it.key, it.value) }
   }
 
   fun setTaskTerms(task: Task, terms: List<Term>) {
-    val taskKey = task.pathInCourse
-    state[taskKey] = terms.associate { it.value to it.definition }
+    val taskKey = task.id
+    state.taskTerms[taskKey] = terms.associate { it.value to it.definition }
   }
 
-  fun hasTerms(task: Task): Boolean = state[task.pathInCourse] != null
+  fun hasTerms(task: Task): Boolean = state.taskTerms[task.id] != null
 
   override fun cleanUpState() {
-    state.clear()
+    state.taskTerms.clear()
   }
 
   class TermsState : BaseState() {
     @get:XCollection(style = XCollection.Style.v2)
-    val taskTerms: MutableMap<String, Map<String, String>> by map()
-
-    operator fun get(key: String): Map<String, String>? = taskTerms[key]
-
-    operator fun set(key: String, terms: Map<String, String>) {
-      incrementModificationCount()
-      taskTerms[key] = terms
-    }
-
-    fun clear() {
-      incrementModificationCount()
-      taskTerms.clear()
-    }
+    val taskTerms: MutableMap<Int, Map<String, String>> by map()
   }
 
   companion object {
