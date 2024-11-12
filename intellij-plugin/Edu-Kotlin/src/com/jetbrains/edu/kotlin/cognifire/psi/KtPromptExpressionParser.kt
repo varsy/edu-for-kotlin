@@ -1,5 +1,6 @@
 package com.jetbrains.edu.kotlin.cognifire.psi
 
+import ai.grazie.nlp.utils.dropLastWhitespaces
 import ai.grazie.utils.dropPostfix
 import com.intellij.psi.PsiElement
 import com.intellij.psi.util.PsiTreeUtil
@@ -38,7 +39,10 @@ class KtPromptExpressionParser : PromptExpressionParser {
       (promptPromptPsi?.textOffset ?: 0) + trimmedOffset,
       promptExpression.startOffset,
       promptExpression.endOffset,
-      trimmedPromptPromptText.dropPostfix(TRIM_INDENT_POSTFIX).dropPostfix(QUOTE_POSTFIX),
+      trimmedPromptPromptText
+        .dropPostfix(TRIM_INDENT_POSTFIX)
+        .dropPostfix(QUOTE_POSTFIX)
+        .dropLastWhitespaces(),
       promptCodeBlockPsi?.bodyExpression?.text ?: ""
     )
   }
