@@ -33,6 +33,11 @@
                     dynamic="true">
       <with attribute="implementationClass" implements="com.jetbrains.edu.cognifire.CodeApplier"/>
     </extensionPoint>
+    <extensionPoint qualifiedName="Educational.inspectionProcessor"
+                    beanClass="com.intellij.lang.LanguageExtensionPoint"
+                    dynamic="true">
+      <with attribute="implementationClass" implements="com.jetbrains.edu.cognifire.inspection.InspectionProcessor"/>
+    </extensionPoint>
   </extensionPoints>
 
   <extensions defaultExtensionNs="com.intellij">
