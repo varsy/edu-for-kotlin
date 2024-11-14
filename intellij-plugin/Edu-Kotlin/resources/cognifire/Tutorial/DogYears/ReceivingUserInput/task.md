@@ -1,7 +1,8 @@
-Let's start describing solutions to the problem using natural language.
+### Let's write some ~~_code_~~ words!
 
-First, find out from the user the age of his dog in human years.
-Save the age into a variable named `humanYears` so that it can be manipulated further.
+First, find the age of the user's dog in human years.
+\
+Save the age into a variable named `humanYears` for future use.
 
 <div class="hint" title="Example of a prompt">
 
@@ -9,7 +10,7 @@ Save the age into a variable named `humanYears` so that it can be manipulated fu
 fun calculateDogAgeInDogYears() {
   prompt("""
         Get the user input and save the result to a variable named humanYears.
-    """.trimIndent())
+    """)
 }
 ```
 </div>
