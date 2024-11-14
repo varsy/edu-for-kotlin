@@ -1,5 +1,7 @@
 package jetbrains.course.tutorial.dog.years
 
+import org.jetbrains.academy.cognifire.dsl.*
+
 fun calculateDogAgeInDogYears() {
   val humanYears = readlnOrNull()?.toIntOrNull()
   if (humanYears != null && verifyHumanYearsInput(humanYears)) {
@@ -11,7 +13,15 @@ fun calculateDogAgeInDogYears() {
 }
 
 fun verifyHumanYearsInput(humanYears: Int): Boolean {
-  TODO("Not implemented yet")
+  prompt("""
+        return the following:
+    """) {
+    if(humanYears > 0) {
+      true
+    } else {
+      false
+    }
+  }
 }
 
 fun main() {
