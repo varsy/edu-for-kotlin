@@ -30,6 +30,8 @@ class AIDebugSessionService(private val project: Project, private val coroutineS
           val document = virtualFile.document
           fixes.forEach {
             val offset = virtualFile.readText().indexOf(it.wrongCode)
+            require(offset >= 0)
+            { "There are no offset in the file for the current wrong code: `${it.wrongCode}`" }
             val line = document.getLineNumber(offset) + 1
             // TODO toggle breakpoint
           }
