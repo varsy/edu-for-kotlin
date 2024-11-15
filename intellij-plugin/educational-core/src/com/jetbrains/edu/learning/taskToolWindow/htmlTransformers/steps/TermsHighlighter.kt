@@ -3,16 +3,16 @@ package com.jetbrains.edu.learning.taskToolWindow.htmlTransformers.steps
 import com.jetbrains.edu.learning.taskToolWindow.*
 import com.jetbrains.edu.learning.taskToolWindow.htmlTransformers.HtmlTransformer
 import com.jetbrains.edu.learning.taskToolWindow.htmlTransformers.HtmlTransformerContext
-import com.jetbrains.edu.learning.theoryLookup.TermsManager
+import com.jetbrains.edu.learning.theoryLookup.TheoryLookupTermsManager
 import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
 
 /**
  * Highlights terms in an HTML document by adding dashed underline style to the occurrences of the terms.
- * Takes terms from the [TermsManager] object.
+ * Takes terms from the [TheoryLookupTermsManager] object.
  *
  * @see HtmlTransformer
- * @see TermsManager
+ * @see TheoryLookupTermsManager
  */
 object TermsHighlighter : HtmlTransformer {
   // TODO: filter code blocks and other tags
@@ -21,7 +21,7 @@ object TermsHighlighter : HtmlTransformer {
   private fun Element.isValidTag(): Boolean = tagName() !in INVALID_TAGS
 
   override fun transform(html: Document, context: HtmlTransformerContext): Document {
-    TermsManager.getInstance(context.project).getTerms(context.task).map { it.value }.forEach { termTitle ->
+    TheoryLookupTermsManager.getInstance(context.project).getTaskTerms(context.task)?.map { it.value }?.forEach { termTitle ->
       html.getElementsContainingOwnText(termTitle)
         .flatMap { element ->
           if (!element.isValidTag()) return@flatMap emptyList()

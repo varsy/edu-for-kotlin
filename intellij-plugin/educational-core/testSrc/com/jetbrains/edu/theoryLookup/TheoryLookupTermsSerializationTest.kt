@@ -5,13 +5,13 @@ import com.jetbrains.edu.learning.configurators.FakeGradleBasedLanguage
 import com.jetbrains.edu.learning.courseFormat.Course
 import com.jetbrains.edu.learning.courseFormat.CourseMode
 import com.jetbrains.edu.learning.findTask
-import com.jetbrains.edu.learning.theoryLookup.TheoryLookupTermsStorage
+import com.jetbrains.edu.learning.theoryLookup.TheoryLookupTermsManager
 import com.jetbrains.educational.ml.theory.lookup.term.Term
 import org.junit.Test
 
 class TheoryLookupTermsSerializationTest : EduSettingsServiceTestBase() {
   private val termsStorage
-    get() = TheoryLookupTermsStorage.getInstance(project)
+    get() = TheoryLookupTermsManager.getInstance(project)
 
   @Test
   fun `test empty storage serialization`() {
