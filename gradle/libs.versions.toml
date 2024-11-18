@@ -4,7 +4,7 @@ jackson = "2.17.2"
 kotlin = "2.0.0"
 okhttp = "4.12.0"
 retrofit = "2.9.0"
-educational-ml-library = "1.0.11"
+educational-ml-library = "1.0.29"
 
 [libraries]
 annotations = { group = "org.jetbrains", name = "annotations", version = "23.0.0" }
@@ -22,7 +22,6 @@ kotlin-stdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib", versio
 kotlinx-serialization = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version = "1.6.2" }
 educational-ml-library-core = { group = "com.jetbrains.educational.ml", name = "educational-ml-library-core", version.ref = "educational-ml-library" }
 educational-ml-library-theory-lookup = { group = "com.jetbrains.educational.ml", name = "educational-ml-library-theory-lookup", version.ref = "educational-ml-library" }
-languagetool = { group = "org.languagetool", name = "language-en", version = "6.4" }
 logging-interceptor = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "okhttp" }
 okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp" }
 retrofit = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" }
