@@ -30,7 +30,7 @@ class TheoryLookupTermsSerializationTest : EduSettingsServiceTestBase() {
     val task1 = course.findTask("lesson1", "task1").apply { id = 100 }
 
     with(termsStorage) {
-      setTaskTerms(task1, listOf(Term("A", "B"), Term("B", "C")))
+      setTaskTerms(mapOf(task1 to listOf(Term("A", "B"), Term("B", "C"))))
       checkState("""
         <TermsState>
           <taskTerms>
@@ -48,7 +48,7 @@ class TheoryLookupTermsSerializationTest : EduSettingsServiceTestBase() {
         </TermsState>
       """.trimIndent())
 
-      setTaskTerms(task1, listOf(Term("X", "Y"), Term("Y", "Z")))
+      setTaskTerms(mapOf(task1 to listOf(Term("X", "Y"), Term("Y", "Z"))))
       checkState("""
         <TermsState>
           <taskTerms>

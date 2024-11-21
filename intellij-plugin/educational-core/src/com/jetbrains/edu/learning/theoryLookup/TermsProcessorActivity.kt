@@ -21,10 +21,14 @@ class TermsProcessorActivity : ProjectActivity {
     val termsManager = TheoryLookupTermsManager.getInstance(project)
 
     with(termsManager) {
-      if (!shouldUpdateCourseTerms(course)) return
+      if (!areCourseTermsLoaded()) return
       val courseTerms = getCourseTerms(project, course)
-      updateTaskTerms(courseTerms)
+      setTheoryLookupProperties(courseTerms.toTheoryLookupProperties())
     }
+  }
+
+  private fun Map<Task, List<Term>>.toTheoryLookupProperties(): TheoryLookupProperties {
+    return TheoryLookupProperties(mapKeys { it.key.id })
   }
 
   private suspend fun getCourseTerms(project: Project, course: Course): Map<Task, List<Term>> {

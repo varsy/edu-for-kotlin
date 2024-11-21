@@ -2,64 +2,66 @@ package com.jetbrains.edu.learning.theoryLookup
 
 import com.intellij.openapi.components.*
 import com.intellij.openapi.project.Project
-import com.intellij.util.messages.Topic
 import com.intellij.util.xmlb.annotations.XCollection
 import com.jetbrains.edu.learning.LightTestAware
-import com.jetbrains.edu.learning.courseFormat.Course
-import com.jetbrains.edu.learning.courseFormat.ext.allTasks
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
-import com.jetbrains.edu.learning.createTopic
 import com.jetbrains.educational.ml.theory.lookup.term.Term
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import org.jetbrains.annotations.VisibleForTesting
 
 @Service(Service.Level.PROJECT)
-@State(name = "TheoryLookupTermsStorage", storages = [Storage("theory_lookup.xml", roamingType = RoamingType.DISABLED)])
-class TheoryLookupTermsManager(private val project: Project) : SimplePersistentStateComponent<TheoryLookupTermsManager.TermsState>(TermsState()), LightTestAware {
-  fun getTaskTerms(task: Task): List<Term>? {
-    val taskKey = task.id
-    return state.taskTerms[taskKey]?.map { Term(it.key, it.value) }
-  }
+@State(name = "TheoryLookupTermsStorage", reloadable = true, storages = [Storage("theory_lookup.xml", roamingType = RoamingType.DISABLED)])
+class TheoryLookupTermsManager : PersistentStateComponent<TheoryLookupTermsManager.TermsState>, LightTestAware {
+  private val _theoryLookupProperties = MutableStateFlow<TheoryLookupProperties?>(null)
+  val theoryLookupProperties = _theoryLookupProperties.asStateFlow()
 
-  fun updateTaskTerms(taskToTerms: Map<Task, List<Term>>) {
-    for ((task, terms) in taskToTerms) {
-      setTaskTerms(task, terms)
-    }
+  fun getTaskTerms(task: Task): List<Term>? = theoryLookupProperties.value?.terms?.get(task.id)
+
+  fun setTheoryLookupProperties(properties: TheoryLookupProperties?) {
+    _theoryLookupProperties.value = properties
   }
 
   @VisibleForTesting
-  fun setTaskTerms(task: Task, terms: List<Term>) {
-    val taskKey = task.id
-    state.taskTerms[taskKey] = terms.associate { it.value to it.definition }
-    notifyTermsChanged(task)
+  fun setTaskTerms(tasksToTerms: Map<Task, List<Term>>) {
+    val properties = TheoryLookupProperties(tasksToTerms.entries.associate { it.key.id to it.value })
+    setTheoryLookupProperties(properties)
   }
 
-  fun shouldUpdateCourseTerms(course: Course): Boolean {
-    return course.allTasks.any { !hasTerms(it) }
+  fun areCourseTermsLoaded(): Boolean {
+    return _theoryLookupProperties.value != null
   }
-
-  private fun hasTerms(task: Task): Boolean = state.taskTerms[task.id] != null
 
   override fun cleanUpState() {
-    state.taskTerms.clear()
+    _theoryLookupProperties.value = null
   }
 
-  private fun notifyTermsChanged(task: Task) {
-    project.messageBus.syncPublisher(TOPIC).termsChanged(task)
+  override fun getState(): TermsState {
+    val state = TermsState()
+    val properties = _theoryLookupProperties.value ?: return state
+    state.taskTerms = properties.terms.entries.associateTo(mutableMapOf()) { (taskId, terms) ->
+      //TODO(serialize terms properly)
+      taskId to terms.associate { it.value to it.definition }
+    }
+    return state
+  }
+
+  override fun loadState(state: TermsState) {
+    val taskTerms = mutableMapOf<Int, List<Term>>()
+    for ((taskId, terms) in state.taskTerms) {
+      //TODO(serialize terms properly)
+      taskTerms[taskId] = terms.entries.map { Term(it.key, it.value) }
+    }
+
+    _theoryLookupProperties.value = TheoryLookupProperties(taskTerms)
   }
 
   class TermsState : BaseState() {
     @get:XCollection(style = XCollection.Style.v2)
-    val taskTerms: MutableMap<Int, Map<String, String>> by map()
-  }
-
-  fun interface TermsListener {
-    fun termsChanged(task: Task)
+    var taskTerms by map<Int, Map<String, String>>()
   }
 
   companion object {
     fun getInstance(project: Project): TheoryLookupTermsManager = project.service()
-
-    @Topic.ProjectLevel
-    val TOPIC: Topic<TermsListener> = createTopic("Edu.terms")
   }
 }
