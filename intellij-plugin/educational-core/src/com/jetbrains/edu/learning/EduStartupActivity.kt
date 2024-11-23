@@ -11,12 +11,14 @@ import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.fileTypes.ExactFileNameMatcher
 import com.intellij.openapi.fileTypes.FileTypeManager
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.project.ProjectManager
 import com.intellij.openapi.startup.StartupActivity
 import com.intellij.openapi.startup.StartupManager
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFileManager
 import com.intellij.openapi.wm.ToolWindowId
 import com.intellij.openapi.wm.ToolWindowManager
+import com.jetbrains.edu.agreement.UserAgreementDialog
 import com.jetbrains.edu.agreement.UserAgreementSettings.Companion.userAgreementSettings
 import com.jetbrains.edu.coursecreator.CCUtils
 import com.jetbrains.edu.coursecreator.SynchronizeTaskDescription
@@ -53,6 +55,21 @@ class EduStartupActivity : StartupActivity.DumbAware {
 
   override fun runActivity(project: Project) {
     if (!project.isEduProject() || !userAgreementSettings().isPluginAllowed) return
+
+    if (userAgreementSettings().isNotShown) {
+      runInEdt {
+        val result = UserAgreementDialog.showUserAgreementDialog(project)
+        if (!result) {
+          val projectManager = ProjectManager.getInstance()
+          for (openProject in projectManager.openProjects) {
+            if (openProject.isEduProject() && !openProject.isDisposed) {
+              projectManager.reloadProject(openProject)
+            }
+          }
+        }
+      }
+    }
+
     val manager = StudyTaskManager.getInstance(project)
     val connection = ApplicationManager.getApplication().messageBus.connect(manager)
     if (!isUnitTestMode) {

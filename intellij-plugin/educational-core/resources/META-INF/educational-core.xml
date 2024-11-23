@@ -126,6 +126,9 @@
     <action id="Educational.RefreshTask"
             class="com.jetbrains.edu.learning.actions.RevertTaskAction"
             icon="com.jetbrains.edu.EducationalCoreIcons.Actions.ResetTask"/>
+    <action id="Educational.ShowUserAgreementDialog"
+            class="com.jetbrains.edu.agreement.ShowUserAgreementDialog"
+            internal="true"/>
     <action id="Educational.LeaveFeedbackAction"
             class="com.jetbrains.edu.learning.actions.LeaveFeedbackAction"
             icon="com.jetbrains.edu.EducationalCoreIcons.Actions.CommentTask"/>

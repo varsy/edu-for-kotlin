@@ -45,34 +45,40 @@ class UserAgreementDialog(project: Project?) : DialogWrapper(project) {
     row {
       text(EduCoreBundle.message("user.agreement.dialog.text"))
     }
-    row {
-      checkBox("")
-        .comment(EduCoreBundle.message("user.agreement.dialog.agreement.checkbox.comment"))
-        .onChanged {
-          userAgreementSelected = it.isSelected
-          isOKActionEnabled = isAnyCheckBoxSelected()
-        }
-        .customize(UnscaledGaps.EMPTY)
-      cell(createCheckBoxTextPanel())
-    }
-    row {
-      checkBox(EduCoreBundle.message("user.agreement.dialog.statistics.checkbox"))
-        .onChanged {
-          statisticsSelected = it.isSelected
-          isOKActionEnabled = isAnyCheckBoxSelected()
-        }
+    buttonsGroup {
+      row {
+        radioButton("I want to use JetBrains Academy Plugin with AI features and agree to the")
+          .comment("Acceptance is required for use of the entire plugin")
+          .onChanged {
+            userAgreementSelected = it.isSelected
+            isOKActionEnabled = isAnyCheckBoxSelected()
+          }
+          .customize(UnscaledGaps.EMPTY)
+        cell(createCheckBoxTextPanel(withAiTermsOfService = true))
+      }
+      row {
+        radioButton("I want to use JetBrains Academy Plugin without AI features and agree to the")
+          .onChanged {
+            statisticsSelected = it.isSelected
+            isOKActionEnabled = isAnyCheckBoxSelected()
+          }
+          .customize(UnscaledGaps.EMPTY)
+        cell(createCheckBoxTextPanel())
+      }
     }
   }
 
   @Suppress("DialogTitleCapitalization")
-  private fun createCheckBoxTextPanel(): JPanel = panel {
+  private fun createCheckBoxTextPanel(withAiTermsOfService: Boolean = false): JPanel = panel {
     row {
-      link(EduCoreBundle.message("user.agreement.dialog.checkbox.agreement")) { EduBrowser.getInstance().browse(USER_AGREEMENT_URL) }
+      link("JetBrains Academy Plugin User Agreement") { EduBrowser.getInstance().browse(USER_AGREEMENT_URL) }
         .resizableColumn()
         .customize(leftGap)
+      if (!withAiTermsOfService) return@row
+
       label(EduCoreBundle.message("user.agreement.dialog.checkbox.and"))
         .customize(leftGap)
-      link(EduCoreBundle.message("user.agreement.dialog.checkbox.privacy.policy")) { EduBrowser.getInstance().browse(PRIVACY_POLICY_URL) }
+      link("JetBrains AI Terms of Service") { EduBrowser.getInstance().browse(PRIVACY_POLICY_URL) }
         .resizableColumn()
         .customize(leftGap)
     }
@@ -99,20 +105,6 @@ class UserAgreementDialog(project: Project?) : DialogWrapper(project) {
       val result = UserAgreementDialog(project).showWithResult()
       userAgreementSettings().setUserAgreementSettings(UserAgreementSettings.UserAgreementProperties(result.agreementState))
       val isAccepted = result.agreementState == UserAgreementState.ACCEPTED
-//      runInBackground(project, EduCoreBundle.message("user.agreement.updating.state"), false) {
-//        runBlockingCancellable {
-//          withContext(Dispatchers.IO) {
-//            MarketplaceSubmissionsConnector.getInstance().changeUserAgreementAndStatisticsState(result)
-//            if (project != null) {
-//              SubmissionsManager.getInstance(project).prepareSubmissionsContentWhenLoggedIn()
-//              if (RemoteEnvHelper.isRemoteDevServer() && isAccepted) {
-//                //remove editor notification for rem dev, suggesting to accept User Agreement
-//                EditorNotifications.getInstance(project).updateAllNotifications()
-//              }
-//            }
-//          }
-//        }
-//      }
       return isAccepted
     }
 

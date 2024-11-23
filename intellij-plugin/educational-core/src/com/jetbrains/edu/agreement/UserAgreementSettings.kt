@@ -15,8 +15,11 @@ class UserAgreementSettings : PersistentStateComponent<UserAgreementSettings.Sta
   val isPluginAllowed: Boolean
     get() {
       val pluginAgreement = userAgreementProperties.value.pluginAgreement
-      return pluginAgreement == UserAgreementState.ACCEPTED //|| pluginAgreement == UserAgreementState.NOT_SHOWN
+      return pluginAgreement == UserAgreementState.ACCEPTED || pluginAgreement == UserAgreementState.NOT_SHOWN
     }
+
+  val isNotShown: Boolean
+    get() = userAgreementProperties.value.pluginAgreement == UserAgreementState.NOT_SHOWN
 
   fun setUserAgreementSettings(settings: UserAgreementProperties) {
     _userAgreementProperties.value = settings
