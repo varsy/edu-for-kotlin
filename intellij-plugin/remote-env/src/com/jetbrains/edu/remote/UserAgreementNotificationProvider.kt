@@ -7,10 +7,10 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.ui.EditorNotificationPanel
 import com.intellij.ui.EditorNotificationProvider
+import com.jetbrains.edu.agreement.UserAgreementDialog
 import com.jetbrains.edu.learning.RemoteEnvHelper
 import com.jetbrains.edu.learning.marketplace.api.MarketplaceSubmissionsConnector
 import com.jetbrains.edu.learning.marketplace.isMarketplaceStudentCourse
-import com.jetbrains.edu.learning.marketplace.userAgreement.UserAgreementDialog
 import com.jetbrains.edu.learning.messages.EduCoreBundle
 import com.jetbrains.edu.learning.submissions.UserAgreementState
 import java.util.function.Function

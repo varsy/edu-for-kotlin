@@ -9,6 +9,7 @@ import com.intellij.openapi.components.service
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.ui.JBAccountInfoService
 import com.intellij.util.concurrency.annotations.RequiresBackgroundThread
+import com.jetbrains.edu.agreement.UserAgreementDialog
 import com.jetbrains.edu.learning.RemoteEnvHelper
 import com.jetbrains.edu.learning.authUtils.AuthorizationPlace
 import com.jetbrains.edu.learning.authUtils.EduLoginConnector
@@ -21,7 +22,6 @@ import com.jetbrains.edu.learning.marketplace.JET_BRAINS_ACCOUNT
 import com.jetbrains.edu.learning.marketplace.MarketplaceNotificationUtils.showInstallMarketplacePluginNotification
 import com.jetbrains.edu.learning.marketplace.MarketplaceNotificationUtils.showReloginToJBANeededNotification
 import com.jetbrains.edu.learning.marketplace.MarketplaceOAuthBundle
-import com.jetbrains.edu.learning.marketplace.userAgreement.UserAgreementDialog
 import com.jetbrains.edu.learning.messages.EduCoreBundle
 import com.jetbrains.edu.learning.network.createRetrofitBuilder
 import com.jetbrains.edu.learning.network.executeHandlingExceptions

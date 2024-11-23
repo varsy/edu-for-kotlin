@@ -40,9 +40,6 @@
     <action id="Educational.Student.ShareMySolutions" class="com.jetbrains.edu.learning.marketplace.actions.ShareMySolutionsAction">
       <add-to-group group-id="Educational.CourseView.SecondaryActions" relative-to-action="Educational.HideSolvedLessons" anchor="after"/>
     </action>
-    <action id="Educational.Student.ResetUserAgreementShown"
-            class="com.jetbrains.edu.learning.marketplace.actions.ResetUserAgreementSettingsAction"
-            internal="true"/>
     <action id="Educational.Student.SubmissionsServiceChangeHost"
             class="com.jetbrains.edu.learning.marketplace.changeHost.SubmissionsServiceChangeHost"
             internal="true"/>

@@ -11,6 +11,7 @@ import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.project.Project
 import com.intellij.ui.JBAccountInfoService
 import com.intellij.util.concurrency.annotations.RequiresBackgroundThread
+import com.jetbrains.edu.agreement.UserAgreementDialogResultState
 import com.jetbrains.edu.learning.*
 import com.jetbrains.edu.learning.authUtils.ConnectorUtils
 import com.jetbrains.edu.learning.courseFormat.*
@@ -26,13 +27,11 @@ import com.jetbrains.edu.learning.marketplace.MarketplaceNotificationUtils.showF
 import com.jetbrains.edu.learning.marketplace.MarketplaceNotificationUtils.showNoSubmissionsToDeleteNotification
 import com.jetbrains.edu.learning.marketplace.MarketplaceNotificationUtils.showSubmissionsDeletedSuccessfullyNotification
 import com.jetbrains.edu.learning.marketplace.changeHost.SubmissionsServiceHost
-import com.jetbrains.edu.learning.marketplace.userAgreement.UserAgreementDialogResultState
 import com.jetbrains.edu.learning.messages.EduCoreBundle
 import com.jetbrains.edu.learning.network.createRetrofitBuilder
 import com.jetbrains.edu.learning.network.executeCall
 import com.jetbrains.edu.learning.network.executeParsingErrors
 import com.jetbrains.edu.learning.submissions.*
-import com.jetbrains.edu.learning.submissions.TaskCommunitySubmissions
 import okhttp3.ConnectionPool
 import okhttp3.ResponseBody
 import org.jetbrains.annotations.VisibleForTesting

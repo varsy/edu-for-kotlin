@@ -5,12 +5,12 @@ import com.intellij.ui.EditorNotificationPanel
 import com.intellij.ui.InlineBanner
 import com.intellij.util.ui.HTMLEditorKitBuilder
 import com.intellij.util.ui.UIUtil
+import com.jetbrains.edu.agreement.UserAgreementDialog
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
 import com.jetbrains.edu.learning.invokeLater
 import com.jetbrains.edu.learning.marketplace.MarketplaceNotificationUtils
 import com.jetbrains.edu.learning.marketplace.SolutionSharingPromptCounter
 import com.jetbrains.edu.learning.marketplace.settings.MarketplaceSettings
-import com.jetbrains.edu.learning.marketplace.userAgreement.UserAgreementDialog
 import com.jetbrains.edu.learning.messages.EduCoreBundle
 import com.jetbrains.edu.learning.statistics.EduCounterUsageCollector
 import com.jetbrains.edu.learning.submissions.SubmissionsManager

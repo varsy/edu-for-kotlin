@@ -3,8 +3,8 @@ package com.jetbrains.edu.learning.submissions.ui.linkHandler
 import com.intellij.openapi.application.runInEdt
 import com.intellij.openapi.project.Project
 import com.intellij.ui.ColorUtil
+import com.jetbrains.edu.agreement.UserAgreementDialog
 import com.jetbrains.edu.learning.RemoteEnvHelper
-import com.jetbrains.edu.learning.marketplace.userAgreement.UserAgreementDialog
 import com.jetbrains.edu.learning.messages.EduCoreBundle
 import com.jetbrains.edu.learning.submissions.SubmissionsManager
 import com.jetbrains.edu.learning.submissions.ui.SubmissionsTab.Companion.SUBMISSION_PROTOCOL

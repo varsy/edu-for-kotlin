@@ -1,28 +1,22 @@
-package com.jetbrains.edu.learning.marketplace.userAgreement
+package com.jetbrains.edu.agreement
 
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.application.runInEdt
-import com.intellij.openapi.progress.runBlockingCancellable
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogWrapper
-import com.intellij.ui.EditorNotifications
 import com.intellij.ui.dsl.builder.AlignY
 import com.intellij.ui.dsl.builder.panel
 import com.intellij.ui.dsl.gridLayout.UnscaledGaps
 import com.intellij.util.concurrency.annotations.RequiresBackgroundThread
 import com.intellij.util.concurrency.annotations.RequiresEdt
 import com.intellij.util.ui.JBUI
+import com.jetbrains.edu.agreement.UserAgreementSettings.Companion.userAgreementSettings
 import com.jetbrains.edu.learning.EduBrowser
-import com.jetbrains.edu.learning.RemoteEnvHelper
 import com.jetbrains.edu.learning.marketplace.api.MarketplaceConnector
 import com.jetbrains.edu.learning.marketplace.api.MarketplaceSubmissionsConnector
 import com.jetbrains.edu.learning.messages.EduCoreBundle
-import com.jetbrains.edu.learning.runInBackground
-import com.jetbrains.edu.learning.submissions.SubmissionsManager
 import com.jetbrains.edu.learning.submissions.UserAgreementState
 import com.jetbrains.edu.learning.submissions.isSubmissionDownloadAllowed
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import javax.swing.JComponent
 import javax.swing.JPanel
 
@@ -88,7 +82,6 @@ class UserAgreementDialog(project: Project?) : DialogWrapper(project) {
 
   fun showWithResult(): UserAgreementDialogResultState {
     val result = showAndGet()
-    UserAgreementSettings.getInstance().isDialogShown = true
     if (!result) {
       return UserAgreementDialogResultState(UserAgreementState.DECLINED, false)
     }
@@ -104,21 +97,22 @@ class UserAgreementDialog(project: Project?) : DialogWrapper(project) {
     @RequiresEdt
     fun showUserAgreementDialog(project: Project?): Boolean {
       val result = UserAgreementDialog(project).showWithResult()
+      userAgreementSettings().setUserAgreementSettings(UserAgreementSettings.UserAgreementProperties(result.agreementState))
       val isAccepted = result.agreementState == UserAgreementState.ACCEPTED
-      runInBackground(project, EduCoreBundle.message("user.agreement.updating.state"), false) {
-        runBlockingCancellable {
-          withContext(Dispatchers.IO) {
-            MarketplaceSubmissionsConnector.getInstance().changeUserAgreementAndStatisticsState(result)
-            if (project != null) {
-              SubmissionsManager.getInstance(project).prepareSubmissionsContentWhenLoggedIn()
-              if (RemoteEnvHelper.isRemoteDevServer() && isAccepted) {
-                //remove editor notification for rem dev, suggesting to accept User Agreement
-                EditorNotifications.getInstance(project).updateAllNotifications()
-              }
-            }
-          }
-        }
-      }
+//      runInBackground(project, EduCoreBundle.message("user.agreement.updating.state"), false) {
+//        runBlockingCancellable {
+//          withContext(Dispatchers.IO) {
+//            MarketplaceSubmissionsConnector.getInstance().changeUserAgreementAndStatisticsState(result)
+//            if (project != null) {
+//              SubmissionsManager.getInstance(project).prepareSubmissionsContentWhenLoggedIn()
+//              if (RemoteEnvHelper.isRemoteDevServer() && isAccepted) {
+//                //remove editor notification for rem dev, suggesting to accept User Agreement
+//                EditorNotifications.getInstance(project).updateAllNotifications()
+//              }
+//            }
+//          }
+//        }
+//      }
       return isAccepted
     }
 

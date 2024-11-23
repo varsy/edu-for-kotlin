@@ -108,6 +108,9 @@
     <action id="Educational.ImportLocalCourse" class="com.jetbrains.edu.learning.actions.ImportLocalCourseAction"/>
     <action id="Educational.Check" class="com.jetbrains.edu.learning.actions.CheckAction"/>
     <action id="Educational.Retry" class="com.jetbrains.edu.learning.actions.RetryAction"/>
+    <action id="Educational.ResetUserAgreementSettings"
+            class="com.jetbrains.edu.agreement.ResetUserAgreementSettings"
+            internal="true"/>
     <action id="Educational.PrevPlaceholder"
             class="com.jetbrains.edu.learning.actions.PrevPlaceholderAction"
             icon="AllIcons.Actions.Back"/>
@@ -295,6 +298,7 @@
   </actions>
 
   <extensions defaultExtensionNs="com.intellij">
+    <applicationService serviceImplementation="com.jetbrains.edu.agreement.UserAgreementSettings"/>
     <applicationService serviceInterface="com.jetbrains.edu.learning.EduBrowser"
                         serviceImplementation="com.jetbrains.edu.learning.EduBrowser"
                         testServiceImplementation="com.jetbrains.edu.learning.MockEduBrowser"/>
