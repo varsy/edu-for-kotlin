@@ -1,8 +1,6 @@
 package com.jetbrains.edu.learning.marketplace
 
-import com.intellij.notification.NotificationType
 import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.application.runInEdt
 import com.intellij.openapi.progress.blockingContext
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.ProjectCloseListener
@@ -12,13 +10,10 @@ import com.jetbrains.edu.learning.EduUtilsKt.isStudentProject
 import com.jetbrains.edu.learning.StudyTaskManager
 import com.jetbrains.edu.learning.courseFormat.CourseMode
 import com.jetbrains.edu.learning.courseFormat.EduCourse
-import com.jetbrains.edu.learning.isHeadlessEnvironment
 import com.jetbrains.edu.learning.isUnitTestMode
 import com.jetbrains.edu.learning.marketplace.api.MarketplaceConnector
 import com.jetbrains.edu.learning.marketplace.api.MarketplaceSubmissionsConnector
 import com.jetbrains.edu.learning.marketplace.update.MarketplaceUpdateChecker
-import com.jetbrains.edu.learning.marketplace.userAgreement.UserAgreementDialog
-import com.jetbrains.edu.learning.marketplace.userAgreement.UserAgreementSettings
 import com.jetbrains.edu.learning.messages.EduCoreBundle
 import com.jetbrains.edu.learning.notification.EduNotificationManager
 import com.jetbrains.edu.learning.statistics.DownloadCourseContext.OTHER
@@ -26,7 +21,6 @@ import com.jetbrains.edu.learning.submissions.SharedSolutionsListener
 import com.jetbrains.edu.learning.submissions.SubmissionSettings
 import com.jetbrains.edu.learning.submissions.SubmissionsManager
 import com.jetbrains.edu.learning.submissions.SubmissionsManager.Companion.SHARED_SOLUTIONS_TOPIC
-import com.jetbrains.edu.learning.submissions.UserAgreementState
 import com.jetbrains.edu.learning.yaml.YamlFormatSynchronizer
 
 class MarketplaceStartupActivity : StartupActivity {
@@ -48,19 +42,6 @@ class MarketplaceStartupActivity : StartupActivity {
     if (!project.isStudentProject()) return
 
     val marketplaceConnector = MarketplaceConnector.getInstance()
-
-    if (!isHeadlessEnvironment) {
-      ApplicationManager.getApplication().executeOnPooledThread {
-        val isToShowUserAgreementDialog = marketplaceConnector.isLoggedIn() &&
-                                          !UserAgreementSettings.getInstance().isDialogShown &&
-                                          MarketplaceSubmissionsConnector.getInstance().getUserAgreementState() == UserAgreementState.NOT_SHOWN
-
-        if (isToShowUserAgreementDialog) {
-          runInEdt { UserAgreementDialog.showUserAgreementDialog(project) }
-        }
-      }
-    }
-
     MarketplaceUpdateChecker.getInstance(project).check()
 
     val submissionsManager = SubmissionsManager.getInstance(project)
