@@ -10,13 +10,14 @@ import com.jetbrains.edu.learning.document
 import com.jetbrains.edu.learning.messages.EduCoreBundle
 import com.jetbrains.edu.learning.notification.EduNotificationManager
 import com.jetbrains.educational.ml.ai.debugger.prompt.core.FixCodeForTestAssistant
+import com.jetbrains.educational.ml.ai.debugger.prompt.prompt.entities.description.TaskDescription
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @Service(Service.Level.PROJECT)
 class AIDebugSessionService(private val project: Project, private val coroutineScope: CoroutineScope) {
 
-  fun runDebuggingSession(description: String, virtualFiles: List<VirtualFile>, testDescription: String) {
+  fun runDebuggingSession(description: TaskDescription, virtualFiles: List<VirtualFile>, testDescription: String) {
     coroutineScope.launch {
       withModalProgress(project, EduCoreBundle.message("action.Educational.AiDebuggingNotification.modal.session")) {
         FixCodeForTestAssistant.getCodeFix(
