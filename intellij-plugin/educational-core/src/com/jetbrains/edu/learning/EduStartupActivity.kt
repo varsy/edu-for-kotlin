@@ -54,7 +54,7 @@ class EduStartupActivity : StartupActivity.DumbAware {
   private val YAML_MIGRATED = "Edu.Yaml.Migrate"
 
   override fun runActivity(project: Project) {
-    if (!project.isEduProject() || !userAgreementSettings().isPluginAllowed) return
+    if (!project.isEduProject()) return
 
     if (userAgreementSettings().isNotShown) {
       runInEdt {

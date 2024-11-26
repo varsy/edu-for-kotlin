@@ -7,7 +7,6 @@ import com.intellij.openapi.fileEditor.FileEditorManagerListener
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.wm.ToolWindowManager
-import com.jetbrains.edu.agreement.UserAgreementSettings.Companion.userAgreementSettings
 import com.jetbrains.edu.learning.EduUtilsKt
 import com.jetbrains.edu.learning.EduUtilsKt.isEduProject
 import com.jetbrains.edu.learning.courseFormat.TaskFile
@@ -19,20 +18,18 @@ import com.jetbrains.edu.learning.taskToolWindow.ui.TaskToolWindowView
 class EduFileEditorManagerListener(private val project: Project) : FileEditorManagerListener, FileEditorManagerListener.Before {
 
   override fun beforeFileOpened(source: FileEditorManager, file: VirtualFile) {
-    if (!userAgreementSettings().isPluginAllowed) return
     val taskFile = file.getTaskFile(project) ?: return
     showTaskDescriptionToolWindow(project, taskFile, true)
   }
 
   override fun selectionChanged(event: FileEditorManagerEvent) {
-    if (!userAgreementSettings().isPluginAllowed) return
     val file = event.newFile
     val task = file?.getContainingTask(project) ?: return
     TaskToolWindowView.getInstance(project).currentTask = task
   }
 
   override fun fileClosed(source: FileEditorManager, file: VirtualFile) {
-    if (!project.isEduProject() || !userAgreementSettings().isPluginAllowed) return
+    if (!project.isEduProject()) return
     if (FileEditorManager.getInstance(project).openFiles.isEmpty()) {
       TaskToolWindowView.getInstance(project).currentTask = null
     }

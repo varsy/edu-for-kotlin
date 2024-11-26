@@ -5,7 +5,6 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.ui.InlineBanner
 import com.intellij.util.ui.UIUtil
-import com.jetbrains.edu.agreement.UserAgreementSettings.Companion.userAgreementSettings
 import com.jetbrains.edu.learning.EduUtilsKt.isEduProject
 import com.jetbrains.edu.learning.LightTestAware
 import com.jetbrains.edu.learning.courseFormat.CheckResult
@@ -53,9 +52,6 @@ abstract class TaskToolWindowView(val project: Project) : LightTestAware {
     fun getInstance(project: Project): TaskToolWindowView {
       if (!project.isEduProject()) {
         error("Attempt to get TaskDescriptionView for non-edu project")
-      }
-      if (!userAgreementSettings().isPluginAllowed) {
-        error("Attempt to get TaskDescriptionView when agreement not accepted")
       }
       return project.service()
     }

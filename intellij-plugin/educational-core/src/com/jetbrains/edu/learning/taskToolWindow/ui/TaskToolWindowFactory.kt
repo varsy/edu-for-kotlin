@@ -16,7 +16,6 @@ import com.intellij.openapi.wm.ex.ToolWindowEx
 import com.intellij.openapi.wm.impl.content.ToolWindowContentUi
 import com.intellij.ui.awt.RelativePoint
 import com.intellij.util.ui.UIUtil
-import com.jetbrains.edu.agreement.UserAgreementSettings.Companion.userAgreementSettings
 import com.jetbrains.edu.learning.EduUtilsKt.isEduProject
 import com.jetbrains.edu.learning.messages.EduCoreBundle
 import com.jetbrains.edu.learning.taskToolWindow.ui.styleManagers.StyleManager
@@ -26,10 +25,10 @@ import javax.swing.JSlider
 import javax.swing.SwingConstants
 
 class TaskToolWindowFactory : ToolWindowFactory, DumbAware {
-  override fun isApplicable(project: Project): Boolean = project.isEduProject() && userAgreementSettings().isPluginAllowed
+  override fun isApplicable(project: Project): Boolean = project.isEduProject()
 
   override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
-    if (!project.isEduProject() || !userAgreementSettings().isPluginAllowed) {
+    if (!project.isEduProject()) {
       return
     }
     val taskToolWindowView = TaskToolWindowView.getInstance(project)

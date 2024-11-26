@@ -236,7 +236,7 @@ class CourseViewPane(project: Project) : AbstractProjectViewPaneWithAsyncSupport
     return super.getData(dataId)
   }
 
-  override fun isDefaultPane(project: Project): Boolean = project.isEduProject() && userAgreementSettings().isPluginAllowed
+  override fun isDefaultPane(project: Project): Boolean = project.isEduProject()
 
   companion object {
     @NonNls
