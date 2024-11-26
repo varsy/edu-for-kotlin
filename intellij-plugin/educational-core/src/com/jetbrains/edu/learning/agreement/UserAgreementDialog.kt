@@ -42,39 +42,35 @@ class UserAgreementDialog(project: Project?) : DialogWrapper(project) {
   }.apply { border = JBUI.Borders.empty(5) }
 
   private lateinit var pluginAgreementCheckBox: Cell<JBCheckBox>
-  private lateinit var aiTermsOfServiceCheckBox: Cell<JBCheckBox>
-  private var userAgreementSelected: Boolean = false
-  private var statisticsSelected: Boolean = false
+  private lateinit var aiAgreementCheckBox: Cell<JBCheckBox>
 
   private fun createInnerPanel(): JComponent = panel {
     row {
       text(EduCoreBundle.message("user.agreement.dialog.text"))
     }
     row {
-      pluginAgreementCheckBox = checkBox("")
-        .comment(EduCoreBundle.message("user.agreement.dialog.agreement.checkbox.comment"))
+      pluginAgreementCheckBox = checkBox(EMPTY_TEXT)
+        .comment(EduCoreBundle.message("user.agreement.dialog.plugin.agreement.checkbox.comment"))
         .onChanged {
-          userAgreementSelected = it.isSelected
           if (!it.isSelected) {
-            aiTermsOfServiceCheckBox.selected(false)
+            aiAgreementCheckBox.selected(false)
           }
           isOKActionEnabled = it.isSelected
         }
         .customize(UnscaledGaps.EMPTY)
-      cell(createCheckBoxTextPanel())
+      cell(createPluginAgreementCheckBoxTextPanel())
     }
     row {
-      aiTermsOfServiceCheckBox = checkBox("")
+      aiAgreementCheckBox = checkBox(EMPTY_TEXT)
         .enabledIf(pluginAgreementCheckBox.selected)
-        .customize(leftGap)
-      text("<a>JetBrains AI Terms of Service</a>. I hereby grant JetBrains consent to use my inputs and data to improve JetBrains AI, including for training JetBrains' machine learning models", action = {
-        EduBrowser.getInstance().browse(AI_TERMS_OF_USE_URL)
-      })
+        .comment(EduCoreBundle.message("user.agreement.dialog.ai.agreement.checkbox.comment"))
+        .customize(UnscaledGaps.EMPTY)
+      cell(createAiAgreementCheckBoxTextPanel())
     }
   }
 
   @Suppress("DialogTitleCapitalization")
-  private fun createCheckBoxTextPanel(): JPanel = panel {
+  private fun createPluginAgreementCheckBoxTextPanel(): JPanel = panel {
     row {
       link(EduCoreBundle.message("user.agreement.dialog.checkbox.agreement")) { EduBrowser.getInstance().browse(USER_AGREEMENT_URL) }
         .resizableColumn()
@@ -87,26 +83,49 @@ class UserAgreementDialog(project: Project?) : DialogWrapper(project) {
     }
   }
 
-  fun showWithResult(): UserAgreementDialogResultState {
+  @Suppress("DialogTitleCapitalization")
+  private fun createAiAgreementCheckBoxTextPanel(): JPanel = panel {
+    row {
+      text(
+        EduCoreBundle.message("user.agreement.dialog.ai.agreement.checkbox.text.first.row"),
+        action = {
+          EduBrowser.getInstance().browse(AI_TERMS_OF_USE_URL)
+        })
+        .customize(leftGap)
+    }
+    row {
+      label(EduCoreBundle.message("user.agreement.dialog.ai.agreement.checkbox.text.second.row"))
+        .customize(leftGap)
+    }
+    row {
+      label(EduCoreBundle.message("user.agreement.dialog.ai.agreement.checkbox.text.third.row"))
+        .customize(leftGap)
+    }
+  }
+
+  fun showWithResult(): UserAgreementSettings.UserAgreementProperties {
     val result = showAndGet()
     if (!result) {
-      return UserAgreementDialogResultState(UserAgreementState.DECLINED, false)
+      return UserAgreementSettings.UserAgreementProperties(pluginAgreement = UserAgreementState.DECLINED)
     }
 
-    val userAgreementState = if (userAgreementSelected) UserAgreementState.ACCEPTED else UserAgreementState.DECLINED
-    return UserAgreementDialogResultState(userAgreementState, statisticsSelected)
+    val pluginAgreementState =
+      if (pluginAgreementCheckBox.component.isSelected) UserAgreementState.ACCEPTED else UserAgreementState.DECLINED
+    return UserAgreementSettings.UserAgreementProperties(pluginAgreement = pluginAgreementState)
   }
 
   companion object {
-    private const val AI_TERMS_OF_USE_URL = "https://www.jetbrains.com/ai/terms-of-use/"
-    private const val USER_AGREEMENT_URL = "https://www.jetbrains.com/legal/docs/terms/jetbrains-academy/plugin/"
-    private const val PRIVACY_POLICY_URL = "https://www.jetbrains.com/legal/docs/privacy/privacy/"
+    private const val AI_TERMS_OF_USE_URL: String = "https://www.jetbrains.com/ai/terms-of-use/"
+    private const val USER_AGREEMENT_URL: String = "https://www.jetbrains.com/legal/docs/terms/jetbrains-academy/plugin/"
+    private const val PRIVACY_POLICY_URL: String = "https://www.jetbrains.com/legal/docs/privacy/privacy/"
+
+    private const val EMPTY_TEXT: String = ""
 
     @RequiresEdt
     fun showUserAgreementDialog(project: Project?): Boolean {
       val result = UserAgreementDialog(project).showWithResult()
-      userAgreementSettings().setUserAgreementSettings(UserAgreementSettings.UserAgreementProperties(result.agreementState))
-      val isAccepted = result.agreementState == UserAgreementState.ACCEPTED
+      userAgreementSettings().setUserAgreementSettings(result)
+      val isAccepted = result.pluginAgreement == UserAgreementState.ACCEPTED
       return isAccepted
     }
 
@@ -122,5 +141,3 @@ class UserAgreementDialog(project: Project?) : DialogWrapper(project) {
     }
   }
 }
-
-data class UserAgreementDialogResultState(val agreementState: UserAgreementState, val isStatisticsSharingAllowed: Boolean)

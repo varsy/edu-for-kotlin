@@ -11,7 +11,6 @@ import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.project.Project
 import com.intellij.ui.JBAccountInfoService
 import com.intellij.util.concurrency.annotations.RequiresBackgroundThread
-import com.jetbrains.edu.learning.agreement.UserAgreementDialogResultState
 import com.jetbrains.edu.learning.*
 import com.jetbrains.edu.learning.authUtils.ConnectorUtils
 import com.jetbrains.edu.learning.courseFormat.*
@@ -408,11 +407,6 @@ class MarketplaceSubmissionsConnector {
     }
 
     return response.body()?.string()?.let { UserAgreementState.valueOf(it) }
-  }
-
-  suspend fun changeUserAgreementAndStatisticsState(result: UserAgreementDialogResultState) {
-    changeUserAgreementState(result.agreementState)
-    changeUserStatisticsAllowedState(result.isStatisticsSharingAllowed)
   }
 
   suspend fun changeUserAgreementState(newState: UserAgreementState): Result<Unit, String> {
