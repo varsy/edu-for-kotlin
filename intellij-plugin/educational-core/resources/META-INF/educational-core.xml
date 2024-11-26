@@ -484,6 +484,7 @@
     <configurator language="TEXT" courseType="Hyperskill"
                   implementationClass="com.jetbrains.edu.learning.stepik.hyperskill.PlainTextHyperskillConfigurator"/>
 
+    <optionsProvider instance="com.jetbrains.edu.learning.agreement.UserAgreementOptions"/>
     <optionsProvider instance="com.jetbrains.edu.learning.stepik.StepikOptions"/>
     <optionsProvider instance="com.jetbrains.edu.learning.coursera.CourseraOptions"/>
     <checkListener implementation="com.jetbrains.edu.learning.socialmedia.SocialmediaMultiplePostAction"/>
@@ -533,9 +534,6 @@
                            implementationClass="com.jetbrains.edu.learning.compatibility.SqlGradleCourseCompatibilityProvider"/>
     <compatibilityProvider language="Shell Script"
                            implementationClass="com.jetbrains.edu.learning.compatibility.ShellCourseCompatibilityProvider"/>
-
-    <!--general-->
-    <optionsProvider instance="com.jetbrains.edu.learning.agreement.UserAgreementOptions"/>
 
     <!--educator-->
     <optionsProvider instance="com.jetbrains.edu.coursecreator.settings.CCOptions"/>
