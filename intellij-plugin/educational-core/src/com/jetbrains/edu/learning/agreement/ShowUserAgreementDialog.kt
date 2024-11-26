@@ -1,4 +1,4 @@
-package com.jetbrains.edu.agreement
+package com.jetbrains.edu.learning.agreement
 
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.project.DumbAwareAction

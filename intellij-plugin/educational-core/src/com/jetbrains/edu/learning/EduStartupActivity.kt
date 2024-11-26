@@ -18,8 +18,8 @@ import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFileManager
 import com.intellij.openapi.wm.ToolWindowId
 import com.intellij.openapi.wm.ToolWindowManager
-import com.jetbrains.edu.agreement.UserAgreementDialog
-import com.jetbrains.edu.agreement.UserAgreementSettings.Companion.userAgreementSettings
+import com.jetbrains.edu.learning.agreement.UserAgreementDialog
+import com.jetbrains.edu.learning.agreement.UserAgreementSettings.Companion.userAgreementSettings
 import com.jetbrains.edu.coursecreator.CCUtils
 import com.jetbrains.edu.coursecreator.SynchronizeTaskDescription
 import com.jetbrains.edu.coursecreator.courseignore.CourseIgnoreFileType

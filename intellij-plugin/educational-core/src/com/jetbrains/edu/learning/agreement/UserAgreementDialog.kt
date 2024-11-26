@@ -1,4 +1,4 @@
-package com.jetbrains.edu.agreement
+package com.jetbrains.edu.learning.agreement
 
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.application.runInEdt
@@ -13,8 +13,8 @@ import com.intellij.ui.dsl.gridLayout.UnscaledGaps
 import com.intellij.util.concurrency.annotations.RequiresBackgroundThread
 import com.intellij.util.concurrency.annotations.RequiresEdt
 import com.intellij.util.ui.JBUI
-import com.jetbrains.edu.agreement.UserAgreementSettings.Companion.userAgreementSettings
 import com.jetbrains.edu.learning.EduBrowser
+import com.jetbrains.edu.learning.agreement.UserAgreementSettings.Companion.userAgreementSettings
 import com.jetbrains.edu.learning.marketplace.api.MarketplaceConnector
 import com.jetbrains.edu.learning.marketplace.api.MarketplaceSubmissionsConnector
 import com.jetbrains.edu.learning.messages.EduCoreBundle

@@ -109,7 +109,7 @@
     <action id="Educational.Check" class="com.jetbrains.edu.learning.actions.CheckAction"/>
     <action id="Educational.Retry" class="com.jetbrains.edu.learning.actions.RetryAction"/>
     <action id="Educational.ResetUserAgreementSettings"
-            class="com.jetbrains.edu.agreement.ResetUserAgreementSettings"
+            class="com.jetbrains.edu.learning.agreement.ResetUserAgreementSettings"
             internal="true"/>
     <action id="Educational.PrevPlaceholder"
             class="com.jetbrains.edu.learning.actions.PrevPlaceholderAction"
@@ -127,7 +127,7 @@
             class="com.jetbrains.edu.learning.actions.RevertTaskAction"
             icon="com.jetbrains.edu.EducationalCoreIcons.Actions.ResetTask"/>
     <action id="Educational.ShowUserAgreementDialog"
-            class="com.jetbrains.edu.agreement.ShowUserAgreementDialog"
+            class="com.jetbrains.edu.learning.agreement.ShowUserAgreementDialog"
             internal="true"/>
     <action id="Educational.LeaveFeedbackAction"
             class="com.jetbrains.edu.learning.actions.LeaveFeedbackAction"
@@ -301,7 +301,7 @@
   </actions>
 
   <extensions defaultExtensionNs="com.intellij">
-    <applicationService serviceImplementation="com.jetbrains.edu.agreement.UserAgreementSettings"/>
+    <applicationService serviceImplementation="com.jetbrains.edu.learning.agreement.UserAgreementSettings"/>
     <applicationService serviceInterface="com.jetbrains.edu.learning.EduBrowser"
                         serviceImplementation="com.jetbrains.edu.learning.EduBrowser"
                         testServiceImplementation="com.jetbrains.edu.learning.MockEduBrowser"/>
@@ -534,7 +534,7 @@
                            implementationClass="com.jetbrains.edu.learning.compatibility.ShellCourseCompatibilityProvider"/>
 
     <!--general-->
-    <optionsProvider instance="com.jetbrains.edu.agreement.UserAgreementOptions"/>
+    <optionsProvider instance="com.jetbrains.edu.learning.agreement.UserAgreementOptions"/>
 
     <!--educator-->
     <optionsProvider instance="com.jetbrains.edu.coursecreator.settings.CCOptions"/>

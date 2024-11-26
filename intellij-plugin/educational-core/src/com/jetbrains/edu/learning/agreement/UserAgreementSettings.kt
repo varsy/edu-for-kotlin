@@ -1,4 +1,4 @@
-package com.jetbrains.edu.agreement
+package com.jetbrains.edu.learning.agreement
 
 import com.intellij.openapi.components.*
 import com.intellij.util.application

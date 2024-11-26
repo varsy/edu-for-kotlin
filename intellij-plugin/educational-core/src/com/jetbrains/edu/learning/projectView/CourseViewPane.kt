@@ -40,7 +40,7 @@ import com.intellij.util.ArrayUtil
 import com.intellij.util.ui.JBUI
 import com.intellij.util.ui.UIUtil
 import com.jetbrains.edu.EducationalCoreIcons.CourseView.CourseTree
-import com.jetbrains.edu.agreement.UserAgreementSettings.Companion.userAgreementSettings
+import com.jetbrains.edu.learning.agreement.UserAgreementSettings.Companion.userAgreementSettings
 import com.jetbrains.edu.coursecreator.CCStudyItemDeleteProvider
 import com.jetbrains.edu.coursecreator.CCUtils
 import com.jetbrains.edu.coursecreator.projectView.*

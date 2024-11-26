@@ -1,10 +1,10 @@
-package com.jetbrains.edu.agreement
+package com.jetbrains.edu.learning.agreement
 
 import com.intellij.openapi.options.BoundConfigurable
 import com.intellij.openapi.ui.DialogPanel
 import com.intellij.ui.dsl.builder.bindSelected
 import com.intellij.ui.dsl.builder.panel
-import com.jetbrains.edu.agreement.UserAgreementSettings.Companion.userAgreementSettings
+import com.jetbrains.edu.learning.agreement.UserAgreementSettings.Companion.userAgreementSettings
 import com.jetbrains.edu.learning.settings.OptionsProvider
 
 class UserAgreementOptions : BoundConfigurable("User Agreement"), OptionsProvider {
