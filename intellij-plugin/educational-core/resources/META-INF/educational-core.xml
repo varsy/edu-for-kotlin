@@ -533,6 +533,9 @@
     <compatibilityProvider language="Shell Script"
                            implementationClass="com.jetbrains.edu.learning.compatibility.ShellCourseCompatibilityProvider"/>
 
+    <!--general-->
+    <optionsProvider instance="com.jetbrains.edu.agreement.UserAgreementOptions"/>
+
     <!--educator-->
     <optionsProvider instance="com.jetbrains.edu.coursecreator.settings.CCOptions"/>
     <optionsProvider instance="com.jetbrains.edu.learning.socialmedia.twitter.TwitterOptionsProvider"/>

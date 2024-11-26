@@ -4,8 +4,11 @@ import com.intellij.icons.AllIcons
 import com.intellij.openapi.application.runInEdt
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogWrapper
+import com.intellij.ui.components.JBCheckBox
 import com.intellij.ui.dsl.builder.AlignY
+import com.intellij.ui.dsl.builder.Cell
 import com.intellij.ui.dsl.builder.panel
+import com.intellij.ui.dsl.builder.selected
 import com.intellij.ui.dsl.gridLayout.UnscaledGaps
 import com.intellij.util.concurrency.annotations.RequiresBackgroundThread
 import com.intellij.util.concurrency.annotations.RequiresEdt
@@ -31,9 +34,6 @@ class UserAgreementDialog(project: Project?) : DialogWrapper(project) {
     init()
   }
 
-  private var userAgreementSelected: Boolean = false
-  private var statisticsSelected: Boolean = false
-
   override fun createCenterPanel(): JComponent = panel {
     row {
       icon(AllIcons.General.QuestionDialog).align(AlignY.TOP)
@@ -41,50 +41,51 @@ class UserAgreementDialog(project: Project?) : DialogWrapper(project) {
     }
   }.apply { border = JBUI.Borders.empty(5) }
 
+  private lateinit var pluginAgreementCheckBox: Cell<JBCheckBox>
+  private lateinit var aiTermsOfServiceCheckBox: Cell<JBCheckBox>
+  private var userAgreementSelected: Boolean = false
+  private var statisticsSelected: Boolean = false
+
   private fun createInnerPanel(): JComponent = panel {
     row {
       text(EduCoreBundle.message("user.agreement.dialog.text"))
     }
-    buttonsGroup {
-      row {
-        radioButton("I want to use JetBrains Academy Plugin with AI features and agree to the")
-          .comment("Acceptance is required for use of the entire plugin")
-          .onChanged {
-            userAgreementSelected = it.isSelected
-            isOKActionEnabled = isAnyCheckBoxSelected()
+    row {
+      pluginAgreementCheckBox = checkBox("")
+        .comment(EduCoreBundle.message("user.agreement.dialog.agreement.checkbox.comment"))
+        .onChanged {
+          userAgreementSelected = it.isSelected
+          if (!it.isSelected) {
+            aiTermsOfServiceCheckBox.selected(false)
           }
-          .customize(UnscaledGaps.EMPTY)
-        cell(createCheckBoxTextPanel(withAiTermsOfService = true))
-      }
-      row {
-        radioButton("I want to use JetBrains Academy Plugin without AI features and agree to the")
-          .onChanged {
-            statisticsSelected = it.isSelected
-            isOKActionEnabled = isAnyCheckBoxSelected()
-          }
-          .customize(UnscaledGaps.EMPTY)
-        cell(createCheckBoxTextPanel())
-      }
+          isOKActionEnabled = it.isSelected
+        }
+        .customize(UnscaledGaps.EMPTY)
+      cell(createCheckBoxTextPanel())
+    }
+    row {
+      aiTermsOfServiceCheckBox = checkBox("")
+        .enabledIf(pluginAgreementCheckBox.selected)
+        .customize(leftGap)
+      text("<a>JetBrains AI Terms of Service</a>. I hereby grant JetBrains consent to use my inputs and data to improve JetBrains AI, including for training JetBrains' machine learning models", action = {
+        EduBrowser.getInstance().browse(AI_TERMS_OF_USE_URL)
+      })
     }
   }
 
   @Suppress("DialogTitleCapitalization")
-  private fun createCheckBoxTextPanel(withAiTermsOfService: Boolean = false): JPanel = panel {
+  private fun createCheckBoxTextPanel(): JPanel = panel {
     row {
-      link("JetBrains Academy Plugin User Agreement") { EduBrowser.getInstance().browse(USER_AGREEMENT_URL) }
+      link(EduCoreBundle.message("user.agreement.dialog.checkbox.agreement")) { EduBrowser.getInstance().browse(USER_AGREEMENT_URL) }
         .resizableColumn()
         .customize(leftGap)
-      if (!withAiTermsOfService) return@row
-
       label(EduCoreBundle.message("user.agreement.dialog.checkbox.and"))
         .customize(leftGap)
-      link("JetBrains AI Terms of Service") { EduBrowser.getInstance().browse(PRIVACY_POLICY_URL) }
+      link(EduCoreBundle.message("user.agreement.dialog.checkbox.privacy.policy")) { EduBrowser.getInstance().browse(PRIVACY_POLICY_URL) }
         .resizableColumn()
         .customize(leftGap)
     }
   }
-
-  private fun isAnyCheckBoxSelected(): Boolean = userAgreementSelected || statisticsSelected
 
   fun showWithResult(): UserAgreementDialogResultState {
     val result = showAndGet()
@@ -97,6 +98,7 @@ class UserAgreementDialog(project: Project?) : DialogWrapper(project) {
   }
 
   companion object {
+    private const val AI_TERMS_OF_USE_URL = "https://www.jetbrains.com/ai/terms-of-use/"
     private const val USER_AGREEMENT_URL = "https://www.jetbrains.com/legal/docs/terms/jetbrains-academy/plugin/"
     private const val PRIVACY_POLICY_URL = "https://www.jetbrains.com/legal/docs/privacy/privacy/"
 
