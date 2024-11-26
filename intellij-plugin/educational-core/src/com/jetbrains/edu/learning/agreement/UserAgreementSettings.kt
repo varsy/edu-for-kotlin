@@ -6,6 +6,8 @@ import com.jetbrains.edu.learning.submissions.UserAgreementState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
+fun userAgreementSettings(): UserAgreementSettings = application.service()
+
 @Service
 @State(name = "UserAgreementSettings", storages = [Storage(StoragePathMacros.APP_INTERNAL_STATE_DB, roamingType = RoamingType.DEFAULT)])
 class UserAgreementSettings : PersistentStateComponent<UserAgreementSettings.State> {
@@ -26,10 +28,6 @@ class UserAgreementSettings : PersistentStateComponent<UserAgreementSettings.Sta
 
   fun setUserAgreementSettings(settings: UserAgreementProperties) {
     _userAgreementProperties.value = settings
-  }
-
-  companion object {
-    fun userAgreementSettings(): UserAgreementSettings = application.service()
   }
 
   data class UserAgreementProperties(

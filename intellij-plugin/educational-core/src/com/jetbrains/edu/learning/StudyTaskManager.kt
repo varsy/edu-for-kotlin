@@ -9,8 +9,7 @@ import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.project.Project
 import com.intellij.util.messages.Topic
-import com.jetbrains.edu.learning.agreement.UserAgreementSettings
-import com.jetbrains.edu.learning.agreement.UserAgreementSettings.Companion.userAgreementSettings
+import com.jetbrains.edu.learning.agreement.userAgreementSettings
 import com.jetbrains.edu.learning.courseFormat.Course
 import com.jetbrains.edu.learning.yaml.YamlDeepLoader.loadCourse
 import com.jetbrains.edu.learning.yaml.YamlFormatSettings.isEduYamlProject

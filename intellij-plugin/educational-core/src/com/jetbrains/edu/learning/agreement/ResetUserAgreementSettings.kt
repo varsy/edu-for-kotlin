@@ -3,7 +3,6 @@ package com.jetbrains.edu.learning.agreement
 import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.project.DumbAwareAction
-import com.jetbrains.edu.learning.agreement.UserAgreementSettings.Companion.userAgreementSettings
 import com.jetbrains.edu.learning.messages.EduCoreBundle
 import com.jetbrains.edu.learning.notification.EduNotificationManager
 import com.jetbrains.edu.learning.submissions.UserAgreementState
