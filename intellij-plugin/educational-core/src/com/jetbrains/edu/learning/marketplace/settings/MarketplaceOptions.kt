@@ -2,7 +2,10 @@ package com.jetbrains.edu.learning.marketplace.settings
 
 import com.intellij.openapi.project.ProjectManager
 import com.intellij.ui.HyperlinkAdapter
+import com.intellij.ui.dsl.builder.bindSelected
+import com.intellij.ui.dsl.builder.panel
 import com.jetbrains.edu.learning.RemoteEnvHelper
+import com.jetbrains.edu.learning.agreement.userAgreementSettings
 import com.jetbrains.edu.learning.authUtils.EduLoginConnector
 import com.jetbrains.edu.learning.course
 import com.jetbrains.edu.learning.courseFormat.EduCourse
@@ -10,34 +13,16 @@ import com.jetbrains.edu.learning.marketplace.JET_BRAINS_ACCOUNT
 import com.jetbrains.edu.learning.marketplace.JET_BRAINS_ACCOUNT_PROFILE_PATH
 import com.jetbrains.edu.learning.marketplace.api.MarketplaceAccount
 import com.jetbrains.edu.learning.marketplace.api.MarketplaceConnector
-import com.jetbrains.edu.learning.marketplace.settings.checkboxes.MarketplaceOptionsCheckBox
-import com.jetbrains.edu.learning.marketplace.settings.checkboxes.SolutionSharingOptionsCheckBox
-import com.jetbrains.edu.learning.marketplace.settings.checkboxes.StatisticsCollectionOptionsCheckBox
-import com.jetbrains.edu.learning.marketplace.settings.checkboxes.UserAgreementOptionsCheckBox
+import com.jetbrains.edu.learning.messages.EduCoreBundle
 import com.jetbrains.edu.learning.settings.OAuthLoginOptions
 import com.jetbrains.edu.learning.submissions.SubmissionsManager
-import com.jetbrains.edu.learning.submissions.UserAgreementState
-import java.awt.event.ItemEvent
+import com.jetbrains.edu.learning.submissions.isAccepted
 import javax.swing.JComponent
 
 class MarketplaceOptions : OAuthLoginOptions<MarketplaceAccount>() {
 
   override val connector: EduLoginConnector<MarketplaceAccount, *>
     get() = MarketplaceConnector.getInstance()
-
-  private val userAgreementCheckBox = UserAgreementOptionsCheckBox().apply {
-    addItemListener { e ->
-      val isSelected = e.stateChange == ItemEvent.SELECTED
-      shareMySolutionsCheckBox.isEnabled = isSelected && isEnabled
-      if (!isSelected) {
-        shareMySolutionsCheckBox.isSelected = false
-      }
-    }
-  }
-
-  private val shareMySolutionsCheckBox = SolutionSharingOptionsCheckBox()
-
-  private val statisticsCollectionAllowedCheckBox = StatisticsCollectionOptionsCheckBox()
 
   override fun isAvailable(): Boolean = true
 
@@ -55,56 +40,42 @@ class MarketplaceOptions : OAuthLoginOptions<MarketplaceAccount>() {
     openProjects.forEach {
       if (!it.isDisposed && it.course is EduCourse) SubmissionsManager.getInstance(it).prepareSubmissionsContentWhenLoggedIn()
     }
-    getAdditionalComponents().forEach { checkBox ->
-      (checkBox as? MarketplaceOptionsCheckBox)?.update()
-    }
+    // todo: enable options
   }
 
-  override fun getAdditionalComponents(): List<JComponent> =
-    if (RemoteEnvHelper.isRemoteDevServer()) listOf(shareMySolutionsCheckBox, statisticsCollectionAllowedCheckBox)
-    else listOf(userAgreementCheckBox, shareMySolutionsCheckBox, statisticsCollectionAllowedCheckBox)
+  private val userAgreementSettings = userAgreementSettings()
+  private var submissionsServiceCheckBoxSelected = userAgreementSettings.userAgreementProperties.value.submissionsServiceAgreement.isAccepted()
+  private var aiServiceCheckBoxSelected = userAgreementSettings.userAgreementProperties.value.aiServiceAgreement.isAccepted()
+
+  override fun getAdditionalComponents(): List<JComponent> = listOf(
+    panel {
+      if (!RemoteEnvHelper.isRemoteDevServer()) {
+        row {
+          checkBox(EduCoreBundle.message("marketplace.options.user.agreement.checkbox"))
+            .bindSelected(::submissionsServiceCheckBoxSelected)
+        }
+      }
+      row {
+        checkBox("Solution Sharing")
+      }
+      row {
+        checkBox(EduCoreBundle.message("marketplace.options.ai.service.checkbox"))
+          .bindSelected(::aiServiceCheckBoxSelected)
+      }
+    }
+  )
 
   override fun apply() {
     super.apply()
-    val settings = MarketplaceSettings.INSTANCE
-    if (settings.isSolutionSharingStateModified()) {
-      settings.updateSharingPreference(shareMySolutionsCheckBox.isSelected)
-    }
-
-    if (settings.isUserAgreementStateModified()) {
-      val agreementState = if (userAgreementCheckBox.isSelected) {
-        UserAgreementState.ACCEPTED
-      }
-      else {
-        UserAgreementState.TERMINATED
-      }
-      settings.updateAgreementState(agreementState)
-    }
-
-    if (settings.isStatisticsCollectionStateModified()) {
-      settings.updateStatisticsCollectionState(statisticsCollectionAllowedCheckBox.isSelected)
-    }
+    // todo
   }
 
   override fun reset() {
     super.reset()
-    val settings = MarketplaceSettings.INSTANCE
-    shareMySolutionsCheckBox.isSelected = settings.solutionsSharing == true
-    userAgreementCheckBox.isSelected = settings.userAgreementState == UserAgreementState.ACCEPTED
-    statisticsCollectionAllowedCheckBox.isSelected = settings.statisticsCollectionState == true
+    // todo()
   }
 
   override fun isModified(): Boolean {
-    val settings = MarketplaceSettings.INSTANCE
-    return super.isModified() ||
-           settings.isSolutionSharingStateModified() ||
-           settings.isUserAgreementStateModified() ||
-           settings.isStatisticsCollectionStateModified()
+    return super.isModified() // || todo
   }
-
-  private fun MarketplaceSettings.isSolutionSharingStateModified(): Boolean = solutionsSharing != shareMySolutionsCheckBox.isSelected
-
-  private fun MarketplaceSettings.isUserAgreementStateModified(): Boolean = userAgreementState == UserAgreementState.ACCEPTED != userAgreementCheckBox.isSelected
-
-  private fun MarketplaceSettings.isStatisticsCollectionStateModified(): Boolean = statisticsCollectionState != statisticsCollectionAllowedCheckBox.isSelected
 }

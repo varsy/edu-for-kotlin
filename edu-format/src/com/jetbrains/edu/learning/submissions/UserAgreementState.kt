@@ -15,11 +15,16 @@ enum class UserAgreementState {
   NOT_SHOWN;
 }
 
+fun UserAgreementState.isAccepted() = this == UserAgreementState.ACCEPTED
+
+@Deprecated("")
 fun UserAgreementState?.isSubmissionUploadAllowed(): Boolean = this == UserAgreementState.ACCEPTED
 
+@Deprecated("")
 fun UserAgreementState?.isSubmissionDownloadAllowed(): Boolean = when (this) {
   UserAgreementState.ACCEPTED, UserAgreementState.TERMINATED -> true
   else -> false
 }
 
+@Deprecated("")
 fun UserAgreementState?.isSolutionSharingAllowed(): Boolean = this == UserAgreementState.ACCEPTED

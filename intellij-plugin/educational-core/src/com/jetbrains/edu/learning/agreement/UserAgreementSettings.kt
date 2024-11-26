@@ -31,20 +31,28 @@ class UserAgreementSettings : PersistentStateComponent<UserAgreementSettings.Sta
   }
 
   data class UserAgreementProperties(
-    val pluginAgreement: UserAgreementState = UserAgreementState.NOT_SHOWN
-  )
+    val pluginAgreement: UserAgreementState = UserAgreementState.NOT_SHOWN,
+    val submissionsServiceAgreement: UserAgreementState = UserAgreementState.NOT_SHOWN,
+    val aiServiceAgreement: UserAgreementState = UserAgreementState.NOT_SHOWN,
+  ) {
+    constructor(state: State) : this(state.pluginAgreement, state.submissionsServiceAgreement, state.aiServiceAgreement)
+  }
 
   class State : BaseState() {
     var pluginAgreement by enum<UserAgreementState>(UserAgreementState.NOT_SHOWN)
+    var submissionsServiceAgreement by enum<UserAgreementState>(UserAgreementState.NOT_SHOWN)
+    var aiServiceAgreement by enum<UserAgreementState>(UserAgreementState.NOT_SHOWN)
   }
 
   override fun getState(): State {
     val state = State()
     state.pluginAgreement = userAgreementProperties.value.pluginAgreement
+    state.submissionsServiceAgreement = userAgreementProperties.value.submissionsServiceAgreement
+    state.aiServiceAgreement = userAgreementProperties.value.aiServiceAgreement
     return state
   }
 
   override fun loadState(state: State) {
-    _userAgreementProperties.value = UserAgreementProperties(state.pluginAgreement)
+    _userAgreementProperties.value = UserAgreementProperties(state)
   }
 }

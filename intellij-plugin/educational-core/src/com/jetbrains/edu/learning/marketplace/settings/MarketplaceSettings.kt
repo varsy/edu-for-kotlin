@@ -6,14 +6,11 @@ import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.project.Project
 import com.intellij.ui.JBAccountInfoService
 import com.jetbrains.edu.learning.isUnitTestMode
-import com.jetbrains.edu.learning.marketplace.MarketplaceNotificationUtils.showSuccessRequestNotification
 import com.jetbrains.edu.learning.marketplace.api.MarketplaceAccount
 import com.jetbrains.edu.learning.marketplace.api.MarketplaceSubmissionsConnector
 import com.jetbrains.edu.learning.marketplace.getJBAUserInfo
 import com.jetbrains.edu.learning.marketplace.isMarketplaceStudentCourse
 import com.jetbrains.edu.learning.marketplace.toBoolean
-import com.jetbrains.edu.learning.messages.EduCoreBundle
-import com.jetbrains.edu.learning.notification.EduNotificationManager
 import com.jetbrains.edu.learning.onError
 import com.jetbrains.edu.learning.statistics.EduCounterUsageCollector
 import com.jetbrains.edu.learning.submissions.UserAgreementState
@@ -40,34 +37,14 @@ class MarketplaceSettings(private val scope: CoroutineScope) {
   var userAgreementState: UserAgreementState? = null
     private set
 
-  /**
-   * Do not rely on this property deciding if statistics can be uploaded, get actual state from the remote
-   */
-  @Volatile
-  var statisticsCollectionState: Boolean? = null
-    private set
-
   init {
     if (!isUnitTestMode && isJBALoggedIn()) {
       scope.launch(Dispatchers.IO) {
         val submissionsConnector = MarketplaceSubmissionsConnector.getInstance()
-
         val remoteAgreementState = submissionsConnector.getUserAgreementState()
         userAgreementState = remoteAgreementState
-        val remoteStatisticsState = submissionsConnector.getUserStatisticsAllowedState()
-        statisticsCollectionState = remoteStatisticsState
-
         solutionsSharing = submissionsConnector.getSharingPreference().toBoolean()
       }
-    }
-  }
-
-  fun updateSolutionSharingFromRemote(afterUpdate: suspend (sharingPreference: Boolean?) -> Unit = {}) {
-    scope.launch(Dispatchers.IO) {
-      if (isJBALoggedIn() && solutionsSharing == null) {
-        solutionsSharing = MarketplaceSubmissionsConnector.getInstance().getSharingPreference().toBoolean()
-      }
-      afterUpdate(solutionsSharing)
     }
   }
 
@@ -111,84 +88,9 @@ class MarketplaceSettings(private val scope: CoroutineScope) {
     }
   }
 
-  fun updateAgreementState(state: UserAgreementState, project: Project? = null) {
-    if (!isJBALoggedIn()) return
-    scope.launch(Dispatchers.IO) {
-      MarketplaceSubmissionsConnector.getInstance().changeUserAgreementState(state).onError {
-        EduNotificationManager.showErrorNotification(
-          project,
-          EduCoreBundle.message("user.agreement.changed.failed.notification.title"),
-          EduCoreBundle.message("notification.something.went.wrong.text")
-        )
-        return@launch
-      }
-
-      userAgreementState = state
-
-      val notificationText = if (state == UserAgreementState.ACCEPTED) {
-        EduCoreBundle.message("user.agreement.changed.accepted.notification.text")
-      }
-      else {
-        EduCoreBundle.message("user.agreement.changed.terminated.notification.text")
-      }
-
-      showSuccessRequestNotification(
-        project,
-        EduCoreBundle.message("user.agreement.changed.success.notification.title"),
-        notificationText
-      )
-    }
-  }
-
   @VisibleForTesting
   fun setTestAgreementState(state: UserAgreementState?) {
     userAgreementState = state
-  }
-
-  fun updateStatisticsCollectionState(state: Boolean, project: Project? = null) {
-    if (!isJBALoggedIn()) return
-    scope.launch(Dispatchers.IO) {
-      MarketplaceSubmissionsConnector.getInstance().changeUserStatisticsAllowedState(state).onError {
-        EduNotificationManager.showErrorNotification(
-          project,
-          EduCoreBundle.message("user.statistics.changed.failed.notification.title"),
-          EduCoreBundle.message("notification.something.went.wrong.text")
-        )
-        return@launch
-      }
-
-      statisticsCollectionState = state
-      val notificationText = if (state) {
-        EduCoreBundle.message("user.statistics.changed.allowed.notification.text")
-      }
-      else {
-        EduCoreBundle.message("user.statistics.changed.prohibited.notification.text")
-      }
-
-      showSuccessRequestNotification(
-        project,
-        EduCoreBundle.message("user.statistics.changed.success.notification.title"),
-        notificationText
-      )
-    }
-  }
-
-  fun updateToActualUserAgreementState(processUpdate: suspend (UserAgreementState?) -> Unit) {
-    if (!isJBALoggedIn()) return
-    scope.launch(Dispatchers.IO) {
-      val actualAgreementState = MarketplaceSubmissionsConnector.getInstance().getUserAgreementState()
-      userAgreementState = actualAgreementState
-      processUpdate(actualAgreementState)
-    }
-  }
-
-  fun updateToActualStatisticsSharingState(processUpdate: suspend (Boolean?) -> Unit) {
-    if (!isJBALoggedIn()) return
-    scope.launch(Dispatchers.IO) {
-      val actualStatisticsState = MarketplaceSubmissionsConnector.getInstance().getUserStatisticsAllowedState()
-      statisticsCollectionState = actualStatisticsState
-      processUpdate(actualStatisticsState)
-    }
   }
 
   @TestOnly
