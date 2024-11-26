@@ -29,8 +29,7 @@ class EduFileEditorManagerListener(private val project: Project) : FileEditorMan
   }
 
   override fun fileClosed(source: FileEditorManager, file: VirtualFile) {
-    if (!project.isEduProject()) return
-    if (FileEditorManager.getInstance(project).openFiles.isEmpty()) {
+    if (project.isEduProject() && FileEditorManager.getInstance(project).openFiles.isEmpty()) {
       TaskToolWindowView.getInstance(project).currentTask = null
     }
   }
