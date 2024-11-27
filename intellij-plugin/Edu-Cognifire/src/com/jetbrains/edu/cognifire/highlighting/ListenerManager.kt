@@ -45,6 +45,13 @@ class ListenerManager(private val project: Project) {
     listeners.clear()
   }
 
+  fun clearAllMouseMotionListeners() {
+    listeners.filterIsInstance<EditorMouseMotionListener>().forEach {
+      editor?.removeEditorMouseMotionListener(it)
+    }
+    listeners.removeAll { it is EditorMouseMotionListener }
+  }
+
   companion object {
     fun getInstance(project: Project): ListenerManager = project.service()
   }

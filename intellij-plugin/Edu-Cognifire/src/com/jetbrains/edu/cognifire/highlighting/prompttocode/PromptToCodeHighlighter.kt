@@ -91,16 +91,24 @@ class PromptToCodeHighlighter(private val project: Project) {
 
   private fun getDocumentListener(codeExpression: CodeExpression, promptExpression: PromptExpression) = object: DocumentListener {
     override fun documentChanged(event: DocumentEvent) {
+      val delta = event.newLength - event.oldLength
       if (event.offset in promptExpression.startOffset until promptExpression.endOffset ||
           event.offset in codeExpression.startOffset until codeExpression.endOffset) {
-        highlighterManager.clearAll()
-        listenerManager.clearAll()
+        highlighterManager.clearAllAfterSync()
+        listenerManager.clearAllMouseMotionListeners()
+
+        if(delta > 0) {
+          highlighterManager.addUncommitedChangesHighlighter(
+            event.offset,
+            event.offset + delta,
+            attributes
+          )
+        }
       } else if (event.offset < promptExpression.startOffset) {
         val delta = event.newLength - event.oldLength
         codeExpression.shiftOffset(delta)
         promptExpression.shiftOffset(delta)
       } else if (event.offset in promptExpression.endOffset until codeExpression.startOffset) {
-        val delta = event.newLength - event.oldLength
         codeExpression.shiftOffset(delta)
       }
     }
