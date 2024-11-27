@@ -50,15 +50,6 @@
     </extensionPoint>
   </extensionPoints>
 
-  <extensions defaultExtensionNs="com.intellij">
-    <intentionAction>
-      <language>kotlin</language>
-      <className>com.jetbrains.edu.cognifire.actions.CodeIntentionAction</className>
-      <categoryKey>cognifire.intention.category.name</categoryKey>
-      <descriptionDirectoryName>CodeIntentionAction</descriptionDirectoryName>
-    </intentionAction>
-  </extensions>
-
   <actions>
     <action id="Educational.Educator.CreateTutorial"
             class="com.jetbrains.edu.cognifire.tutorial.TutorialGenerator">
