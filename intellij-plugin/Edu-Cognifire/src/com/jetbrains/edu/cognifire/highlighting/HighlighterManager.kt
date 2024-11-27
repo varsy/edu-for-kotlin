@@ -15,13 +15,19 @@ import com.jetbrains.edu.learning.selectedEditor
 class HighlighterManager(private val project: Project) {
   private val grammarHighlighters = mutableListOf<RangeHighlighter>()
   private val promptToCodeHighlighters = mutableListOf<RangeHighlighter>()
+  private val uncommitedChangesHighlighters = mutableListOf<RangeHighlighter>()
 
   private val markupModel: MarkupModel?
     get() = project.selectedEditor?.markupModel
 
-  fun clearAll() {
+  fun clearAllAfterSync() {
     grammarHighlighters.clearAndDispose()
     promptToCodeHighlighters.clearAndDispose()
+  }
+
+  fun clearAll() {
+    clearAllAfterSync()
+    uncommitedChangesHighlighters.clearAndDispose()
   }
 
   fun clearPromptToCodeHighlighters() = promptToCodeHighlighters.clearAndDispose()
@@ -51,6 +57,17 @@ class HighlighterManager(private val project: Project) {
       attributes
     )?.also {
       promptToCodeHighlighters.add(it)
+    }
+
+  fun addUncommitedChangesHighlighter(startOffset: Int, endOffset: Int, attributes: TextAttributes): RangeHighlighter? =
+    markupModel?.addRangeHighlighter(
+      startOffset,
+      endOffset,
+      HighlighterLayer.SELECTION,
+      attributes,
+      HighlighterTargetArea.EXACT_RANGE
+    )?.also {
+      uncommitedChangesHighlighters.add(it)
     }
 
   companion object {
