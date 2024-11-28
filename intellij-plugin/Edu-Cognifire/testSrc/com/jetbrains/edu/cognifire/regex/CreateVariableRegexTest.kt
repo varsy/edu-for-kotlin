@@ -19,28 +19,28 @@ class CreateVariableRegexTest : RegexTest, EduTestCase() {
         (MIN_IDENTIFIER_NAME_LENGTH..MAX_IDENTIFIER_NAME_LENGTH).random()
       )
     } + listOf(
-      TestAnswer("declare `foo`", listOf("foo")), // test the `declare` verb
-      TestAnswer("set up `foo`", listOf("foo")), // test the `set up` verb
-      TestAnswer("create `bar`", listOf("bar")), // test the `create` verb
+      TestAnswer("declare `foo`", listOf("declare", "foo")), // test the `declare` verb
+      TestAnswer("initialize `foo`", listOf("initialize", "foo")), // test the `set up` verb
+      TestAnswer("create `bar`", listOf("create", "bar")), // test the `create` verb
 
-      TestAnswer("create the `buzz`", listOf("buzz")), // test the `the` article
-      TestAnswer("create a `buzz`", listOf("buzz")), // test the `a` article
-      TestAnswer("declare an `apple`", listOf("apple")), // test the `an` article
+      TestAnswer("create the `buzz`", listOf("create", "buzz")), // test the `the` article
+      TestAnswer("create a `buzz`", listOf("create", "buzz")), // test the `a` article
+      TestAnswer("declare an `apple`", listOf("declare", "apple")), // test the `an` article
 
-      TestAnswer("declare the string `buzz`", listOf("buzz")), // test the optional `string` word
-      TestAnswer("declare the random string `buzz`", listOf("buzz")), // test the optional `random string` word
-      TestAnswer("set up the empty string `myString`", listOf("myString")), // test the optional `empty string` word
-      TestAnswer("declare the variable `buzz`", listOf("buzz")), // test the optional `variable` word
-      TestAnswer("create the variable called `foo`", listOf("foo")), // test the optional `called` word
+      TestAnswer("declare the string `buzz`", listOf("declare", "string", "buzz")), // test the optional `string` word
+      TestAnswer("declare the random string `buzz`", listOf("declare", "random string", "buzz")), // test the optional `random string` word
+      TestAnswer("initialize the empty string `myString`", listOf("initialize", "empty string", "myString")), // test the optional `empty string` word
+      TestAnswer("declare the variable `buzz`", listOf("declare", "buzz")), // test the optional `variable` word
+      TestAnswer("create the variable called `foo`", listOf("create", "foo")), // test the optional `called` word
 
-      TestAnswer("deClaRe THE STrinG `buzz`", listOf("buzz")), // test case-insensitive
-      TestAnswer("CREaTe A `buzz`", listOf("buzz")), // test case-insensitive
-      TestAnswer("DeClArE `foo`", listOf("foo")), // test case-insensitive
-      TestAnswer("cREatE thE vArIabLe cAlLed `foo`", listOf("foo")), // test case-insensitive
+      TestAnswer("deClaRe THE STrinG `buzz`", listOf("deClaRe", "STrinG", "buzz")), // test case-insensitive
+      TestAnswer("CREaTe A `buzz`", listOf("CREaTe", "buzz")), // test case-insensitive
+      TestAnswer("DeClArE `foo`", listOf("DeClArE", "foo")), // test case-insensitive
+      TestAnswer("cREatE thE vArIabLe cAlLed `foo`", listOf("cREatE", "foo")), // test case-insensitive
 
-      TestAnswer("declare   the  string   `buzz`", listOf("buzz")), // test spacing
-      TestAnswer("set   up  the empty string      `myString`", listOf("myString")), // test spacing
-      TestAnswer("create    the    variable   called   `foo`", listOf("foo")), // test spacing
+      TestAnswer("declare   the  string   `buzz`", listOf("declare", "string", "buzz")), // test spacing
+      TestAnswer("initialize   the empty string      `myString`", listOf("initialize", "empty string", "myString")), // test spacing
+      TestAnswer("create    the    variable   called   `foo`", listOf("create", "foo")), // test spacing
     )
 
   override fun shouldNotMatch() =
