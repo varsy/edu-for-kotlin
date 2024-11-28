@@ -31,5 +31,6 @@
     <completion.confidence language="kotlin" implementationClass="com.jetbrains.edu.kotlin.cognifire.completion.CognifireCompletionConfidence" id="kotlinStrings" order="first"/>
     <completion.contributor language="kotlin" implementationClass="com.jetbrains.edu.kotlin.cognifire.completion.CognifireCompletionContributor"/>
     <annotator language="kotlin" implementationClass="com.jetbrains.edu.kotlin.cognifire.psi.KtPromptErrorAnnotator"/>
+    <annotator language="kotlin" implementationClass="com.jetbrains.edu.kotlin.cognifire.psi.KtPromptSyntaxHighlightingAnnotator"/>
   </extensions>
 </idea-plugin>

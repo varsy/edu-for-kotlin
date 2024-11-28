@@ -35,7 +35,7 @@ object GrammarRegex {
   private const val VAR = "(?:var|variable|$MUTABLE)"
   private const val VAL = "(?:val|$CONST)"
   private const val VARIABLE = "(?:$VAL|$VAR)"
-  private const val SET = "(?:set|assign|give|initialize)"
+  private const val SET = "(?:set|assign|give)"
   private const val CALLED = "(?:called|named)"
   private const val FUNCTION = "(?:fun|function)"
   private const val PRINT = "(?:print|prints|output|outputs|display|displays)"
@@ -43,8 +43,8 @@ object GrammarRegex {
   private const val CALL = "(?:call|invoke|run|execute)"
   private const val IN = "(?:in|of)"
   private const val UP = "up"
-  private const val CREATE = "(?:declare|set|create)"
-  private const val BOOL = "(?:true|false)"
+  private const val CREATE = "(?:declare|create|initialize)"
+  private const val BOOL = "\\b(?:true|false)\\b"
   private const val ADD = "(?:add|adds|append|appends)"
   private const val EQUAL = "(?:equal|equals)"
   private const val RETURN = "(?:return|returns)"
@@ -52,7 +52,7 @@ object GrammarRegex {
   private const val WITH = "with"
   private const val GET = "(?:get|gets|receive|receives|obtain|obtains)"
   private const val DATA_STRUCTURE = "(?:array|list|set|map|dictionary|hashmap|hashset|collection|iterable|sequence|queue|stack)"
-  private const val NUMBER = "[0-9]+"
+  private const val NUMBER = "\\b(?:[0-9]+)\\b"
   private const val STRING = "\"[^\\r\\n\"]+\""
   private const val IDENTIFIER = "`([A-Za-z_][A-Za-z0-9_]*)`"
   private const val NO_CAPTURE_IDENTIFIER = "`[A-Za-z_][A-Za-z0-9_]*`"
@@ -63,7 +63,8 @@ object GrammarRegex {
     NUMBER,
     STRING,
     NO_CAPTURE_IDENTIFIER,
-    BOOL
+    BOOL,
+    CODE
   ).joinToString("|", prefix = "(?:", postfix = ")")
 
   private val arbitraryText = listOf(
@@ -110,35 +111,54 @@ object GrammarRegex {
     CODE,
   ).joinToString("|")
 
+  val keyword = listOf(
+    IF,
+    ELSE,
+    THEN,
+    LOOP,
+    EACH,
+    WHILE,
+    DO,
+    EMPTY,
+    RANDOM,
+  ).joinToString("|", prefix = "(?i)\\b(", postfix = ")\\b").toRegex()
+
+  val valueRegex = listOf(
+    NUMBER,
+    BOOL,
+  ).joinToString("|", prefix = "(", postfix = ")").toRegex()
+
+  val stringRegex = "($STRING)".toRegex()
+
   /**
    * Regex that matches variable storing. Example: ``Store 3 in the variable `foo` ``.
    */
-  val storeVariable = ("(?i)$STORE(?:\\s+$ARTICLE)?(?:\\s+$VALUE)?\\s+$value(?:\\s+(?:$arbitraryText))*\\s+$IN" +
+  val storeVariable = ("(?i)($STORE)(?:\\s+$ARTICLE)?(?:\\s+$VALUE)?\\s+($value)(?:\\s+(?:$arbitraryText))*\\s+($IN)" +
                        "(?:\\s+$ARTICLE)?(?:\\s+$VARIABLE)?\\s+$IDENTIFIER").toRegex()
 
   /**
    * Regex that matches variable creation. Example: ``Create an empty string `foo` ``.
    */
-  val createVariable = ("(?i)$CREATE(?:\\s+$UP)?(?:\\s+$ARTICLE)?(?:\\s+(?:$word))?(?:\\s+$VARIABLE)?" +
+  val createVariable = ("(?i)($CREATE)(?:\\s+$UP)?(?:\\s+$ARTICLE)?(?:\\s+($word))?(?:\\s+$VARIABLE)?" +
                         "(?:\\s+$CALLED)?(?:\\s+(?:$IDENTIFIER))").toRegex()
 
   /**
    * Regex that matches variable initialization. Example: "Set the variable `foo` to 3".
    */
-  val setVariable = ("(?i)$SET(?:\\s+$ARTICLE)?(?:\\s+$VARIABLE)?(?:\\s+$CALLED)?\\s+" +
-                     IDENTIFIER).toRegex()
+  val setVariable = ("(?i)($SET)(?:\\s+$ARTICLE)?(?:\\s+$VARIABLE)?(?:\\s+$CALLED)?\\s+$IDENTIFIER(?:\\s+(?:$arbitraryText))*\\s+($TO)" +
+                     "(?:\\s+$ARTICLE)?(?:\\s+$VALUE)?\\s+($value)").toRegex()
 
   /**
    * Regex that matches variable saving. Example: ``Save 3 to the variable `foo` ``.
    */
-  val saveVariable = ("(?i)(?:$SAVE)(?:\\s+$ARTICLE)?(?:\\s+$VALUE)?\\s+$value(?:\\s+(?:$arbitraryText))*\\s+$TO" +
+  val saveVariable = ("(?i)($SAVE)(?:\\s+$ARTICLE)?(?:\\s+$VALUE)?\\s+($value)(?:\\s+(?:$arbitraryText))*\\s+($TO)" +
                       "(?:\\s+$ARTICLE)?(?:\\s+$VARIABLE)?\\s+$IDENTIFIER").toRegex()
 
   /**
    * Regex that matches a function call. Example: "Call the function `foo` with 1 and 3".
    */
   val callFunction = (
-    "(?i)$CALL(?:\\s+$ARTICLE)?(?:\\s+$FUNCTION)?\\s+$IDENTIFIER" +
+    "(?i)($CALL)(?:\\s+$ARTICLE)?(?:\\s+$FUNCTION)?\\s+$IDENTIFIER" +
     "(?:(?:\\s+$WITH(?:\\s+$ARTICLE)?(?:\\s+$ARGUMENT)?)?\\s+($value(?:(?:\\s+$AND\\s+|\\s*$SEPARATOR\\s*)$value)*))?"
                      ).toRegex()
 
@@ -146,7 +166,7 @@ object GrammarRegex {
    * Regex that matches a loop expression. Example: ``For each `i` in the `array` ``.
    */
   val loopExpression = (
-    "(?i)$LOOP\\s+(?:$OVER\\s+)?(?:$EACH\\s+)?(?:$ELEMENT\\s+)?$IDENTIFIER\\s+$IN\\s+" +
+    "(?i)($LOOP)\\s+(?:$OVER\\s+)?(?:$EACH\\s+)?(?:$ELEMENT\\s+)?$IDENTIFIER\\s+($IN)\\s+" +
     "(?:$ARTICLE\\s+)?(?:$DATA_STRUCTURE\\s+)?$IDENTIFIER"
                        ).toRegex()
 
