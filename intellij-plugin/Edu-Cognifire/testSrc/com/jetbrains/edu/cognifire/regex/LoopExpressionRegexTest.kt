@@ -19,18 +19,18 @@ class LoopExpressionRegexTest : RegexTest, EduTestCase() {
       )
     } + listOf(
       // minimal loop syntax
-      TestAnswer("loop `item` in `collection`", listOf("item", "collection")),
-      TestAnswer("for `index` in `list`", listOf("index", "list")),
+      TestAnswer("loop `item` in `collection`", listOf("loop", "item", "in", "collection")),
+      TestAnswer("for `index` in `list`", listOf("for", "index", "in", "list")),
 
       // optional elements may or may not be present
-      TestAnswer("iterate through every item `index` in the array `arrayName`", listOf("index", "arrayName")),
-      TestAnswer("loop over each element `item` in `collection`", listOf("item", "collection")),
-      TestAnswer("go through all elements `item` in `list`", listOf("item", "list")),
-      TestAnswer("for every element `item` in set `setName`", listOf("item", "setName")),
-      TestAnswer("for every item `i` in the sequence `name`", listOf("i", "name")),
+      TestAnswer("iterate through every item `index` in the array `arrayName`", listOf("iterate", "index", "in", "arrayName")),
+      TestAnswer("loop over each element `item` in `collection`", listOf("loop", "item", "in", "collection")),
+      TestAnswer("go through all elements `item` in `list`", listOf("go", "item", "in", "list")),
+      TestAnswer("for every element `item` in set `setName`", listOf("for", "item", "in", "setName")),
+      TestAnswer("for every item `i` in the sequence `name`", listOf("for", "i", "in", "name")),
 
       // test spacing
-      TestAnswer("for    every      item  `i`     in          sequence   `name`", listOf("i", "name")),
+      TestAnswer("for    every      item  `i`     in          sequence   `name`", listOf("for", "i", "in", "name")),
     )
 
   override fun shouldNotMatch() =

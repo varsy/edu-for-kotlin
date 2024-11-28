@@ -2,7 +2,7 @@ package com.jetbrains.edu.kotlin.cognifire.psi
 
 import com.intellij.psi.PsiElement
 import com.intellij.psi.util.PsiTreeUtil
-import com.jetbrains.edu.cognifire.PromptErrorAnnotator
+import com.jetbrains.edu.cognifire.annotator.PromptErrorAnnotator
 import com.jetbrains.edu.cognifire.models.NamedFunction
 import com.jetbrains.edu.cognifire.models.NamedVariable
 import org.jetbrains.kotlin.psi.*

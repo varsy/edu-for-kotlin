@@ -10,26 +10,32 @@ class SetVariableRegexTest : RegexTest, EduTestCase() {
 
   override fun shouldMatch() =
     listOf(
-      TestAnswer("set `foo`", listOf("foo")), // test the `set` verb
-      TestAnswer("assign `foo`", listOf("foo")), // test the `assign` verb
-      TestAnswer("give `bar`", listOf("bar")), // test the `give` verb
-      TestAnswer("initialize `bar`", listOf("bar")), // test the `initialize` verb
+      TestAnswer("set `foo` to 3", listOf("set", "foo", "to", "3")), // test the `set` verb
+      TestAnswer("assign `foo` to 3", listOf("assign", "foo", "to", "3")), // test the `assign` verb
+      TestAnswer("give `bar` to 3", listOf("give", "bar", "to", "3")), // test the `give` verb
 
-      TestAnswer("set the `buzz`", listOf("buzz")), // test the `the` article
-      TestAnswer("set a `buzz`", listOf("buzz")), // test the `a` article
-      TestAnswer("set an `apple`", listOf("apple")), // test the `an` article
+      TestAnswer("set the `buzz` to 3", listOf("set", "buzz", "to", "3")), // test the `the` article
+      TestAnswer("set a `buzz` to 3", listOf("set", "buzz", "to", "3")), // test the `a` article
+      TestAnswer("set an `apple` to 3", listOf("set", "apple", "to", "3")), // test the `an` article
 
-      TestAnswer("initialize the variable `buzz`", listOf("buzz")), // test the optional `variable` word
-      TestAnswer("set the variable called `buzz`", listOf("buzz")), // test the optional `called` word
+      TestAnswer("set `foo` to result", listOf("set", "foo", "to", "result")), // test the `result` word
+      TestAnswer("set `foo` to 3321", listOf("set",  "foo", "to", "3321")), // test the number
+      TestAnswer("set `greeting` to \"hello\"", listOf("set", "greeting", "to", "\"hello\"")), // test the string value
+      TestAnswer("set `foo` to `myVar`", listOf("set", "foo", "to", "`myVar`")), // test the value wrapped in backticks
+      TestAnswer("set `foo` to true", listOf("set", "foo", "to", "true")), // test true value
+      TestAnswer("set `foo` to false", listOf("set", "foo", "to", "false")), // test false value
 
-      TestAnswer("SET `foo`", listOf("foo")), // test case-insensitive
-      TestAnswer("Set The `buzz`", listOf("buzz")), // test case-insensitive
-      TestAnswer("iNiTIAliZe tHE varIaBLe `buzz`", listOf("buzz")), // test case-insensitive
-      TestAnswer("SEt THE vaRiABLE cALlEd `buzz`", listOf("buzz")), // test case-insensitive
+      TestAnswer("set the variable `buzz` to 3", listOf("set", "buzz", "to", "3")), // test the optional `variable` word
+      TestAnswer("set the variable called `buzz` to 3", listOf("set", "buzz", "to", "3")), // test the optional `called` word
 
-      TestAnswer("give   `bar`", listOf("bar")), // test spacing
-      TestAnswer("set  a   `buzz`", listOf("buzz")), // test spacing
-      TestAnswer("set   the   variable    called `buzz`", listOf("buzz")), // test spacing
+      TestAnswer("SET `foo` to 3", listOf("SET", "foo", "to", "3")), // test case-insensitive
+      TestAnswer("Set The `buzz` To 3", listOf("Set", "buzz", "To", "3")), // test case-insensitive
+      TestAnswer("GiVE tHE varIaBLe `buzz` tO 3", listOf("GiVE", "buzz", "tO", "3")), // test case-insensitive
+      TestAnswer("SEt THE vaRiABLE cALlEd `buzz` TO 3", listOf("SEt", "buzz", "TO", "3")), // test case-insensitive
+
+      TestAnswer("give   `bar`   to   3", listOf("give", "bar", "to", "3")), // test spacing
+      TestAnswer("set  a   `buzz`   to      3    ", listOf("set", "buzz", "to", "3")), // test spacing
+      TestAnswer("set   the   variable    called `buzz`    to   3  ", listOf("set", "buzz", "to", "3")), // test spacing
       )
 
   override fun shouldNotMatch() =
