@@ -36,9 +36,10 @@ object TestGenerator {
    */
   fun generateCreateVariable(variableNameLength: Int): TestAnswer {
     val variableName = generateIdentifier(variableNameLength)
+    val createSynonyms = getCreateSynonyms().random()
     return TestAnswer(
-      "${getCreateSynonyms().random()} ${listOf(EMPTY_STRING, THE).random()} `${variableName}`",
-      listOf(variableName)
+      "$createSynonyms ${listOf(EMPTY_STRING, THE).random()} `${variableName}`",
+      listOf(createSynonyms, variableName)
     )
   }
 
@@ -48,10 +49,11 @@ object TestGenerator {
    */
   fun generateNoParenthesesFunction(functionNameLength: Int): TestAnswer {
     val functionName = generateIdentifier(functionNameLength)
+    val callSynonyms = getCallSynonyms().random()
     return TestAnswer(
-      "${getCallSynonyms().random()} ${listOf(EMPTY_STRING, THE).random()}" +
+      "$callSynonyms ${listOf(EMPTY_STRING, THE).random()}" +
       " ${(listOf(EMPTY_STRING) + getFunctionSynonyms()).random()} `$functionName`",
-      listOf(functionName)
+      listOf(callSynonyms, functionName)
     )
   }
 
@@ -62,11 +64,12 @@ object TestGenerator {
   fun generateLoopExpression(nameLength: Int): TestAnswer {
     val identifier = generateIdentifier(nameLength)
     val data = generateIdentifier(nameLength)
+    val loopSynonyms = getLoopSynonyms().random()
     return TestAnswer(
-      "${getLoopSynonyms().random()} ${getOverSynonyms().withEmptyStringAndRandom()}" +
+      "$loopSynonyms ${getOverSynonyms().withEmptyStringAndRandom()}" +
       " ${getEachSynonyms().withEmptyStringAndRandom()} ${getElementSynonyms().withEmptyStringAndRandom()}" +
       " `$identifier` in ${listOf(EMPTY_STRING, THE).random()} ${getDataStructureSynonyms().withEmptyStringAndRandom()} `${data}`",
-      listOf(identifier, data)
+      listOf(loopSynonyms, identifier, "in", data)
     )
   }
 
