@@ -1,10 +1,10 @@
-package com.jetbrains.edu.cognifire
+package com.jetbrains.edu.cognifire.annotator
 
 import com.intellij.lang.annotation.AnnotationHolder
-import com.intellij.lang.annotation.Annotator
 import com.intellij.lang.annotation.HighlightSeverity
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
+import com.jetbrains.edu.cognifire.ErrorProcessor
 import com.jetbrains.edu.cognifire.highlighting.undefinedidentifier.*
 import com.jetbrains.edu.cognifire.messages.EduCognifireBundle
 import com.jetbrains.edu.cognifire.models.NamedFunction
@@ -15,7 +15,7 @@ import com.jetbrains.edu.cognifire.utils.isPromptBlock
  * Highlights parts containing errors inside the `prompt` DSL element.
  */
 
-interface PromptErrorAnnotator<T> : Annotator {
+interface PromptErrorAnnotator<T> : PromptAnnotator {
 
   override fun annotate(element: PsiElement, holder: AnnotationHolder) {
     if (!element.isRelevant()) return
@@ -86,24 +86,6 @@ interface PromptErrorAnnotator<T> : Annotator {
   }
 
   /**
-   * Returns a sequence of [MatchGroup] representing the parts of `target`
-   * string that are relevant based on the given [Regex].
-   */
-  private fun getAnnotatorRuleMatches(target: String, rule: AnnotatorRule): Sequence<AnnotatorRuleMatch> {
-    return rule.regex.findAll(target).map { it.toAnnotatorRuleMatch(rule) }
-  }
-
-  /**
-   * Converts [MatchResult] to [AnnotatorRuleMatch].
-   * The [MatchResult] must contain at least one non-null capturing group.
-   */
-  private fun MatchResult.toAnnotatorRuleMatch(rule: AnnotatorRule): AnnotatorRuleMatch {
-    val identifier = groups[1] ?: error("Invalid regular expression. There should be at least one non-null capturing group.")
-    val arguments = if (groups.size > 2) groups[2]?.value else null
-    return AnnotatorRuleMatch(rule, identifier, arguments)
-  }
-
-  /**
    * Returns visible entities, that is, entities that can be accessed from the `context` scope.
    */
   fun <E> getVisibleEntities(
@@ -136,6 +118,8 @@ interface PromptErrorAnnotator<T> : Annotator {
       AnnotatorRule.ISOLATED_CODE -> {
         processor.processNamedVariable(NamedVariable(target))
       }
+
+      else -> AnnotatorParametrizedError.NO_ERROR
     }
   }
 
@@ -157,12 +141,6 @@ interface PromptErrorAnnotator<T> : Annotator {
   fun getNamedFunctionClasses(): Array<T>
 
   /**
-   * Returns the [PsiElement] representing the prompt block.
-   * May return `null` if there is no prompt.
-   */
-  fun getPromptContentOrNull(element: PsiElement): PsiElement?
-
-  /**
    * Returns the [PsiElement] representing the code prompt block.
    * May return `null` if there is no code prompt block.
    */
@@ -172,7 +150,4 @@ interface PromptErrorAnnotator<T> : Annotator {
    * Finds the parent function of the given PSI element, if it exists.
    */
   fun getParentFunctionBodyOrNull(element: PsiElement): PsiElement?
-
-  fun PsiElement.getStartOffset(): Int
-  fun PsiElement.getEndOffset(): Int
 }
