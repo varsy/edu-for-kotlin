@@ -1,7 +1,6 @@
 package com.jetbrains.edu.learning.courseFormat.tasks
 
 import com.jetbrains.edu.learning.courseFormat.*
-import com.jetbrains.edu.learning.courseFormat.tasks.cognifire.PromptActionManager
 import java.util.*
 
 /**
@@ -32,9 +31,9 @@ abstract class Task : StudyItem {
   var feedbackLink: String? = null
 
   /**
-   * Represents a collection of prompt actions.
+   * Represents whether all prompt actions have been generated successfully.
    */
-  val promptActionManager = PromptActionManager()
+  var isPromptActionsGeneratedSuccessfully: Boolean = true
 
   /**
    * null means that behaviour for this particular Task hasn't been configured by a user and [Course.solutionsHidden] should be used instead

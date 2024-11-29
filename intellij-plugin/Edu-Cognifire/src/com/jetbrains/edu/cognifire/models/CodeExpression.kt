@@ -1,7 +1,7 @@
 package com.jetbrains.edu.cognifire.models
 
-class CodeExpression (
-  val code: String,
+open class CodeExpression (
+  open val code: String,
   private val baseContentOffset: Int,
   private val baseStartOffset: Int,
   private val baseEndOffset: Int

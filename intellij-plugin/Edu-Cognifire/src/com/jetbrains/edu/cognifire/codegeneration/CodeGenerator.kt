@@ -5,40 +5,63 @@ import com.intellij.openapi.progress.runBlockingCancellable
 import com.jetbrains.edu.cognifire.utils.RedundantTodoCleaner
 import com.intellij.openapi.project.Project
 import com.jetbrains.edu.cognifire.inspection.InspectionProcessor
+import com.jetbrains.edu.cognifire.models.CodeExpression
 import com.jetbrains.edu.cognifire.models.PromptExpression
 import com.jetbrains.edu.cognifire.utils.toGeneratedCode
+import com.jetbrains.edu.cognifire.utils.toPrompt
+import com.jetbrains.educational.ml.cognifire.core.PromptSyncAssistant
 import com.jetbrains.educational.ml.cognifire.core.PromptToCodeAssistant
 import com.jetbrains.educational.ml.cognifire.responses.PromptToCodeContent
-import com.jetbrains.educational.ml.cognifire.responses.PromptToCodeResponse
 
-class CodeGenerator(promptExpression: PromptExpression, project: Project, language: Language) {
-  private val enumeratedPromptLines = getEnumeratedPromptLines(promptExpression)
+class CodeGenerator(
+  private val promptExpression: PromptExpression,
+  private val project: Project,
+  private val language: Language,
+  private val previousPromptToCode: PromptToCodeContent?,
+  private val codeExpression: CodeExpression?
+) {
 
-  private val promptToCodeTranslation: PromptToCodeResponse =
-    getCodeFromPrompt(promptExpression.functionSignature.toString(), enumeratedPromptLines)
+  val finalPromptToCodeTranslation = improvePromptToCode()
 
-  private val promptToCodeClearedFromWrongTodos =
-    RedundantTodoCleaner.deleteWrongTodo(promptToCodeTranslation.content, promptExpression.functionSignature)
+  val promptToCodeLines = finalPromptToCodeTranslation
+    .groupBy { it.promptLineNumber }
+    .mapValues { promptGroup ->
+      promptGroup.value.map { it.codeLineNumber }
+    }
+  val codeToPromptLines = finalPromptToCodeTranslation
+    .groupBy { it.codeLineNumber }
+    .mapValues { promptGroup ->
+      promptGroup.value.map { it.promptLineNumber }
+    }
+  val generatedCode = finalPromptToCodeTranslation.toGeneratedCode()
+  val generatedPrompt = finalPromptToCodeTranslation.toPrompt()
 
-  private val promptToCodeAfterInspections: PromptToCodeContent =
-    InspectionProcessor.applyInspections(
+  private fun generatePromptToCode() =
+    if (previousPromptToCode != null && codeExpression?.code != null && previousPromptToCode.toGeneratedCode() != codeExpression.code
+                          && previousPromptToCode.toPrompt() == promptExpression.prompt) {
+      syncPrompt(
+        previousPromptToCode,
+        codeExpression.code.lines().enumerate(0),
+        getSetOfModifiedCodeLines(previousPromptToCode.toGeneratedCode(), codeExpression.code),
+        promptExpression.functionSignature.toString()
+      )
+    } else if (previousPromptToCode != null && codeExpression?.code != null && previousPromptToCode.toGeneratedCode() != codeExpression.code
+             && previousPromptToCode.toPrompt() != promptExpression.prompt) {
+      getCodeFromPrompt(promptExpression.functionSignature.toString(), getEnumeratedPromptLines(promptExpression)) // TODO: handle conflict
+    } else {
+      getCodeFromPrompt(promptExpression.functionSignature.toString(), getEnumeratedPromptLines(promptExpression))
+    }
+
+  private fun improvePromptToCode(): PromptToCodeContent {
+    val promptToCodeClearedFromWrongTodos =
+      RedundantTodoCleaner.deleteWrongTodo(generatePromptToCode().content, promptExpression.functionSignature)
+    return InspectionProcessor.applyInspections(
       promptToCodeClearedFromWrongTodos,
       promptExpression.functionSignature.toString(),
       project,
       language
     ) ?: promptToCodeClearedFromWrongTodos
-
-  val promptToCodeLines = promptToCodeAfterInspections
-    .groupBy { it.promptLineNumber }
-    .mapValues { promptGroup ->
-      promptGroup.value.map { it.codeLineNumber }
-    }
-  val codeToPromptLines = promptToCodeAfterInspections
-    .groupBy { it.codeLineNumber }
-    .mapValues { promptGroup ->
-      promptGroup.value.map { it.promptLineNumber }
-    }
-  val generatedCode = promptToCodeAfterInspections.toGeneratedCode()
+  }
 
   private fun getCodeFromPrompt(functionSignature: String, enumeratedPromptLines: String) = runBlockingCancellable {
     PromptToCodeAssistant.generateCode(
@@ -48,12 +71,29 @@ class CodeGenerator(promptExpression: PromptExpression, project: Project, langua
       .getOrThrow()
   }
 
+  private fun syncPrompt(previousPromptToCode: PromptToCodeContent, modifiedCode: String, modifiedCodeLineNumbers: Set<Int>, functionSignature: String) =
+    runBlockingCancellable {
+      PromptSyncAssistant.syncPrompt(previousPromptToCode, modifiedCode, modifiedCodeLineNumbers, functionSignature).getOrThrow()
+    }
+
+  private fun getSetOfModifiedCodeLines(code: String, modifiedCode: String): Set<Int> {
+    val oldCodeLines = code.lines()
+    val modifiedCodeLines = modifiedCode.lines()
+    val modifiedCodeLineNumbers = mutableSetOf<Int>()
+    for (i in 0 until maxOf(oldCodeLines.size, modifiedCodeLines.size)) {
+      if (oldCodeLines.getOrNull(i)?.trim() != modifiedCodeLines.getOrNull(i)?.trim()) {
+        modifiedCodeLineNumbers.add(i)
+      }
+    }
+    return modifiedCodeLineNumbers
+  }
+
   private fun getEnumeratedPromptLines(promptExpression: PromptExpression): String {
-    val promptLines = promptExpression.prompt.lines()
-    val codeLines = promptExpression.code.lines()
+    val promptLines = promptExpression.prompt.lines().filter { it.isNotBlank() }
+    val codeLines = promptExpression.code.lines().filter { it.isNotBlank() }
 
     return promptLines.enumerate(0) + System.lineSeparator() +
-           codeLines.enumerate(promptLines.size + 1)
+           codeLines.enumerate(promptLines.size)
   }
 
   private fun List<String>.enumerate(startIndex: Int): String {

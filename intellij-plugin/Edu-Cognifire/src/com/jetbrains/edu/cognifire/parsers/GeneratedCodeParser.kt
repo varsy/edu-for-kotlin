@@ -1,4 +1,4 @@
-package com.jetbrains.edu.cognifire
+package com.jetbrains.edu.cognifire.parsers
 
 import com.intellij.lang.Language
 import com.intellij.lang.LanguageExtension
