@@ -1,4 +1,4 @@
-package com.jetbrains.edu.learning.courseFormat.tasks.cognifire
+package com.jetbrains.edu.cognifire.manager
 
 /**
  * Represents the state for each Prompt-Code block
