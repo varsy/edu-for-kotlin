@@ -4,7 +4,7 @@ import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiElement
-import com.jetbrains.edu.cognifire.CodeExpressionWriter
+import com.jetbrains.edu.cognifire.writers.CodeExpressionWriter
 import com.jetbrains.edu.cognifire.models.CodeExpression
 import com.jetbrains.edu.learning.courseGeneration.GeneratorUtils
 import org.jetbrains.kotlin.psi.KtCallExpression
@@ -15,10 +15,10 @@ import org.jetbrains.kotlin.psi.psiUtil.startOffset
 
 class KtCodeExpressionWriter : CodeExpressionWriter {
 
-  override fun addCodeExpression(project: Project, element: PsiElement, generatedCode: String): CodeExpression {
+  override fun addExpression(project: Project, element: PsiElement, text: String, oldExpression: CodeExpression?): CodeExpression {
     val psiFactory = KtPsiFactory(project)
 
-    val codeTemplate = getCodeTemplate(generatedCode)
+    val codeTemplate = getCodeTemplate(text)
 
     val newCodeBlock = psiFactory.createExpression(codeTemplate) as? KtCallExpression ?: error("Failed to create code block")
     val documentManager = PsiDocumentManager.getInstance(project)
@@ -39,7 +39,7 @@ class KtCodeExpressionWriter : CodeExpressionWriter {
       endOffset = resultingCodeBlock.endOffset
     })
     return CodeExpression(
-      generatedCode,
+      text,
       codeOffset,
       startOffset,
       endOffset

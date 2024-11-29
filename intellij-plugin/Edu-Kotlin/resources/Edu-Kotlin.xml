@@ -24,6 +24,8 @@
     <codeApplier language="kotlin" implementationClass="com.jetbrains.edu.kotlin.cognifire.psi.KtCodeApplier"/>
     <generatedCodeParser language="kotlin" implementationClass="com.jetbrains.edu.kotlin.cognifire.psi.KtGeneratedCodeParser"/>
     <inspectionProcessor language="kotlin" implementationClass="com.jetbrains.edu.kotlin.cognifire.inspection.KtInspectionProcessor"/>
+    <codeExpressionParser language="kotlin" implementationClass="com.jetbrains.edu.kotlin.cognifire.psi.KtCodeExpressionParser"/>
+    <promptExpressionWriter language="kotlin" implementationClass="com.jetbrains.edu.kotlin.cognifire.psi.KtPromptExpressionWriter"/>
   </extensions>
 
   <extensions defaultExtensionNs="com.intellij">

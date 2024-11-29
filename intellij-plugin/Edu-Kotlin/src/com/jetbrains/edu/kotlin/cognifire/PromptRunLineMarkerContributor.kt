@@ -1,12 +1,14 @@
 package com.jetbrains.edu.kotlin.cognifire
 
 import com.intellij.execution.lineMarker.RunLineMarkerContributor
-import com.intellij.icons.AllIcons
 import com.intellij.psi.PsiElement
 import com.intellij.psi.impl.source.tree.LeafPsiElement
 import com.intellij.psi.util.PsiTreeUtil
 import com.jetbrains.edu.cognifire.CognifireDslPackageCallChecker
 import com.jetbrains.edu.cognifire.actions.PromptExecutorAction
+import com.jetbrains.edu.cognifire.manager.PromptActionManager
+import com.jetbrains.edu.cognifire.manager.PromptCodeState
+import com.jetbrains.edu.cognifire.ui.CognifireIcons
 import com.jetbrains.edu.cognifire.utils.PROMPT
 import com.jetbrains.edu.kotlin.messages.EduKotlinBundle
 import com.jetbrains.edu.learning.actions.EduActionUtils.getCurrentTask
@@ -27,14 +29,20 @@ class PromptRunLineMarkerContributor : RunLineMarkerContributor() {
       val function = PsiTreeUtil.getParentOfType(targetElement, KtNamedFunction::class.java) ?: return null
       val uniqueId = "${function.fqName}:${function.valueParameters.size}"
       val action = PromptExecutorAction(targetElement, uniqueId, task)
-      task.promptActionManager.addAction(uniqueId)
+      var tooltipText = EduKotlinBundle.message("action.run.generate.code.text")
+      val promptActionManager = PromptActionManager.getInstance(project)
+      val promptAction = promptActionManager.getAction(uniqueId)
+      if (promptAction != null && promptAction.state != PromptCodeState.PromptWritten) {
+        tooltipText = EduKotlinBundle.message("action.run.sync.prompt.with.code.text")
+      } else {
+        promptActionManager.addAction(uniqueId, task.id)
+      }
+      task.isPromptActionsGeneratedSuccessfully = promptActionManager.generatedSuccessfully(task.id)
       TaskToolWindowView.getInstance(project).updateCheckPanel(task)
       return Info(
-        AllIcons.Actions.Execute,
+        CognifireIcons.Sync,
         arrayOf(action),
-      ) { _ ->
-        EduKotlinBundle.message("action.run.generate.code.text")
-      }
+      ) { _ -> tooltipText }
     }
     return null
   }

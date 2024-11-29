@@ -10,9 +10,6 @@ import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.runBackgroundableTask
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
-import com.jetbrains.edu.cognifire.PromptExpressionParser
-import com.jetbrains.edu.cognifire.CodeExpressionWriter
-import com.jetbrains.edu.cognifire.GeneratedCodeParser
 import com.jetbrains.edu.cognifire.codegeneration.CodeGenerationState
 import com.jetbrains.edu.cognifire.codegeneration.CodeGenerator
 import com.jetbrains.edu.cognifire.grammar.GrammarParser
@@ -25,11 +22,19 @@ import com.jetbrains.edu.cognifire.messages.EduCognifireBundle
 import com.jetbrains.edu.cognifire.models.PromptExpression
 import com.jetbrains.edu.learning.actions.EduActionUtils
 import com.jetbrains.edu.learning.actions.EduActionUtils.getCurrentTask
-import com.jetbrains.edu.learning.courseFormat.tasks.cognifire.PromptCodeState
 import com.jetbrains.edu.learning.notification.EduNotificationManager
 import com.jetbrains.edu.learning.taskToolWindow.ui.TaskToolWindowView
 import com.jetbrains.educational.ml.core.exception.AiAssistantException
 import com.jetbrains.edu.cognifire.log.Logger
+import com.jetbrains.edu.cognifire.manager.PromptActionManager
+import com.jetbrains.edu.cognifire.manager.PromptCodeState
+import com.jetbrains.edu.cognifire.models.CodeExpression
+import com.jetbrains.edu.cognifire.models.ProdeExpression
+import com.jetbrains.edu.cognifire.parsers.CodeExpressionParser
+import com.jetbrains.edu.cognifire.parsers.GeneratedCodeParser
+import com.jetbrains.edu.cognifire.parsers.PromptExpressionParser
+import com.jetbrains.edu.cognifire.writers.CodeExpressionWriter
+import com.jetbrains.edu.cognifire.writers.PromptExpressionWriter
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
 
 /**
@@ -55,17 +60,18 @@ class PromptExecutorAction(private val element: PsiElement, private val id: Stri
       )
       return
     }
-    executeAction(project, promptExpression)
+    val codeExpression = CodeExpressionParser.getCodeExpression(element, element.language)
+    executeAction(project, promptExpression, codeExpression)
   }
 
   override fun getActionUpdateThread() = ActionUpdateThread.BGT
-  private fun executeAction(project: Project, promptExpression: PromptExpression) = runBackgroundableTask(
+  private fun executeAction(project: Project, promptExpression: PromptExpression, codeExpression: CodeExpression?) = runBackgroundableTask(
     EduCognifireBundle.message("action.progress.bar.message"),
     project
   ) { indicator ->
     runLocked(project) {
       runWithProgressBar(indicator) {
-        handleCodeGeneration(project, promptExpression)
+        handleCodeGeneration(project, promptExpression, codeExpression)
       }
     }
   }
@@ -111,49 +117,64 @@ class PromptExecutorAction(private val element: PsiElement, private val id: Stri
 
   private fun handleCodeGeneration(
     project: Project,
-    promptExpression: PromptExpression
+    promptExpression: PromptExpression,
+    codeExpression: CodeExpression?
   ) {
-    val codeGenerator = CodeGenerator(promptExpression, project, element.language)
+    val promptActionManager = PromptActionManager.getInstance(project)
+    val codeGenerator = CodeGenerator(promptExpression, project, element.language, promptActionManager.getAction(id)?.promptToCode, codeExpression)
 
     invokeLater {
       val generatedCode = codeGenerator.generatedCode
-      val codeExpression = CodeExpressionWriter.addCodeExpression(
-        project,
-        element,
-        generatedCode,
-        element.language
-      )
+      val (newPromptExpression, newCodeExpression) = syncProde(project, codeGenerator, promptExpression)
       PromptToCodeHighlighter(project).setUp(
-        promptExpression,
-        codeExpression,
+        newPromptExpression,
+        newCodeExpression,
         codeGenerator.promptToCodeLines,
         codeGenerator.codeToPromptLines
       )
 
-      val state = if (GeneratedCodeParser.hasErrors(project, generatedCode, promptExpression.functionSignature, element.language)) {
+      val state = if (GeneratedCodeParser.hasErrors(project, generatedCode, newPromptExpression.functionSignature, element.language)) {
         PromptCodeState.CodeFailed
       } else {
         PromptCodeState.CodeSuccess
       }
       var unparsableSentences = emptyList<OffsetSentence>()
       if (state == PromptCodeState.CodeFailed) {
-        unparsableSentences = checkGrammar(promptExpression, project)
+        unparsableSentences = checkGrammar(newPromptExpression, project)
         GrammarHighlighter.highlightAll(project, unparsableSentences)
       }
       Logger.cognifireLogger.info(
         """Lesson id: ${task.lesson.id}    Task id: ${task.id}    Action id: $id
-           | Text prompt: ${promptExpression.prompt}
-           | Code prompt: ${promptExpression.code}
+           | Text prompt: ${newPromptExpression.prompt}
+           | Code prompt: ${newPromptExpression.code}
            | Generated code: $generatedCode
            | Has TODO blocks: ${state == PromptCodeState.CodeFailed}
            | Has unparsable sentences - ${unparsableSentences.isNotEmpty()}: ${unparsableSentences.map { it.sentence }}
         """.trimMargin()
       )
+      promptActionManager.updateAction(id, state, codeGenerator.finalPromptToCodeTranslation)
       project.getCurrentTask()?.let {
-        it.promptActionManager.updateAction(id, state)
+        it.isPromptActionsGeneratedSuccessfully = promptActionManager.generatedSuccessfully(task.id)
         TaskToolWindowView.getInstance(project).updateCheckPanel(it)
       }
     }
+  }
+
+  private fun syncProde(project: Project, codeGenerator: CodeGenerator, promptExpression: PromptExpression): ProdeExpression {
+    val newPromptExpression = PromptExpressionWriter.addPromptExpression(
+      project,
+      element,
+      codeGenerator.generatedPrompt,
+      promptExpression,
+      element.language
+    )
+    val codeExpression = CodeExpressionWriter.addCodeExpression(
+      project,
+      element,
+      codeGenerator.generatedCode,
+      element.language
+    )
+    return ProdeExpression(newPromptExpression, codeExpression)
   }
 
   private fun Project.notifyError(title: String = "", content: String, promptExpression: PromptExpression? = null) =
