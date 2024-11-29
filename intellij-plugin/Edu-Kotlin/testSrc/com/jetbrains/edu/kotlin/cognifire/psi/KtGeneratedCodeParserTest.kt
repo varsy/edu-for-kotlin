@@ -1,6 +1,6 @@
 package com.jetbrains.edu.kotlin.cognifire.psi
 
-import com.jetbrains.edu.cognifire.GeneratedCodeParser
+import com.jetbrains.edu.cognifire.parsers.GeneratedCodeParser
 import com.jetbrains.edu.cognifire.utils.RedundantTodoCleaner
 import com.jetbrains.edu.cognifire.models.FunctionSignature
 import com.jetbrains.edu.cognifire.utils.toGeneratedCode
