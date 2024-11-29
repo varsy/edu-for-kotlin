@@ -2,8 +2,9 @@ package com.jetbrains.edu.cognifire.highlighting
 
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
-import com.intellij.openapi.editor.markup.*
+import com.intellij.openapi.editor.markup.MarkupModel
 import com.intellij.openapi.project.Project
+import com.jetbrains.edu.cognifire.highlighting.highlighers.ProdeHighlighter
 import com.jetbrains.edu.learning.selectedEditor
 
 /**
@@ -13,62 +14,29 @@ import com.jetbrains.edu.learning.selectedEditor
  */
 @Service(Service.Level.PROJECT)
 class HighlighterManager(private val project: Project) {
-  private val grammarHighlighters = mutableListOf<RangeHighlighter>()
-  private val promptToCodeHighlighters = mutableListOf<RangeHighlighter>()
-  private val uncommitedChangesHighlighters = mutableListOf<RangeHighlighter>()
+  val highlighters = mutableListOf<ProdeHighlighter>()
 
   private val markupModel: MarkupModel?
     get() = project.selectedEditor?.markupModel
 
-  fun clearAllAfterSync() {
-    grammarHighlighters.clearAndDispose()
-    promptToCodeHighlighters.clearAndDispose()
-  }
-
   fun clearAll() {
-    clearAllAfterSync()
-    uncommitedChangesHighlighters.clearAndDispose()
+    highlighters.forEach {
+      it.markupHighlighter?.dispose()
+    }
+    highlighters.clear()
   }
 
-  fun clearPromptToCodeHighlighters() = promptToCodeHighlighters.clearAndDispose()
-
-  private fun MutableList<RangeHighlighter>.clearAndDispose() {
-    forEach {
-      it.dispose()
+  inline fun <reified T : ProdeHighlighter> clearProdeHighlighters() {
+    highlighters.filterIsInstance<T>().forEach {
+      it.markupHighlighter?.dispose()
     }
-    clear()
+    highlighters.removeAll { it is T }
   }
 
-  fun addGrammarHighlighter(startOffset: Int, endOffset: Int, attributes: TextAttributes): RangeHighlighter? =
-    markupModel?.addRangeHighlighter(
-      startOffset,
-      endOffset,
-      HighlighterLayer.ERROR,
-      attributes,
-      HighlighterTargetArea.EXACT_RANGE
-    )?.also {
-      grammarHighlighters.add(it)
-    }
-
-  fun addPromptToCodeHighlighter(lineNumber: Int, attributes: TextAttributes): RangeHighlighter? =
-    markupModel?.addLineHighlighter(
-      lineNumber,
-      HighlighterLayer.LAST,
-      attributes
-    )?.also {
-      promptToCodeHighlighters.add(it)
-    }
-
-  fun addUncommitedChangesHighlighter(startOffset: Int, endOffset: Int, attributes: TextAttributes): RangeHighlighter? =
-    markupModel?.addRangeHighlighter(
-      startOffset,
-      endOffset,
-      HighlighterLayer.SELECTION,
-      attributes,
-      HighlighterTargetArea.EXACT_RANGE
-    )?.also {
-      uncommitedChangesHighlighters.add(it)
-    }
+  fun addProdeHighlighter(highlighter: ProdeHighlighter) {
+    highlighter.addMarkupHighlighter(markupModel)
+    highlighters.add(highlighter)
+  }
 
   companion object {
     fun getInstance(project: Project): HighlighterManager = project.service()

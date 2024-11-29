@@ -7,7 +7,7 @@ import com.intellij.openapi.editor.event.DocumentListener
 import com.intellij.openapi.editor.event.EditorMouseMotionListener
 import com.intellij.openapi.project.Project
 import com.jetbrains.edu.learning.selectedEditor
-import java.util.EventListener
+import java.util.*
 
 /**
  * This class manages the event listeners for a given project.
@@ -24,7 +24,7 @@ class ListenerManager(private val project: Project) {
   fun addListener(
     listener: EventListener
   ) {
-    when(listener) {
+    when (listener) {
       is EditorMouseMotionListener -> editor?.addEditorMouseMotionListener(listener)
       is DocumentListener -> editor?.document?.addDocumentListener(listener)
     }
@@ -32,7 +32,7 @@ class ListenerManager(private val project: Project) {
   }
 
   private fun removeListener(listener: EventListener) {
-    when(listener) {
+    when (listener) {
       is EditorMouseMotionListener -> editor?.removeEditorMouseMotionListener(listener)
       is DocumentListener -> editor?.document?.removeDocumentListener(listener)
     }
