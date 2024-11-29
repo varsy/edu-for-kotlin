@@ -4,13 +4,13 @@ import com.intellij.openapi.editor.event.DocumentEvent
 import com.intellij.openapi.editor.event.DocumentListener
 import com.intellij.openapi.editor.event.EditorMouseEvent
 import com.intellij.openapi.editor.event.EditorMouseMotionListener
-import com.intellij.openapi.editor.markup.TextAttributes
 import com.intellij.openapi.project.Project
-import com.intellij.ui.JBColor
 import com.jetbrains.edu.cognifire.highlighting.HighlighterManager
 import com.jetbrains.edu.cognifire.highlighting.ListenerManager
-import com.jetbrains.edu.cognifire.models.PromptExpression
+import com.jetbrains.edu.cognifire.highlighting.highlighers.LinkingHighlighter
+import com.jetbrains.edu.cognifire.highlighting.highlighers.UncommitedChangesHighlighter
 import com.jetbrains.edu.cognifire.models.CodeExpression
+import com.jetbrains.edu.cognifire.models.PromptExpression
 
 /**
  * Class [PromptToCodeHighlighter] is responsible for highlighting the prompt and code lines
@@ -70,9 +70,9 @@ class PromptToCodeHighlighter(private val project: Project) {
       val promptLineOffset = editor.document.getLineNumber(promptExpression.contentOffset)
       val codeLineOffset = editor.document.getLineNumber(codeExpression.contentOffset)
 
-      highlighterManager.clearPromptToCodeHighlighters()
+      highlighterManager.clearProdeHighlighters<LinkingHighlighter>()
 
-      if(selectedLineWithOffset - promptLineOffset in promptToCodeLines.keys) showHighlighters(
+      if (selectedLineWithOffset - promptLineOffset in promptToCodeLines.keys) showHighlighters(
         selectedLineWithOffset - promptLineOffset,
         promptLineOffset,
         codeLineOffset,
@@ -89,27 +89,37 @@ class PromptToCodeHighlighter(private val project: Project) {
     }
   }
 
-  private fun getDocumentListener(codeExpression: CodeExpression, promptExpression: PromptExpression) = object: DocumentListener {
+  private fun getDocumentListener(codeExpression: CodeExpression, promptExpression: PromptExpression) = object : DocumentListener {
     override fun documentChanged(event: DocumentEvent) {
       val delta = event.newLength - event.oldLength
+
+      if (event.offset < promptExpression.startOffset) {
+        promptExpression.shiftStartOffset(delta)
+        promptExpression.shiftEndOffset(delta)
+      }
+      else if (event.offset in promptExpression.startOffset until promptExpression.endOffset) {
+        promptExpression.shiftEndOffset(delta)
+      }
+
+      if (event.offset in promptExpression.endOffset until codeExpression.startOffset) {
+        codeExpression.shiftStartOffset(delta)
+        codeExpression.shiftEndOffset(delta)
+      }
+      else if (event.offset in codeExpression.startOffset until codeExpression.endOffset) {
+        codeExpression.shiftEndOffset(delta)
+      }
+
       if (event.offset in promptExpression.startOffset until promptExpression.endOffset ||
-          event.offset in codeExpression.startOffset until codeExpression.endOffset) {
-        highlighterManager.clearAllAfterSync()
+          event.offset in codeExpression.startOffset until codeExpression.endOffset
+      ) {
+        highlighterManager.clearProdeHighlighters<LinkingHighlighter>()
         listenerManager.clearAllMouseMotionListeners()
 
-        if(delta > 0) {
-          highlighterManager.addUncommitedChangesHighlighter(
-            event.offset,
-            event.offset + delta,
-            attributes
+        if (delta > 0) {
+          highlighterManager.addProdeHighlighter(
+            UncommitedChangesHighlighter(event.offset, event.offset + delta)
           )
         }
-      } else if (event.offset < promptExpression.startOffset) {
-        val delta = event.newLength - event.oldLength
-        codeExpression.shiftOffset(delta)
-        promptExpression.shiftOffset(delta)
-      } else if (event.offset in promptExpression.endOffset until codeExpression.startOffset) {
-        codeExpression.shiftOffset(delta)
       }
     }
   }
@@ -131,15 +141,12 @@ class PromptToCodeHighlighter(private val project: Project) {
 
   private fun addHighlighters(lines: List<Int>) = try {
     lines.forEach { line ->
-      highlighterManager.addPromptToCodeHighlighter(line, attributes)
+      highlighterManager.addProdeHighlighter(
+        LinkingHighlighter(line)
+      )
     }
   }
   catch (_: IndexOutOfBoundsException) {
     // The code hasn't been generated yet.
-  }
-
-  companion object {
-    private val attributes =
-      TextAttributes().apply { backgroundColor = JBColor.LIGHT_GRAY }
   }
 }

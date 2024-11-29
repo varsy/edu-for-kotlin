@@ -16,26 +16,26 @@ import com.jetbrains.edu.cognifire.grammar.GrammarParser
 import com.jetbrains.edu.cognifire.grammar.OffsetSentence
 import com.jetbrains.edu.cognifire.highlighting.HighlighterManager
 import com.jetbrains.edu.cognifire.highlighting.ListenerManager
+import com.jetbrains.edu.cognifire.highlighting.grammar.GrammarHighlighterProcessor
 import com.jetbrains.edu.cognifire.highlighting.prompttocode.PromptToCodeHighlighter
-import com.jetbrains.edu.cognifire.highlighting.grammar.GrammarHighlighter
-import com.jetbrains.edu.cognifire.messages.EduCognifireBundle
-import com.jetbrains.edu.cognifire.models.PromptExpression
-import com.jetbrains.edu.learning.actions.EduActionUtils
-import com.jetbrains.edu.learning.actions.EduActionUtils.getCurrentTask
-import com.jetbrains.edu.learning.notification.EduNotificationManager
-import com.jetbrains.edu.learning.taskToolWindow.ui.TaskToolWindowView
-import com.jetbrains.educational.ml.core.exception.AiAssistantException
 import com.jetbrains.edu.cognifire.log.Logger
 import com.jetbrains.edu.cognifire.manager.PromptActionManager
 import com.jetbrains.edu.cognifire.manager.PromptCodeState
+import com.jetbrains.edu.cognifire.messages.EduCognifireBundle
 import com.jetbrains.edu.cognifire.models.CodeExpression
 import com.jetbrains.edu.cognifire.models.ProdeExpression
+import com.jetbrains.edu.cognifire.models.PromptExpression
 import com.jetbrains.edu.cognifire.parsers.CodeExpressionParser
 import com.jetbrains.edu.cognifire.parsers.GeneratedCodeParser
 import com.jetbrains.edu.cognifire.parsers.PromptExpressionParser
 import com.jetbrains.edu.cognifire.writers.CodeExpressionWriter
 import com.jetbrains.edu.cognifire.writers.PromptExpressionWriter
+import com.jetbrains.edu.learning.actions.EduActionUtils
+import com.jetbrains.edu.learning.actions.EduActionUtils.getCurrentTask
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
+import com.jetbrains.edu.learning.notification.EduNotificationManager
+import com.jetbrains.edu.learning.taskToolWindow.ui.TaskToolWindowView
+import com.jetbrains.educational.ml.core.exception.AiAssistantException
 
 /**
  * An action class responsible for handling the running of `prompt` DSL (Domain-Specific Language) elements.
@@ -85,9 +85,11 @@ class PromptExecutorAction(private val element: PsiElement, private val id: Stri
     }
     try {
       execution()
-    } catch (e: AiAssistantException) {
+    }
+    catch (e: AiAssistantException) {
       project.notifyError(title = EduCognifireBundle.message("action.not.run.due.to.ai.assistant.exception"), content = e.message)
-    } catch (_: Throwable) {
+    }
+    catch (_: Throwable) {
       CodeGenerationState.getInstance(project).unlock()
       project.notifyError(content = EduCognifireBundle.message("action.not.run.due.to.unknown.exception"))
     }
@@ -121,7 +123,8 @@ class PromptExecutorAction(private val element: PsiElement, private val id: Stri
     codeExpression: CodeExpression?
   ) {
     val promptActionManager = PromptActionManager.getInstance(project)
-    val codeGenerator = CodeGenerator(promptExpression, project, element.language, promptActionManager.getAction(id)?.promptToCode, codeExpression)
+    val codeGenerator =
+      CodeGenerator(promptExpression, project, element.language, promptActionManager.getAction(id)?.promptToCode, codeExpression)
 
     invokeLater {
       val generatedCode = codeGenerator.generatedCode
@@ -135,13 +138,14 @@ class PromptExecutorAction(private val element: PsiElement, private val id: Stri
 
       val state = if (GeneratedCodeParser.hasErrors(project, generatedCode, newPromptExpression.functionSignature, element.language)) {
         PromptCodeState.CodeFailed
-      } else {
+      }
+      else {
         PromptCodeState.CodeSuccess
       }
       var unparsableSentences = emptyList<OffsetSentence>()
       if (state == PromptCodeState.CodeFailed) {
         unparsableSentences = checkGrammar(newPromptExpression, project)
-        GrammarHighlighter.highlightAll(project, unparsableSentences)
+        GrammarHighlighterProcessor.highlightAll(project, unparsableSentences)
       }
       Logger.cognifireLogger.info(
         """Lesson id: ${task.lesson.id}    Task id: ${task.id}    Action id: $id
