@@ -1,4 +1,4 @@
-package com.jetbrains.edu.cognifire
+package com.jetbrains.edu.cognifire.writers
 
 import com.intellij.lang.Language
 import com.intellij.lang.LanguageExtension
@@ -10,8 +10,8 @@ import com.jetbrains.edu.cognifire.models.CodeExpression
 /**
  * Adds a `code` DSL block with the generated code to the code after the given [PsiElement].
  */
-interface CodeExpressionWriter {
-  fun addCodeExpression(project: Project, element: PsiElement, generatedCode: String): CodeExpression
+interface CodeExpressionWriter : ExpressionWriter<CodeExpression> {
+  override fun addExpression(project: Project, element: PsiElement, text: String, oldExpression: CodeExpression?): CodeExpression?
 
   companion object {
     private val EP_NAME = LanguageExtension<CodeExpressionWriter>("Educational.codeExpressionWriter")
@@ -23,7 +23,7 @@ interface CodeExpressionWriter {
      */
     fun addCodeExpression(project: Project, element: PsiElement, generatedCode: String, language: Language): CodeExpression {
       ThreadingAssertions.assertReadAccess()
-      return EP_NAME.forLanguage(language)?.addCodeExpression(project, element, generatedCode)
+      return EP_NAME.forLanguage(language)?.addExpression(project, element, generatedCode)
              ?: error("Not supported to provide a code expression for the ${language.displayName} language")
     }
 

@@ -11,17 +11,27 @@
     <extensionPoint qualifiedName="Educational.promptExpressionParser"
                     beanClass="com.intellij.lang.LanguageExtensionPoint"
                     dynamic="true">
-      <with attribute="implementationClass" implements="com.jetbrains.edu.cognifire.PromptExpressionParser"/>
+      <with attribute="implementationClass" implements="com.jetbrains.edu.cognifire.parsers.PromptExpressionParser"/>
     </extensionPoint>
     <extensionPoint qualifiedName="Educational.generatedCodeParser"
                     beanClass="com.intellij.lang.LanguageExtensionPoint"
                     dynamic="true">
-      <with attribute="implementationClass" implements="com.jetbrains.edu.cognifire.GeneratedCodeParser"/>
+      <with attribute="implementationClass" implements="com.jetbrains.edu.cognifire.parsers.GeneratedCodeParser"/>
     </extensionPoint>
     <extensionPoint qualifiedName="Educational.codeExpressionWriter"
                     beanClass="com.intellij.lang.LanguageExtensionPoint"
                     dynamic="true">
-      <with attribute="implementationClass" implements="com.jetbrains.edu.cognifire.CodeExpressionWriter"/>
+      <with attribute="implementationClass" implements="com.jetbrains.edu.cognifire.writers.CodeExpressionWriter"/>
+    </extensionPoint>
+    <extensionPoint qualifiedName="Educational.promptExpressionWriter"
+                    beanClass="com.intellij.lang.LanguageExtensionPoint"
+                    dynamic="true">
+      <with attribute="implementationClass" implements="com.jetbrains.edu.cognifire.writers.PromptExpressionWriter"/>
+    </extensionPoint>
+    <extensionPoint qualifiedName="Educational.codeExpressionParser"
+                    beanClass="com.intellij.lang.LanguageExtensionPoint"
+                    dynamic="true">
+      <with attribute="implementationClass" implements="com.jetbrains.edu.cognifire.parsers.CodeExpressionParser"/>
     </extensionPoint>
     <extensionPoint qualifiedName="Educational.cognifireDslPackageCallChecker"
                     beanClass="com.intellij.lang.LanguageExtensionPoint"
