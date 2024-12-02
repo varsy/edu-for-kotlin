@@ -38,7 +38,7 @@ class CodeGenerator(
 
   private fun generatePromptToCode() =
     if (previousPromptToCode != null && codeExpression?.code != null && previousPromptToCode.toGeneratedCode() != codeExpression.code
-                          && previousPromptToCode.toPrompt() == promptExpression.prompt) {
+                          && previousPromptToCode.toPrompt().filter { !it.isWhitespace() } == promptExpression.prompt.filter { !it.isWhitespace() }) {
       syncPrompt(
         previousPromptToCode,
         codeExpression.code.lines().enumerate(0),
