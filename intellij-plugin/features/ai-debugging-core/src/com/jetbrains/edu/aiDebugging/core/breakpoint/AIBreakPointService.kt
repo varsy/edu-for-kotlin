@@ -34,7 +34,6 @@ class AIBreakPointService(private val project: Project, private val scope: Corou
     addListener(type)
   }
 
-
   fun toggleLineBreakpoint(language: Language, file: VirtualFile, line: Int) = runReadAction {
     val type = language.getAIBreakpointType()
     breakpointManager.addLineBreakpoint(type, file.url, line, type.createProperties())

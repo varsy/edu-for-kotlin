@@ -25,6 +25,7 @@ import com.jetbrains.educational.ml.ai.debugger.prompt.prompt.entities.descripti
 class AIDebuggingCheckListener : CheckListener {
   override fun afterCheck(project: Project, task: Task, result: CheckResult) {
     if (!isAvailable(task, result)) return
+    val testDescription = (result.details ?: result.message) + (result.diff ?: "")
     val textToShow = EduAIDebuggingCoreBundle.message("action.Educational.AiDebuggingNotification.text")
 
     val aiDebuggingHintBanner = AIDebuggingHintInlineBanner(textToShow).apply {

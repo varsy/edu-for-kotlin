@@ -38,7 +38,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import com.jetbrains.edu.aiDebugging.core.ui.AIBreakpointHint
 
-
 @Service(Service.Level.PROJECT)
 class AIDebugSessionService(private val project: Project, private val coroutineScope: CoroutineScope) {
 
