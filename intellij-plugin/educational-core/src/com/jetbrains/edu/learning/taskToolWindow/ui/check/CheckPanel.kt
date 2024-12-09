@@ -18,7 +18,6 @@ import com.jetbrains.edu.learning.actions.*
 import com.jetbrains.edu.learning.actions.EduAIHintsUtils.GET_HINT_ACTION_ID
 import com.jetbrains.edu.learning.actions.EduAIHintsUtils.isGetHintAvailable
 import com.jetbrains.edu.learning.checker.CheckUtils.getCustomRunConfigurationForRunner
-import com.jetbrains.edu.learning.aiDebugging.AiDebuggingNotification
 import com.jetbrains.edu.learning.course
 import com.jetbrains.edu.learning.courseFormat.CheckResult
 import com.jetbrains.edu.learning.courseFormat.CheckStatus
@@ -96,7 +95,6 @@ class CheckPanel(private val project: Project, private val parentDisposable: Dis
     if (checkResult != null) {
       linkPanel.removeAll()
       checkDetailsPlaceholder.add(CheckDetailsPanel(project, task, checkResult, checkTimeAlarm), BorderLayout.SOUTH)
-      AiDebuggingNotification.addAiDebuggingNotification(task, checkDetailsPlaceholder, checkResult)
     }
   }
 

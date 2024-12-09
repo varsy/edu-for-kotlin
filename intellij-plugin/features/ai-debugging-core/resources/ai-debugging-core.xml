@@ -1,0 +1,33 @@
+<idea-plugin package="com.jetbrains.edu.aiDebugging.core">
+  <resource-bundle>messages.EduAIDebuggingCoreBundle</resource-bundle>
+
+  <dependencies>
+    <!--suppress PluginXmlValidity -->
+    <module name="AI"/>
+  </dependencies>
+
+  <actions>
+    <action id="Educational.AIDebug"
+            class="com.jetbrains.edu.aiDebugging.core.action.DebugAction">
+      <add-to-group group-id="EditorPopupMenu" anchor="last"/>
+    </action>
+  </actions>
+
+  <extensions defaultExtensionNs="com.intellij">
+    <!--suppress PluginXmlValidity -->
+    <postStartupActivity implementation="com.jetbrains.edu.aiDebugging.core.breakpoint.AIBreakPointsStartupActivity"/>
+  </extensions>
+
+  <extensions defaultExtensionNs="Educational">
+    <checkListener implementation="com.jetbrains.edu.aiDebugging.core.AIDebuggingCheckListener"/>
+  </extensions>
+
+  <extensionPoints>
+    <extensionPoint qualifiedName="aiDebugging.breakpointTypeManager"
+                    beanClass="com.intellij.lang.LanguageExtensionPoint"
+                    dynamic="true">
+      <with attribute="implementationClass"
+            implements="com.jetbrains.edu.aiDebugging.core.breakpoint.BreakpointTypeManager"/>
+    </extensionPoint>
+  </extensionPoints>
+</idea-plugin>
