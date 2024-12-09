@@ -198,8 +198,6 @@ allprojects {
     implementationWithoutKotlin(rootProject.libs.retrofit)
     implementationWithoutKotlin(rootProject.libs.converter.jackson)
     implementationWithoutKotlin(rootProject.libs.kotlin.css.jvm)
-    implementationWithoutKotlin(rootProject.libs.educational.ml.library.core)
-    implementationWithoutKotlin(rootProject.libs.educational.ml.library.ai.debugger)
 
 
     testImplementation(rootProject.libs.junit)
@@ -323,6 +321,8 @@ dependencies {
     pluginModule(implementation(project("features:ai-hints-kotlin")))
     pluginModule(implementation(project("features:ai-hints-python")))
     pluginModule(implementation(project("localization")))
+    pluginModule(implementation(project("features:ai-debugging-core")))
+    pluginModule(implementation(project("features:ai-debugging-java")))
 
     testFramework(TestFrameworkType.Bundled)
   }
@@ -1025,6 +1025,45 @@ project("features:ai-hints-python") {
     testImplementation(project(":intellij-plugin:educational-core", "testOutput"))
     testImplementation(project(":intellij-plugin:features:ai-hints-core", "testOutput"))
     testImplementation(project(":intellij-plugin:Edu-Python"))
+  }
+}
+
+project("features:ai-debugging-core") {
+  dependencies {
+    intellijPlatform {
+      intellijIde(project, baseVersion)
+    }
+
+    implementation(project(":intellij-plugin:educational-core"))
+    api(rootProject.libs.educational.ml.library.core) {
+      excludeKotlinDeps()
+      excludeKotlinSerializationDeps()
+      exclude(group = "net.java.dev.jna")
+    }
+    api(rootProject.libs.educational.ml.library.ai.debugger) {
+      excludeKotlinDeps()
+      excludeKotlinSerializationDeps()
+      exclude(group = "net.java.dev.jna")
+    }
+
+    testImplementation(project(":intellij-plugin:educational-core", "testOutput"))
+  }
+}
+
+project("features:ai-debugging-java") {
+  dependencies {
+    intellijPlatform {
+      val ideVersion = if (!isJvmCenteredIDE) ideaVersion else baseVersion
+      intellijIde(project, ideVersion)
+
+      intellijPlugins(jvmPlugins)
+    }
+
+    implementation(project(":intellij-plugin:educational-core"))
+    implementation(project(":intellij-plugin:features:ai-debugging-core"))
+
+    testImplementation(project(":intellij-plugin:educational-core", "testOutput"))
+    testImplementation(project(":intellij-plugin:features:ai-debugging-core", "testOutput"))
   }
 }
 
