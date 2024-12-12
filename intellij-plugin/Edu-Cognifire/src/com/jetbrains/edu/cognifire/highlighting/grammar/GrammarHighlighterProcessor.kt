@@ -9,13 +9,11 @@ import com.jetbrains.edu.cognifire.highlighting.highlighers.GrammarHighlighter
  * Represents a class that highlights sentences that didn't pass the grammar.
  */
 object GrammarHighlighterProcessor {
-  fun highlightAll(project: Project, unparsableSentences: List<OffsetSentence>) {
-    unparsableSentences.forEach { highlightSentence(project, it) }
+  fun highlightAll(project: Project, unparsableSentences: List<OffsetSentence>, actionId: String) {
+    unparsableSentences.forEach { highlightSentence(project, it, actionId) }
   }
 
-  private fun highlightSentence(project: Project, sentence: OffsetSentence) {
-    HighlighterManager.getInstance(project).addProdeHighlighter(
-      GrammarHighlighter(sentence.startOffset, sentence.endOffset)
-    )
+  private fun highlightSentence(project: Project, sentence: OffsetSentence, actionId: String) {
+    HighlighterManager.getInstance().addProdeHighlighter(GrammarHighlighter(sentence.startOffset, sentence.endOffset), actionId, project)
   }
 }

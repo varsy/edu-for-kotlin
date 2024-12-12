@@ -16,19 +16,20 @@ import java.util.*
  */
 @Service(Service.Level.PROJECT)
 class ListenerManager(private val project: Project) {
-  private val listeners: MutableList<EventListener> = mutableListOf()
+  private val listeners = mutableMapOf<String, MutableList<EventListener>>()
 
   private val editor: Editor?
     get() = project.selectedEditor
 
   fun addListener(
-    listener: EventListener
+    listener: EventListener,
+    id: String
   ) {
     when (listener) {
       is EditorMouseMotionListener -> editor?.addEditorMouseMotionListener(listener)
       is DocumentListener -> editor?.document?.addDocumentListener(listener)
     }
-    listeners.add(listener)
+    listeners.getOrPut(id) { mutableListOf() }.add(listener)
   }
 
   private fun removeListener(listener: EventListener) {
@@ -38,18 +39,18 @@ class ListenerManager(private val project: Project) {
     }
   }
 
-  fun clearAll() {
-    listeners.forEach {
+  fun clearAll(id: String) {
+    listeners[id]?.forEach {
       removeListener(it)
     }
-    listeners.clear()
+    listeners[id]?.clear()
   }
 
-  fun clearAllMouseMotionListeners() {
-    listeners.filterIsInstance<EditorMouseMotionListener>().forEach {
+  fun clearAllMouseMotionListeners(id: String) {
+    listeners[id]?.filterIsInstance<EditorMouseMotionListener>()?.forEach {
       editor?.removeEditorMouseMotionListener(it)
     }
-    listeners.removeAll { it is EditorMouseMotionListener }
+    listeners[id]?.removeAll { it is EditorMouseMotionListener }
   }
 
   companion object {
