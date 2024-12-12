@@ -58,7 +58,7 @@ class KtPromptExpressionParser : PromptExpressionParser {
         } ?: emptyList()
 
     return FunctionSignature(
-      containingFunction.name ?: "",
+      containingFunction.fqName?.toString() ?: "",
       containingFunctionParameters,
       containingFunction.typeReference?.text ?: UNIT_RETURN_VALUE
     )
