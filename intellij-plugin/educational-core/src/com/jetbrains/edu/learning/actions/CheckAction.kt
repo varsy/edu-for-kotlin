@@ -11,8 +11,6 @@ import com.intellij.openapi.actionSystem.ex.ActionUtil
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.invokeAndWaitIfNeeded
 import com.intellij.openapi.application.invokeLater
-import com.intellij.openapi.application.runWriteAction
-import com.intellij.openapi.command.CommandProcessor
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
 import com.intellij.openapi.diagnostic.Logger
@@ -24,9 +22,6 @@ import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.project.DumbService
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.NlsActions
-import com.intellij.openapi.util.text.StringUtil
-import com.intellij.openapi.vfs.writeBytes
-import com.intellij.psi.PsiDocumentManager
 import com.intellij.util.concurrency.annotations.RequiresEdt
 import com.jetbrains.edu.coursecreator.CCUtils.isCourseCreator
 import com.jetbrains.edu.learning.*
@@ -34,6 +29,8 @@ import com.jetbrains.edu.learning.EduUtilsKt.showPopup
 import com.jetbrains.edu.learning.actions.EduActionUtils.showFakeProgress
 import com.jetbrains.edu.learning.actions.EduActionUtils.updateAction
 import com.jetbrains.edu.learning.checker.CheckListener
+import com.jetbrains.edu.learning.checker.CheckUtils.createTests
+import com.jetbrains.edu.learning.checker.CheckUtils.deleteTests
 import com.jetbrains.edu.learning.checker.TaskChecker
 import com.jetbrains.edu.learning.checker.details.CheckDetailsView
 import com.jetbrains.edu.learning.checker.remote.RemoteTaskCheckerManager.remoteCheckerForTask
@@ -164,62 +161,14 @@ class CheckAction() : ActionWithProgressIcon(), DumbAware {
       task.getDir(project.courseDir) ?: return CheckResult.NO_LOCAL_CHECK
 
       if (task.course.isStudy) {
-        createTests(invisibleTestFiles)
+        createTests(invisibleTestFiles, project)
       }
       return try {
         checker.check(indicator)
       }
       finally {
         if (task.shouldGenerateTestsOnTheFly()) {
-          deleteTests(invisibleTestFiles)
-        }
-      }
-    }
-
-    private fun deleteTests(testFiles: List<TaskFile>) {
-      invokeAndWaitIfNeeded {
-        testFiles.forEach { file ->
-          when (file.contents) {
-            is BinaryContents -> replaceFileBytes(file, EMPTY_BYTE_ARRAY)
-            is TextualContents -> replaceFileText(file, "")
-            is UndeterminedContents -> replaceFileText(file, "")
-          }
-        }
-      }
-    }
-
-    private fun createTests(testFiles: List<TaskFile>) {
-      invokeAndWaitIfNeeded {
-        testFiles.forEach { file ->
-          when (val contents = file.contents) {
-            is BinaryContents -> replaceFileBytes(file, contents.bytes)
-            is TextualContents -> replaceFileText(file, contents.text)
-            is UndeterminedContents -> replaceFileText(file, contents.textualRepresentation)
-          }
-        }
-      }
-    }
-
-    private fun replaceFileBytes(file: TaskFile, bytes: ByteArray) {
-      CommandProcessor.getInstance().runUndoTransparentAction {
-        runWriteAction {
-          file.getVirtualFile(project)?.writeBytes(bytes)
-        }
-      }
-    }
-
-    private fun replaceFileText(file: TaskFile, newText: String) {
-      val newDocumentText = StringUtil.convertLineSeparators(newText)
-      CommandProcessor.getInstance().runUndoTransparentAction {
-        runWriteAction {
-          val document = file.getDocument(project) ?: return@runWriteAction
-          CommandProcessor.getInstance().executeCommand(
-            project,
-            { document.setText(newDocumentText) },
-            message("action.change.test.text"),
-            "Edu Actions"
-          )
-          PsiDocumentManager.getInstance(project).commitAllDocuments()
+          deleteTests(invisibleTestFiles, project)
         }
       }
     }
@@ -311,6 +260,5 @@ class CheckAction() : ActionWithProgressIcon(), DumbAware {
   companion object {
     private const val PROCESS_MESSAGE = "Check in progress"
     private val LOG = Logger.getInstance(CheckAction::class.java)
-    private val EMPTY_BYTE_ARRAY = byteArrayOf()
   }
 }
