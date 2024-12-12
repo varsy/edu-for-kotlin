@@ -5,11 +5,13 @@ import com.jetbrains.edu.cognifire.CognifireDslPackageCallChecker
 import com.jetbrains.edu.learning.courseFormat.Course
 import com.jetbrains.edu.learning.courseFormat.EduFormatNames.KOTLIN
 import com.jetbrains.educational.ml.cognifire.responses.PromptToCodeContent
+import com.intellij.openapi.application.runReadAction
 
 fun isCognifireApplicable(course: Course) = course.languageId == KOTLIN
 
-fun PsiElement.isPromptBlock() = text.startsWith(PROMPT) &&
-                                          CognifireDslPackageCallChecker.isCallFromCognifireDslPackage(this, this.language)
+fun PsiElement.isPromptBlock() = runReadAction {
+  text.startsWith(PROMPT) && CognifireDslPackageCallChecker.isCallFromCognifireDslPackage(this, this.language)
+}
 
 const val PROMPT = "prompt"
 const val CODE = "code"
