@@ -1,6 +1,7 @@
 package com.jetbrains.edu.kotlin.cognifire
 
 import com.intellij.execution.lineMarker.RunLineMarkerContributor
+import com.intellij.openapi.application.runReadAction
 import com.intellij.psi.PsiElement
 import com.intellij.psi.impl.source.tree.LeafPsiElement
 import com.intellij.psi.util.PsiTreeUtil
@@ -23,8 +24,9 @@ class PromptRunLineMarkerContributor : RunLineMarkerContributor() {
     val targetElement = element.parent.parent
     if (element is LeafPsiElement &&
         targetElement is KtCallExpression &&
-        element.text == PROMPT &&
-        CognifireDslPackageCallChecker.isCallFromCognifireDslPackage(element.parent.parent, element.language)
+        element.text == PROMPT && runReadAction {
+          CognifireDslPackageCallChecker.isCallFromCognifireDslPackage(element.parent.parent, element.language)
+        }
     ) {
       val function = PsiTreeUtil.getParentOfType(targetElement, KtNamedFunction::class.java) ?: return null
       val uniqueId = "${function.fqName}:${function.valueParameters.size}"
