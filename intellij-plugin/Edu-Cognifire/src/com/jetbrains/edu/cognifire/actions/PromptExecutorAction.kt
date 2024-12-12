@@ -6,6 +6,8 @@ import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.invokeLater
+import com.intellij.openapi.application.runReadAction
+import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.runBackgroundableTask
 import com.intellij.openapi.project.Project
@@ -14,6 +16,7 @@ import com.jetbrains.edu.cognifire.codegeneration.CodeGenerationState
 import com.jetbrains.edu.cognifire.codegeneration.CodeGenerator
 import com.jetbrains.edu.cognifire.grammar.GrammarParser
 import com.jetbrains.edu.cognifire.grammar.OffsetSentence
+import com.jetbrains.edu.cognifire.highlighting.GuardedBlockManager
 import com.jetbrains.edu.cognifire.highlighting.HighlighterManager
 import com.jetbrains.edu.cognifire.highlighting.ListenerManager
 import com.jetbrains.edu.cognifire.highlighting.grammar.GrammarHighlighterProcessor
@@ -46,11 +49,13 @@ import com.jetbrains.educational.ml.core.exception.AiAssistantException
 class PromptExecutorAction(private val element: PsiElement, private val id: String, private val task: Task) : AnAction() {
   override fun actionPerformed(e: AnActionEvent) {
     val project = e.project ?: error("Project was not found")
-
+    val document = getDocument() ?: return
 
     // TODO: Update highlighters on PsiElement update
-    HighlighterManager.getInstance(project).clearAll()
-    ListenerManager.getInstance(project).clearAll()
+    HighlighterManager.getInstance().clearAll(id)
+    ListenerManager.getInstance(project).clearAll(id)
+    GuardedBlockManager.getInstance().removeGuardedBlock(id, document)
+    document.setReadOnly(true)
 
     val promptExpression = PromptExpressionParser.parsePromptExpression(element, element.language)
     if (promptExpression == null) {
@@ -58,11 +63,14 @@ class PromptExecutorAction(private val element: PsiElement, private val id: Stri
         EduCognifireBundle.message("action.not.run.due.to.nested.block.title"),
         EduCognifireBundle.message("action.not.run.due.to.nested.block.text")
       )
+      getDocument()?.setReadOnly(false)
       return
     }
     val codeExpression = CodeExpressionParser.getCodeExpression(element, element.language)
     executeAction(project, promptExpression, codeExpression)
   }
+
+  private fun getDocument() = runReadAction { FileDocumentManager.getInstance().getDocument(element.containingFile.virtualFile) }
 
   override fun getActionUpdateThread() = ActionUpdateThread.BGT
   private fun executeAction(project: Project, promptExpression: PromptExpression, codeExpression: CodeExpression?) = runBackgroundableTask(
@@ -81,6 +89,7 @@ class PromptExecutorAction(private val element: PsiElement, private val id: Stri
 
     if (!codeGenerationState.lock()) {
       project.notifyError(content = EduCognifireBundle.message("action.already.running"))
+      getDocument()?.setReadOnly(false)
       return
     }
     try {
@@ -92,9 +101,9 @@ class PromptExecutorAction(private val element: PsiElement, private val id: Stri
     catch (_: Throwable) {
       CodeGenerationState.getInstance(project).unlock()
       project.notifyError(content = EduCognifireBundle.message("action.not.run.due.to.unknown.exception"))
-    }
-    finally {
+    } finally {
       CodeGenerationState.getInstance(project).unlock()
+      getDocument()?.setReadOnly(false)
     }
   }
 
@@ -129,7 +138,7 @@ class PromptExecutorAction(private val element: PsiElement, private val id: Stri
     invokeLater {
       val generatedCode = codeGenerator.generatedCode
       val (newPromptExpression, newCodeExpression) = syncProde(project, codeGenerator, promptExpression)
-      PromptToCodeHighlighter(project).setUp(
+      PromptToCodeHighlighter(project, id).setUp(
         newPromptExpression,
         newCodeExpression,
         codeGenerator.promptToCodeLines,
@@ -145,7 +154,7 @@ class PromptExecutorAction(private val element: PsiElement, private val id: Stri
       var unparsableSentences = emptyList<OffsetSentence>()
       if (state == PromptCodeState.CodeFailed) {
         unparsableSentences = checkGrammar(newPromptExpression, project)
-        GrammarHighlighterProcessor.highlightAll(project, unparsableSentences)
+        GrammarHighlighterProcessor.highlightAll(project, unparsableSentences, id)
       }
       Logger.cognifireLogger.info(
         """Lesson id: ${task.lesson.id}    Task id: ${task.id}    Action id: $id
