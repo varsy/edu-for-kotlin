@@ -6,13 +6,6 @@
     <module name="AI"/>
   </dependencies>
 
-  <actions>
-    <action id="Educational.AIDebug"
-            class="com.jetbrains.edu.aiDebugging.core.action.DebugAction">
-      <add-to-group group-id="EditorPopupMenu" anchor="last"/>
-    </action>
-  </actions>
-
   <extensions defaultExtensionNs="com.intellij">
     <!--suppress PluginXmlValidity -->
     <postStartupActivity implementation="com.jetbrains.edu.aiDebugging.core.breakpoint.AIBreakPointsStartupActivity"/>

@@ -15,6 +15,7 @@ import com.jetbrains.edu.learning.courseFormat.DescriptionFormat
 import com.jetbrains.edu.learning.courseFormat.ext.getDescriptionFile
 import com.jetbrains.edu.learning.courseFormat.ext.getVirtualFile
 import com.jetbrains.edu.learning.courseFormat.ext.project
+import com.jetbrains.edu.learning.courseFormat.tasks.EduTask
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
 import com.jetbrains.edu.learning.selectedTaskFile
 import com.jetbrains.edu.learning.taskToolWindow.ui.TaskToolWindowView
@@ -24,19 +25,18 @@ import com.jetbrains.educational.ml.ai.debugger.prompt.prompt.entities.descripti
 class AIDebuggingCheckListener : CheckListener {
   override fun afterCheck(project: Project, task: Task, result: CheckResult) {
     if (!isAvailable(task)) return
-    val testDescription = (result.details ?: result.message) + (result.diff ?: "")
     val textToShow = EduAIDebuggingCoreBundle.message("action.Educational.AiDebuggingNotification.text")
 
     val aiDebuggingHintBanner = AIDebuggingHintInlineBanner(textToShow).apply {
       addAction(EduAIDebuggingCoreBundle.message("action.Educational.AiDebuggingNotification.start.debugging.session")) {
-        showDebugNotification(task, testDescription)
+        showDebugNotification(task, result) { this.close() }
       }
     }
     TaskToolWindowView.getInstance(project).addInlineBannerToCheckPanel(aiDebuggingHintBanner)
   }
 
   // TODO replace testDescription to some data class with test information
-  private fun showDebugNotification(task: Task, testDescription: String) {
+  private fun showDebugNotification(task: Task, testResult: CheckResult, closeAIDebuggingHint: () -> Unit) {
     val project = task.project ?: error("Project is missing")
     val virtualFiles = listOf(
       project.selectedTaskFile?.getVirtualFile(project)
@@ -44,11 +44,11 @@ class AIDebuggingCheckListener : CheckListener {
     ) // TODO take all task files
     val taskDescription = task.getTaskDescription(project)
     val service = project.service<AIDebugSessionService>()
-    service.runDebuggingSession(taskDescription, virtualFiles, testDescription)
+    service.runDebuggingSession(task, taskDescription, virtualFiles, testResult, closeAIDebuggingHint)
   }
 
   private fun isAvailable(task: Task) =
-    task.course.courseMode == CourseMode.STUDENT && task.status == CheckStatus.Failed // TODO: when should we show this button?
+    task.course.courseMode == CourseMode.STUDENT && task.status == CheckStatus.Failed && task is EduTask // TODO: when should we show this button?
 
   private fun Task.getTaskDescription(project: Project): TaskDescription {
     val description = runReadAction { getDescriptionFile(project)?.readText() } ?: error("There are no description for the task")
