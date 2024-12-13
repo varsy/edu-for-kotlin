@@ -1,5 +1,5 @@
 [versions]
-educational-ml-library = "1.0.31"
+educational-ml-library = "1.0.32"
 jackson = "2.17.2"
 kotlin = "2.0.0"
 okhttp = "4.12.0"
