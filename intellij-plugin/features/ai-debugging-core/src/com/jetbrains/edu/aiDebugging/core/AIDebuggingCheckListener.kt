@@ -17,7 +17,6 @@ import com.jetbrains.edu.learning.courseFormat.ext.getVirtualFile
 import com.jetbrains.edu.learning.courseFormat.ext.project
 import com.jetbrains.edu.learning.courseFormat.tasks.EduTask
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
-import com.jetbrains.edu.learning.selectedTaskFile
 import com.jetbrains.edu.learning.taskToolWindow.ui.TaskToolWindowView
 import com.jetbrains.educational.ml.ai.debugger.prompt.prompt.entities.description.TaskDescription
 import com.jetbrains.educational.ml.ai.debugger.prompt.prompt.entities.description.TaskDescriptionType
@@ -38,10 +37,8 @@ class AIDebuggingCheckListener : CheckListener {
   // TODO replace testDescription to some data class with test information
   private fun showDebugNotification(task: Task, testResult: CheckResult, closeAIDebuggingHint: () -> Unit) {
     val project = task.project ?: error("Project is missing")
-    val virtualFiles = listOf(
-      project.selectedTaskFile?.getVirtualFile(project)
-      ?: error("There are no virtual file for the selected task`")
-    ) // TODO take all task files
+    val virtualFiles = task.taskFiles.values.filter { it.isVisible }.mapNotNull { it.getVirtualFile(project) }
+    if (virtualFiles.isEmpty()) return
     val taskDescription = task.getTaskDescription(project)
     val service = project.service<AIDebugSessionService>()
     service.runDebuggingSession(task, taskDescription, virtualFiles, testResult, closeAIDebuggingHint)
