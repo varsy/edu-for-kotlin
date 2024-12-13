@@ -8,6 +8,7 @@ import com.intellij.openapi.actionSystem.ex.ActionUtil
 import com.intellij.openapi.actionSystem.impl.PresentationFactory
 import com.intellij.util.ui.JBUI
 import com.jetbrains.edu.learning.actions.ActionWithProgressIcon
+import com.jetbrains.edu.learning.messages.EduCoreBundle
 import com.jetbrains.edu.learning.ui.isDefault
 import org.apache.commons.lang3.StringUtils
 import java.awt.BorderLayout
@@ -27,11 +28,12 @@ class CheckPanelButtonComponent private constructor() : JPanel(BorderLayout()) {
    * @param[action] action to execute when button is clicked. Panel will also have process icon when action is being executed.
    * @param[isDefault] parameter specifies whether button is painted as default or not. `false` by default.
    * @param[isEnabled] parameter for enabling/disabling button. `true` by default.
+   * @param[isSuccessOfPromptActions] parameter to show a tool tip about fixing prompt actions. `true` by default.
    *
    * @see com.jetbrains.edu.learning.actions.ActionWithProgressIcon
    */
-  constructor(action: ActionWithProgressIcon, isDefault: Boolean = false, isEnabled: Boolean = true) : this() {
-    val buttonPanel = createButtonPanel(action = action, isDefault = isDefault, isEnabled = isEnabled)
+  constructor(action: ActionWithProgressIcon, isDefault: Boolean = false, isEnabled: Boolean = true, isSuccessOfPromptActions: Boolean = true) : this() {
+    val buttonPanel = createButtonPanel(action = action, isDefault = isDefault, isSuccessOfPromptActions = isSuccessOfPromptActions, isEnabled = isEnabled)
     add(buttonPanel, BorderLayout.WEST)
 
     val spinnerPanel = action.spinnerPanel
@@ -60,9 +62,10 @@ class CheckPanelButtonComponent private constructor() : JPanel(BorderLayout()) {
     action: AnAction,
     isDefault: Boolean = false,
     isEnabled: Boolean = true,
+    isSuccessOfPromptActions: Boolean = true,
     customButtonText: String? = null
   ): JPanel {
-    val button = createButton(action, isDefault = isDefault, isEnabled = isEnabled, customButtonText = customButtonText)
+    val button = createButton(action, isDefault = isDefault, isEnabled = isEnabled, isSuccessOfPromptActions = isSuccessOfPromptActions, customButtonText = customButtonText)
     return createButtonPanel(button)
   }
 
@@ -70,6 +73,7 @@ class CheckPanelButtonComponent private constructor() : JPanel(BorderLayout()) {
     action: AnAction,
     isDefault: Boolean = false,
     isEnabled: Boolean = true,
+    isSuccessOfPromptActions: Boolean = true,
     customButtonText: String? = null
   ): JButton {
     val text = if (customButtonText != null) StringUtils.abbreviate(customButtonText, 25) else action.templatePresentation.text
@@ -77,6 +81,7 @@ class CheckPanelButtonComponent private constructor() : JPanel(BorderLayout()) {
       this.isEnabled = isEnabled
       this.isFocusable = isEnabled
       this.isDefault = isDefault
+      if (!isSuccessOfPromptActions) toolTipText = EduCoreBundle.message("cognifire.ui.tool.tip.text.fix.todo")
     }
     if (isEnabled) {
       button.addActionListener { e ->

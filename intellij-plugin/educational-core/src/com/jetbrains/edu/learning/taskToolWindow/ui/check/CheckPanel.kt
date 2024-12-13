@@ -151,14 +151,18 @@ class CheckPanel(private val project: Project, private val parentDisposable: Dis
 
   private fun updateCheckButtonWrapper(task: Task) {
     checkButtonWrapper.removeAll()
-    if (!task.isPromptActionsGeneratedSuccessfully) return
     when (task) {
       is DataTask -> updateCheckButtonWrapper(task)
       is TheoryTask -> {}
       else -> {
         val isDefault = !(task.isChangedOnFailed && task.status == CheckStatus.Failed || task.isSolved)
-        val isEnabled = !(task.isChangedOnFailed && task.status == CheckStatus.Failed)
-        val checkComponent = CheckPanelButtonComponent(CheckAction(task.getUICheckLabel()), isDefault = isDefault, isEnabled = isEnabled)
+        val isEnabled = !(task.isChangedOnFailed && task.status == CheckStatus.Failed) && task.isPromptActionsGeneratedSuccessfully
+        val checkComponent = CheckPanelButtonComponent(
+          CheckAction(task.getUICheckLabel()),
+          isDefault = isDefault,
+          isEnabled = isEnabled,
+          isSuccessOfPromptActions = task.isPromptActionsGeneratedSuccessfully
+        )
         checkButtonWrapper.add(checkComponent, BorderLayout.WEST)
       }
     }
