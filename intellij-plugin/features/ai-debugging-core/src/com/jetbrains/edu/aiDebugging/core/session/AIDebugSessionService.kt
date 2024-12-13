@@ -10,7 +10,6 @@ import com.intellij.openapi.components.Service
 import com.intellij.openapi.externalSystem.service.execution.ExternalSystemRunConfiguration
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.openapi.vfs.readText
 import com.intellij.platform.ide.progress.withModalProgress
 import com.intellij.xdebugger.*
 import com.jetbrains.edu.aiDebugging.core.breakpoint.AIBreakPointService
@@ -38,20 +37,15 @@ class AIDebugSessionService(private val project: Project, private val coroutineS
       withModalProgress(project, EduAIDebuggingCoreBundle.message("action.Educational.AiDebuggingNotification.modal.session")) {
         FixCodeForTestAssistant.getCodeFix(
           description,
-          virtualFiles.first().readText(),
+          virtualFiles.toNumberedLineMap(),
           testResult.details ?: testResult.message
-        ) // TODO change to several files and grab text in a proper way
+        )
       }.onSuccess { fixes ->
         val language = project.course?.languageById ?: error("Language is not found")
         runReadAction {
-          val virtualFile = virtualFiles.first() // TODO change to several files
-          val document = virtualFile.document
           fixes.forEach {
-            val offset = virtualFile.readText().indexOf(it.wrongCode.split(System.lineSeparator()).firstOrNull() ?: "") // TODO: fix prompt!!
-            require(offset >= 0)
-            { "There are no offset in the file for the current wrong code: `${it.wrongCode}`" }
-            val line = document.getLineNumber(offset)
-            project.getService(AIBreakPointService::class.java).toggleLineBreakpoint(language, virtualFile, line)
+            val virtualFile = virtualFiles.firstOrNull { file -> file.name == it.fileName } ?: error("Virtual file is not found")
+            project.getService(AIBreakPointService::class.java).toggleLineBreakpoint(language, virtualFile, it.wrongCodeLineNumber)
           }
         }
         runWithTests(task, closeAIDebuggingHint) {
@@ -64,6 +58,10 @@ class AIDebugSessionService(private val project: Project, private val coroutineS
         )
       }
     }
+  }
+
+  private fun List<VirtualFile>.toNumberedLineMap() = runReadAction {
+    associate { it.name to it.document.text.lines().mapIndexed { index, line -> "$index: $line" }.joinToString(System.lineSeparator()) }
   }
 
   private fun runWithTests(task: Task, closeAIDebuggingHint: () -> Unit, execution: () -> Unit) {
