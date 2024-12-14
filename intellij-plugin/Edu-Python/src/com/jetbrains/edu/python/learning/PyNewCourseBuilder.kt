@@ -32,13 +32,8 @@ class PyNewCourseBuilder : EduCourseBuilder<PyProjectSettings> {
 
   override fun getSupportedLanguageVersions(): List<String> = getSupportedVersions()
 
-  override fun getCourseProjectGenerator(course: Course): CourseProjectGenerator<PyProjectSettings> {
-    return object : PyCourseProjectGenerator(this@PyNewCourseBuilder, course) {
-      override fun createAdditionalFiles(holder: CourseInfoHolder<Course>) {
-        // do nothing, independently of what could a base PyCourseProjectGenerator create
-      }
-    }
-  }
+  override fun getCourseProjectGenerator(course: Course): CourseProjectGenerator<PyProjectSettings> =
+    PyCourseProjectGenerator(this, course)
 
   override fun getDefaultTaskTemplates(
     course: Course,
