@@ -18,9 +18,6 @@ open class HyperskillCourseProjectGenerator<T : EduProjectSettings>(
   override fun afterProjectGenerated(project: Project, projectSettings: T, onConfigurationFinished: () -> Unit) =
     base.afterProjectGenerated(project, projectSettings, onConfigurationFinished)
 
-  override fun createAdditionalFiles(holder: CourseInfoHolder<Course>) =
-    base.createAdditionalFiles(holder)
-
   override fun autoCreatedAdditionalFiles(holder: CourseInfoHolder<Course>): List<EduFile> =
     base.autoCreatedAdditionalFiles(holder)
 
