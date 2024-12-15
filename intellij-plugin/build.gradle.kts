@@ -1006,13 +1006,13 @@ fun IntelliJPlatformDependenciesExtension.intellijIde(project: Project, versionW
 
   // Workaround for https://github.com/JetBrains/intellij-platform-gradle-plugin/issues/1738
   // It will become redundant since IJPGP 2.2.0
-  if (type == AndroidStudio) {
-    project.configurations {
-      intellijPlatformBundledModules {
-        exclude(Configurations.Dependencies.BUNDLED_MODULE_GROUP, "com.jetbrains.performancePlugin")
-      }
-    }
-  }
+//  if (type == AndroidStudio) {
+//    project.configurations {
+//      intellijPlatformBundledModules {
+//        exclude(Configurations.Dependencies.BUNDLED_MODULE_GROUP, "com.jetbrains.performancePlugin")
+//      }
+//    }
+//  }
 
   // JetBrains runtime is necessary not only for running IDE but for tests as well
   if (hasProp("jbrVersion")) {
