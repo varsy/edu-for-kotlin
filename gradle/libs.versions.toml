@@ -35,7 +35,7 @@ openTest4J = { group = "org.opentest4j", name = "opentest4j", version = "1.3.0" 
 
 [plugins]
 downloadPlugin = { id = "de.undercouch.download", version = "5.3.0" }
-intelliJPlatformPlugin = { id = "org.jetbrains.intellij.platform", version = "2.1.0" }
+intelliJPlatformPlugin = { id = "org.jetbrains.intellij.platform", version = "2.2.1" }
 kotlinPlugin = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlinSerializationPlugin = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 propertiesPlugin = { id = "net.saliman.properties", version = "1.5.2" }
