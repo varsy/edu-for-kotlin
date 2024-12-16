@@ -91,7 +91,6 @@ class PromptExecutorAction(private val element: PsiElement, private val prodeId:
 
     if (!codeGenerationState.lock()) {
       project.notifyError(content = EduCognifireBundle.message("action.already.running"))
-      getDocument()?.setReadOnly(false)
       return
     }
     try {
