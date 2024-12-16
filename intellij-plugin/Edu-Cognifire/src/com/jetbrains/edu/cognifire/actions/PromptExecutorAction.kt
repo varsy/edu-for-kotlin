@@ -45,16 +45,18 @@ import com.jetbrains.educational.ml.core.exception.AiAssistantException
  * The main task is to parse the `prompt` DSL, generate code, process the code, and then append a `code` DSL block with the generated code.
  *
  * @param element The PSI element associated with the `prompt` DSL that this action is supposed to execute.
+ * @param prodeId A unique identifier for the Prompt-to-Code.
+ * @param task The educational task within which this action is being executed.
  */
-class PromptExecutorAction(private val element: PsiElement, private val id: String, private val task: Task) : AnAction() {
+class PromptExecutorAction(private val element: PsiElement, private val prodeId: String, private val task: Task) : AnAction() {
   override fun actionPerformed(e: AnActionEvent) {
     val project = e.project ?: error("Project was not found")
     val document = getDocument() ?: return
 
     // TODO: Update highlighters on PsiElement update
-    HighlighterManager.getInstance().clearAll(id)
-    ListenerManager.getInstance(project).clearAll(id)
-    GuardedBlockManager.getInstance().removeGuardedBlock(id, document)
+    HighlighterManager.getInstance().clearAll(prodeId)
+    ListenerManager.getInstance(project).clearAll(prodeId)
+    GuardedBlockManager.getInstance().removeGuardedBlock(prodeId, document)
     document.setReadOnly(true)
 
     val promptExpression = PromptExpressionParser.parsePromptExpression(element, element.language)
@@ -133,12 +135,12 @@ class PromptExecutorAction(private val element: PsiElement, private val id: Stri
   ) {
     val promptActionManager = PromptActionManager.getInstance(project)
     val codeGenerator =
-      CodeGenerator(promptExpression, project, element.language, promptActionManager.getAction(id)?.promptToCode, codeExpression)
+      CodeGenerator(promptExpression, project, element.language, promptActionManager.getAction(prodeId)?.promptToCode, codeExpression)
 
     invokeLater {
       val generatedCode = codeGenerator.generatedCode
       val (newPromptExpression, newCodeExpression) = syncProde(project, codeGenerator, promptExpression)
-      PromptToCodeHighlighter(project, id).setUp(
+      PromptToCodeHighlighter(project, prodeId).setUp(
         newPromptExpression,
         newCodeExpression,
         codeGenerator.promptToCodeLines,
@@ -154,10 +156,10 @@ class PromptExecutorAction(private val element: PsiElement, private val id: Stri
       var unparsableSentences = emptyList<OffsetSentence>()
       if (state == PromptCodeState.CodeFailed) {
         unparsableSentences = checkGrammar(newPromptExpression, project)
-        GrammarHighlighterProcessor.highlightAll(project, unparsableSentences, id)
+        GrammarHighlighterProcessor.highlightAll(project, unparsableSentences, prodeId)
       }
       Logger.cognifireLogger.info(
-        """Lesson id: ${task.lesson.id}    Task id: ${task.id}    Action id: $id
+        """Lesson id: ${task.lesson.id}    Task id: ${task.id}    Action id: $prodeId
            | Text prompt: ${newPromptExpression.prompt}
            | Code prompt: ${newPromptExpression.code}
            | Generated code: $generatedCode
@@ -165,7 +167,7 @@ class PromptExecutorAction(private val element: PsiElement, private val id: Stri
            | Has unparsable sentences - ${unparsableSentences.isNotEmpty()}: ${unparsableSentences.map { it.sentence }}
         """.trimMargin()
       )
-      promptActionManager.updateAction(id, state, codeGenerator.finalPromptToCodeTranslation)
+      promptActionManager.updateAction(prodeId, state, codeGenerator.finalPromptToCodeTranslation)
       project.getCurrentTask()?.let {
         it.isPromptActionsGeneratedSuccessfully = promptActionManager.generatedSuccessfully(task.id)
         TaskToolWindowView.getInstance(project).updateCheckPanel(it)
@@ -198,7 +200,7 @@ class PromptExecutorAction(private val element: PsiElement, private val id: Stri
     ).notify(this).also {
       promptExpression?.let {
         Logger.cognifireLogger.info(
-          """Lesson id: ${task.lesson.id}    Task id: ${task.id}    Action id: $id
+          """Lesson id: ${task.lesson.id}    Task id: ${task.id}    Action id: $prodeId
            | Error: $title
            | ErrorMessage: $content
            | Text prompt: ${it.prompt}
@@ -207,7 +209,7 @@ class PromptExecutorAction(private val element: PsiElement, private val id: Stri
         )
       } ?: run {
         Logger.cognifireLogger.info(
-          """Lesson id: ${task.lesson.id}    Task id: ${task.id}    Action id: $id
+          """Lesson id: ${task.lesson.id}    Task id: ${task.id}    Action id: $prodeId
            | Error: $title
            | ErrorMessage: $content
         """.trimMargin()

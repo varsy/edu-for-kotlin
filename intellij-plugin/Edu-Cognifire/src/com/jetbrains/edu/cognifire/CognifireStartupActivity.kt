@@ -1,6 +1,7 @@
 package com.jetbrains.edu.cognifire
 
 import com.intellij.openapi.Disposable
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.fileEditor.FileDocumentManager
@@ -33,18 +34,22 @@ class CognifireStartupActivity : ProjectActivity, Disposable {
   }
 
   private fun addListenersToAllProdeInFile(file: VirtualFile, project: Project) = DumbService.getInstance(project).runWhenSmart {
-    if (project.isDisposed) return@runWhenSmart
-    val psiFile = runReadAction { PsiManager.getInstance(project).findFile(file) } ?: return@runWhenSmart
-    val expressions = runReadAction { ProdeExpressionParser.getProdeExpressions(psiFile, psiFile.language) }
-    invokeLater {
-      if (project.isDisposed) return@invokeLater
-      expressions.forEach {
-        val function = it.promptExpression.functionSignature
-        val id = "${function.name}:${function.functionParameters.size}"
-        PromptToCodeHighlighter(project, id).setUpDocumentListener(it.promptExpression, it.codeExpression)
-        HighlighterManager.getInstance().highlightAllUncommitedChanges(id, project)
-        FileDocumentManager.getInstance().getDocument(file)?.let { document ->
-          GuardedBlockManager.getInstance().setReadonlyFragmentModificationHandler(document, it)
+    ApplicationManager.getApplication().executeOnPooledThread {
+      if (project.isDisposed) return@executeOnPooledThread
+      val expressions = runReadAction {
+        val psiFile = PsiManager.getInstance(project).findFile(file) ?: return@runReadAction null
+        ProdeExpressionParser.getProdeExpressions(psiFile, psiFile.language)
+      } ?: return@executeOnPooledThread
+      invokeLater {
+        if (project.isDisposed) return@invokeLater
+        expressions.forEach {
+          val function = it.promptExpression.functionSignature
+          val id = "${function.name}:${function.functionParameters.size}"
+          PromptToCodeHighlighter(project, id).setUpDocumentListener(it.promptExpression, it.codeExpression)
+          HighlighterManager.getInstance().highlightAllUncommitedChanges(id, project)
+          FileDocumentManager.getInstance().getDocument(file)?.let { document ->
+            GuardedBlockManager.getInstance().setReadonlyFragmentModificationHandler(document, it)
+          }
         }
       }
     }
