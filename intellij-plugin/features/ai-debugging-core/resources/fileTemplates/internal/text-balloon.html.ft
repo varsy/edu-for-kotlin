@@ -1,0 +1,5 @@
+<html>
+<body style="width: 300px; white-space: normal; word-wrap: break-word; word-break: break-word; margin-right: 5px;">
+    ${text}
+</body>
+</html>
