@@ -1,6 +1,7 @@
 package com.jetbrains.edu.aiDebugging.core.breakpoint
 
 import com.intellij.lang.Language
+import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.editor.markup.RangeHighlighter
 import com.intellij.openapi.editor.markup.TextAttributes
@@ -34,10 +35,9 @@ class AIBreakPointService(private val project: Project, private val scope: Corou
   }
 
 
-  fun toggleLineBreakpoint(language: Language, file: VirtualFile, line: Int) {
+  fun toggleLineBreakpoint(language: Language, file: VirtualFile, line: Int) = runReadAction {
     val type = language.getAIBreakpointType()
     breakpointManager.addLineBreakpoint(type, file.url, line, type.createProperties())
-
   }
 
   private val listener by lazy {
