@@ -1,0 +1,16 @@
+<idea-plugin package="com.jetbrains.edu.aiDebugging.jvm">
+  <dependencies>
+    <!--suppress PluginXmlValidity -->
+    <module name="ai-debugging-core"/>
+    <plugin id="com.intellij.modules.java"/>
+  </dependencies>
+
+  <extensions defaultExtensionNs="aiDebugging">
+    <breakpointTypeManager language="JVM" implementationClass="com.jetbrains.edu.aiDebugging.jvm.JvmBreakpointTypeManager"/>
+  </extensions>
+
+  <extensions defaultExtensionNs="com.intellij">
+    <xdebugger.breakpointType implementation="com.jetbrains.edu.aiDebugging.jvm.JvmAIDebuggerBreakpointType"/>
+    <debugger.javaBreakpointHandlerFactory implementation="com.jetbrains.edu.aiDebugging.jvm.JvmAIDebuggerBreakpointHandlerFactory"/>
+  </extensions>
+</idea-plugin>
