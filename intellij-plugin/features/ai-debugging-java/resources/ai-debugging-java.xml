@@ -7,6 +7,8 @@
 
   <extensions defaultExtensionNs="aiDebugging">
     <breakpointTypeManager language="JAVA" implementationClass="com.jetbrains.edu.aiDebugging.java.JBreakpointTypeManager"/>
+    <breakpointTypeManager language="kotlin" implementationClass="com.jetbrains.edu.aiDebugging.java.JBreakpointTypeManager"/>
+    <breakpointTypeManager language="Scala" implementationClass="com.jetbrains.edu.aiDebugging.java.JBreakpointTypeManager"/>
   </extensions>
 
   <extensions defaultExtensionNs="com.intellij">
