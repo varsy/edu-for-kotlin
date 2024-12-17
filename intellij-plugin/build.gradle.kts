@@ -321,7 +321,7 @@ dependencies {
     pluginModule(implementation(project("features:ai-hints-kotlin")))
     pluginModule(implementation(project("localization")))
     pluginModule(implementation(project("features:ai-debugging-core")))
-    pluginModule(implementation(project("features:ai-debugging-java")))
+    pluginModule(implementation(project("features:ai-debugging-jvm")))
 
     testFramework(TestFrameworkType.Bundled)
   }
@@ -1024,7 +1024,7 @@ project("features:ai-debugging-core") {
   }
 }
 
-project("features:ai-debugging-java") {
+project("features:ai-debugging-jvm") {
   dependencies {
     intellijPlatform {
       val ideVersion = if (!isJvmCenteredIDE) ideaVersion else baseVersion

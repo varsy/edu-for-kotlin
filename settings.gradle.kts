@@ -41,7 +41,7 @@ include(
   "intellij-plugin:features:ai-hints-core",
   "intellij-plugin:features:ai-hints-kotlin",
   "intellij-plugin:features:ai-debugging-core",
-  "intellij-plugin:features:ai-debugging-java"
+  "intellij-plugin:features:ai-debugging-jvm"
 )
 
 if (settings.providers.gradleProperty("fleetIntegration").get().toBoolean()) {

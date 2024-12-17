@@ -43,6 +43,6 @@
     <module name="ai-hints-core"/>
     <module name="ai-hints-kotlin"/>
     <module name="ai-debugging-core"/>
-    <module name="ai-debugging-java"/>
+    <module name="ai-debugging-jvm"/>
   </content>
 </idea-plugin>
