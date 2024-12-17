@@ -6,7 +6,6 @@ import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiElement
 import com.jetbrains.edu.cognifire.writers.PromptExpressionWriter
 import com.jetbrains.edu.cognifire.models.PromptExpression
-import com.jetbrains.edu.cognifire.utils.isPromptBlock
 import com.jetbrains.edu.kotlin.cognifire.utils.getBaseContentOffset
 import org.jetbrains.kotlin.psi.KtCallExpression
 import org.jetbrains.kotlin.psi.KtPsiFactory
@@ -15,7 +14,7 @@ import org.jetbrains.kotlin.psi.psiUtil.endOffset
 
 class KtPromptExpressionWriter : PromptExpressionWriter {
   override fun addExpression(project: Project, element: PsiElement, text: String, oldExpression: PromptExpression?): PromptExpression? {
-    if (!element.isPromptBlock() || element !is KtCallExpression) return null
+    if (element !is KtCallExpression) return null
     val promptPromptPsi = element.valueArguments.firstOrNull() ?: return null
     if (oldExpression == null) return null
     val prompt = "\"\"\"${System.lineSeparator()}$text${System.lineSeparator()}\"\"\""
