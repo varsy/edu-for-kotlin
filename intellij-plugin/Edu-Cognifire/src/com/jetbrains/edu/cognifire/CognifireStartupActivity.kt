@@ -43,8 +43,8 @@ class CognifireStartupActivity : ProjectActivity, Disposable {
       invokeLater {
         if (project.isDisposed) return@invokeLater
         expressions.forEach {
-          val function = it.promptExpression.functionSignature
-          val id = "${function.name}:${function.functionParameters.size}"
+          val functionSignature = it.promptExpression.functionSignature
+          val id = "${functionSignature.name}:${functionSignature.functionParameters.size}"
           PromptToCodeHighlighter(project, id).setUpDocumentListener(it.promptExpression, it.codeExpression)
           HighlighterManager.getInstance().highlightAllUncommitedChanges(id, project)
           FileDocumentManager.getInstance().getDocument(file)?.let { document ->
