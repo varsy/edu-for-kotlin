@@ -1,7 +1,7 @@
 package com.jetbrains.edu.cognifire.highlighting.highlighers
 
-import com.intellij.openapi.editor.markup.*
 import com.intellij.openapi.editor.Editor
+import com.intellij.openapi.editor.markup.*
 import com.intellij.openapi.editor.markup.HighlighterLayer
 import com.intellij.openapi.editor.markup.HighlighterTargetArea
 import com.intellij.openapi.editor.markup.RangeHighlighter
@@ -9,7 +9,7 @@ import com.intellij.openapi.editor.markup.TextAttributes
 import com.intellij.ui.JBColor
 
 
-class UncommitedChangesHighlighter(
+class UncommittedChangesHighlighter(
   private val startOffset: Int,
   private val endOffset: Int
 ): ProdeHighlighter {
@@ -34,9 +34,9 @@ class UncommitedChangesHighlighter(
         editor.markupModel.addRangeHighlighter(
           startOffset,
           endOffset,
-          HighlighterLayer.SELECTION,
+          layer,
           attributes,
-          HighlighterTargetArea.EXACT_RANGE
+          targetArea
         )
       }
     }
