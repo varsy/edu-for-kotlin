@@ -6,7 +6,6 @@ import com.intellij.openapi.components.Storage
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
 import com.jetbrains.edu.cognifire.highlighting.highlighers.ProdeHighlighter
-import com.jetbrains.edu.cognifire.highlighting.highlighers.UncommittedChangesHighlighter
 import com.jetbrains.edu.learning.selectedEditor
 
 /**
@@ -35,11 +34,10 @@ class HighlighterManager : PersistentStateComponent<HighlighterManager> {
     highlighters.getOrPut(id) { mutableListOf() }.add(highlighter)
   }
 
-  fun highlightAllUncommitedChanges(id: String, project: Project) {
-    highlighters[id]?.filterIsInstance<UncommittedChangesHighlighter>()?.forEach { highlighter ->
-      project.selectedEditor?.let {
-        highlighter.addHighlighter(it)
-      }
+  fun applyHighlighters(id: String, project: Project) {
+    val editor = project.selectedEditor ?: return
+    highlighters[id]?.forEach { highlighter ->
+      highlighter.applyExistingHighlighter(editor)
     }
   }
 
