@@ -6,7 +6,7 @@ import com.jetbrains.edu.cognifire.highlighting.GuardedBlockManager
 import com.jetbrains.edu.cognifire.highlighting.HighlighterManager
 import com.jetbrains.edu.cognifire.highlighting.ListenerManager
 import com.jetbrains.edu.cognifire.highlighting.highlighers.LinkingHighlighter
-import com.jetbrains.edu.cognifire.highlighting.highlighers.UncommitedChangesHighlighter
+import com.jetbrains.edu.cognifire.highlighting.highlighers.UncommittedChangesHighlighter
 import com.jetbrains.edu.cognifire.models.BaseProdeExpression
 import com.jetbrains.edu.cognifire.models.CodeExpression
 import com.jetbrains.edu.cognifire.models.PromptExpression
@@ -154,7 +154,7 @@ class PromptToCodeHighlighter(private val project: Project, private val prodeId:
   }
 
   private fun handleUncommitedChanges(offset: Int, delta: Int) {
-    highlighterManager.addProdeHighlighter(UncommitedChangesHighlighter(offset, offset + delta), prodeId, project)
+    highlighterManager.addProdeHighlighter(UncommittedChangesHighlighter(offset, offset + delta), prodeId, project)
   }
 
   private fun addReadOnlyBlock(codeExpression: CodeExpression, promptExpression: PromptExpression, event: DocumentEvent) {

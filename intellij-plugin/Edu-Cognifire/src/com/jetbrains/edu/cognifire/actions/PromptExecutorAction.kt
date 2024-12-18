@@ -53,7 +53,6 @@ class PromptExecutorAction(private val element: PsiElement, private val prodeId:
     val project = e.project ?: error("Project was not found")
     val document = getDocument() ?: return
 
-    // TODO: Update highlighters on PsiElement update
     HighlighterManager.getInstance().clearAll(prodeId)
     ListenerManager.getInstance(project).clearAll(prodeId)
     GuardedBlockManager.getInstance().removeGuardedBlock(prodeId, document)
@@ -65,7 +64,7 @@ class PromptExecutorAction(private val element: PsiElement, private val prodeId:
         EduCognifireBundle.message("action.not.run.due.to.nested.block.title"),
         EduCognifireBundle.message("action.not.run.due.to.nested.block.text")
       )
-      getDocument()?.setReadOnly(false)
+      document.setReadOnly(false)
       return
     }
     val codeExpression = CodeExpressionParser.getCodeExpression(element, element.language)
