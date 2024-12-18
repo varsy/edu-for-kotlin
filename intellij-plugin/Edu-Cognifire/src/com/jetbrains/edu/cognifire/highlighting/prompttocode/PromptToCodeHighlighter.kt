@@ -9,6 +9,7 @@ import com.jetbrains.edu.cognifire.highlighting.HighlighterManager
 import com.jetbrains.edu.cognifire.highlighting.ListenerManager
 import com.jetbrains.edu.cognifire.highlighting.highlighers.LinkingHighlighter
 import com.jetbrains.edu.cognifire.highlighting.highlighers.UncommitedChangesHighlighter
+import com.jetbrains.edu.cognifire.models.BaseProdeExpression
 import com.jetbrains.edu.cognifire.models.CodeExpression
 import com.jetbrains.edu.cognifire.models.PromptExpression
 
@@ -92,36 +93,56 @@ class PromptToCodeHighlighter(private val project: Project) {
   private fun getDocumentListener(codeExpression: CodeExpression, promptExpression: PromptExpression) = object : DocumentListener {
     override fun documentChanged(event: DocumentEvent) {
       val delta = event.newLength - event.oldLength
+      val offset = event.offset
 
-      if (event.offset < promptExpression.startOffset) {
-        promptExpression.shiftStartOffset(delta)
-        promptExpression.shiftEndOffset(delta)
-      }
-      else if (event.offset in promptExpression.startOffset until promptExpression.endOffset) {
-        promptExpression.shiftEndOffset(delta)
+      fun BaseProdeExpression.shiftOffsets(shiftStart: Boolean = false, shiftEnd: Boolean = false) {
+        if (shiftStart) shiftStartOffset(delta)
+        if (shiftEnd) shiftEndOffset(delta)
       }
 
-      if (event.offset in promptExpression.endOffset until codeExpression.startOffset) {
-        codeExpression.shiftStartOffset(delta)
-        codeExpression.shiftEndOffset(delta)
-      }
-      else if (event.offset in codeExpression.startOffset until codeExpression.endOffset) {
-        codeExpression.shiftEndOffset(delta)
-      }
+      var prodeIsEdited = false
 
-      if (event.offset in promptExpression.startOffset until promptExpression.endOffset ||
-          event.offset in codeExpression.startOffset until codeExpression.endOffset
-      ) {
-        highlighterManager.clearProdeHighlighters<LinkingHighlighter>()
-        listenerManager.clearAllMouseMotionListeners()
-
-        if (delta > 0) {
-          highlighterManager.addProdeHighlighter(
-            UncommitedChangesHighlighter(event.offset, event.offset + delta)
-          )
+      when (offset) {
+        in 0 until promptExpression.startOffset -> {
+          promptExpression.shiftOffsets(shiftStart = true, shiftEnd = true)
+          codeExpression.shiftOffsets(shiftStart = true, shiftEnd = true)
         }
+
+        in promptExpression.startOffset until promptExpression.endOffset -> {
+          promptExpression.shiftOffsets(shiftEnd = true)
+          codeExpression.shiftOffsets(shiftStart = true, shiftEnd = true)
+          prodeIsEdited = true
+        }
+
+        in promptExpression.endOffset until codeExpression.startOffset -> {
+          codeExpression.shiftOffsets(shiftStart = true, shiftEnd = true)
+        }
+
+        in codeExpression.startOffset until codeExpression.endOffset -> {
+          codeExpression.shiftOffsets(shiftEnd = true)
+          prodeIsEdited = true
+        }
+
+      }
+
+      if (prodeIsEdited && delta > 0) {
+        clearHighlighters()
+        handleUncommitedChanges(offset, delta)
       }
     }
+
+
+  }
+
+  private fun clearHighlighters() {
+    highlighterManager.clearProdeHighlighters<LinkingHighlighter>()
+    listenerManager.clearAllMouseMotionListeners()
+  }
+
+  private fun handleUncommitedChanges(offset: Int, delta: Int) {
+    highlighterManager.addProdeHighlighter(
+      UncommitedChangesHighlighter(offset, offset + delta)
+    )
   }
 
   private fun showHighlighters(
