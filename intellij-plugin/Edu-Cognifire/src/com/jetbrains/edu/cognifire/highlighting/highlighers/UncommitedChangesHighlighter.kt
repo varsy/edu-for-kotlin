@@ -4,7 +4,7 @@ import com.intellij.openapi.editor.markup.*
 import com.intellij.ui.JBColor
 
 class UncommitedChangesHighlighter(val startOffset: Int, val endOffset: Int) : ProdeHighlighter {
-  override val attributes = TextAttributes().apply { backgroundColor = JBColor.green }
+  override val attributes = TextAttributes().apply { backgroundColor = JBColor(0xE6FFE6, 0x224422) }
 
   override var markupHighlighter: RangeHighlighter? = null
 
