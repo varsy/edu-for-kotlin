@@ -5,7 +5,7 @@ import com.jetbrains.edu.aiDebugging.core.messages.EduAIDebuggingCoreBundle
 import com.jetbrains.edu.aiDebugging.core.ui.AIDebuggingIcons
 import javax.swing.Icon
 
-class JvmAIDebuggerBreakpointType : JavaLineBreakpointType("java-line-ai", EduAIDebuggingCoreBundle.message("ai.debugger.java.breakpoint.description")) {
+class JvmAIDebuggerBreakpointType : JavaLineBreakpointType("jvm-line-ai", EduAIDebuggingCoreBundle.message("ai.debugger.jvm.breakpoint.description")) {
   // TODO change to real image
   override fun getEnabledIcon(): Icon = AIDebuggingIcons.AIBug
 }
