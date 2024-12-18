@@ -46,7 +46,7 @@ class CognifireStartupActivity : ProjectActivity, Disposable {
           val functionSignature = it.promptExpression.functionSignature
           val id = "${functionSignature.name}:${functionSignature.functionParameters.size}"
           PromptToCodeHighlighter(project, id).setUpDocumentListener(it.promptExpression, it.codeExpression)
-          HighlighterManager.getInstance().highlightAllUncommitedChanges(id, project)
+          HighlighterManager.getInstance().applyHighlighters(id, project)
           FileDocumentManager.getInstance().getDocument(file)?.let { document ->
             GuardedBlockManager.getInstance().setReadonlyFragmentModificationHandler(document, it)
           }
