@@ -12,6 +12,7 @@ import com.jetbrains.edu.learning.courseFormat.CheckResult
 import com.jetbrains.edu.learning.courseFormat.CheckStatus
 import com.jetbrains.edu.learning.courseFormat.CourseMode
 import com.jetbrains.edu.learning.courseFormat.DescriptionFormat
+import com.jetbrains.edu.learning.courseFormat.EduTestInfo.Companion.firstFailed
 import com.jetbrains.edu.learning.courseFormat.ext.getDescriptionFile
 import com.jetbrains.edu.learning.courseFormat.ext.getVirtualFile
 import com.jetbrains.edu.learning.courseFormat.ext.project
@@ -23,7 +24,7 @@ import com.jetbrains.educational.ml.ai.debugger.prompt.prompt.entities.descripti
 
 class AIDebuggingCheckListener : CheckListener {
   override fun afterCheck(project: Project, task: Task, result: CheckResult) {
-    if (!isAvailable(task)) return
+    if (!isAvailable(task, result)) return
     val textToShow = EduAIDebuggingCoreBundle.message("action.Educational.AiDebuggingNotification.text")
 
     val aiDebuggingHintBanner = AIDebuggingHintInlineBanner(textToShow).apply {
@@ -44,8 +45,12 @@ class AIDebuggingCheckListener : CheckListener {
     service.runDebuggingSession(task, taskDescription, virtualFiles, testResult, closeAIDebuggingHint)
   }
 
-  private fun isAvailable(task: Task) =
-    task.course.courseMode == CourseMode.STUDENT && task.status == CheckStatus.Failed && task is EduTask // TODO: when should we show this button?
+  // TODO: when should we show this button?
+  private fun isAvailable(task: Task, result: CheckResult) =
+    task.course.courseMode == CourseMode.STUDENT &&
+    task.status == CheckStatus.Failed &&
+    task is EduTask &&
+    result.executedTestsInfo.firstFailed() != null
 
   private fun Task.getTaskDescription(project: Project): TaskDescription {
     val description = runReadAction { getDescriptionFile(project)?.readText() } ?: error("There are no description for the task")
