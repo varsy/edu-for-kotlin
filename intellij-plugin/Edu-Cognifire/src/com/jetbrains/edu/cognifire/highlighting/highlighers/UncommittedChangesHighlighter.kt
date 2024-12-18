@@ -1,6 +1,5 @@
 package com.jetbrains.edu.cognifire.highlighting.highlighers
 
-import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.markup.*
 import com.intellij.openapi.editor.markup.HighlighterLayer
 import com.intellij.openapi.editor.markup.HighlighterTargetArea
@@ -27,18 +26,4 @@ class UncommittedChangesHighlighter(
     )?.also {
       markupHighlighter = it
     }
-
-  fun addHighlighter(editor: Editor) {
-    markupHighlighter?.let {
-      it.apply {
-        editor.markupModel.addRangeHighlighter(
-          startOffset,
-          endOffset,
-          layer,
-          attributes,
-          targetArea
-        )
-      }
-    }
-  }
 }
