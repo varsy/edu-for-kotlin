@@ -19,6 +19,7 @@ import com.jetbrains.edu.codeInsight.EduPsiReferenceProvider
 import com.jetbrains.edu.codeInsight.EduReferenceContributorBase
 import com.jetbrains.edu.codeInsight.inFileWithName
 import com.jetbrains.edu.codeInsight.psiElement
+import com.jetbrains.edu.learning.EduUtilsKt
 import com.jetbrains.edu.learning.StudyTaskManager
 import com.jetbrains.edu.learning.configuration.excludeFromArchive
 import com.jetbrains.edu.learning.courseFormat.ext.configurator
@@ -54,8 +55,8 @@ class EduYamlTaskFilePathReferenceProvider : EduPsiReferenceProvider() {
     override fun getReferenceCompletionFilter(): Condition<PsiFileSystemItem> {
       return Condition { item ->
         val virtualFile = item.virtualFile
-        // Do not suggest files & directories that cannot be in course
-        if (excludeFromArchive(element.project, virtualFile)) return@Condition false
+        // Do not suggest files & directories that cannot be in a task
+        if (EduUtilsKt.canNotBeTaskFile(virtualFile)) return@Condition false
         if (item.isDirectory) return@Condition true
         val filePaths = (element as YAMLScalar).collectFilePaths()
         val itemPath = VfsUtil.getRelativePath(virtualFile, taskDir) ?: return@Condition false

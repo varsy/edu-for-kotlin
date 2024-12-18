@@ -93,8 +93,8 @@ abstract class CCChangeFilePropagationFlag(
     return propagatableFile?.isPropagatable == !requiredPropagationFlag
   }
 
-  override fun collectAffectedFiles(project: Project, course: Course, files: List<VirtualFile>): List<VirtualFile> {
-    val affectedFiles = super.collectAffectedFiles(project, course, files)
+  override fun collectAffectedFiles(project: Project, files: List<VirtualFile>): List<VirtualFile> {
+    val affectedFiles = super.collectAffectedFiles(project, files)
     val affectedTaskFiles = affectedFiles.mapNotNull { it.getTaskFile(project) }
     val tasksFilesInLesson = mutableMapOf<Lesson, List<TaskFile>>()
     for (taskFile in affectedTaskFiles) {

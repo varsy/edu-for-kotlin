@@ -11,11 +11,8 @@ import com.intellij.openapi.util.NlsActions.ActionText
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFile
 import com.jetbrains.edu.coursecreator.CCUtils
-import com.jetbrains.edu.learning.StudyTaskManager
+import com.jetbrains.edu.learning.EduUtilsKt.canNotBeTaskFile
 import com.jetbrains.edu.learning.actions.EduActionUtils.runUndoableAction
-import com.jetbrains.edu.learning.configuration.excludeFromArchive
-import com.jetbrains.edu.learning.courseFormat.Course
-import com.jetbrains.edu.learning.courseFormat.ext.configurator
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
 import com.jetbrains.edu.learning.getContainingTask
 import com.jetbrains.edu.learning.yaml.YamlFormatSynchronizer.saveItem
@@ -45,9 +42,8 @@ abstract class CCChangeFilePropertyActionBase(
   override fun actionPerformed(e: AnActionEvent) {
     val project = e.project ?: return
     val virtualFiles = CommonDataKeys.VIRTUAL_FILE_ARRAY.getData(e.dataContext)?.toList() ?: return
-    val course = StudyTaskManager.getInstance(project).course ?: return
 
-    val affectedFiles = collectAffectedFiles(project, course, virtualFiles)
+    val affectedFiles = collectAffectedFiles(project, virtualFiles)
     val states = mutableListOf<State>()
     val tasks = mutableSetOf<Task>()
     for (file in affectedFiles) {
@@ -77,13 +73,12 @@ abstract class CCChangeFilePropertyActionBase(
   protected abstract fun isAvailableForSingleFile(project: Project, task: Task, file: VirtualFile): Boolean
   protected abstract fun createStateForFile(project: Project, task: Task, file: VirtualFile): State?
 
-  protected open fun collectAffectedFiles(project: Project, course: Course, files: List<VirtualFile>): List<VirtualFile> {
+  protected open fun collectAffectedFiles(project: Project, files: List<VirtualFile>): List<VirtualFile> {
     val affectedFiles = mutableListOf<VirtualFile>()
-    val configurator = course.configurator ?: return emptyList()
     for (file in files) {
-      if (configurator.excludeFromArchive(project, file) || file.getContainingTask(project) == null) continue
+      if (canNotBeTaskFile(file) || file.getContainingTask(project) == null) continue
       if (file.isDirectory) {
-        affectedFiles += collectAffectedFiles(project, course, VfsUtil.collectChildrenRecursively(file).filter { !it.isDirectory })
+        affectedFiles += collectAffectedFiles(project, VfsUtil.collectChildrenRecursively(file).filter { !it.isDirectory })
       }
       else {
         affectedFiles += file
