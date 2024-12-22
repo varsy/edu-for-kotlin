@@ -18,6 +18,7 @@ abstract class EduNode<T : StudyItem>(
   project: Project,
   value: PsiDirectory,
   viewSettings: ViewSettings,
+  protected val context: CourseViewContext,
   open val item: T?
 ) : PsiDirectoryNode(project, value, viewSettings) {
 

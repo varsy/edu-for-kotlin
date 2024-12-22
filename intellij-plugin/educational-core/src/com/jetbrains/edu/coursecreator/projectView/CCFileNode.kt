@@ -7,11 +7,13 @@ import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiFile
 import com.jetbrains.edu.coursecreator.framework.SyncChangesStateManager
 import com.jetbrains.edu.learning.getTaskFile
+import com.jetbrains.edu.learning.projectView.CourseViewContext
 
 open class CCFileNode(
   project: Project,
   value: PsiFile,
-  viewSettings: ViewSettings
+  viewSettings: ViewSettings,
+  protected val context: CourseViewContext
 ) : PsiFileNode(project, value, viewSettings) {
   override fun updateImpl(data: PresentationData) {
     super.updateImpl(data)
