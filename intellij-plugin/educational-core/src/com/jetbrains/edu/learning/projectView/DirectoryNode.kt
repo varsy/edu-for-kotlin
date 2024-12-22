@@ -18,8 +18,9 @@ open class DirectoryNode(
   project: Project,
   value: PsiDirectory,
   viewSettings: ViewSettings,
+  context: CourseViewContext,
   task: Task?
-) : EduNode<Task>(project, value, viewSettings, task) {
+) : EduNode<Task>(project, value, viewSettings, context, task) {
 
   override fun canNavigate(): Boolean = true
 
@@ -28,7 +29,7 @@ open class DirectoryNode(
   }
 
   open fun createChildDirectoryNode(value: PsiDirectory): PsiDirectoryNode {
-    return DirectoryNode(myProject, value, settings, item)
+    return DirectoryNode(myProject, value, settings, context, item)
   }
 
   open fun createChildFileNode(originalNode: AbstractTreeNode<*>, psiFile: PsiFile): AbstractTreeNode<*> {

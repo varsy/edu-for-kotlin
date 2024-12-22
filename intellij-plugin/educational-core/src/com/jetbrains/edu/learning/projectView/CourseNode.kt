@@ -13,8 +13,8 @@ open class CourseNode(
   project: Project,
   value: PsiDirectory,
   settings: ViewSettings,
-  course: Course
-) : EduNode<Course>(project, value, settings, course) {
+  context: CourseViewContext
+) : EduNode<Course>(project, value, settings, context, context.course) {
 
   override fun modifyChildNode(childNode: AbstractTreeNode<*>): AbstractTreeNode<*>? {
     val directory = childNode.value as? PsiDirectory ?: return null
@@ -34,15 +34,15 @@ open class CourseNode(
   }
 
   protected open fun createSectionNode(directory: PsiDirectory, section: Section): SectionNode {
-    return SectionNode(myProject, settings, section, directory)
+    return SectionNode(myProject, settings, context, section, directory)
   }
 
   protected open fun createLessonNode(directory: PsiDirectory, lesson: Lesson): LessonNode? {
     return if (lesson is FrameworkLesson) {
-      createFrameworkLessonNode(myProject, directory, settings, lesson)
+      createFrameworkLessonNode(myProject, directory, settings, context, lesson)
     }
     else {
-      LessonNode(myProject, directory, settings, lesson)
+      LessonNode(myProject, directory, settings, context, lesson)
     }
   }
 

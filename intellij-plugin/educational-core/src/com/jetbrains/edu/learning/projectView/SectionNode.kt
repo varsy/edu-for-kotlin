@@ -12,9 +12,10 @@ import com.jetbrains.edu.learning.projectView.FrameworkLessonNode.Companion.crea
 open class SectionNode(
   project: Project,
   viewSettings: ViewSettings,
+  context: CourseViewContext,
   section: Section,
   psiDirectory: PsiDirectory
-) : EduNode<Section>(project, psiDirectory, viewSettings, section) {
+) : EduNode<Section>(project, psiDirectory, viewSettings, context, section) {
 
   override val item: Section get() = super.item!!
 
@@ -26,10 +27,10 @@ open class SectionNode(
 
   protected open fun createLessonNode(directory: PsiDirectory, lesson: Lesson): LessonNode? {
     return if (lesson is FrameworkLesson) {
-      createFrameworkLessonNode(myProject, directory, settings, lesson)
+      createFrameworkLessonNode(myProject, directory, settings, context, lesson)
     }
     else {
-      LessonNode(myProject, directory, settings, lesson)
+      LessonNode(myProject, directory, settings, context, lesson)
     }
   }
 

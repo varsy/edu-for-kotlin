@@ -15,8 +15,9 @@ class FrameworkLessonNode private constructor(
   project: Project,
   value: PsiDirectory,
   viewSettings: ViewSettings,
+  context: CourseViewContext,
   lesson: FrameworkLesson
-) : LessonNode(project, value, viewSettings, lesson) {
+) : LessonNode(project, value, viewSettings, context, lesson) {
 
   override val item: FrameworkLesson
     get() = super.item as FrameworkLesson
@@ -24,7 +25,7 @@ class FrameworkLessonNode private constructor(
   override fun modifyChildNode(childNode: AbstractTreeNode<*>): AbstractTreeNode<*>? {
     val task = item.currentTask() ?: return null
     return CourseViewUtils.modifyTaskChildNode(myProject, childNode, task, ::createChildFileNode) {
-      dir -> DirectoryNode(myProject, dir, settings, task)
+      dir -> DirectoryNode(myProject, dir, settings, context, task)
     }
   }
 
@@ -60,6 +61,7 @@ class FrameworkLessonNode private constructor(
       project: Project,
       lessonDirectory: PsiDirectory,
       viewSettings: ViewSettings,
+      context: CourseViewContext,
       lesson: FrameworkLesson
     ): FrameworkLessonNode? {
       val task = lesson.currentTask()
@@ -70,7 +72,7 @@ class FrameworkLessonNode private constructor(
       else {
         lessonDirectory
       }
-      return FrameworkLessonNode(project, dir, viewSettings, lesson)
+      return FrameworkLessonNode(project, dir, viewSettings, context, lesson)
     }
   }
 }

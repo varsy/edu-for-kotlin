@@ -14,8 +14,9 @@ open class TaskNode(
   project: Project,
   value: PsiDirectory,
   viewSettings: ViewSettings,
+  context: CourseViewContext,
   task: Task
-) : EduNode<Task>(project, value, viewSettings, task) {
+) : EduNode<Task>(project, value, viewSettings, context, task) {
 
   override val item: Task get() = super.item!!
 
@@ -32,7 +33,7 @@ open class TaskNode(
   }
 
   open fun createChildDirectoryNode(value: PsiDirectory): PsiDirectoryNode {
-    return DirectoryNode(myProject, value, settings, item)
+    return DirectoryNode(myProject, value, settings, context, item)
   }
 
   open fun createChildFileNode(originalNode: AbstractTreeNode<*>, psiFile: PsiFile): AbstractTreeNode<*> {

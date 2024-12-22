@@ -14,14 +14,16 @@ import com.jetbrains.edu.learning.StudyTaskManager
 import com.jetbrains.edu.learning.courseFormat.ext.configurator
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
 import com.jetbrains.edu.learning.isTestsFile
+import com.jetbrains.edu.learning.projectView.CourseViewContext
 import com.jetbrains.edu.learning.projectView.DirectoryNode
 
 class CCNode(
   project: Project,
   value: PsiDirectory,
   viewSettings: ViewSettings,
+  context: CourseViewContext,
   task: Task?
-) : DirectoryNode(project, value, viewSettings, task) {
+) : DirectoryNode(project, value, viewSettings, context, task) {
 
   override fun canNavigate(): Boolean = true
 
@@ -31,22 +33,22 @@ class CCNode(
     val value = childNode.value
 
     if (value is PsiDirectory) {
-      return CCNode(myProject, value, settings, item)
+      return CCNode(myProject, value, settings, context, item)
     }
     if (value is PsiElement) {
       val psiFile = value.containingFile
       val virtualFile = psiFile.virtualFile
       val course = StudyTaskManager.getInstance(myProject).course ?: return null
-      if (course.configurator == null) return CCStudentInvisibleFileNode(myProject, psiFile, settings)
+      if (course.configurator == null) return CCStudentInvisibleFileNode(myProject, psiFile, settings, context)
       if (EduUtilsKt.isTaskDescriptionFile(virtualFile.name)) {
         return null
       }
       if (!virtualFile.isTestsFile(myProject)) {
-        return CCStudentInvisibleFileNode(myProject, psiFile, settings)
+        return CCStudentInvisibleFileNode(myProject, psiFile, settings, context)
       }
       else {
         if (isCourseCreator(myProject)) {
-          return CCStudentInvisibleFileNode(myProject, psiFile, settings)
+          return CCStudentInvisibleFileNode(myProject, psiFile, settings, context)
         }
       }
     }
@@ -54,10 +56,10 @@ class CCNode(
   }
 
   override fun createChildDirectoryNode(value: PsiDirectory): PsiDirectoryNode {
-    return CCNode(myProject, value, settings, item)
+    return CCNode(myProject, value, settings, context, item)
   }
 
   override fun createChildFileNode(originalNode: AbstractTreeNode<*>, psiFile: PsiFile): PsiFileNode {
-    return CCFileNode(myProject, psiFile, settings)
+    return CCFileNode(myProject, psiFile, settings, context)
   }
 }

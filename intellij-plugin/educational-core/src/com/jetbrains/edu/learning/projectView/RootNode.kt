@@ -35,11 +35,12 @@ class RootNode(project: Project, viewSettings: ViewSettings?) : ProjectViewProje
 
   private fun addCourseNode(course: Course, nodes: MutableList<AbstractTreeNode<*>>, psiDirectory: PsiDirectory?) {
     if (psiDirectory == null) return
+    val context = CourseViewContext.create(myProject, course) ?: return
     nodes += if (isCourseCreator(myProject)) {
-      CCCourseNode(myProject, psiDirectory, settings, course)
+      CCCourseNode(myProject, psiDirectory, settings, context)
     }
     else {
-      CourseNode(myProject, psiDirectory, settings, course)
+      CourseNode(myProject, psiDirectory, settings, context)
     }
   }
 }

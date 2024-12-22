@@ -12,8 +12,9 @@ open class LessonNode(
   project: Project,
   value: PsiDirectory,
   viewSettings: ViewSettings,
+  context: CourseViewContext,
   lesson: Lesson
-) : EduNode<Lesson>(project, value, viewSettings, lesson) {
+) : EduNode<Lesson>(project, value, viewSettings, context, lesson) {
 
   override fun getWeight(): Int = item.index
 
@@ -25,7 +26,7 @@ open class LessonNode(
   }
 
   protected open fun createTaskNode(directory: PsiDirectory, task: Task): TaskNode {
-    return TaskNode(myProject, directory, settings, task)
+    return TaskNode(myProject, directory, settings, context, task)
   }
 
   override val item: Lesson get() = super.item!!

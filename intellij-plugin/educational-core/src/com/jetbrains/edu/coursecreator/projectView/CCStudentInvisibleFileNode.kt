@@ -10,6 +10,7 @@ import com.jetbrains.edu.coursecreator.courseignore.CourseIgnoreRules
 import com.jetbrains.edu.learning.canBeAddedToTask
 import com.jetbrains.edu.learning.getContainingTask
 import com.jetbrains.edu.learning.messages.EduCoreBundle.message
+import com.jetbrains.edu.learning.projectView.CourseViewContext
 import com.jetbrains.edu.learning.projectView.CourseViewUtils.testPresentation
 import org.jetbrains.annotations.TestOnly
 
@@ -21,8 +22,9 @@ class CCStudentInvisibleFileNode(
   project: Project,
   value: PsiFile,
   viewSettings: ViewSettings,
+  context: CourseViewContext,
   private val name: String = value.name
-) : CCFileNode(project, value, viewSettings) {
+) : CCFileNode(project, value, viewSettings, context) {
 
   private fun isExcluded(file: VirtualFile?, project: Project): Boolean {
     file ?: return false

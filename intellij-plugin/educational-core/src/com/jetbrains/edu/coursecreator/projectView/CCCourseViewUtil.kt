@@ -16,16 +16,17 @@ import com.jetbrains.edu.coursecreator.framework.SyncChangesTaskFileState
 import com.jetbrains.edu.learning.courseFormat.FrameworkLesson
 import com.jetbrains.edu.learning.getTaskFile
 import com.jetbrains.edu.learning.messages.EduCoreBundle
+import com.jetbrains.edu.learning.projectView.CourseViewContext
 import com.jetbrains.edu.learning.projectView.RootNode
 import com.jetbrains.edu.learning.projectView.TaskNode
 import javax.swing.tree.TreeNode
 
 
-fun modifyNodeInEducatorMode(project: Project, viewSettings: ViewSettings, childNode: AbstractTreeNode<*>): AbstractTreeNode<*>? {
+fun modifyNodeInEducatorMode(project: Project, viewSettings: ViewSettings, context: CourseViewContext, childNode: AbstractTreeNode<*>): AbstractTreeNode<*>? {
   val value = childNode.value
   return when (value) {
-    is PsiDirectory -> CCNode(project, value, viewSettings, null)
-    is PsiFile -> CCStudentInvisibleFileNode(project, value, viewSettings)
+    is PsiDirectory -> CCNode(project, value, viewSettings, context, null)
+    is PsiFile -> CCStudentInvisibleFileNode(project, value, viewSettings, context)
     else -> null
   }
 }

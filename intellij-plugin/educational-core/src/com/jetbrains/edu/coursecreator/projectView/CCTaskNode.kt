@@ -15,14 +15,16 @@ import com.jetbrains.edu.learning.configuration.EduConfigurator
 import com.jetbrains.edu.learning.courseFormat.ext.configurator
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
 import com.jetbrains.edu.learning.isTestsFile
+import com.jetbrains.edu.learning.projectView.CourseViewContext
 import com.jetbrains.edu.learning.projectView.TaskNode
 
 class CCTaskNode(
   project: Project,
   value: PsiDirectory,
   viewSettings: ViewSettings,
+  context: CourseViewContext,
   task: Task
-) : TaskNode(project, value, viewSettings, task) {
+) : TaskNode(project, value, viewSettings, context, task) {
 
   override fun modifyChildNode(childNode: AbstractTreeNode<*>): AbstractTreeNode<*>? {
     val node = super.modifyChildNode(childNode)
@@ -39,23 +41,23 @@ class CCTaskNode(
       val psiFile = value.containingFile
       val virtualFile = psiFile.virtualFile ?: return null
       val course = StudyTaskManager.getInstance(myProject).course ?: return null
-      val configurator = course.configurator ?: return CCStudentInvisibleFileNode(myProject, psiFile, settings)
+      val configurator = course.configurator ?: return CCStudentInvisibleFileNode(myProject, psiFile, settings, context)
       return if (!virtualFile.isTestsFile(myProject)) {
-        CCStudentInvisibleFileNode(myProject, psiFile, settings)
+        CCStudentInvisibleFileNode(myProject, psiFile, settings, context)
       }
       else {
-        CCStudentInvisibleFileNode(myProject, psiFile, settings, getTestNodeName(configurator, value))
+        CCStudentInvisibleFileNode(myProject, psiFile, settings, context, getTestNodeName(configurator, value))
       }
     }
     return null
   }
 
   override fun createChildDirectoryNode(value: PsiDirectory): PsiDirectoryNode {
-    return CCNode(myProject, value, settings, item)
+    return CCNode(myProject, value, settings, context, item)
   }
 
   override fun createChildFileNode(originalNode: AbstractTreeNode<*>, psiFile: PsiFile): PsiFileNode {
-    return CCFileNode(myProject, psiFile, settings)
+    return CCFileNode(myProject, psiFile, settings, context)
   }
 
   companion object {
