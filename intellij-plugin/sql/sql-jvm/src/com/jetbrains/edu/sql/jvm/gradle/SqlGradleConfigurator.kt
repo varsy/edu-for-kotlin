@@ -7,6 +7,8 @@ import com.jetbrains.edu.jvm.gradle.GradleCourseBuilderBase
 import com.jetbrains.edu.jvm.gradle.checker.GradleTaskCheckerProvider
 import com.jetbrains.edu.learning.CourseInfoHolder
 import com.jetbrains.edu.learning.checker.TaskCheckerProvider
+import com.jetbrains.edu.learning.configuration.ArchiveFileInfo
+import com.jetbrains.edu.learning.configuration.buildArchiveFileInfo
 import com.jetbrains.edu.learning.courseFormat.Course
 import com.jetbrains.edu.sql.core.SqlConfiguratorBase
 
@@ -18,10 +20,16 @@ class SqlGradleConfigurator : GradleConfiguratorBase(), SqlConfiguratorBase<JdkP
   override val courseBuilder: GradleCourseBuilderBase
     get() = SqlGradleCourseBuilder()
 
-  override fun excludeFromArchive(holder: CourseInfoHolder<out Course?>, file: VirtualFile): Boolean {
-    if (super<GradleConfiguratorBase>.excludeFromArchive(holder, file)) return true
-    return file.extension == DB_EXTENSION
-  }
+  override fun archiveFileInfo(holder: CourseInfoHolder<out Course?>, file: VirtualFile): ArchiveFileInfo =
+    buildArchiveFileInfo(holder, file) {
+      when {
+        nameRegex("""\.$DB_EXTENSION$""") -> {
+          description("Build output file")
+        }
+
+        else -> info(super<GradleConfiguratorBase>.archiveFileInfo(holder, file))
+      }
+    }
 
   override val taskCheckerProvider: TaskCheckerProvider
     get() = GradleTaskCheckerProvider()

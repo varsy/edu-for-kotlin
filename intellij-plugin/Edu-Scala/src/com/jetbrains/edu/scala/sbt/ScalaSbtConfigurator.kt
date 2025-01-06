@@ -11,7 +11,9 @@ import com.jetbrains.edu.learning.EduCourseBuilder
 import com.jetbrains.edu.learning.EduNames
 import com.jetbrains.edu.learning.EduUtilsKt
 import com.jetbrains.edu.learning.checker.TaskCheckerProvider
+import com.jetbrains.edu.learning.configuration.ArchiveFileInfo
 import com.jetbrains.edu.learning.configuration.EduConfigurator
+import com.jetbrains.edu.learning.configuration.buildArchiveFileInfo
 import com.jetbrains.edu.learning.courseFormat.Course
 import com.jetbrains.edu.learning.courseGeneration.GeneratorUtils.getInternalTemplateText
 import com.jetbrains.edu.scala.isScalaPluginCompatible
@@ -49,10 +51,16 @@ class ScalaSbtConfigurator : EduConfigurator<JdkProjectSettings> {
   override val defaultPlaceholderText: String
     get() = "/* TODO */"
 
-  override fun excludeFromArchive(holder: CourseInfoHolder<out Course?>, file: VirtualFile): Boolean {
-    return super.excludeFromArchive(holder, file) ||
-           generateSequence(file, VirtualFile::getParent).any { it.name == "target"}
-  }
+  override fun archiveFileInfo(holder: CourseInfoHolder<out Course?>, file: VirtualFile): ArchiveFileInfo =
+    buildArchiveFileInfo(holder, file) {
+      when {
+        regex("(/|^)target(/|$)") -> {
+          description("Build output file")
+        }
+
+        else -> info(super.archiveFileInfo(holder, file))
+      }
+    }
 
   companion object {
     const val TEST_SCALA = "TestSpec.scala"

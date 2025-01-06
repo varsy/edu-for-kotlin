@@ -2,14 +2,16 @@ package com.jetbrains.edu.jvm.gradle
 
 import com.intellij.openapi.extensions.PluginId
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.vfs.VfsUtilCore
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.util.containers.ContainerUtil
 import com.jetbrains.edu.jvm.JdkProjectSettings
 import com.jetbrains.edu.jvm.jvmEnvironmentSettings
 import com.jetbrains.edu.learning.CourseInfoHolder
 import com.jetbrains.edu.learning.EduNames
+import com.jetbrains.edu.learning.configuration.ArchiveFileInfo
 import com.jetbrains.edu.learning.configuration.EduConfigurator
+import com.jetbrains.edu.learning.configuration.IncludeType
+import com.jetbrains.edu.learning.configuration.buildArchiveFileInfo
 import com.jetbrains.edu.learning.courseFormat.Course
 import com.jetbrains.edu.learning.gradle.GradleConstants.GRADLE
 import com.jetbrains.edu.learning.gradle.GradleConstants.GRADLE_WRAPPER_JAR
@@ -22,14 +24,26 @@ import com.jetbrains.edu.learning.gradle.GradleConstants.SETTINGS_GRADLE
 abstract class GradleConfiguratorBase : EduConfigurator<JdkProjectSettings> {
   abstract override val courseBuilder: GradleCourseBuilderBase
 
-  override fun excludeFromArchive(holder: CourseInfoHolder<out Course?>, file: VirtualFile): Boolean {
-    if (super.excludeFromArchive(holder, file)) return true
-    val name = file.name
-    val path = file.path
-    val pathSegments = path.split(VfsUtilCore.VFS_SEPARATOR_CHAR)
-    if (SETTINGS_GRADLE == name) return false
-    return name in NAMES_TO_EXCLUDE || pathSegments.any { it in FOLDERS_TO_EXCLUDE }
-  }
+  override fun archiveFileInfo(holder: CourseInfoHolder<out Course?>, file: VirtualFile): ArchiveFileInfo =
+    buildArchiveFileInfo(holder, file) {
+      when {
+        nameRegex("""^$SETTINGS_GRADLE$""") -> {
+          description("Gradle settings")
+          type(IncludeType.MUST_INCLUDE)
+          includeInArchive()
+        }
+
+        FOLDERS_TO_EXCLUDE.any { regex("""(^|/)$it(/|$)""") } -> {
+          type(IncludeType.MUST_NOT_INCLUDE)
+        }
+
+        file.name in NAMES_TO_EXCLUDE -> {
+          type(IncludeType.MUST_NOT_INCLUDE)
+        }
+
+        else -> info(super.archiveFileInfo(holder, file))
+      }
+    }
 
   override val sourceDir: String
     get() = EduNames.SRC

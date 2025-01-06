@@ -7,7 +7,10 @@ import com.jetbrains.edu.learning.CourseInfoHolder
 import com.jetbrains.edu.learning.EduCourseBuilder
 import com.jetbrains.edu.learning.EduNames
 import com.jetbrains.edu.learning.checker.TaskCheckerProvider
+import com.jetbrains.edu.learning.configuration.ArchiveFileInfo
 import com.jetbrains.edu.learning.configuration.EduConfigurator
+import com.jetbrains.edu.learning.configuration.IncludeType
+import com.jetbrains.edu.learning.configuration.buildArchiveFileInfo
 import com.jetbrains.edu.learning.courseFormat.Course
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
 import com.jetbrains.php.composer.ComposerUtils
@@ -41,10 +44,22 @@ class PhpConfigurator : EduConfigurator<PhpProjectSettings> {
 
   override fun isTestFile(task: Task, path: String): Boolean = super.isTestFile(task, path) || path == testFileName
 
-  override fun excludeFromArchive(holder: CourseInfoHolder<out Course?>, file: VirtualFile): Boolean =
-    super.excludeFromArchive(holder, file) ||
-    file.path.contains(ComposerUtils.VENDOR_DIR_DEFAULT_NAME) ||
-    file.path.contains(ComposerUtils.COMPOSER_PHAR_NAME)
+  override fun archiveFileInfo(holder: CourseInfoHolder<out Course?>, file: VirtualFile): ArchiveFileInfo =
+    buildArchiveFileInfo(holder, file) {
+      when {
+        regex("(^|/)${ComposerUtils.VENDOR_DIR_DEFAULT_NAME}(/|$)") -> {
+          description("Vendor directory")
+          type(IncludeType.MUST_NOT_INCLUDE)
+        }
+
+        nameRegex("^${ComposerUtils.COMPOSER_PHAR_NAME}$") -> {
+          description("Composer phar")
+          type(IncludeType.MUST_NOT_INCLUDE)
+        }
+
+        else -> info(super.archiveFileInfo(holder, file))
+      }
+    }
 
   companion object {
     const val MAIN_PHP = "main.php"

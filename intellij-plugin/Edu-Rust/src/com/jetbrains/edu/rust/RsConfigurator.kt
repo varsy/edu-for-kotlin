@@ -7,7 +7,9 @@ import com.intellij.util.text.VersionComparatorUtil
 import com.jetbrains.edu.EducationalCoreIcons
 import com.jetbrains.edu.learning.CourseInfoHolder
 import com.jetbrains.edu.learning.EduCourseBuilder
+import com.jetbrains.edu.learning.configuration.ArchiveFileInfo
 import com.jetbrains.edu.learning.configuration.EduConfigurator
+import com.jetbrains.edu.learning.configuration.buildArchiveFileInfo
 import com.jetbrains.edu.learning.courseFormat.Course
 import com.jetbrains.edu.learning.courseFormat.PluginInfos
 import com.jetbrains.edu.learning.pluginVersion
@@ -39,12 +41,25 @@ class RsConfigurator : EduConfigurator<RsProjectSettings> {
   override val logo: Icon
     get() = EducationalCoreIcons.Language.Rust
 
-  override fun excludeFromArchive(holder: CourseInfoHolder<out Course?>, file: VirtualFile): Boolean {
-    // Cargo config file should be included into course even it's located in "hidden" `.cargo` directory
-    if (file.isCargoConfigDirOrFile(holder.courseDir)) return false
-    return super.excludeFromArchive(holder, file) || file.name == CargoConstants.LOCK_FILE ||
-           generateSequence(file, VirtualFile::getParent).any { it.name == CargoConstants.ProjectLayout.target }
-  }
+  override fun archiveFileInfo(holder: CourseInfoHolder<out Course?>, file: VirtualFile): ArchiveFileInfo =
+    buildArchiveFileInfo(holder, file) {
+      when {
+        file.isCargoConfigDirOrFile(holder.courseDir) -> {
+          description("Cargo configuration files")
+          includeInArchive()
+        }
+
+        nameRegex("^${CargoConstants.LOCK_FILE}$") -> {
+          description("Cargo lock file")
+        }
+
+        regex("(/|^)${CargoConstants.ProjectLayout.target}(/|$)") -> {
+          description("Build output file")
+        }
+
+        else -> info(super.archiveFileInfo(holder, file))
+      }
+    }
 
   private fun VirtualFile.isCargoConfigDirOrFile(courseDir: VirtualFile): Boolean {
     val cargoDir = courseDir.findChild(".cargo") ?: return false

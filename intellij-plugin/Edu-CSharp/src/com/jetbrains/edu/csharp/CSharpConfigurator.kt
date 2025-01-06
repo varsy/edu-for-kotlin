@@ -9,10 +9,12 @@ import com.jetbrains.edu.learning.CourseInfoHolder
 import com.jetbrains.edu.learning.EduCourseBuilder
 import com.jetbrains.edu.learning.EduExperimentalFeatures
 import com.jetbrains.edu.learning.checker.TaskCheckerProvider
+import com.jetbrains.edu.learning.configuration.ArchiveFileInfo
 import com.jetbrains.edu.learning.configuration.EduConfigurator
+import com.jetbrains.edu.learning.configuration.IncludeType
+import com.jetbrains.edu.learning.configuration.buildArchiveFileInfo
 import com.jetbrains.edu.learning.courseFormat.Course
 import com.jetbrains.edu.learning.isFeatureEnabled
-import com.jetbrains.edu.learning.pathRelativeToTask
 import com.jetbrains.rider.ideaInterop.fileTypes.sln.SolutionFileType
 import org.jetbrains.annotations.NonNls
 import javax.swing.Icon
@@ -36,12 +38,23 @@ class CSharpConfigurator : EduConfigurator<CSharpProjectSettings> {
   override val taskCheckerProvider: TaskCheckerProvider
     get() = CSharpTaskCheckerProvider()
 
-  override fun excludeFromArchive(holder: CourseInfoHolder<out Course?>, file: VirtualFile): Boolean {
-    if (super.excludeFromArchive(holder, file)) return true
-    return file.extension == SolutionFileType.defaultExtension
-           || file.pathRelativeToTask(holder).contains("$BIN_DIRECTORY/")
-           || file.pathRelativeToTask(holder).contains("$OBJ_DIRECTORY/")
-  }
+  override fun archiveFileInfo(holder: CourseInfoHolder<out Course?>, file: VirtualFile): ArchiveFileInfo =
+    buildArchiveFileInfo(holder, file) {
+      when {
+        nameRegex("""\.${SolutionFileType.defaultExtension}$""") -> {
+          description("Solution file")
+          type(IncludeType.MUST_NOT_INCLUDE)
+        }
+
+        regex("""(^|/)($BIN_DIRECTORY|$OBJ_DIRECTORY)(/|$)""") -> {
+          description("Output directory")
+          type(IncludeType.MUST_NOT_INCLUDE)
+          hideInCourseView()
+        }
+
+        else -> info(super.archiveFileInfo(holder, file))
+      }
+    }
 
   override val defaultPlaceholderText: String
     get() = "/* TODO */"

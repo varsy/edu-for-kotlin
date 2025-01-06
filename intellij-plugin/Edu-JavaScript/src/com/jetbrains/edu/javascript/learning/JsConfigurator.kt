@@ -9,7 +9,10 @@ import com.jetbrains.edu.learning.CourseInfoHolder
 import com.jetbrains.edu.learning.EduCourseBuilder
 import com.jetbrains.edu.learning.EduNames
 import com.jetbrains.edu.learning.checker.TaskCheckerProvider
+import com.jetbrains.edu.learning.configuration.ArchiveFileInfo
 import com.jetbrains.edu.learning.configuration.EduConfigurator
+import com.jetbrains.edu.learning.configuration.IncludeType
+import com.jetbrains.edu.learning.configuration.buildArchiveFileInfo
 import com.jetbrains.edu.learning.courseFormat.Course
 import javax.swing.Icon
 
@@ -38,8 +41,22 @@ open class JsConfigurator : EduConfigurator<JsNewProjectSettings> {
   override val isEnabled: Boolean
     get() = !PlatformUtils.isRider()
 
-  override fun excludeFromArchive(holder: CourseInfoHolder<out Course?>, file: VirtualFile): Boolean =
-    super.excludeFromArchive(holder, file) || file.path.contains("node_modules") || "package-lock.json" == file.name
+  override fun archiveFileInfo(holder: CourseInfoHolder<out Course?>, file: VirtualFile): ArchiveFileInfo =
+    buildArchiveFileInfo(holder, file) {
+      when {
+        regex("(^|/)node_modules(/|$)") -> {
+          description("Node packages")
+          type(IncludeType.MUST_NOT_INCLUDE)
+        }
+
+        nameRegex("^package-lock.json$") -> {
+          description("Package lock file")
+          type(IncludeType.MUST_NOT_INCLUDE)
+        }
+
+        else -> info(super.archiveFileInfo(holder, file))
+      }
+    }
 
   override val defaultPlaceholderText: String
     get() = "/* TODO */"
