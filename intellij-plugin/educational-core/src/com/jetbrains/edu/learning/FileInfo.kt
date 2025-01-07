@@ -27,7 +27,7 @@ fun VirtualFile.fileInfo(project: Project): FileInfo? {
   if (task == null) {
     val course = project.course ?: return null
     val relativePath = FileUtil.getRelativePath(
-      CourseInfoHolder.fromCourse(course, project.courseDir).courseDir.path,
+      project.courseDir.path,
       this.path,
       VFS_SEPARATOR_CHAR
     ) ?: return null
