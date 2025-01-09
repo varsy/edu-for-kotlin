@@ -15,7 +15,6 @@ class ArchiveInfoBuilder(private val holder: CourseInfoHolder<out Course?>, priv
   private var excludedFromArchive: Boolean = true
   private var description: String? = null
   private var includeType: IncludeType = IncludeType.NO_MATTER
-  private var showInCourseView: Boolean = true
 
   fun includeInArchive() {
     excludedFromArchive = false
@@ -29,25 +28,19 @@ class ArchiveInfoBuilder(private val holder: CourseInfoHolder<out Course?>, priv
     this.includeType = includeType
   }
 
-  fun hideInCourseView() {
-    this.showInCourseView = false
-  }
-
   fun info(value: ArchiveFileInfo) {
     this.excludedFromArchive = value.excludedFromArchive
     this.description = value.description
     this.includeType = value.includeType
-    this.showInCourseView = value.showInCourseView
   }
 
   private class Info(
     override val excludedFromArchive: Boolean,
     override val description: String?,
-    override val includeType: IncludeType,
-    override val showInCourseView: Boolean,
+    override val includeType: IncludeType
   ) : ArchiveFileInfo
 
-  fun generate(): ArchiveFileInfo = Info(excludedFromArchive, description, includeType, showInCourseView)
+  fun generate(): ArchiveFileInfo = Info(excludedFromArchive, description, includeType)
 
   fun regex(pattern: String): Boolean = pathFilter {
     Regex(pattern).containsMatchIn(it)

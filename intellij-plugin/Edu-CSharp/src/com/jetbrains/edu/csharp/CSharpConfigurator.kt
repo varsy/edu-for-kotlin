@@ -43,13 +43,12 @@ class CSharpConfigurator : EduConfigurator<CSharpProjectSettings> {
       when {
         nameRegex("""\.${SolutionFileType.defaultExtension}$""") -> {
           description("Solution file")
-          type(IncludeType.MUST_NOT_INCLUDE)
+          type(IncludeType.MUST_NOT_INCLUDE_AND_HIDE)
         }
 
         regex("""(^|/)($BIN_DIRECTORY|$OBJ_DIRECTORY)(/|$)""") -> {
           description("Output directory")
-          type(IncludeType.MUST_NOT_INCLUDE)
-          hideInCourseView()
+          type(IncludeType.MUST_NOT_INCLUDE_AND_HIDE)
         }
 
         else -> info(super.archiveFileInfo(holder, file))

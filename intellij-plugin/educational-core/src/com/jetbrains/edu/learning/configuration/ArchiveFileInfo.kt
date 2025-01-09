@@ -20,11 +20,6 @@ interface ArchiveFileInfo {
    * Specified a hint or a warning type for the course-info.yaml
    */
   val includeType: IncludeType
-
-  /**
-   * The file should be displayed in the course view
-   */
-  val showInCourseView: Boolean
 }
 
 enum class IncludeType {
@@ -32,5 +27,6 @@ enum class IncludeType {
   BETTER_INCLUDE,
   BETTER_NOT_INCLUDE,
   MUST_INCLUDE,
-  MUST_NOT_INCLUDE
+  MUST_NOT_INCLUDE,
+  MUST_NOT_INCLUDE_AND_HIDE
 }

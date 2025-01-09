@@ -76,7 +76,7 @@ interface EduConfigurator<Settings : EduProjectSettings> {
 
         regex("""\.iml$""") -> {
           description("IDE project settings")
-          type(IncludeType.MUST_NOT_INCLUDE)
+          type(IncludeType.MUST_NOT_INCLUDE_AND_HIDE)
         }
 
         EduUtilsKt.isTaskDescriptionFile(file.name) -> {
@@ -113,6 +113,10 @@ interface EduConfigurator<Settings : EduProjectSettings> {
         }
 
         else -> includeInArchive()
+      }
+
+      if (regex("(/|^)(${EduNames.BUILD}|${EduNames.OUT})(/|$)")) {
+        type(IncludeType.MUST_NOT_INCLUDE_AND_HIDE)
       }
     }
 

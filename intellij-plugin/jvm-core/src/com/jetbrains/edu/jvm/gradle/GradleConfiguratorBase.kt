@@ -41,6 +41,10 @@ abstract class GradleConfiguratorBase : EduConfigurator<JdkProjectSettings> {
           type(IncludeType.MUST_NOT_INCLUDE)
         }
 
+        file.name in NAMES_TO_EXCLUDE_AND_HIDE -> {
+          type(IncludeType.MUST_NOT_INCLUDE_AND_HIDE)
+        }
+
         else -> info(super.archiveFileInfo(holder, file))
       }
     }
@@ -56,8 +60,12 @@ abstract class GradleConfiguratorBase : EduConfigurator<JdkProjectSettings> {
 
   companion object {
     private val NAMES_TO_EXCLUDE = ContainerUtil.newHashSet(
-      "EduTestRunner.java", GRADLE_WRAPPER_UNIX, GRADLE_WRAPPER_WIN, LOCAL_PROPERTIES,
+      "EduTestRunner.java",
       SETTINGS_GRADLE, GRADLE_WRAPPER_JAR, GRADLE_WRAPPER_PROPERTIES
+    )
+
+    private val NAMES_TO_EXCLUDE_AND_HIDE = ContainerUtil.newHashSet(
+      GRADLE_WRAPPER_UNIX, GRADLE_WRAPPER_WIN, LOCAL_PROPERTIES
     )
 
     private val FOLDERS_TO_EXCLUDE = ContainerUtil.newHashSet(EduNames.OUT, EduNames.BUILD, GRADLE)

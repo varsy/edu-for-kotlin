@@ -9,6 +9,7 @@ import com.intellij.openapi.util.io.FileUtilRt
 import com.intellij.psi.PsiDirectory
 import com.intellij.util.containers.ContainerUtil
 import com.jetbrains.edu.learning.configuration.EduConfigurator
+import com.jetbrains.edu.learning.configuration.IncludeType
 import com.jetbrains.edu.learning.configuration.excludeFromArchive
 import com.jetbrains.edu.learning.courseFormat.Course
 import com.jetbrains.edu.learning.courseFormat.Lesson
@@ -21,6 +22,7 @@ import com.jetbrains.edu.learning.messages.EduCoreBundle
 import com.jetbrains.edu.learning.projectView.CourseNode
 import com.jetbrains.edu.learning.projectView.LessonNode
 import com.jetbrains.edu.learning.projectView.SectionNode
+import com.jetbrains.edu.learning.toCourseInfoHolder
 import org.jetbrains.annotations.Nls
 
 class CCCourseNode(
@@ -42,7 +44,8 @@ class CCCourseNode(
     val configurator: EduConfigurator<*> = item.configurator ?: return null
     if (childNode is PsiDirectoryNode) {
       val psiDirectory = childNode.value
-      if (!configurator.excludeFromArchive(myProject, psiDirectory.virtualFile)) {
+      val info = configurator.archiveFileInfo(myProject.toCourseInfoHolder(), psiDirectory.virtualFile)
+      if (info.includeType != IncludeType.MUST_NOT_INCLUDE_AND_HIDE && info.includeType != IncludeType.MUST_NOT_INCLUDE) {
         return CCNode(myProject, psiDirectory, settings, null)
       }
     }
