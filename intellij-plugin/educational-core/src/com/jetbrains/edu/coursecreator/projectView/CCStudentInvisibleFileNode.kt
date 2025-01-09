@@ -6,7 +6,6 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
 import com.intellij.ui.SimpleTextAttributes
-import com.jetbrains.edu.coursecreator.courseignore.CourseIgnoreRules
 import com.jetbrains.edu.learning.canBeAddedToTask
 import com.jetbrains.edu.learning.getContainingTask
 import com.jetbrains.edu.learning.messages.EduCoreBundle.message
@@ -26,7 +25,7 @@ class CCStudentInvisibleFileNode(
   private val name: String = value.name
 ) : CCFileNode(project, value, viewSettings, context) {
 
-  private fun isExcluded(file: VirtualFile?, project: Project): Boolean {
+  private fun needsExcludedMark(file: VirtualFile?, project: Project): Boolean {
     file ?: return false
     val task = file.getContainingTask(project)
 
@@ -34,7 +33,7 @@ class CCStudentInvisibleFileNode(
       file.canBeAddedToTask(project)
     }
     else {
-      CourseIgnoreRules.loadFromCourseIgnoreFile(project).isIgnored(file)
+      !context.containsAdditionalFile(file) && !context.generatedPersonallyForStudent(file)
     }
   }
 
@@ -42,7 +41,7 @@ class CCStudentInvisibleFileNode(
     super.updateImpl(data)
 
     val file = value.virtualFile
-    val isExcluded = isExcluded(file, project)
+    val isExcluded = needsExcludedMark(file, project)
     val presentableName = if (isExcluded) message("course.creator.course.view.excluded", name) else name
 
     data.clearText()

@@ -4,10 +4,12 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.vfs.VfsUtilCore.VFS_SEPARATOR_CHAR
 import com.intellij.openapi.vfs.VirtualFile
+import com.jetbrains.edu.learning.EduUtilsKt
 import com.jetbrains.edu.learning.configuration.EduConfigurator
 import com.jetbrains.edu.learning.courseDir
 import com.jetbrains.edu.learning.courseFormat.Course
 import com.jetbrains.edu.learning.courseFormat.ext.configurator
+import com.jetbrains.edu.learning.yaml.YamlFormatSynchronizer.isConfigFile
 
 data class CourseViewContext(
   private val courseDir: VirtualFile,
@@ -23,6 +25,13 @@ data class CourseViewContext(
     )
     return course.additionalFiles.find { it.name == relativePath } != null
   }
+
+  fun generatedPersonallyForStudent(file: VirtualFile): Boolean =
+    // TODO should be delegated to [configurator] after EDU-7821 is implemented
+    EduUtilsKt.isTaskDescriptionFile(file.name)
+    || isConfigFile(file)
+    || file.name == "local.properties" // for android configurator
+    || file.extension?.lowercase() == "sln" // for C# configurator
 
   companion object {
     fun create(project: Project, course: Course): CourseViewContext? {
