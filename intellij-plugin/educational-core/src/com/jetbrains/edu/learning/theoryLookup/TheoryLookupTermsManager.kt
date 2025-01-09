@@ -3,7 +3,7 @@ package com.jetbrains.edu.learning.theoryLookup
 import com.intellij.openapi.components.*
 import com.intellij.openapi.project.Project
 import com.intellij.util.xmlb.annotations.XCollection
-import com.jetbrains.edu.learning.LightTestAware
+import com.jetbrains.edu.learning.EduTestAware
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
 import com.jetbrains.educational.ml.theory.lookup.term.Term
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -12,7 +12,7 @@ import org.jetbrains.annotations.VisibleForTesting
 
 @Service(Service.Level.PROJECT)
 @State(name = "TheoryLookupTermsStorage", reloadable = true, storages = [Storage("theory_lookup.xml", roamingType = RoamingType.DISABLED)])
-class TheoryLookupTermsManager : PersistentStateComponent<TheoryLookupTermsManager.TermsState>, LightTestAware {
+class TheoryLookupTermsManager : PersistentStateComponent<TheoryLookupTermsManager.TermsState>, EduTestAware {
   private val _theoryLookupProperties = MutableStateFlow<TheoryLookupProperties?>(null)
   val theoryLookupProperties = _theoryLookupProperties.asStateFlow()
 
