@@ -6,6 +6,7 @@
   </dependencies>
 
   <extensions defaultExtensionNs="aiHints">
+    <eduAiHints implementationClass="com.jetbrains.edu.aiHints.kotlin.KtEduAiHintsConfigurator" language="kotlin"/>
     <functionSignaturesProvider language="kotlin" implementationClass="com.jetbrains.edu.aiHints.kotlin.KtFunctionSignaturesProvider"/>
     <functionSignatureResolver language="kotlin" implementationClass="com.jetbrains.edu.aiHints.kotlin.KtFunctionSignatureResolver"/>
     <filesDiffer language="kotlin" implementationClass="com.jetbrains.edu.aiHints.kotlin.KtFilesDiffer"/>
