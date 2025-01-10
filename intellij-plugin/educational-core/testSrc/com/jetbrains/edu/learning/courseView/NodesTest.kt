@@ -2,9 +2,11 @@
 package com.jetbrains.edu.learning.courseView
 
 import com.intellij.openapi.application.runWriteAction
+import com.intellij.openapi.vfs.findOrCreateFile
+import com.intellij.openapi.vfs.writeText
 import com.intellij.testFramework.LightPlatformTestCase
-import com.jetbrains.edu.learning.EduNames
 import com.jetbrains.edu.learning.configurators.FakeGradleBasedLanguage
+import com.jetbrains.edu.learning.courseDir
 import com.jetbrains.edu.learning.courseFormat.CheckStatus
 import com.jetbrains.edu.learning.courseFormat.CourseMode
 import com.jetbrains.edu.learning.courseFormat.EduCourse
@@ -193,11 +195,9 @@ class NodesTest : CourseViewTestBase() {
   @Test
   fun `test non course files`() {
     courseWithInvisibleItems(CourseMode.EDUCATOR)
-    runWriteAction {
-      LightPlatformTestCase.getSourceRoot().createChildData(NodesTest::class.java, "non_course_file1.txt")
-      findFile("lesson1/task1").createChildData(NodesTest::class.java, "non_course_file2.txt")
-      findFile("lesson1/task2/folder").createChildData(NodesTest::class.java, "non_course_file3.txt")
-    }
+    nonAdditionalFile("non_course_file1.txt")
+    nonAdditionalFile("lesson1/task1/non_course_file2.txt")
+    nonAdditionalFile("lesson1/task2/folder/non_course_file3.txt")
 
     assertCourseView("""
       -Project
@@ -219,7 +219,7 @@ class NodesTest : CourseViewTestBase() {
           additionalFile1.txt
           CCStudentInvisibleFileNode additionalFile2.txt
           CCStudentInvisibleFileNode task.md
-        CCStudentInvisibleFileNode non_course_file1.txt
+        CCStudentInvisibleFileNode non_course_file1.txt (excluded)
     """.trimIndent())
   }
 
@@ -424,8 +424,6 @@ class NodesTest : CourseViewTestBase() {
 
   @Test
   fun `test excluded files in educator mode`() {
-    val lessonIgnoredFile = "lesson1/LessonIgnoredFile.txt"
-    val courseIgnoredFile = "IgnoredFile.txt"
     courseWithFiles(courseMode = CourseMode.EDUCATOR) {
       lesson("lesson1") {
         eduTask {
@@ -437,10 +435,9 @@ class NodesTest : CourseViewTestBase() {
           taskFile("file2.txt")
         }
       }
-      additionalFile(lessonIgnoredFile)
-      additionalFile(courseIgnoredFile)
-      additionalFile(EduNames.COURSE_IGNORE, "$courseIgnoredFile\n${lessonIgnoredFile}\n\n")
     }
+    nonAdditionalFile("lesson1/LessonIgnoredFile.txt")
+    nonAdditionalFile("IgnoredFile.txt")
     assertCourseView("""
       |-Project
       | -CCCourseNode Test Course (Course Creation)
@@ -454,7 +451,6 @@ class NodesTest : CourseViewTestBase() {
       |    file2.txt
       |    CCStudentInvisibleFileNode task.md
       |   CCStudentInvisibleFileNode LessonIgnoredFile.txt (excluded)
-      |  CCStudentInvisibleFileNode .courseignore
       |  CCStudentInvisibleFileNode IgnoredFile.txt (excluded)
     """.trimMargin("|"))
   }
@@ -468,11 +464,9 @@ class NodesTest : CourseViewTestBase() {
           taskFile("file2.txt")
           dir("dir-inside-task-ignored") {
             taskFile("a.txt")
-            //taskFile("b.txt") exists as an additional file, it is not included independently of courseignore
           }
           dir("dir-inside-task-not-ignored") {
             taskFile("c.txt")
-            //taskFile("d.txt") exists as an additional file, it is not included independently of courseignore
           }
         }
         eduTask {
@@ -480,19 +474,12 @@ class NodesTest : CourseViewTestBase() {
           taskFile("file2.txt")
         }
       }
-      additionalFile("lesson1/task1/dir-inside-task-ignored/b.txt")
-      additionalFile("lesson1/task1/dir-inside-task-not-ignored/d.txt")
-      additionalFile("dir-ignored/a.txt")
       additionalFile("dir-not-ignored/a.txt")
-      additionalFile("dir-not-ignored/ignored-file.txt")
-      additionalFile(EduNames.COURSE_IGNORE, """
-        |dir-inside-task-ignored/
-        |**/dir-inside-task-not-ignored/**
-        |
-        |dir-ignored/
-        |ignored-file.txt
-      """.trimMargin("|"))
+      additionalFile("lesson1/task1/dir-inside-task-not-ignored/d.txt") // what if we put an additional file to a task folder
     }
+    nonAdditionalFile("lesson1/task1/dir-inside-task-ignored/b.txt")
+    nonAdditionalFile("dir-ignored/a.txt")
+    nonAdditionalFile("dir-not-ignored/ignored-file.txt")
     assertCourseView("""
       |-Project
       | -CCCourseNode Test Course (Course Creation)
@@ -511,12 +498,11 @@ class NodesTest : CourseViewTestBase() {
       |    file1.txt
       |    file2.txt
       |    CCStudentInvisibleFileNode task.md
-      |  -CCNode dir-ignored (excluded)
-      |   CCStudentInvisibleFileNode a.txt
+      |  -CCNode dir-ignored
+      |   CCStudentInvisibleFileNode a.txt (excluded)
       |  -CCNode dir-not-ignored
       |   CCStudentInvisibleFileNode a.txt
       |   CCStudentInvisibleFileNode ignored-file.txt (excluded)
-      |  CCStudentInvisibleFileNode .courseignore
     """.trimMargin("|"))
   }
 
@@ -529,12 +515,12 @@ class NodesTest : CourseViewTestBase() {
           taskFile("not-ignored.txt")
         }
       }
-      additionalFile("ignored.txt")
-      additionalFile("subfolder/ignored.txt")
       additionalFile("not-ignored.txt")
       additionalFile("subfolder/not-ignored.txt")
-      additionalFile(EduNames.COURSE_IGNORE, "ignored.txt\ntask.md")
     }
+    nonAdditionalFile("ignored.txt")
+    nonAdditionalFile("subfolder/ignored.txt")
+    nonAdditionalFile("lesson1/task1/ignored.txt")
     assertCourseView("""
       |-Project
       | -CCCourseNode Test Course (Course Creation)
@@ -546,7 +532,6 @@ class NodesTest : CourseViewTestBase() {
       |  -CCNode subfolder
       |   CCStudentInvisibleFileNode ignored.txt (excluded)
       |   CCStudentInvisibleFileNode not-ignored.txt
-      |  CCStudentInvisibleFileNode .courseignore
       |  CCStudentInvisibleFileNode ignored.txt (excluded)
       |  CCStudentInvisibleFileNode not-ignored.txt
     """.trimMargin("|"))
@@ -653,5 +638,12 @@ class NodesTest : CourseViewTestBase() {
       |    CCStudentInvisibleFileNode task.md
       |    XtaskFile.txt
     """.trimMargin("|"))
+  }
+
+  /**
+   * Creates a file on disk that should not go to the list of course additional files
+   */
+  private fun nonAdditionalFile(path: String, contents: String = "") = runWriteAction {
+    project.courseDir.findOrCreateFile(path).writeText(contents)
   }
 }
