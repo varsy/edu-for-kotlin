@@ -4,6 +4,7 @@ import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.ex.ActionUtil
 import com.intellij.openapi.project.DumbService
+import com.jetbrains.edu.aiHints.core.EduAIHintsConfigurator
 import com.jetbrains.edu.aiHints.core.HintsLoader
 import com.jetbrains.edu.aiHints.core.messages.EduAIHintsCoreBundle
 import com.jetbrains.edu.learning.EduUtilsKt.showPopup
@@ -11,6 +12,7 @@ import com.jetbrains.edu.learning.actions.ActionWithProgressIcon
 import com.jetbrains.edu.learning.actions.EduActionUtils.GET_HINT_ACTION_ID
 import com.jetbrains.edu.learning.actions.EduActionUtils.getCurrentTask
 import com.jetbrains.edu.learning.actions.EduActionUtils.isGetHintAvailable
+import com.jetbrains.edu.learning.course
 import com.jetbrains.edu.learning.taskToolWindow.ui.TaskToolWindowView
 
 class GetHint : ActionWithProgressIcon() {
@@ -23,7 +25,7 @@ class GetHint : ActionWithProgressIcon() {
     e.presentation.isEnabledAndVisible = false
     val project = e.project ?: return
     val task = project.getCurrentTask() ?: return
-    e.presentation.isEnabledAndVisible = isGetHintAvailable(task)
+    e.presentation.isEnabledAndVisible = isGetHintAvailable(task) && EduAIHintsConfigurator.findEduAiHintsConfigurator(e.project?.course) != null
   }
 
   override fun actionPerformed(e: AnActionEvent) {

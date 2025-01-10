@@ -29,6 +29,11 @@
   </extensions>
 
   <extensionPoints>
+    <extensionPoint qualifiedName="aiHints.eduAiHints"
+                    beanClass="com.intellij.lang.LanguageExtensionPoint"
+                    dynamic="true">
+      <with attribute="implementationClass" implements="com.jetbrains.edu.aiHints.core.EduAIHintsConfigurator"/>
+    </extensionPoint>
     <extensionPoint qualifiedName="aiHints.functionSignaturesProvider"
                     beanClass="com.intellij.lang.LanguageExtensionPoint"
                     dynamic="true">
