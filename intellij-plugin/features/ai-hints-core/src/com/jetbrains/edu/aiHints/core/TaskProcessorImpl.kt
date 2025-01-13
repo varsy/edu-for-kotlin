@@ -12,7 +12,6 @@ import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiFileFactory
 import com.intellij.psi.PsiManager
-import com.jetbrains.edu.aiHints.core.EduAIHintsConfigurator.Companion.findEduAiHintsConfigurator
 import com.jetbrains.edu.aiHints.core.context.*
 import com.jetbrains.edu.learning.checker.CheckUtils.COMPILATION_FAILED_MESSAGE
 import com.jetbrains.edu.learning.courseFormat.CheckStatus
@@ -32,8 +31,8 @@ import org.jsoup.nodes.Document
 class TaskProcessorImpl(val task: Task) : TaskProcessor {
   var currentTaskFile: TaskFile? = null
 
-  private val eduAIHintsConfigurator
-    get() = findEduAiHintsConfigurator(task.course)
+  private val eduAIHintsProvider
+    get() = EduAIHintsProvider.forCourse(task.course)
 
   private val project = task.project ?: error("Project was not found")
 
@@ -205,7 +204,7 @@ class TaskProcessorImpl(val task: Task) : TaskProcessor {
     val functionFromCode = getFunctionPsiWithName(code, functionName, project, language)?.copy()
     val functionFromCodeHint = getFunctionPsiWithName(modifiedCode, functionName, project, language)?.copy()
                                ?: error("Function with the name $functionName in the code hint is not found")
-    val reducedCodeHint = eduAIHintsConfigurator?.reduceDiffFunctions(functionFromCode, functionFromCodeHint, project)
+    val reducedCodeHint = eduAIHintsProvider?.reduceDiffFunctions(functionFromCode, functionFromCodeHint, project)
     return runReadAction { reducedCodeHint?.text ?: modifiedCode }
   }
 
@@ -227,7 +226,7 @@ class TaskProcessorImpl(val task: Task) : TaskProcessor {
     }
 
     for (newFunction in functionSignaturesFromCodeHint) {
-      runReadAction { eduAIHintsConfigurator?.getFunctionBySignature(codeHintPsiFile, newFunction.name) }?.let { psiNewFunction ->
+      runReadAction { eduAIHintsProvider?.getFunctionBySignature(codeHintPsiFile, newFunction.name) }?.let { psiNewFunction ->
         WriteCommandAction.runWriteCommandAction(project, null, null, {
           FunctionSignatureResolver.getFunctionBySignature(psiFileCopy, newFunction.name, language)?.replace(psiNewFunction)?.let {
             isFileModified = true

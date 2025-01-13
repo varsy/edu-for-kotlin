@@ -10,7 +10,7 @@ import com.jetbrains.edu.aiHints.core.context.SignatureSource
 import com.jetbrains.edu.learning.courseFormat.Course
 import com.jetbrains.edu.learning.courseFormat.ext.languageById
 
-interface EduAIHintsConfigurator {
+interface EduAIHintsProvider {
   fun findChangedMethods(before: PsiFile, after: PsiFile, considerParameters: Boolean): List<String>
 
   fun reduceDiffFunctions(function: PsiElement?, modifiedFunction: PsiElement, project: Project): PsiElement?
@@ -22,10 +22,10 @@ interface EduAIHintsConfigurator {
   fun getInspections(): List<LocalInspectionTool>
 
   companion object {
-    private val EP_NAME = LanguageExtension<EduAIHintsConfigurator>("aiHints.eduAiHints")
+    private val EP_NAME = LanguageExtension<EduAIHintsProvider>("aiHints.provider")
 
-    fun findEduAiHintsConfigurator(course: Course?): EduAIHintsConfigurator? {
-      return course?.languageById?.let { EP_NAME.forLanguage(it) }
+    fun forCourse(course: Course): EduAIHintsProvider? {
+      return course.languageById?.let { EP_NAME.forLanguage(it) }
     }
   }
 }
