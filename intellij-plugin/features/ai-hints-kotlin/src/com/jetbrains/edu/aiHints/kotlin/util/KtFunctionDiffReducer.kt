@@ -1,16 +1,14 @@
-package com.jetbrains.edu.aiHints.kotlin
+package com.jetbrains.edu.aiHints.kotlin.util
 
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiElement
-import com.jetbrains.edu.aiHints.core.FunctionDiffReducer
 import org.jetbrains.kotlin.lexer.KtTokens
 import org.jetbrains.kotlin.psi.*
 
-class KtFunctionDiffReducer : FunctionDiffReducer {
-
-  override fun reduceDiffFunctions(function: PsiElement?, modifiedFunction: PsiElement, project: Project): PsiElement {
+object KtFunctionDiffReducer {
+  fun reduceDiffFunctions(function: PsiElement?, modifiedFunction: PsiElement, project: Project): PsiElement {
     if (function == null) {
       reducingNewElement(modifiedFunction, project, true)
       return modifiedFunction
@@ -252,15 +250,13 @@ class KtFunctionDiffReducer : FunctionDiffReducer {
   private fun equalText(first: PsiElement, second: PsiElement, symbolsToIgnore: (Char) -> Boolean) =
     first.text.filterNot(symbolsToIgnore) == second.text.filterNot(symbolsToIgnore)
 
-  companion object {
-    private const val MAX_BODY_LINES_IN_SHORT_FUNCTION = 3
-    private const val TODO = "TODO"
-    private const val TODO_EXPRESSION = "TODO(\"Not yet implemented\")"
-    private const val TODO_BLOCK_EXPRESSION =
-      """
+  private const val MAX_BODY_LINES_IN_SHORT_FUNCTION = 3
+  private const val TODO = "TODO"
+  private const val TODO_EXPRESSION = "TODO(\"Not yet implemented\")"
+  private const val TODO_BLOCK_EXPRESSION =
+    """
             {
                 TODO("Not yet implemented")
             }
       """
-  }
 }

@@ -1,13 +1,11 @@
-package com.jetbrains.edu.aiHints.kotlin
+package com.jetbrains.edu.aiHints.kotlin.util
 
 import com.intellij.psi.PsiFile
 import com.intellij.psi.util.PsiTreeUtil
-import com.jetbrains.edu.aiHints.core.FilesDiffer
 import org.jetbrains.kotlin.psi.KtNamedFunction
 
-class KtFilesDiffer : FilesDiffer {
-
-  override fun findChangedMethods(before: PsiFile, after: PsiFile, considerParameters: Boolean): List<String> {
+object KtFilesDiffer {
+  fun findChangedMethods(before: PsiFile, after: PsiFile, considerParameters: Boolean): List<String> {
     val beforeMethods = PsiTreeUtil.findChildrenOfType(before, KtNamedFunction::class.java).associateBy { it.fqName }
     val afterMethods = PsiTreeUtil.findChildrenOfType(after, KtNamedFunction::class.java).associateBy { it.fqName }
 

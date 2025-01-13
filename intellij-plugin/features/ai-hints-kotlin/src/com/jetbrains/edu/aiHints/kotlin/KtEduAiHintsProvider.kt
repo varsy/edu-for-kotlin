@@ -4,28 +4,31 @@ import com.intellij.codeInspection.LocalInspectionTool
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
+import com.intellij.util.concurrency.annotations.RequiresReadLock
 import com.jetbrains.edu.aiHints.core.EduAIHintsProvider
 import com.jetbrains.edu.aiHints.core.context.FunctionSignature
+import com.jetbrains.edu.aiHints.core.context.FunctionsToStrings
 import com.jetbrains.edu.aiHints.core.context.SignatureSource
+import com.jetbrains.edu.aiHints.kotlin.util.*
 
 class KtEduAiHintsProvider : EduAIHintsProvider {
-  override fun findChangedMethods(before: PsiFile, after: PsiFile, considerParameters: Boolean): List<String> {
-    TODO("Not yet implemented")
-  }
+  @RequiresReadLock
+  override fun findChangedMethods(before: PsiFile, after: PsiFile, considerParameters: Boolean): List<String> =
+    KtFilesDiffer.findChangedMethods(before, after, considerParameters)
 
-  override fun reduceDiffFunctions(function: PsiElement?, modifiedFunction: PsiElement, project: Project): PsiElement? {
-    TODO("Not yet implemented")
-  }
+  override fun reduceDiffFunctions(function: PsiElement?, modifiedFunction: PsiElement, project: Project): PsiElement =
+    KtFunctionDiffReducer.reduceDiffFunctions(function, modifiedFunction, project)
 
-  override fun getFunctionBySignature(psiFile: PsiFile, functionName: String): PsiElement? {
-    TODO("Not yet implemented")
-  }
+  @RequiresReadLock
+  override fun getFunctionBySignature(psiFile: PsiFile, functionName: String): PsiElement? =
+    KtFunctionSignaturesProvider.getFunctionBySignature(psiFile, functionName)
 
-  override fun getFunctionSignatures(psiFile: PsiFile, signatureSource: SignatureSource): List<FunctionSignature> {
-    TODO("Not yet implemented")
-  }
+  @RequiresReadLock
+  override fun getFunctionSignatures(psiFile: PsiFile, signatureSource: SignatureSource): List<FunctionSignature> =
+    KtFunctionSignaturesProvider.getFunctionSignatures(psiFile, signatureSource)
 
-  override fun getInspections(): List<LocalInspectionTool> {
-    TODO("Not yet implemented")
-  }
+  override fun getInspections(): List<LocalInspectionTool> = KtInspectionsProvider.getInspections()
+
+  @RequiresReadLock
+  override fun getFunctionsToStringsMap(psiFile: PsiFile): FunctionsToStrings = KtStringExtractor.getFunctionsToStringsMap(psiFile)
 }

@@ -33,15 +33,10 @@
   </extensions>
 
   <extensionPoints>
-    <extensionPoint qualifiedName="aiHints.provider"
+    <extensionPoint qualifiedName="Educational.aiHintsProvider"
                     beanClass="com.intellij.lang.LanguageExtensionPoint"
                     dynamic="true">
       <with attribute="implementationClass" implements="com.jetbrains.edu.aiHints.core.EduAIHintsProvider"/>
-    </extensionPoint>
-    <extensionPoint qualifiedName="aiHints.stringExtractor"
-                    beanClass="com.intellij.lang.LanguageExtensionPoint"
-                    dynamic="true">
-      <with attribute="implementationClass" implements="com.jetbrains.edu.aiHints.core.StringExtractor"/>
     </extensionPoint>
   </extensionPoints>
 </idea-plugin>

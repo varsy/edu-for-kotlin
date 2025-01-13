@@ -5,8 +5,7 @@
     <plugin id="org.jetbrains.kotlin"/>
   </dependencies>
 
-  <extensions defaultExtensionNs="aiHints">
-    <provider implementationClass="com.jetbrains.edu.aiHints.kotlin.KtEduAiHintsProvider" language="kotlin"/>
-    <stringExtractor language="kotlin" implementationClass="com.jetbrains.edu.aiHints.kotlin.KtStringExtractor"/>
+  <extensions defaultExtensionNs="Educational">
+    <aiHintsProvider implementationClass="com.jetbrains.edu.aiHints.kotlin.KtEduAiHintsProvider" language="kotlin"/>
   </extensions>
 </idea-plugin>
