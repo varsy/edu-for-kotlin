@@ -216,7 +216,7 @@ class CourseArchiveCreator(
 
   private fun prepareCourse(course: Course) {
     loadActualTextsForTasks(project, course)
-    loadActualTextsForAdditionalFiles(project, course)
+    loadActualTextsForAdditionalFilesAndFilterOutForbiddenFiles(project, course)
     course.sortItems()
     course.pluginDependencies = collectCourseDependencies(project, course)
     course.courseMode = CourseMode.STUDENT
@@ -324,34 +324,51 @@ class CourseArchiveCreator(
       }
     }
 
-    private fun loadActualTextsForAdditionalFiles(project: Project, course: Course) {
+    private fun loadActualTextsForAdditionalFilesAndFilterOutForbiddenFiles(project: Project, course: Course) {
       val courseDir = project.courseDir
+
+      val configurator = course.configurator
+      val courseInfoHolder = project.toCourseInfoHolder()
+      val filteredAdditionalFiles = mutableListOf<EduFile>()
 
       for (additionalFile in course.additionalFiles) {
         val fsFile = courseDir.findFileByRelativePath(additionalFile.name)
         if (fsFile == null) {
           throw FileNotFoundException(EduCoreBundle.message("error.additional.file.does.not.exist", additionalFile.name))
         }
-        additionalFile.contents = when(additionalFile.isBinary) {
-          false -> TextualContentsFromDisk(fsFile)
-          true -> BinaryContentsFromDisk(fsFile)
-          // Undetermined contents seem impossible because additional files
-          // are created and read from course-info.yaml always with determined contents.
-          // But if the contents are anyhow undetermined (probably because of tests), we must disambiguate it.
-          null -> if (fsFile.isToEncodeContent) {
-            BinaryContentsFromDisk(fsFile)
-          }
-          else {
-            TextualContentsFromDisk(fsFile)
-          }
+
+        if (
+          configurator?.excludeFromArchive(courseInfoHolder, fsFile) != true && // TODO: EDU-7821
+          fsFile.getContainingTask(courseInfoHolder) == null
+        ) {
+          filteredAdditionalFiles += additionalFile
+          loadActualText(additionalFile, fsFile)
         }
       }
+
+      course.additionalFiles = filteredAdditionalFiles
     }
 
     private fun loadActualTexts(project: Project, task: Task) {
       val taskDir = task.getDir(project.courseDir) ?: return
       convertToStudentTaskFiles(project, task, taskDir)
       task.updateDescriptionTextAndFormat(project)
+    }
+
+    private fun loadActualText(additionalFile: EduFile, fsFile: VirtualFile) {
+      additionalFile.contents = when(additionalFile.isBinary) {
+        false -> TextualContentsFromDisk(fsFile)
+        true -> BinaryContentsFromDisk(fsFile)
+        // Undetermined contents seem impossible because additional files
+        // are created and read from course-info.yaml always with determined contents.
+        // But if the contents are anyhow undetermined (probably because of tests), we must disambiguate it.
+        null -> if (fsFile.isToEncodeContent) {
+          BinaryContentsFromDisk(fsFile)
+        }
+        else {
+          TextualContentsFromDisk(fsFile)
+        }
+      }
     }
 
     private fun convertToStudentTaskFiles(project: Project, task: Task, taskDir: VirtualFile) {
