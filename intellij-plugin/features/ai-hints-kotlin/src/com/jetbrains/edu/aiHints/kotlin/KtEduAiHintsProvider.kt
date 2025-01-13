@@ -4,11 +4,11 @@ import com.intellij.codeInspection.LocalInspectionTool
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
-import com.jetbrains.edu.aiHints.core.EduAIHintsConfigurator
+import com.jetbrains.edu.aiHints.core.EduAIHintsProvider
 import com.jetbrains.edu.aiHints.core.context.FunctionSignature
 import com.jetbrains.edu.aiHints.core.context.SignatureSource
 
-class KtEduAiHintsConfigurator : EduAIHintsConfigurator {
+class KtEduAiHintsProvider : EduAIHintsProvider {
   override fun findChangedMethods(before: PsiFile, after: PsiFile, considerParameters: Boolean): List<String> {
     TODO("Not yet implemented")
   }

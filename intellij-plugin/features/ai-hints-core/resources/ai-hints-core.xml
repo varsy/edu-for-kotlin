@@ -29,40 +29,15 @@
   </extensions>
 
   <extensionPoints>
-    <extensionPoint qualifiedName="aiHints.eduAiHints"
+    <extensionPoint qualifiedName="aiHints.provider"
                     beanClass="com.intellij.lang.LanguageExtensionPoint"
                     dynamic="true">
-      <with attribute="implementationClass" implements="com.jetbrains.edu.aiHints.core.EduAIHintsConfigurator"/>
-    </extensionPoint>
-    <extensionPoint qualifiedName="aiHints.functionSignaturesProvider"
-                    beanClass="com.intellij.lang.LanguageExtensionPoint"
-                    dynamic="true">
-      <with attribute="implementationClass" implements="com.jetbrains.edu.aiHints.core.FunctionSignaturesProvider"/>
-    </extensionPoint>
-    <extensionPoint qualifiedName="aiHints.functionSignatureResolver"
-                    beanClass="com.intellij.lang.LanguageExtensionPoint"
-                    dynamic="true">
-      <with attribute="implementationClass" implements="com.jetbrains.edu.aiHints.core.FunctionSignatureResolver"/>
-    </extensionPoint>
-    <extensionPoint qualifiedName="aiHints.filesDiffer"
-                    beanClass="com.intellij.lang.LanguageExtensionPoint"
-                    dynamic="true">
-      <with attribute="implementationClass" implements="com.jetbrains.edu.aiHints.core.FilesDiffer"/>
-    </extensionPoint>
-    <extensionPoint qualifiedName="aiHints.functionDiffReducer"
-                    beanClass="com.intellij.lang.LanguageExtensionPoint"
-                    dynamic="true">
-      <with attribute="implementationClass" implements="com.jetbrains.edu.aiHints.core.FunctionDiffReducer"/>
+      <with attribute="implementationClass" implements="com.jetbrains.edu.aiHints.core.EduAIHintsProvider"/>
     </extensionPoint>
     <extensionPoint qualifiedName="aiHints.stringExtractor"
                     beanClass="com.intellij.lang.LanguageExtensionPoint"
                     dynamic="true">
       <with attribute="implementationClass" implements="com.jetbrains.edu.aiHints.core.StringExtractor"/>
-    </extensionPoint>
-    <extensionPoint qualifiedName="aiHints.inspectionProvider"
-                    beanClass="com.intellij.lang.LanguageExtensionPoint"
-                    dynamic="true">
-      <with attribute="implementationClass" implements="com.jetbrains.edu.aiHints.core.InspectionProvider"/>
     </extensionPoint>
   </extensionPoints>
 </idea-plugin>

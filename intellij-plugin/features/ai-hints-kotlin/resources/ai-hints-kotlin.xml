@@ -6,12 +6,7 @@
   </dependencies>
 
   <extensions defaultExtensionNs="aiHints">
-    <eduAiHints implementationClass="com.jetbrains.edu.aiHints.kotlin.KtEduAiHintsConfigurator" language="kotlin"/>
-    <functionSignaturesProvider language="kotlin" implementationClass="com.jetbrains.edu.aiHints.kotlin.KtFunctionSignaturesProvider"/>
-    <functionSignatureResolver language="kotlin" implementationClass="com.jetbrains.edu.aiHints.kotlin.KtFunctionSignatureResolver"/>
-    <filesDiffer language="kotlin" implementationClass="com.jetbrains.edu.aiHints.kotlin.KtFilesDiffer"/>
-    <functionDiffReducer language="kotlin" implementationClass="com.jetbrains.edu.aiHints.kotlin.KtFunctionDiffReducer"/>
+    <provider implementationClass="com.jetbrains.edu.aiHints.kotlin.KtEduAiHintsProvider" language="kotlin"/>
     <stringExtractor language="kotlin" implementationClass="com.jetbrains.edu.aiHints.kotlin.KtStringExtractor"/>
-    <inspectionProvider language="kotlin" implementationClass="com.jetbrains.edu.aiHints.kotlin.KtInspectionProvider"/>
   </extensions>
 </idea-plugin>
