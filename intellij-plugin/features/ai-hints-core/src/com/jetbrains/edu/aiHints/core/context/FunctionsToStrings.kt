@@ -3,8 +3,9 @@ package com.jetbrains.edu.aiHints.core.context
 import com.intellij.lang.Language
 import com.intellij.openapi.project.Project
 import com.intellij.util.concurrency.annotations.RequiresReadLock
-import com.jetbrains.edu.aiHints.core.StringExtractor
+import com.jetbrains.edu.aiHints.core.EduAIHintsProvider
 import com.jetbrains.edu.aiHints.core.TaskProcessorImpl.Companion.createPsiFileForSolution
+import com.jetbrains.edu.learning.course
 import com.jetbrains.edu.learning.courseFormat.TaskFile
 import com.jetbrains.edu.learning.courseFormat.ext.getSolution
 
@@ -24,10 +25,12 @@ value class FunctionsToStrings(val value: Map<FunctionSignature, List<String>>) 
     @JvmStatic
     @RequiresReadLock
     fun create(project: Project, language: Language, files: List<TaskFile>): FunctionsToStrings {
+      val course = project.course ?: error("Course is null for project $project")
       val functionsToStrings = files.asSequence()
         .flatMap { file ->
           val psiFileSolution = file.getSolution().createPsiFileForSolution(project, language)
-          StringExtractor.getFunctionsToStringsMap(psiFileSolution, language).value.entries.asSequence()
+          val functionsToStringsMap = EduAIHintsProvider.forCourse(course)?.getFunctionsToStringsMap(psiFileSolution) ?: return@flatMap emptySequence()
+          functionsToStringsMap.value.entries.asSequence()
         }
         .associate { it.toPair() }
       return FunctionsToStrings(functionsToStrings)

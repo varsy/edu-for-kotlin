@@ -14,6 +14,7 @@ import com.intellij.psi.PsiFileFactory
 import com.intellij.psi.PsiManager
 import com.jetbrains.edu.aiHints.core.context.*
 import com.jetbrains.edu.learning.checker.CheckUtils.COMPILATION_FAILED_MESSAGE
+import com.jetbrains.edu.learning.course
 import com.jetbrains.edu.learning.courseFormat.CheckStatus
 import com.jetbrains.edu.learning.courseFormat.TaskFile
 import com.jetbrains.edu.learning.courseFormat.ext.*
@@ -31,8 +32,7 @@ import org.jsoup.nodes.Document
 class TaskProcessorImpl(val task: Task) : TaskProcessor {
   var currentTaskFile: TaskFile? = null
 
-  private val eduAIHintsProvider
-    get() = EduAIHintsProvider.forCourse(task.course)
+  private val eduAIHintsProvider = EduAIHintsProvider.forCourse(task.course)
 
   private val project = task.project ?: error("Project was not found")
 
@@ -87,7 +87,7 @@ class TaskProcessorImpl(val task: Task) : TaskProcessor {
       getFunctionSignaturesIfFileUnchanged(file, project)?.let {
         return@flatMap it
       } ?: run {
-        runReadAction { getFunctionSignatures(task, file, project) }.also {
+        runReadAction { getFunctionSignatures(file, project) }.also {
           file.functionSignatures = it
         }
       }
@@ -108,13 +108,12 @@ class TaskProcessorImpl(val task: Task) : TaskProcessor {
     return isUnchanged
   }
 
-  private fun getFunctionSignatures(task: Task, file: TaskFile, project: Project): List<FunctionSignature> {
-    val language = task.course.languageById ?: return emptyList()
+  private fun getFunctionSignatures(file: TaskFile, project: Project): List<FunctionSignature> {
     val virtualFile = file.getVirtualFile(project) ?: return emptyList()
     val psiFile = PsiManager.getInstance(project).findFile(virtualFile) ?: return emptyList()
-    val functionSignatures = FunctionSignaturesProvider.getFunctionSignatures(
-      psiFile, if (file.isVisible) SignatureSource.VISIBLE_FILE else SignatureSource.HIDDEN_FILE, language
-    )
+    val functionSignatures = eduAIHintsProvider?.getFunctionSignatures(
+      psiFile, if (file.isVisible) SignatureSource.VISIBLE_FILE else SignatureSource.HIDDEN_FILE
+    ) ?: emptyList()
     return functionSignatures
   }
 
@@ -131,7 +130,6 @@ class TaskProcessorImpl(val task: Task) : TaskProcessor {
 
   override fun getStringsFromTask(): List<String> {
     val project = task.project ?: return emptyList()
-    val language = task.course.languageById ?: return emptyList()
     return task.taskFiles.values.filterNot { it.isTestFile }.flatMap { file ->
       getStringsIfFileUnchanged(file, project)?.let {
         return@flatMap it
@@ -139,7 +137,8 @@ class TaskProcessorImpl(val task: Task) : TaskProcessor {
         val virtualFile = file.getVirtualFile(project) ?: return@flatMap emptyList()
         runReadAction {
           val psiFile = PsiManager.getInstance(project).findFile(virtualFile) ?: return@runReadAction emptyList()
-          StringExtractor.getFunctionsToStringsMap(psiFile, language).value.values.flatten()
+          val functionsToStringsMap = eduAIHintsProvider?.getFunctionsToStringsMap(psiFile) ?: return@runReadAction emptyList()
+          functionsToStringsMap.value.values.flatten()
         }.also {
           file.usedStrings = it
         }
@@ -149,7 +148,7 @@ class TaskProcessorImpl(val task: Task) : TaskProcessor {
 
   override fun getShortFunctionFromSolutionIfRecommended(code: String, functionName: String): String? {
     val functionSignatures = getFunctionSignaturesFromGeneratedCode(code, project, language)
-    val signature = functionSignatures.find { it.name == functionName }
+    val signature = functionSignatures?.find { it.name == functionName }
     val functionsSignaturesFromSolution = task.authorSolutionContext.functionSignatures.filter {
       it.bodyLineCount != null && it.bodyLineCount <= MAX_BODY_LINES_IN_SHORT_FUNCTION
     }
@@ -157,8 +156,8 @@ class TaskProcessorImpl(val task: Task) : TaskProcessor {
       val taskFile = currentTaskFile ?: project.selectedTaskFile ?: error("Can't get task file")
       return runReadAction {
         val psiFileSolution = taskFile.getSolution().createPsiFileForSolution(project, language)
-        FunctionSignatureResolver.getFunctionBySignature(
-          psiFileSolution, signature.name, language
+        eduAIHintsProvider?.getFunctionBySignature(
+          psiFileSolution, signature.name
         )?.text ?: error("Cannot get the function from the author's solution")
       }
     }
@@ -167,7 +166,7 @@ class TaskProcessorImpl(val task: Task) : TaskProcessor {
 
   private fun getFunctionSignaturesFromGeneratedCode(code: String, project: Project, language: Language) = runReadAction {
     val psiFile = code.createPsiFileForSolution(project, language)
-    FunctionSignaturesProvider.getFunctionSignatures(psiFile, SignatureSource.GENERATED_SOLUTION, language)
+    eduAIHintsProvider?.getFunctionSignatures(psiFile, SignatureSource.GENERATED_SOLUTION)
   }
 
   override fun extractRequiredFunctionsFromCodeHint(codeHint: String): String {
@@ -180,7 +179,7 @@ class TaskProcessorImpl(val task: Task) : TaskProcessor {
   override fun getModifiedFunctionNameInCodeHint(codeStr: String, codeHint: String) = runReadAction {
     val codeHintPsiFile = PsiFileFactory.getInstance(project).createFileFromText(CODE_HINT_PSI_FILE_NAME, language, codeHint)
     val codePsiFile = PsiFileFactory.getInstance(project).createFileFromText(CODE_PSI_FILE_NAME, language, codeStr)
-    val functionName = FilesDiffer.findDifferentMethods(codePsiFile, codeHintPsiFile, language, true).firstOrNull()
+    val functionName = eduAIHintsProvider?.findChangedMethods(codePsiFile, codeHintPsiFile, true)?.firstOrNull()
                        ?: error("The code prompt didn't make any difference")
     val selectedTaskFile = project.selectedTaskFile
     val taskName = task.taskFilesWithChangedFunctions
@@ -193,7 +192,7 @@ class TaskProcessorImpl(val task: Task) : TaskProcessor {
 
   private fun getFunctionPsiWithName(code: String, functionName: String, project: Project, language: Language) = runReadAction {
     val codePsiFile = PsiFileFactory.getInstance(project).createFileFromText(CODE_PSI_FILE_NAME, language, code)
-    FunctionSignatureResolver.getFunctionBySignature(codePsiFile, functionName, language)
+    eduAIHintsProvider?.getFunctionBySignature(codePsiFile, functionName)
   }
 
   /**
@@ -220,15 +219,15 @@ class TaskProcessorImpl(val task: Task) : TaskProcessor {
     var isFileModified = false
     val codeHintPsiFile = runReadAction { PsiFileFactory.getInstance(project).createFileFromText(CODE_HINT_PSI_FILE_NAME, language, codeHint) }
     val functionSignaturesFromCodeHint = runReadAction {
-      FunctionSignaturesProvider.getFunctionSignatures(
-        codeHintPsiFile, SignatureSource.GENERATED_SOLUTION, language
-      )
+      eduAIHintsProvider?.getFunctionSignatures(
+        codeHintPsiFile, SignatureSource.GENERATED_SOLUTION
+      ) ?: emptyList()
     }
 
     for (newFunction in functionSignaturesFromCodeHint) {
       runReadAction { eduAIHintsProvider?.getFunctionBySignature(codeHintPsiFile, newFunction.name) }?.let { psiNewFunction ->
         WriteCommandAction.runWriteCommandAction(project, null, null, {
-          FunctionSignatureResolver.getFunctionBySignature(psiFileCopy, newFunction.name, language)?.replace(psiNewFunction)?.let {
+          eduAIHintsProvider?.getFunctionBySignature(psiFileCopy, newFunction.name)?.replace(psiNewFunction)?.let {
             isFileModified = true
           } ?: run {
             psiFileCopy.add(psiNewFunction)
@@ -243,7 +242,8 @@ class TaskProcessorImpl(val task: Task) : TaskProcessor {
 
   override fun applyInspections(code: String) = applyInspections(code, project, language)
 
-  override fun containsGeneratedCodeStructures(code: String) = getFunctionSignaturesFromGeneratedCode(code, project, language).isNotEmpty()
+  override fun containsGeneratedCodeStructures(code: String): Boolean =
+    !getFunctionSignaturesFromGeneratedCode(code, project, language).isNullOrEmpty()
 
   private fun getChangedContent(task: Task, project: Project): String? {
     findChangedFunctions(task, project)
@@ -264,8 +264,8 @@ class TaskProcessorImpl(val task: Task) : TaskProcessor {
       val previousTaskFile = previousTask.taskFiles[taskFile.name] ?: continue
       val beforePsiFile = previousTaskFile.getSolution().createPsiFileForSolution(project, language)
       val afterPsiFile = taskFile.getSolution().createPsiFileForSolution(project, language)
-      val changedFunctions = FilesDiffer.findDifferentMethods(beforePsiFile, afterPsiFile, language)
-      if (changedFunctions.isNotEmpty()) {
+      val changedFunctions = eduAIHintsProvider?.findChangedMethods(beforePsiFile, afterPsiFile)
+      if (!changedFunctions.isNullOrEmpty()) {
         taskFileNamesToChangedFunctions[taskFile.name] = changedFunctions
       }
     }
@@ -281,21 +281,21 @@ class TaskProcessorImpl(val task: Task) : TaskProcessor {
    */
   private fun PsiFile.filterAllowedModifications(task: Task, project: Project, signatureSource: SignatureSource): String {
     findChangedFunctions(task, project)
-    val language = task.course.languageById ?: return ""
+    val functionSignatures = eduAIHintsProvider?.getFunctionSignatures(this, signatureSource) ?: return ""
     return runReadAction {
-      FunctionSignaturesProvider.getFunctionSignatures(this, signatureSource, language).filter { functionSignature ->
+      functionSignatures.filter { functionSignature ->
         task.taskFilesWithChangedFunctions?.values?.flatten()?.contains(functionSignature.name) == true ||
         !task.authorSolutionContext.functionSignatures.contains(functionSignature)
       }.joinToString(separator = System.lineSeparator()) {
-        FunctionSignatureResolver.getFunctionBySignature(this, it.name, language)?.text ?: ""
+        eduAIHintsProvider.getFunctionBySignature(this, it.name)?.text ?: ""
       }
     }
   }
 
   companion object {
     fun applyInspections(code: String, project: Project, language: Language): String {
+      val inspections = runReadAction { project.course?.let { EduAIHintsProvider.forCourse(it)?.getInspections() } } ?: return code
       val psiFile = runReadAction { PsiFileFactory.getInstance(project).createFileFromText("file", language, code) }
-      val inspections = runReadAction { InspectionProvider.getInspections(language) }
       for (inspection in inspections) {
         psiFile.applyLocalInspection(inspection).forEach { descriptor ->
           descriptor.fixes?.firstOrNull()?.let { quickFix ->

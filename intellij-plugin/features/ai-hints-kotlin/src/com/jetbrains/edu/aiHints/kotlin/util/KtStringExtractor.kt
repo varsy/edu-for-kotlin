@@ -1,18 +1,18 @@
-package com.jetbrains.edu.aiHints.kotlin
+package com.jetbrains.edu.aiHints.kotlin.util
 
 import com.intellij.psi.PsiFile
 import com.intellij.psi.util.PsiTreeUtil
-import com.jetbrains.edu.aiHints.core.StringExtractor
 import com.jetbrains.edu.aiHints.core.context.FunctionsToStrings
 import com.jetbrains.edu.aiHints.core.context.SignatureSource
+import com.jetbrains.edu.aiHints.kotlin.util.KtFunctionSignaturesProvider.generateSignature
 import org.jetbrains.kotlin.idea.references.mainReference
 import org.jetbrains.kotlin.psi.KtNamedFunction
 import org.jetbrains.kotlin.psi.KtProperty
 import org.jetbrains.kotlin.psi.KtReferenceExpression
 import org.jetbrains.kotlin.psi.KtStringTemplateExpression
 
-class KtStringExtractor : StringExtractor {
-  override fun getFunctionsToStringsMap(psiFile: PsiFile): FunctionsToStrings {
+object KtStringExtractor {
+  fun getFunctionsToStringsMap(psiFile: PsiFile): FunctionsToStrings {
     val signatureToStrings = psiFile.findAllFunctions().mapNotNull { function ->
       val signature = function.generateSignature(SignatureSource.MODEL_SOLUTION) ?: return@mapNotNull null
       val stringTemplateExpressions = function.collectStringTemplateExpressions()

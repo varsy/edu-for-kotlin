@@ -1,6 +1,6 @@
 package com.jetbrains.edu.aiHints.kotlin
 
-import com.jetbrains.edu.aiHints.core.FunctionSignatureResolver
+import com.jetbrains.edu.aiHints.core.EduAIHintsProvider
 import com.jetbrains.edu.aiHints.core.TaskProcessorImpl.Companion.createPsiFileForSolution
 import com.jetbrains.edu.aiHints.core.context.FunctionParameter
 import com.jetbrains.edu.aiHints.core.context.FunctionSignature
@@ -51,7 +51,7 @@ class FunctionSignatureResolverTest : EduTestCase() {
 
   private fun getFunctionBySignature(code: String, functionSignature: FunctionSignature) {
     val psiFile = code.createPsiFileForSolution(project, language)
-    assertEquals(code, FunctionSignatureResolver.getFunctionBySignature(psiFile, functionSignature.name, language)?.text)
+    assertEquals(code, EduAIHintsProvider.forCourse(getCourse())?.getFunctionBySignature(psiFile, functionSignature.name)?.text)
   }
 
   override fun createCourse() {
