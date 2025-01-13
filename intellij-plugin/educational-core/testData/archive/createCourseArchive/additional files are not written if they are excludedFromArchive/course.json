@@ -1,0 +1,48 @@
+{
+  "summary" : "Test Course Description",
+  "title" : "Test Course",
+  "programming_language_id" : "TEXT",
+  "language" : "en",
+  "course_type" : "PyCharm",
+  "items" : [
+    {
+      "title" : "lesson1",
+      "task_list" : [
+        {
+          "name" : "task1",
+          "files" : {
+            "main.txt" : {
+              "name" : "main.txt",
+              "placeholders" : [ ],
+              "is_visible" : true,
+              "is_binary" : false
+            }
+          },
+          "description_text" : "",
+          "description_format" : "MD",
+          "task_type" : "edu"
+        }
+      ],
+      "type" : "lesson"
+    }
+  ],
+  "additional_files" : [
+    {
+      "name" : "additional_file1.txt",
+      "is_visible" : true,
+      "is_binary" : false
+    },
+    {
+      "name" : "some-config.yaml",
+      "is_visible" : true,
+      "is_binary" : false
+    },
+    {
+      "name" : "courseignore-ignored-file",
+      "is_visible" : true,
+      "is_binary" : false
+    }
+  ],
+  "version" : 19,
+  "edu_plugin_version" : "yyyy.2-yyyy.1-TEST"
+}

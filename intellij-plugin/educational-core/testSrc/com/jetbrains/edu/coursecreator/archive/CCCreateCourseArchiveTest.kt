@@ -10,6 +10,7 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.vfs.findOrCreateFile
 import com.intellij.psi.PsiDocumentManager
 import com.jetbrains.edu.coursecreator.archive.CCCreateCourseArchiveTest.PlainTextCompatibilityProvider.Companion.PLAIN_TEXT_PLUGIN_ID
+import com.jetbrains.edu.coursecreator.courseignore.CourseIgnoreRules
 import com.jetbrains.edu.coursecreator.yaml.createConfigFiles
 import com.jetbrains.edu.learning.*
 import com.jetbrains.edu.learning.cipher.TestCipher
@@ -842,6 +843,46 @@ class CCCreateCourseArchiveTest : CourseArchiveTestBase() {
       project.courseDir.findOrCreateFile(additionalFile2) // is not present in the list course.additionalFiles
     }
     createUserFile(additionalFile3) // automatically added to the list course.additionalFiles
+
+    doTest(course)
+  }
+
+  @Test
+  fun `additional files are not written if they are excludedFromArchive`() {
+    val courseIgnoreIgnoredFile = "courseignore-ignored-file"
+
+    val course = courseWithFiles(courseMode = CourseMode.EDUCATOR) {
+      lesson {
+        eduTask {
+          taskFile("main.txt")
+        }
+      }
+      additionalFile("additional_file1.txt")
+      additionalFile("some-config.yaml")
+      // the file is additional, thus it should go to the archive even if it is excluded by .courseignore
+      additionalFile(courseIgnoreIgnoredFile)
+
+      // Must NOT be added to the course archive, even if listed as additional
+
+      // EduConfigurator.excludeFromArchive(".file") == true TODO: include in archive EDU-7821
+      additionalFile(".excluded_file_starting_with_dot")
+      // this and the following files: EduConfigurator.excludeFromArchive(file) == true
+      additionalFile("course-info.yaml")
+      additionalFile("course-remote-info.yaml")
+      additionalFile("lesson1/lesson-info.yaml")
+      additionalFile("lesson1/lesson-remote-info.yaml")
+      additionalFile("lesson1/task1/task.md")
+      additionalFile("lesson1/task1/task-info.yaml")
+      additionalFile("lesson1/task1/task-remote-info.yaml")
+      // is inside a task
+      additionalFile("lesson1/task1/file_in_task")
+    }
+    createUserFile(EduNames.COURSE_IGNORE, "$courseIgnoreIgnoredFile\n")
+
+    // make sure courseIgnoreIgnoredFile is actually ignored
+    val courseIgnoreRules = CourseIgnoreRules.loadFromCourseIgnoreFile(project)
+    val ignoredFile = project.courseDir.findFileByRelativePath(courseIgnoreIgnoredFile)!!
+    assertTrue(courseIgnoreRules.isIgnored(ignoredFile))
 
     doTest(course)
   }
