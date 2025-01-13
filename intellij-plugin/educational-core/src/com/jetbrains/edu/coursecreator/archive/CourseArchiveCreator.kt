@@ -215,7 +215,8 @@ class CourseArchiveCreator(
   }
 
   private fun prepareCourse(course: Course) {
-    loadActualTexts(project, course)
+    loadActualTextsForTasks(project, course)
+    loadActualTextsForAdditionalFiles(project, course)
     course.sortItems()
     course.pluginDependencies = collectCourseDependencies(project, course)
     course.courseMode = CourseMode.STUDENT
@@ -311,7 +312,7 @@ class CourseArchiveCreator(
       return this
     }
 
-    private fun loadActualTexts(project: Project, course: Course) {
+    private fun loadActualTextsForTasks(project: Project, course: Course) {
       val courseDir = project.courseDir
 
       course.visitLessons { lesson ->
@@ -321,6 +322,10 @@ class CourseArchiveCreator(
           loadActualTexts(project, task)
         }
       }
+    }
+
+    private fun loadActualTextsForAdditionalFiles(project: Project, course: Course) {
+      val courseDir = project.courseDir
 
       for (additionalFile in course.additionalFiles) {
         val fsFile = courseDir.findFileByRelativePath(additionalFile.name)
