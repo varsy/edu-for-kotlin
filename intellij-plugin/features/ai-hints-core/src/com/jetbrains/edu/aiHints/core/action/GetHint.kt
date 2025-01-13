@@ -37,6 +37,7 @@ class GetHint : ActionWithProgressIcon() {
     }
 
     val task = TaskToolWindowView.getInstance(project).currentTask ?: return
+    TaskToolWindowView.getInstance(project).updateCheckPanel(task)
     HintsLoader.getInstance(project).getHint(task)
   }
 
