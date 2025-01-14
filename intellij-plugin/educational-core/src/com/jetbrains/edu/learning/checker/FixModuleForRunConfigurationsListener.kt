@@ -25,18 +25,22 @@ import com.jetbrains.edu.learning.courseFormat.ext.findSourceDir
  * As a result, run configuration won't be properly set up by the platform.
  */
 class FixModuleForRunConfigurationsListener(private val project: Project) : RunManagerListener, ModuleRootListener {
+
+  private fun learnerMode(): Boolean = project.isEduProject() && project.course?.isStudy == true
+
   override fun runConfigurationAdded(settings: RunnerAndConfigurationSettings) {
+    if (!learnerMode()) return
     updateConfiguration(settings)
   }
 
   override fun rootsChanged(event: ModuleRootEvent) {
+    if (!learnerMode()) return
     RunManager.getInstance(project).allSettings.forEach {
       updateConfiguration(it)
     }
   }
 
   private fun updateConfiguration(settings: RunnerAndConfigurationSettings) {
-    if (!project.isEduProject()) return
     val path = settings.pathIfStoredInArbitraryFileInProject ?: return
     val configuration = settings.configuration as? ModuleBasedConfiguration<*, *> ?: return
 
