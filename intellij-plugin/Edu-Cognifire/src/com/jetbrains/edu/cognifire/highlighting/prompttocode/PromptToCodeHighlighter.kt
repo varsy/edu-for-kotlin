@@ -2,6 +2,7 @@ package com.jetbrains.edu.cognifire.highlighting.prompttocode
 
 import com.intellij.openapi.editor.event.*
 import com.intellij.openapi.project.Project
+import com.intellij.psi.PsiDocumentManager
 import com.jetbrains.edu.cognifire.highlighting.GuardedBlockManager
 import com.jetbrains.edu.cognifire.highlighting.HighlighterManager
 import com.jetbrains.edu.cognifire.highlighting.ListenerManager
@@ -10,6 +11,7 @@ import com.jetbrains.edu.cognifire.highlighting.highlighers.UncommittedChangesHi
 import com.jetbrains.edu.cognifire.models.BaseProdeExpression
 import com.jetbrains.edu.cognifire.models.CodeExpression
 import com.jetbrains.edu.cognifire.models.PromptExpression
+import com.jetbrains.edu.learning.selectedEditor
 
 /**
  * Class [PromptToCodeHighlighter] is responsible for highlighting the prompt and code lines
@@ -24,6 +26,9 @@ class PromptToCodeHighlighter(private val project: Project, private val prodeId:
 
   private val highlighterManager = HighlighterManager.getInstance()
   private val listenerManager = ListenerManager.getInstance(project)
+  private val editor = project.selectedEditor
+  private var initialPromptContent: String = ""
+  private var initialCodeContent: String = ""
 
   /**
    * Sets up the EditorMouseMotionListener to handle mouse movement events in the editor.
@@ -56,12 +61,16 @@ class PromptToCodeHighlighter(private val project: Project, private val prodeId:
       getDocumentListener(codeExpression, promptExpression),
       prodeId
     )
+    initialPromptContent = editor?.document?.text?.getSubstringText(promptExpression.startOffset, promptExpression.endOffset) ?: ""
+    initialCodeContent = editor?.document?.text?.getSubstringText(codeExpression.startOffset, codeExpression.endOffset) ?: ""
   }
 
   fun setUpDocumentListener(
     promptExpression: PromptExpression,
     codeExpression: CodeExpression
   ) {
+    initialPromptContent = editor?.document?.text?.getSubstringText(promptExpression.startOffset, promptExpression.endOffset) ?: ""
+    initialCodeContent = editor?.document?.text?.getSubstringText(codeExpression.startOffset, codeExpression.endOffset) ?: ""
     listenerManager.addListener(
       getDocumentListener(codeExpression, promptExpression),
       prodeId
@@ -141,11 +150,9 @@ class PromptToCodeHighlighter(private val project: Project, private val prodeId:
         handleUncommitedChanges(offset, delta)
       }
       if (prodeIsEdited && delta != 0) {
-        addReadOnlyBlock(codeExpression, promptExpression, event)
+        handleReadOnlyBlocks(codeExpression, promptExpression, event)
       }
     }
-
-
   }
 
   private fun clearHighlighters() {
@@ -157,14 +164,38 @@ class PromptToCodeHighlighter(private val project: Project, private val prodeId:
     highlighterManager.addProdeHighlighter(UncommittedChangesHighlighter(offset, offset + delta), prodeId, project)
   }
 
-  private fun addReadOnlyBlock(codeExpression: CodeExpression, promptExpression: PromptExpression, event: DocumentEvent) {
+  private fun String.normalize() = this.replace(Regex("\\s+"), " ").trim()
+
+  private fun String.getSubstringText(startOffset: Int, endOffset: Int) = try {
+      this.substring(startOffset, endOffset)
+    } catch (e: StringIndexOutOfBoundsException) {
+      ""
+    }
+
+  private fun handleReadOnlyBlocks(codeExpression: CodeExpression, promptExpression: PromptExpression, event: DocumentEvent) {
     val document = event.document
     val guardManager = GuardedBlockManager.getInstance()
+    val currentPromptContent = document.text.getSubstringText(promptExpression.startOffset, promptExpression.endOffset).normalize()
+    val currentCodeContent = document.text.getSubstringText(codeExpression.startOffset, codeExpression.endOffset).normalize()
+
     if (event.offset in promptExpression.startOffset until promptExpression.endOffset) {
-      guardManager.addGuardedBlock(document, codeExpression.startOffset, codeExpression.endOffset, prodeId)
+      if (currentPromptContent != initialPromptContent.normalize()) {
+        guardManager.addGuardedBlock(document, codeExpression.startOffset, codeExpression.endOffset, prodeId)
+      }
+      else {
+        guardManager.removeGuardedBlock(prodeId, document)
+      }
     } else if (event.offset in codeExpression.startOffset until codeExpression.endOffset) {
-      guardManager.addGuardedBlock(document, promptExpression.startOffset, promptExpression.endOffset, prodeId)
+      if (currentCodeContent != initialCodeContent.normalize()) {
+        guardManager.addGuardedBlock(document, promptExpression.startOffset, promptExpression.endOffset, prodeId)
+      }
+      else {
+        guardManager.removeGuardedBlock(prodeId, document)
+      }
     }
+
+    PsiDocumentManager.getInstance(project).commitDocument(document)
+    editor?.contentComponent?.repaint()
   }
 
   private fun showHighlighters(
