@@ -1,5 +1,6 @@
 package com.jetbrains.edu.learning.checker
 
+import com.intellij.execution.RunManager
 import com.intellij.execution.RunManagerListener
 import com.intellij.execution.RunnerAndConfigurationSettings
 import com.intellij.execution.configurations.ModuleBasedConfiguration
@@ -7,6 +8,8 @@ import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.module.ModuleUtilCore
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.roots.ModuleRootEvent
+import com.intellij.openapi.roots.ModuleRootListener
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import com.jetbrains.edu.learning.*
@@ -21,12 +24,21 @@ import com.jetbrains.edu.learning.courseFormat.ext.findSourceDir
  * if you create course project, your modules may have different names.
  * As a result, run configuration won't be properly set up by the platform.
  */
-class EduRunManagerListener(private val project: Project) : RunManagerListener {
+class FixModuleForRunConfigurationsListener(private val project: Project) : RunManagerListener, ModuleRootListener {
   override fun runConfigurationAdded(settings: RunnerAndConfigurationSettings) {
+    updateConfiguration(settings)
+  }
+
+  override fun rootsChanged(event: ModuleRootEvent) {
+    RunManager.getInstance(project).allSettings.forEach {
+      updateConfiguration(it)
+    }
+  }
+
+  private fun updateConfiguration(settings: RunnerAndConfigurationSettings) {
     if (!project.isEduProject()) return
     val path = settings.pathIfStoredInArbitraryFileInProject ?: return
     val configuration = settings.configuration as? ModuleBasedConfiguration<*, *> ?: return
-    if (configuration.configurationModule.module != null) return
 
     val file = LocalFileSystem.getInstance().findFileByPath(path) ?: return
     if (file.isTaskRunConfigurationFile(project)) {
@@ -47,6 +59,6 @@ class EduRunManagerListener(private val project: Project) : RunManagerListener {
   }
 
   companion object {
-    private val LOG: Logger = logger<EduRunManagerListener>()
+    private val LOG: Logger = logger<FixModuleForRunConfigurationsListener>()
   }
 }

@@ -20,8 +20,10 @@
   </applicationListeners>
 
   <projectListeners>
-    <listener class="com.jetbrains.edu.learning.checker.EduRunManagerListener"
+    <listener class="com.jetbrains.edu.learning.checker.FixModuleForRunConfigurationsListener"
               topic="com.intellij.execution.RunManagerListener"/>
+    <listener class="com.jetbrains.edu.learning.checker.FixModuleForRunConfigurationsListener"
+              topic="com.intellij.openapi.roots.ModuleRootListener"/>
     <listener class="com.jetbrains.edu.learning.yaml.YamlLoadingErrorManager$Listener"
               topic="com.jetbrains.edu.learning.yaml.YamlListener"/>
     <listener class="com.jetbrains.edu.learning.taskToolWindow.EduFileEditorManagerListener"
