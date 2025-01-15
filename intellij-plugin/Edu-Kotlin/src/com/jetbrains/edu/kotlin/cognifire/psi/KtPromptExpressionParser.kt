@@ -3,20 +3,18 @@ package com.jetbrains.edu.kotlin.cognifire.psi
 import ai.grazie.nlp.utils.dropLastWhitespaces
 import ai.grazie.utils.dropPostfix
 import com.intellij.psi.PsiElement
+import com.intellij.psi.SmartPointerManager
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.psi.util.findParentOfType
-import com.jetbrains.edu.cognifire.parsers.PromptExpressionParser
+import com.jetbrains.edu.cognifire.models.FunctionArgument
 import com.jetbrains.edu.cognifire.models.FunctionSignature
 import com.jetbrains.edu.cognifire.models.PromptExpression
-import com.jetbrains.edu.cognifire.models.FunctionArgument
+import com.jetbrains.edu.cognifire.parsers.PromptExpressionParser
 import com.jetbrains.edu.cognifire.utils.isPromptBlock
 import com.jetbrains.edu.kotlin.cognifire.utils.QUOTE_CHAR
 import com.jetbrains.edu.kotlin.cognifire.utils.UNIT_RETURN_VALUE
-import com.jetbrains.edu.kotlin.cognifire.utils.getBaseContentOffset
 import org.jetbrains.kotlin.psi.KtCallExpression
 import org.jetbrains.kotlin.psi.KtNamedFunction
-import org.jetbrains.kotlin.psi.psiUtil.startOffset
-import org.jetbrains.kotlin.psi.psiUtil.endOffset
 
 class KtPromptExpressionParser : PromptExpressionParser {
   override fun getExpression(element: PsiElement): PromptExpression? {
@@ -34,11 +32,13 @@ class KtPromptExpressionParser : PromptExpressionParser {
     val promptPromptText = promptPromptPsi?.text ?: ""
     val trimmedPromptPromptText = promptPromptText.trimStart(QUOTE_CHAR).trimStart()
 
+    val expressionElement = element
+    val contentElement = element.valueArguments.firstOrNull()?.getArgumentExpression() ?: return null
+
     return PromptExpression(
+      SmartPointerManager.createPointer(expressionElement),
+      SmartPointerManager.createPointer(contentElement),
       getFunctionSignature(containingFunction),
-      promptPromptPsi?.getBaseContentOffset() ?: 0,
-      element.startOffset,
-      element.endOffset,
       trimmedPromptPromptText
         .dropPostfix(TRIM_INDENT_POSTFIX)
         .dropPostfix(QUOTE_POSTFIX)

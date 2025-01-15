@@ -4,13 +4,11 @@ import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiElement
-import com.jetbrains.edu.cognifire.writers.PromptExpressionWriter
+import com.intellij.psi.SmartPointerManager
 import com.jetbrains.edu.cognifire.models.PromptExpression
-import com.jetbrains.edu.kotlin.cognifire.utils.getBaseContentOffset
+import com.jetbrains.edu.cognifire.writers.PromptExpressionWriter
 import org.jetbrains.kotlin.psi.KtCallExpression
 import org.jetbrains.kotlin.psi.KtPsiFactory
-import org.jetbrains.kotlin.psi.psiUtil.startOffset
-import org.jetbrains.kotlin.psi.psiUtil.endOffset
 
 class KtPromptExpressionWriter : PromptExpressionWriter {
   override fun addExpression(project: Project, element: PsiElement, text: String, oldExpression: PromptExpression?): PromptExpression? {
@@ -26,11 +24,13 @@ class KtPromptExpressionWriter : PromptExpressionWriter {
       promptPromptPsi.replace(newValueArgument)
     })
 
+    val expressionElement = element
+    val contentElement = element.valueArguments.firstOrNull()?.getArgumentExpression() ?: return null
+
     return PromptExpression(
+      SmartPointerManager.createPointer(expressionElement),
+      SmartPointerManager.createPointer(contentElement),
       oldExpression.functionSignature,
-      element.valueArguments.firstOrNull()?.getBaseContentOffset() ?: 0,
-      element.startOffset,
-      element.endOffset,
       text,
       oldExpression.code
     )
