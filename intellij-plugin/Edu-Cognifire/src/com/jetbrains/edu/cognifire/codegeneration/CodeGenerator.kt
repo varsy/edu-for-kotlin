@@ -17,8 +17,8 @@ class CodeGenerator(
   private val promptExpression: PromptExpression,
   private val project: Project,
   private val language: Language,
-  private val previousPromptToCode: PromptToCodeContent?,
-  private val codeExpression: CodeExpression?
+  private val previousPromptToCode: PromptToCodeContent? = null,
+  private val codeExpression: CodeExpression? = null
 ) {
 
   val finalPromptToCodeTranslation = improvePromptToCode()

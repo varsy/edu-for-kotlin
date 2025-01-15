@@ -1033,6 +1033,7 @@ project("Edu-Cognifire") {
     }
 
     testImplementation(project(":intellij-plugin:educational-core", "testOutput"))
+    testImplementation(rootProject.libs.jackson.dataformat.csv)
 
     antlr(rootProject.libs.antlr)
   }

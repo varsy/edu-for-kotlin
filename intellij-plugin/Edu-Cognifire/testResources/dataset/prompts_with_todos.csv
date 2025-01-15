@@ -1,0 +1,14 @@
+prompt,sentencesIndicesWithTodo
+"Declare a variable `complete` of type `Boolean`.
+Start a do-while loop that will continue until `complete` becomes `true`.
+Print the message ""Please input your guess. It should be of length $wordLength."".
+Read the user's input into the variable `guess` using function `safeReadLine`..
+Call the function `isComplete` with `secret` and `guess` as arguments, and assign the result to `complete`.",
+Declare a variable `complete` of type `Boolean`.,0
+"Implement the playGame function: while the game is not completed, read the user's guess.",0
+"Declare a variable `complete`.
+Start a loop that will continue until `complete` becomes `true`.
+Print the message ""Please input your guess. It should be of length $wordLength."".
+Read the user's input.
+Call the function `isComplete and assign the result to `complete`.","0, 3, 4"
+Implement the playGame function.,0
