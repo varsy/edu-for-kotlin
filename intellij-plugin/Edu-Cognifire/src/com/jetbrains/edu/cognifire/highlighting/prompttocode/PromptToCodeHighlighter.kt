@@ -12,6 +12,7 @@ import com.jetbrains.edu.cognifire.highlighting.highlighers.LinkingHighlighter
 import com.jetbrains.edu.cognifire.highlighting.highlighers.UncommittedChangesHighlighter
 import com.jetbrains.edu.cognifire.models.CodeExpression
 import com.jetbrains.edu.cognifire.models.PromptExpression
+import kotlin.math.abs
 
 /**
  * Class [PromptToCodeHighlighter] is responsible for highlighting the prompt and code lines
@@ -108,7 +109,8 @@ class PromptToCodeHighlighter(private val project: Project, private val prodeId:
       val delta = event.newLength - event.oldLength
       val offset = event.offset
 
-      val eventRange = (minOf(offset, offset + delta)..maxOf(offset, offset + delta))
+      val eventRange = offset until offset + abs(delta)
+
       val promptRange = promptExpression.startOffset until promptExpression.endOffset
       val codeRange = codeExpression.startOffset until codeExpression.endOffset
 
