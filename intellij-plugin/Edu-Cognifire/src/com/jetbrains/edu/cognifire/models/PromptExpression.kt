@@ -11,7 +11,7 @@ class PromptExpression(
   val code: String
 ) : BaseProdeExpression {
   override val contentOffset: Int
-    get() = contentElement.range?.startOffset?.plus(4) ?: 0
+    get() = contentElement.range?.startOffset?.plus("\"\"\"\n".length) ?: 0
 
   override val startOffset: Int
     get() = expressionElement.range?.startOffset ?: 0
