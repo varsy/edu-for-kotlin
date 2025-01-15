@@ -1,30 +1,21 @@
 package com.jetbrains.edu.cognifire.models
 
+import com.intellij.psi.PsiElement
+import com.intellij.psi.SmartPsiElementPointer
+
 class PromptExpression(
+  private val expressionElement: SmartPsiElementPointer<PsiElement>,
+  private val contentElement: SmartPsiElementPointer<PsiElement>,
   val functionSignature: FunctionSignature,
-  private val baseContentOffset: Int,
-  private val baseStartOffset: Int,
-  private val baseEndOffset: Int,
   val prompt: String,
   val code: String
 ) : BaseProdeExpression {
-  override var dynamicStartOffset: Int = 0
-  override var dynamicEndOffset: Int = 0
-
   override val contentOffset: Int
-    get() = baseContentOffset + dynamicStartOffset
+    get() = contentElement.range?.startOffset?.plus("\"\"\"\n".length) ?: 0
 
   override val startOffset: Int
-    get() = baseStartOffset + dynamicStartOffset
+    get() = expressionElement.range?.startOffset ?: 0
 
   override val endOffset: Int
-    get() = baseEndOffset + dynamicEndOffset
-
-  override fun shiftStartOffset(delta: Int) {
-    dynamicStartOffset += delta
-  }
-
-  override fun shiftEndOffset(delta: Int) {
-    dynamicEndOffset += delta
-  }
+    get() = expressionElement.range?.endOffset ?: 0
 }
