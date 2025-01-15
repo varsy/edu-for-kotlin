@@ -1,15 +1,18 @@
 package com.jetbrains.edu.cognifire.highlighting.prompttocode
 
-import com.intellij.openapi.editor.event.*
+import com.intellij.openapi.editor.event.DocumentEvent
+import com.intellij.openapi.editor.event.DocumentListener
+import com.intellij.openapi.editor.event.EditorMouseEvent
+import com.intellij.openapi.editor.event.EditorMouseMotionListener
 import com.intellij.openapi.project.Project
 import com.jetbrains.edu.cognifire.highlighting.GuardedBlockManager
 import com.jetbrains.edu.cognifire.highlighting.HighlighterManager
 import com.jetbrains.edu.cognifire.highlighting.ListenerManager
 import com.jetbrains.edu.cognifire.highlighting.highlighers.LinkingHighlighter
 import com.jetbrains.edu.cognifire.highlighting.highlighers.UncommittedChangesHighlighter
-import com.jetbrains.edu.cognifire.models.BaseProdeExpression
 import com.jetbrains.edu.cognifire.models.CodeExpression
 import com.jetbrains.edu.cognifire.models.PromptExpression
+import kotlin.math.abs
 
 /**
  * Class [PromptToCodeHighlighter] is responsible for highlighting the prompt and code lines
@@ -106,42 +109,20 @@ class PromptToCodeHighlighter(private val project: Project, private val prodeId:
       val delta = event.newLength - event.oldLength
       val offset = event.offset
 
-      fun BaseProdeExpression.shiftOffsets(shiftStart: Boolean = false, shiftEnd: Boolean = false) {
-        if (shiftStart) shiftStartOffset(delta)
-        if (shiftEnd) shiftEndOffset(delta)
-      }
+      val eventRange = offset until offset + abs(delta)
 
-      var prodeIsEdited = false
+      val promptRange = promptExpression.startOffset until promptExpression.endOffset
+      val codeRange = codeExpression.startOffset until codeExpression.endOffset
 
-      when (offset) {
-        in 0 until promptExpression.startOffset -> {
-          promptExpression.shiftOffsets(shiftStart = true, shiftEnd = true)
-          codeExpression.shiftOffsets(shiftStart = true, shiftEnd = true)
-        }
 
-        in promptExpression.startOffset until promptExpression.endOffset -> {
-          promptExpression.shiftOffsets(shiftEnd = true)
-          codeExpression.shiftOffsets(shiftStart = true, shiftEnd = true)
-          prodeIsEdited = true
-        }
+      val prodeIsEdited = eventRange.intersect(promptRange).isNotEmpty() ||
+                          eventRange.intersect(codeRange).isNotEmpty()
 
-        in promptExpression.endOffset until codeExpression.startOffset -> {
-          codeExpression.shiftOffsets(shiftStart = true, shiftEnd = true)
-        }
 
-        in codeExpression.startOffset until codeExpression.endOffset -> {
-          codeExpression.shiftOffsets(shiftEnd = true)
-          prodeIsEdited = true
-        }
-
-      }
-
-      if (prodeIsEdited && delta > 0) {
+      if (prodeIsEdited) {
         clearHighlighters()
-        handleUncommitedChanges(offset, delta)
-      }
-      if (prodeIsEdited && delta != 0) {
-        addReadOnlyBlock(codeExpression, promptExpression, event)
+        if (delta > 0) handleUncommitedChanges(offset, delta)
+        if (delta != 0) addReadOnlyBlock(codeExpression, promptExpression, event)
       }
     }
 
@@ -162,7 +143,8 @@ class PromptToCodeHighlighter(private val project: Project, private val prodeId:
     val guardManager = GuardedBlockManager.getInstance()
     if (event.offset in promptExpression.startOffset until promptExpression.endOffset) {
       guardManager.addGuardedBlock(document, codeExpression.startOffset, codeExpression.endOffset, prodeId)
-    } else if (event.offset in codeExpression.startOffset until codeExpression.endOffset) {
+    }
+    else if (event.offset in codeExpression.startOffset until codeExpression.endOffset) {
       guardManager.addGuardedBlock(document, promptExpression.startOffset, promptExpression.endOffset, prodeId)
     }
   }

@@ -3,49 +3,70 @@ package com.jetbrains.edu.kotlin.cognifire.psi
 import ai.grazie.nlp.utils.dropLastWhitespaces
 import ai.grazie.utils.dropPostfix
 import com.intellij.psi.PsiElement
+import com.intellij.psi.SmartPointerManager
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.psi.util.findParentOfType
-import com.jetbrains.edu.cognifire.parsers.PromptExpressionParser
+import com.jetbrains.edu.cognifire.models.FunctionArgument
 import com.jetbrains.edu.cognifire.models.FunctionSignature
 import com.jetbrains.edu.cognifire.models.PromptExpression
-import com.jetbrains.edu.cognifire.models.FunctionArgument
+import com.jetbrains.edu.cognifire.parsers.PromptExpressionParser
 import com.jetbrains.edu.cognifire.utils.isPromptBlock
 import com.jetbrains.edu.kotlin.cognifire.utils.QUOTE_CHAR
 import com.jetbrains.edu.kotlin.cognifire.utils.UNIT_RETURN_VALUE
-import com.jetbrains.edu.kotlin.cognifire.utils.getBaseContentOffset
 import org.jetbrains.kotlin.psi.KtCallExpression
+import org.jetbrains.kotlin.psi.KtLambdaExpression
 import org.jetbrains.kotlin.psi.KtNamedFunction
-import org.jetbrains.kotlin.psi.psiUtil.startOffset
-import org.jetbrains.kotlin.psi.psiUtil.endOffset
 
 class KtPromptExpressionParser : PromptExpressionParser {
   override fun getExpression(element: PsiElement): PromptExpression? {
-    if (!element.isPromptBlock() ||
-        element !is KtCallExpression ||
-        existsNestedPromptExpressions(element)
-    ) {
+    if (!isValidPromptElement(element)) {
       return null
     }
-    val containingFunction = element.findParentOfType<KtNamedFunction>() ?: return null
 
-    val promptPromptPsi = element.valueArguments.firstOrNull()
-    val promptCodeBlockPsi = element.lambdaArguments.firstOrNull()?.getLambdaExpression()
+    val callExpression = element as KtCallExpression
+    val containingFunction = callExpression.findParentOfType<KtNamedFunction>() ?: return null
 
-    val promptPromptText = promptPromptPsi?.text ?: ""
-    val trimmedPromptPromptText = promptPromptText.trimStart(QUOTE_CHAR).trimStart()
+    return buildPromptExpression(callExpression, containingFunction)
+  }
+
+  private fun isValidPromptElement(element: PsiElement): Boolean =
+    element.isPromptBlock() &&
+    element is KtCallExpression &&
+    !existsNestedPromptExpressions(element)
+
+  private fun buildPromptExpression(
+    callExpression: KtCallExpression,
+    containingFunction: KtNamedFunction
+  ): PromptExpression? {
+    val (promptText, codeBlock) = extractPromptComponents(callExpression)
+    val contentElement = callExpression.valueArguments.firstOrNull()?.getArgumentExpression() ?: return null
 
     return PromptExpression(
+      SmartPointerManager.createPointer(callExpression),
+      SmartPointerManager.createPointer(contentElement),
       getFunctionSignature(containingFunction),
-      promptPromptPsi?.getBaseContentOffset() ?: 0,
-      element.startOffset,
-      element.endOffset,
-      trimmedPromptPromptText
-        .dropPostfix(TRIM_INDENT_POSTFIX)
-        .dropPostfix(QUOTE_POSTFIX)
-        .dropLastWhitespaces(),
-      promptCodeBlockPsi?.bodyExpression?.text ?: ""
+      processPromptText(promptText),
+      codeBlock?.bodyExpression?.text.orEmpty()
     )
   }
+
+  private fun extractPromptComponents(callExpression: KtCallExpression): Pair<String, KtLambdaExpression?> {
+    val promptArgument = callExpression.valueArguments.firstOrNull()
+    val codeBlock = callExpression.lambdaArguments.firstOrNull()?.getLambdaExpression()
+
+    return Pair(
+      promptArgument?.text.orEmpty(),
+      codeBlock
+    )
+  }
+
+  private fun processPromptText(rawPromptText: String): String =
+    rawPromptText
+      .trimStart(QUOTE_CHAR)
+      .trimStart()
+      .dropPostfix(TRIM_INDENT_POSTFIX)
+      .dropPostfix(QUOTE_POSTFIX)
+      .dropLastWhitespaces()
 
   private fun getFunctionSignature(containingFunction: KtNamedFunction): FunctionSignature {
     val containingFunctionParameters =
