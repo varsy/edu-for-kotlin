@@ -1,28 +1,19 @@
 package com.jetbrains.edu.cognifire.models
 
-open class CodeExpression(
-  open val code: String,
-  private val baseContentOffset: Int,
-  private val baseStartOffset: Int,
-  private val baseEndOffset: Int
-) : BaseProdeExpression {
-  override var dynamicStartOffset: Int = 0
-  override var dynamicEndOffset: Int = 0
+import com.intellij.psi.PsiElement
+import com.intellij.psi.SmartPsiElementPointer
 
+open class CodeExpression(
+  private val expressionElement: SmartPsiElementPointer<PsiElement>,
+  private val contentElement: SmartPsiElementPointer<PsiElement>,
+  open val code: String
+) : BaseProdeExpression {
   override val contentOffset: Int
-    get() = baseContentOffset + dynamicStartOffset
+    get() = contentElement.range?.startOffset ?: 0
 
   override val startOffset: Int
-    get() = baseStartOffset + dynamicStartOffset
+    get() = expressionElement.range?.startOffset ?: 0
 
   override val endOffset: Int
-    get() = baseEndOffset + dynamicEndOffset
-
-  override fun shiftStartOffset(delta: Int) {
-    dynamicStartOffset += delta
-  }
-
-  override fun shiftEndOffset(delta: Int) {
-    dynamicEndOffset += delta
-  }
+    get() = expressionElement.range?.endOffset ?: 0
 }
