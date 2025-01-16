@@ -11,6 +11,7 @@ import com.intellij.openapi.vfs.newvfs.impl.VfsRootAccess
 import com.intellij.testFramework.IdeaTestUtil
 import com.jetbrains.edu.jvm.JdkProjectSettings
 import com.jetbrains.edu.learning.checker.EduCheckerFixture
+import com.jetbrains.edu.learning.isTeamCity
 import java.io.File
 
 class JdkCheckerFixture : EduCheckerFixture<JdkProjectSettings>() {
@@ -29,7 +30,7 @@ class JdkCheckerFixture : EduCheckerFixture<JdkProjectSettings>() {
   override fun getSkipTestReason(): String? {
     // We temporarily disable checkers tests on teamcity linux agents
     // because they don't work on these agents and we can't find out a reason :((
-    return if (SystemInfo.isLinux && System.getenv("TEAMCITY_VERSION") != null) "Linux TeamCity agent" else super.getSkipTestReason()
+    return if (SystemInfo.isLinux && isTeamCity) "Linux TeamCity agent" else super.getSkipTestReason()
   }
 
   override fun setUp() {

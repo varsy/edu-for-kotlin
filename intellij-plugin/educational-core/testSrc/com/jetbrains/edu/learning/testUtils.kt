@@ -38,6 +38,8 @@ import org.junit.Assert.assertArrayEquals
 import org.junit.Assert.assertEquals
 import kotlin.test.assertIs
 
+val isTeamCity: Boolean get() = System.getenv("TEAMCITY_VERSION") != null
+
 inline fun <reified T> nullValue(): Matcher<T> = CoreMatchers.nullValue(T::class.java)
 
 fun <T> withFeature(featureId: String, enabled: Boolean, action: () -> T): T {
