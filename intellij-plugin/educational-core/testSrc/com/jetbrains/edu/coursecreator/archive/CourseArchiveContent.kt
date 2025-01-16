@@ -5,6 +5,7 @@ import com.intellij.platform.testFramework.core.FileComparisonFailedError
 import com.intellij.testFramework.fixtures.BasePlatformTestCase.fail
 import com.jetbrains.edu.learning.courseFormat.EduFormatNames.COURSE_META_FILE
 import com.jetbrains.edu.learning.courseFormat.JSON_FORMAT_VERSION
+import com.jetbrains.edu.learning.isTeamCity
 import org.junit.Assert
 import java.io.ByteArrayInputStream
 import java.io.File
@@ -60,17 +61,33 @@ data class CourseArchiveContent(
 
     for ((path, contents) in filesToCompare) {
       if (path == COURSE_META_FILE) {
-        val expectedJson = contents.expected.toString(Charsets.UTF_8).withLatestJsonVersion()
-        val actualJson = contents.actual.toString(Charsets.UTF_8)
-
-        // `FileComparisonFailedError` is used here instead of `assertEquals`
-        // to add the possibility to move changes from actual to expected files using IDE Diff View
-        if (expectedJson != actualJson) {
-          throw FileComparisonFailedError("Unexpected $path content", expectedJson, actualJson, expectedBaseDir.resolve(path).absolutePath)
-        }
+        checkCourseArchiveJson(contents, expectedBaseDir)
       }
       else {
         Assert.assertArrayEquals("Unexpected $path content", contents.expected, contents.actual)
+      }
+    }
+  }
+
+  private fun checkCourseArchiveJson(contents: ContentsToCompare, expectedBaseDir: File) {
+    val expectedJson = contents.expected.toString(Charsets.UTF_8).withLatestJsonVersion()
+    val actualJson = contents.actual.toString(Charsets.UTF_8)
+
+    if (expectedJson != actualJson) {
+      if (!isTeamCity) {
+        // `FileComparisonFailedError` is used here instead of `assertEquals`
+        // to add the possibility to move changes from actual to expected files using IDE Diff View
+        throw FileComparisonFailedError(
+          "Unexpected $COURSE_META_FILE content",
+          expectedJson,
+          actualJson,
+          expectedBaseDir.resolve(COURSE_META_FILE).absolutePath
+        )
+      }
+      else {
+        // Teamcity doesn't know about `FileComparisonFailedError` and cannot show diff in Web if assert fails.
+        // To make it work, let's fall back to `Assert.assertEquals`
+        Assert.assertEquals("Unexpected $COURSE_META_FILE content", expectedJson, actualJson)
       }
     }
   }
