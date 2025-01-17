@@ -1,17 +1,13 @@
 package com.jetbrains.edu.cognifire.highlighting.highlighers
 
 import com.intellij.openapi.editor.markup.*
-import com.intellij.openapi.editor.markup.HighlighterLayer
-import com.intellij.openapi.editor.markup.HighlighterTargetArea
-import com.intellij.openapi.editor.markup.RangeHighlighter
-import com.intellij.openapi.editor.markup.TextAttributes
 import com.intellij.ui.JBColor
 
 
 class UncommittedChangesHighlighter(
   private val startOffset: Int,
   private val endOffset: Int
-): ProdeHighlighter {
+) : ProdeHighlighter {
   override val attributes = TextAttributes().apply { backgroundColor = JBColor(0xE6FFE6, 0x224422) }
 
   override var markupHighlighter: RangeHighlighter? = null
@@ -20,7 +16,7 @@ class UncommittedChangesHighlighter(
     markupModel?.addRangeHighlighter(
       startOffset,
       endOffset,
-      HighlighterLayer.SELECTION,
+      HighlighterLayer.SELECTION - 1,
       attributes,
       HighlighterTargetArea.EXACT_RANGE
     )?.also {
