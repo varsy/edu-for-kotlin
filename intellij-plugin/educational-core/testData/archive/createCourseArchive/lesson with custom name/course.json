@@ -1,7 +1,7 @@
 {
   "summary" : "my summary",
   "title" : "Test Course",
-  "programming_language_id" : "TEXT",
+  "programming_language_id" : "UNTEXT",
   "language" : "en",
   "course_type" : "PyCharm",
   "items" : [
@@ -21,7 +21,7 @@
           },
           "description_text" : "solve task",
           "description_format" : "MD",
-          "task_type" : "edu"
+          "task_type" : "boo-boo"
         }
       ],
       "type" : "lesson"
