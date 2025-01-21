@@ -1,9 +1,8 @@
 package com.jetbrains.edu.aiHints.python
 
-import com.intellij.psi.PsiFileFactory
 import com.jetbrains.edu.aiHints.core.FunctionSignatureResolver
+import com.jetbrains.edu.aiHints.python.PyHintsTestUtils.createPsiFile
 import com.jetbrains.edu.learning.EduTestCase
-import com.jetbrains.python.PythonFileType
 import com.jetbrains.python.PythonLanguage
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -19,7 +18,7 @@ class PyFunctionSignatureResolverTest(
 
   @Test
   fun `test getting function by signature`() {
-    val psiFile = PsiFileFactory.getInstance(project).createFileFromText("task.py", PythonFileType.INSTANCE, code)
+    val psiFile = createPsiFile(project, code)
     val actualFunctionName = FunctionSignatureResolver.getFunctionBySignature(psiFile, functionName, PythonLanguage.INSTANCE)?.text
     assertEquals(code, actualFunctionName)
   }

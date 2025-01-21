@@ -6,7 +6,7 @@
   </dependencies>
 
   <extensions defaultExtensionNs="aiHints">
-    <!--suppress PluginXmlValidity -->
+    <functionSignaturesProvider language="Python" implementationClass="com.jetbrains.edu.aiHints.python.PyFunctionSignaturesProvider"/>
     <functionSignatureResolver language="Python" implementationClass="com.jetbrains.edu.aiHints.python.PyFunctionSignatureResolver"/>
     <filesDiffer language="Python" implementationClass="com.jetbrains.edu.aiHints.python.PyFilesDiffer"/>
     <inspectionProvider language="Python" implementationClass="com.jetbrains.edu.aiHints.python.PyInspectionProvider"/>
