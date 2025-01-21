@@ -1,5 +1,6 @@
 package com.jetbrains.edu.cognifire.highlighting.prompttocode
 
+import com.intellij.openapi.editor.Document
 import com.intellij.openapi.editor.event.DocumentEvent
 import com.intellij.openapi.editor.event.DocumentListener
 import com.intellij.openapi.editor.event.EditorMouseEvent
@@ -10,9 +11,13 @@ import com.jetbrains.edu.cognifire.highlighting.HighlighterManager
 import com.jetbrains.edu.cognifire.highlighting.ListenerManager
 import com.jetbrains.edu.cognifire.highlighting.highlighers.LinkingHighlighter
 import com.jetbrains.edu.cognifire.highlighting.highlighers.UncommittedChangesHighlighter
+import com.jetbrains.edu.cognifire.highlighting.ProdeStateManager
+import com.jetbrains.edu.cognifire.models.BaseProdeExpression
 import com.jetbrains.edu.cognifire.models.CodeExpression
 import com.jetbrains.edu.cognifire.models.PromptExpression
+import com.jetbrains.edu.learning.selectedEditor
 import kotlin.math.abs
+
 
 /**
  * Class [PromptToCodeHighlighter] is responsible for highlighting the prompt and code lines
@@ -27,7 +32,9 @@ class PromptToCodeHighlighter(private val project: Project, private val prodeId:
 
   private val highlighterManager = HighlighterManager.getInstance()
   private val listenerManager = ListenerManager.getInstance(project)
-
+  private var initialPromptContent: String = ""
+  private var initialCodeContent: String = ""
+  private val prodeStateManager = ProdeStateManager.getInstance()
   /**
    * Sets up the EditorMouseMotionListener to handle mouse movement events in the editor.
    * The method creates an anonymous class implementation of the EditorMouseMotionListener interface
@@ -46,29 +53,45 @@ class PromptToCodeHighlighter(private val project: Project, private val prodeId:
     promptToCodeLines: Map<Int, List<Int>>,
     codeToPromptLines: Map<Int, List<Int>>
   ) {
-    listenerManager.addListener(
-      getMouseMotionListener(
-        promptExpression,
-        codeExpression,
-        promptToCodeLines,
-        codeToPromptLines
-      ),
-      prodeId
+    val document = project.selectedEditor?.document ?: error("Inconsistent document state")
+    initialPromptContent = getContent(document, promptExpression)
+    initialCodeContent = getContent(document, codeExpression)
+
+    addMotionListener(promptExpression, codeExpression, promptToCodeLines, codeToPromptLines)
+    addDocumentListener(promptExpression, codeExpression)
+
+    prodeStateManager.addProde(
+      prodeId,
+      promptToCodeLines,
+      codeToPromptLines,
+      initialPromptContent,
+      initialCodeContent
     )
-    listenerManager.addListener(
-      getDocumentListener(codeExpression, promptExpression),
-      prodeId
-    )
+    prodeStateManager.addMouseMotionListener(prodeId)
   }
 
-  fun setUpDocumentListener(
+  fun setUpListeners(promptExpression: PromptExpression, codeExpression: CodeExpression) =
+    prodeStateManager.getProdeData(prodeId)?.let { prodeData ->
+      with(prodeData) {
+        initialPromptContent = initialPrompt
+        initialCodeContent = initialCode
+        addDocumentListener(promptExpression, codeExpression)
+        if (prodeStateManager.hasMouseMotion(prodeId)) {
+          addMotionListener(promptExpression, codeExpression, promptToCodeLines, codeToPromptLines)
+        }
+      }
+    } ?: run {
+      setUpDocumentListener(promptExpression, codeExpression)
+    }
+
+  private fun setUpDocumentListener(
     promptExpression: PromptExpression,
     codeExpression: CodeExpression
   ) {
-    listenerManager.addListener(
-      getDocumentListener(codeExpression, promptExpression),
-      prodeId
-    )
+    val document = project.selectedEditor?.document ?: error("Inconsistent document state")
+    initialPromptContent = getContent(document, promptExpression)
+    initialCodeContent = getContent(document, codeExpression)
+    addDocumentListener(promptExpression, codeExpression)
   }
 
   private fun getMouseMotionListener(
@@ -103,7 +126,7 @@ class PromptToCodeHighlighter(private val project: Project, private val prodeId:
     }
   }
 
-  private fun getDocumentListener(codeExpression: CodeExpression, promptExpression: PromptExpression) = object : DocumentListener {
+  private fun getDocumentListener(promptExpression: PromptExpression, codeExpression: CodeExpression) = object : DocumentListener {
     override fun documentChanged(event: DocumentEvent) {
       if (project.isDisposed) return
       val delta = event.newLength - event.oldLength
@@ -122,32 +145,78 @@ class PromptToCodeHighlighter(private val project: Project, private val prodeId:
       if (prodeIsEdited) {
         clearHighlighters()
         if (delta > 0) handleUncommitedChanges(offset, delta)
-        if (delta != 0) addReadOnlyBlock(codeExpression, promptExpression, event)
+        if (delta != 0) handleReadOnlyBlocks(codeExpression, promptExpression, event)
       }
     }
-
-
   }
 
   private fun clearHighlighters() {
     highlighterManager.clearProdeHighlighters<LinkingHighlighter>(prodeId)
     listenerManager.clearAllMouseMotionListeners(prodeId)
+    prodeStateManager.removeMouseMotionListener(prodeId)
   }
 
   private fun handleUncommitedChanges(offset: Int, delta: Int) {
     highlighterManager.addProdeHighlighter(UncommittedChangesHighlighter(offset, offset + delta), prodeId, project)
   }
 
-  private fun addReadOnlyBlock(codeExpression: CodeExpression, promptExpression: PromptExpression, event: DocumentEvent) {
+  private fun addMotionListener(
+    promptExpression: PromptExpression,
+    codeExpression: CodeExpression,
+    promptToCodeLines: Map<Int, List<Int>>,
+    codeToPromptLines: Map<Int, List<Int>>
+  ) {
+    listenerManager.addListener(
+      getMouseMotionListener(
+        promptExpression,
+        codeExpression,
+        promptToCodeLines,
+        codeToPromptLines
+      ),
+      prodeId
+    )
+  }
+  
+  private fun addDocumentListener(promptExpression: PromptExpression, codeExpression: CodeExpression) {
+    listenerManager.addListener(
+      getDocumentListener(promptExpression, codeExpression),
+      prodeId
+    )
+  }
+
+  private fun getContent(document: Document, prodeExpression: BaseProdeExpression) =
+    document.charsSequence.slice(
+      prodeExpression.startOffset until prodeExpression.endOffset
+    ).toString().normalize()
+
+  private fun String.normalize() = this.replace(Regex("\\s+"), " ").trim()
+
+  private fun handleReadOnlyBlocks(codeExpression: CodeExpression, promptExpression: PromptExpression, event: DocumentEvent) {
     val document = event.document
     val guardManager = GuardedBlockManager.getInstance()
-    if (event.offset in promptExpression.startOffset until promptExpression.endOffset) {
-      guardManager.addGuardedBlock(document, codeExpression.startOffset, codeExpression.endOffset, prodeId)
-    }
-    else if (event.offset in codeExpression.startOffset until codeExpression.endOffset) {
-      guardManager.addGuardedBlock(document, promptExpression.startOffset, promptExpression.endOffset, prodeId)
+    val currentPromptContent = getContent(document, promptExpression)
+    val currentCodeContent = getContent(document, codeExpression)
+
+    when {
+      event.offset in promptExpression.startOffset until promptExpression.endOffset
+      && currentPromptContent != initialPromptContent -> guardManager.addGuardedBlock(
+        document,
+        codeExpression.startOffset,
+        codeExpression.endOffset,
+        prodeId
+      )
+
+      event.offset in codeExpression.startOffset until codeExpression.endOffset
+      && currentCodeContent != initialCodeContent -> guardManager.addGuardedBlock(
+        document,
+        promptExpression.startOffset,
+        promptExpression.endOffset,
+        prodeId
+      )
+      else -> guardManager.removeGuardedBlock(prodeId, document)
     }
   }
+
 
   private fun showHighlighters(
     originLine: Int,

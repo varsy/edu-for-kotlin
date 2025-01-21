@@ -58,6 +58,7 @@
   <extensions defaultExtensionNs="com.intellij">
     <applicationService serviceImplementation="com.jetbrains.edu.cognifire.highlighting.HighlighterManager"/>
     <applicationService serviceImplementation="com.jetbrains.edu.cognifire.highlighting.GuardedBlockManager"/>
+    <applicationService serviceImplementation="com.jetbrains.edu.cognifire.highlighting.ProdeStateManager"/>
     <postStartupActivity implementation="com.jetbrains.edu.cognifire.CognifireStartupActivity"/>
   </extensions>
 
