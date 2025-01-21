@@ -13,6 +13,11 @@ data class FunctionSignature(
     return "$signaturePrefix: $returnType"
   }
 
+  /**
+   * The equality check doesn't cover all properties of an object, which is done on purpose.
+   * For example, in [com.jetbrains.edu.aiHints.core.TaskProcessorImpl.getShortFunctionFromSolutionIfRecommended] we search for the generated function,
+   * which might have a different implementation. That is, we only want to compare by function signature, which is name and parameters.
+   */
   override fun equals(other: Any?): Boolean {
     if (this === other) return true
     if (javaClass != other?.javaClass) return false
