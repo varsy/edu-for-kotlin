@@ -3,12 +3,14 @@ package com.jetbrains.edu.aiHints.core.context
 data class FunctionSignature(
   val name: String,
   val parameters: List<FunctionParameter>,
-  val returnType: String,
+  val returnType: String?,
   val signatureSource: SignatureSource? = null,
   val bodyLineCount: Int? = null
 ) {
   override fun toString(): String {
-    return "$name(${parameters.joinToString(separator = ", ")}): $returnType"
+    val signaturePrefix = "$name(${parameters.joinToString(separator = ", ")})"
+    if (returnType == null) return signaturePrefix
+    return "$signaturePrefix: $returnType"
   }
 
   override fun equals(other: Any?): Boolean {
