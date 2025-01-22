@@ -96,7 +96,9 @@ class PromptExecutorAction(private val element: PsiElement, private val prodeId:
       execution()
     }
     catch (e: AiAssistantException) {
-      project.notifyError(title = EduCognifireBundle.message("action.not.run.due.to.ai.assistant.exception"), content = e.message)
+      if (e.cause.toString() != EduCognifireBundle.message("exception.process.cancelled.exception")) {
+        project.notifyError(title = EduCognifireBundle.message("action.not.run.due.to.ai.assistant.exception"), content = e.message)
+      }
     }
     catch (_: Throwable) {
       CodeGenerationState.getInstance(project).unlock()
