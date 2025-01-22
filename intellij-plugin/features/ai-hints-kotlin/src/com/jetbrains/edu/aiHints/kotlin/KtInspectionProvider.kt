@@ -1,17 +1,14 @@
 package com.jetbrains.edu.aiHints.kotlin
 
-import com.intellij.codeInspection.LocalInspectionEP
-import com.intellij.codeInspection.LocalInspectionTool
-import com.intellij.util.asSafely
 import com.jetbrains.edu.aiHints.core.InspectionProvider
-import org.jetbrains.kotlin.idea.KotlinLanguage
 
 class KtInspectionProvider : InspectionProvider {
 
   /**
    * @see <a href="https://github.com/jetbrains-academy/kotlin-course-template/blob/main/.idea/inspectionProfiles/README.md">Inspections on Kotlin Courses</a>
    */
-  private val inspectionIds: Set<String> = setOf(
+  override val inspections: Set<String>
+    get() = setOf(
     "AddOperatorModifier",
     "AddVarianceModifier",
     "ImplicitThis",
@@ -43,9 +40,4 @@ class KtInspectionProvider : InspectionProvider {
     "SimplifyBooleanWithConstants",
     "LoopToCallChain"
   )
-
-  override fun getInspections(): List<LocalInspectionTool> = LocalInspectionEP.LOCAL_INSPECTION.extensions
-    .filter { it.language == KotlinLanguage.INSTANCE.id }
-    .mapNotNull { it.instantiateTool().asSafely<LocalInspectionTool>() }
-    .filter { it.id in inspectionIds }
 }
