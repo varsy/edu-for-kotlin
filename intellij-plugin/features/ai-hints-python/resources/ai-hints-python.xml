@@ -9,5 +9,6 @@
     <!--suppress PluginXmlValidity -->
     <functionSignatureResolver language="Python" implementationClass="com.jetbrains.edu.aiHints.python.PyFunctionSignatureResolver"/>
     <filesDiffer language="Python" implementationClass="com.jetbrains.edu.aiHints.python.PyFilesDiffer"/>
+    <inspectionProvider language="Python" implementationClass="com.jetbrains.edu.aiHints.python.PyInspectionProvider"/>
   </extensions>
 </idea-plugin>
