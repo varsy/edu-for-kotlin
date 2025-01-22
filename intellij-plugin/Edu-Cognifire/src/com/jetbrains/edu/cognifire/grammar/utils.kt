@@ -10,11 +10,11 @@ import org.antlr.v4.runtime.TokenStream
  * Parses the string using a custom lexer and parser.
  */
 
-fun String.parse(): ProblemSolvingLanguageParser.SentenceContext {
+fun String.parse(): ProblemSolvingLanguageParser.ProgramContext {
   val lexer = ProblemSolvingLanguageLexer(CharStreams.fromString(this.lowercase()))
   val tokens: TokenStream = CommonTokenStream(lexer)
   val parser = ProblemSolvingLanguageParser(tokens)
   parser.addErrorListener(ThrowingErrorListener.INSTANCE)
-  return parser.sentence()
+  return parser.program()
 }
 

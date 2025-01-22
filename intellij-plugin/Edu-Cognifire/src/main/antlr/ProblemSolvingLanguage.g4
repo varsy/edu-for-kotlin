@@ -1,12 +1,14 @@
 grammar ProblemSolvingLanguage;
 
-sentence: arbitraryText? expr arbitraryText? EOF;
+program: sentence (SEPARATOR sentence)* EOF;
+
+sentence: arbitraryText? expr arbitraryText?;
 
 arbitraryText : ( ARGUMENT | ARTICLE | MODIFIED | BY | IDENTIFIER | AND | VALUE | ELSE | THEN | LOOP | EACH | WHILE | DO | EMPTY | RANDOM | STRING_WORD | VARIABLE | SET | CALLED | FUNCTION | PRINT | STORE | CALL | IN | CREATE | BOOL | REPEAT | UNTIL | ADD | EQUAL | RETURN | READ | WITH | GET | CONST)+?;
 
 word: STRING_WORD | (RANDOM STRING_WORD) | (EMPTY STRING_WORD) | NUMBER | CODE;
 
-value: NUMBER | STRING | CODE | IDENTIFIER | BOOL;
+value: NUMBER | STRING | CODE | IDENTIFIER | BOOL | RESULT;
 
 contains: value arbitraryText? IN arbitraryText? CODE;
 
@@ -76,3 +78,5 @@ STRING: '"'(~["\r\n])*'"';
 CODE: '`'(~[`\r\n])*'`';
 IDENTIFIER : [A-Za-z][A-Za-z0-9]*;
 WS : [ \t\r\n,.:\\]+ -> skip;
+SEPARATOR: ',' | '.' | AND | ':' | ';' | THEN;
+RESULT: 'result' | 'it';

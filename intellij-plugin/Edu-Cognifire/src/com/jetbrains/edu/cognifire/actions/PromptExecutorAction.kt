@@ -15,7 +15,7 @@ import com.intellij.psi.PsiElement
 import com.jetbrains.edu.cognifire.codegeneration.CodeGenerationState
 import com.jetbrains.edu.cognifire.codegeneration.CodeGenerator
 import com.jetbrains.edu.cognifire.grammar.GrammarParser
-import com.jetbrains.edu.cognifire.grammar.OffsetSentence
+import com.jetbrains.edu.cognifire.grammar.UnparsableSentenceLink
 import com.jetbrains.edu.cognifire.highlighting.GuardedBlockManager
 import com.jetbrains.edu.cognifire.highlighting.HighlighterManager
 import com.jetbrains.edu.cognifire.highlighting.ListenerManager
@@ -37,6 +37,7 @@ import com.jetbrains.edu.learning.actions.EduActionUtils
 import com.jetbrains.edu.learning.actions.EduActionUtils.getCurrentTask
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
 import com.jetbrains.edu.learning.notification.EduNotificationManager
+import com.jetbrains.edu.learning.selectedEditor
 import com.jetbrains.edu.learning.taskToolWindow.ui.TaskToolWindowView
 import com.jetbrains.educational.ml.core.exception.AiAssistantException
 
@@ -101,7 +102,8 @@ class PromptExecutorAction(private val element: PsiElement, private val prodeId:
     catch (_: Throwable) {
       CodeGenerationState.getInstance(project).unlock()
       project.notifyError(content = EduCognifireBundle.message("action.not.run.due.to.unknown.exception"))
-    } finally {
+    }
+    finally {
       CodeGenerationState.getInstance(project).unlock()
       getDocument()?.setReadOnly(false)
     }
@@ -110,20 +112,6 @@ class PromptExecutorAction(private val element: PsiElement, private val prodeId:
   private fun runWithProgressBar(indicator: ProgressIndicator, execution: () -> Unit) {
     ApplicationManager.getApplication().executeOnPooledThread { EduActionUtils.showFakeProgress(indicator) }
     execution()
-  }
-
-  private fun checkGrammar(promptExpression: PromptExpression, project: Project): List<OffsetSentence> {
-    val unparsableSentences = GrammarParser.getUnparsableSentences(promptExpression)
-
-    if (unparsableSentences.isNotEmpty()) {
-      project.notifyError(
-        EduCognifireBundle.message("action.not.run.due.to.incorrect.grammar.title"),
-        EduCognifireBundle.message("action.not.run.due.to.incorrect.grammar.text"),
-        promptExpression
-      )
-    }
-
-    return unparsableSentences
   }
 
   private fun handleCodeGeneration(
@@ -145,32 +133,44 @@ class PromptExecutorAction(private val element: PsiElement, private val prodeId:
         codeGenerator.codeToPromptLines
       )
 
+      val unparsableSentenceLink = highlightGrammar(project, newPromptExpression, newCodeExpression, codeGenerator)
+
       val state = if (GeneratedCodeParser.hasErrors(project, generatedCode, newPromptExpression.functionSignature, element.language)) {
         PromptCodeState.CodeFailed
       }
       else {
         PromptCodeState.CodeSuccess
       }
-      var unparsableSentences = emptyList<OffsetSentence>()
-      if (state == PromptCodeState.CodeFailed) {
-        unparsableSentences = checkGrammar(newPromptExpression, project)
-        GrammarHighlighterProcessor.highlightAll(project, unparsableSentences, prodeId)
-      }
+
       Logger.cognifireLogger.info(
-        """Lesson id: ${task.lesson.id}    Task id: ${task.id}    Action id: $prodeId
-           | Text prompt: ${newPromptExpression.prompt}
-           | Code prompt: ${newPromptExpression.code}
-           | Generated code: $generatedCode
-           | Has TODO blocks: ${state == PromptCodeState.CodeFailed}
-           | Has unparsable sentences - ${unparsableSentences.isNotEmpty()}: ${unparsableSentences.map { it.sentence }}
-        """.trimMargin()
+        Logger.getLoggerInfo(task, prodeId, newPromptExpression, generatedCode, state, unparsableSentenceLink)
       )
-      promptActionManager.updateAction(prodeId, state, codeGenerator.finalPromptToCodeTranslation)
+      promptActionManager.updateAction(prodeId, state, codeGenerator.finalProdeTranslation)
       project.getCurrentTask()?.let {
         it.isPromptActionsGeneratedSuccessfully = promptActionManager.generatedSuccessfully(task.id)
         TaskToolWindowView.getInstance(project).updateCheckPanel(it)
       }
     }
+  }
+
+  private fun highlightGrammar(
+    project: Project,
+    newPromptExpression: PromptExpression,
+    newCodeExpression: CodeExpression,
+    codeGenerator: CodeGenerator
+  ): UnparsableSentenceLink {
+    fun getLineNumber(offset: Int) = project.selectedEditor?.document?.getLineNumber(offset) ?: 0
+
+    val promptLineNumberOffset = getLineNumber(newPromptExpression.contentOffset)
+    val codeLineNumberOffset = getLineNumber(newCodeExpression.contentOffset)
+
+    val unparsableProdeLines =
+      GrammarParser.getUnparsableProdeLines(codeGenerator.finalProdeTranslation, promptLineNumberOffset, codeLineNumberOffset)
+
+    GrammarHighlighterProcessor.highlightAll(project, unparsableProdeLines.promptIndices, prodeId)
+    GrammarHighlighterProcessor.highlightAll(project, unparsableProdeLines.codeIndices, prodeId)
+
+    return unparsableProdeLines
   }
 
   private fun syncProde(project: Project, codeGenerator: CodeGenerator, promptExpression: PromptExpression): ProdeExpression {
@@ -197,22 +197,9 @@ class PromptExecutorAction(private val element: PsiElement, private val prodeId:
       content = content
     ).notify(this).also {
       promptExpression?.let {
-        Logger.cognifireLogger.info(
-          """Lesson id: ${task.lesson.id}    Task id: ${task.id}    Action id: $prodeId
-           | Error: $title
-           | ErrorMessage: $content
-           | Text prompt: ${it.prompt}
-           | Code prompt: ${it.code}
-        """.trimMargin()
-        )
+        Logger.cognifireLogger.info(Logger.getLoggerInfo(task, prodeId, title, content, it))
       } ?: run {
-        Logger.cognifireLogger.info(
-          """Lesson id: ${task.lesson.id}    Task id: ${task.id}    Action id: $prodeId
-           | Error: $title
-           | ErrorMessage: $content
-        """.trimMargin()
-        )
+        Logger.cognifireLogger.info(Logger.getLoggerInfo(task, prodeId, title, content))
       }
     }
-
 }

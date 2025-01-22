@@ -1,53 +1,84 @@
 package com.jetbrains.edu.cognifire.grammar
 
 import com.intellij.openapi.progress.runBlockingCancellable
-import com.jetbrains.edu.cognifire.models.PromptExpression
 import com.jetbrains.educational.ml.cognifire.core.GrammarCheckerAssistant
-
-private const val DOT = "."
+import com.jetbrains.educational.ml.cognifire.responses.PromptToCodeContent
+import com.jetbrains.educational.ml.cognifire.responses.PromptToCodeResponse.GeneratedCodeLine
 
 /**
  * Parses provided Prompt.
  */
 object GrammarParser {
+  private const val TODO_MARKER = "TODO"
 
   /**
-   * Returns a list of OffsetSentences that are unparsable from the given [PromptExpression].
+   * Identifies unparsable lines from the provided prompt and code content.
    *
-   * @param promptExpression The [PromptExpression] containing the promptOffset and prompt.
-   * @return The list of unparsable OffsetSentences.
+   * @param promptToCode The content mapping between prompt and generated code lines to be analyzed.
+   * @param promptLineOffset The offset to be applied to prompt line numbers during processing.
+   * @param codeLineOffset The offset to be applied to generated code line numbers during processing.
+   * @return An instance of UnparsableSentenceLink containing sets of unparsable prompt and code line numbers.
    */
-  fun getUnparsableSentences(promptExpression: PromptExpression): List<OffsetSentence> {
-    val sentences = mutableListOf<OffsetSentence>()
+  fun getUnparsableProdeLines(
+    promptToCode: PromptToCodeContent,
+    promptLineOffset: Int,
+    codeLineOffset: Int
+  ): UnparsableSentenceLink = runBlockingCancellable {
+    val unparsableFromPrompt = findUnparsableLinesFromPrompt(promptToCode, promptLineOffset, codeLineOffset)
+    val unparsableFromCode = findUnparsableLinesFromCode(promptToCode, promptLineOffset, codeLineOffset)
 
-    promptExpression.prompt.split(DOT)
-      .fold(promptExpression.contentOffset) { currentOffset, sentence ->
-        sentences.add(OffsetSentence(sentence, currentOffset))
-        currentOffset + sentence.length + 1
-      }
-
-    return runBlockingCancellable {
-      sentences.filter { it.sentence.isNotBlank() }.filterGrammarStatic().filterGrammarMl()
-    }
+    unparsableFromPrompt + unparsableFromCode
   }
 
-  private fun String.matchesGrammarStatic() = try {
+  private suspend fun findUnparsableLinesFromPrompt(
+    promptToCode: PromptToCodeContent,
+    promptLineOffset: Int,
+    codeLineOffset: Int
+  ): UnparsableSentenceLink {
+    val unparsablePromptLines = promptToCode
+      .distinctBy { it.promptLineNumber }
+      .filterNot { it.promptLine.matchesGrammarStatic() }
+      .filterGrammarMl()
+      .map { it.promptLineNumber + promptLineOffset }
+      .toSet()
+
+    val unparsableCodeLines = promptToCode
+      .filter { it.promptLineNumber + promptLineOffset in unparsablePromptLines }
+      .map { it.codeLineNumber + codeLineOffset }
+      .toSet()
+
+    return UnparsableSentenceLink(unparsablePromptLines, unparsableCodeLines)
+  }
+
+  private fun findUnparsableLinesFromCode(
+    promptToCode: PromptToCodeContent,
+    promptLineOffset: Int,
+    codeLineOffset: Int
+  ): UnparsableSentenceLink {
+    val unparsableCodeLines = promptToCode
+      .distinctBy { it.codeLineNumber }
+      .filter { it.generatedCodeLine.startsWith(TODO_MARKER) }
+      .map { it.codeLineNumber + codeLineOffset }
+      .toSet()
+
+    val unparsablePromptLines = promptToCode
+      .filter { it.codeLineNumber + codeLineOffset in unparsableCodeLines }
+      .map { it.promptLineNumber + promptLineOffset }
+      .toSet()
+
+    return UnparsableSentenceLink(unparsablePromptLines, unparsableCodeLines)
+  }
+  
+  private fun String.matchesGrammarStatic() = runCatching {
     parse()
     true
-  } catch (e: Throwable) {
-    false
+  }.getOrElse { false }
+
+  private suspend fun Collection<GeneratedCodeLine>.filterGrammarMl(): List<GeneratedCodeLine> {
+    val mask = GrammarCheckerAssistant.checkGrammar(map { it.promptLine }).getOrThrow().map { it.not() }
+    return filterByMask(mask)
   }
 
-  private fun List<OffsetSentence>.filterGrammarStatic() = filter { !it.sentence.matchesGrammarStatic() }
-  
-  private suspend fun List<OffsetSentence>.filterGrammarMl(): List<OffsetSentence> {
-      val mask = GrammarCheckerAssistant.checkGrammar(
-        map { it.sentence }
-      ).getOrThrow().map { it.not() }
-      return filterByMask(mask)
-  }
-
-  private fun <E> List<E>.filterByMask(mask: List<Boolean>): List<E>
-    = filterIndexed { index, _ -> mask[index] }
+  private fun <E> Collection<E>.filterByMask(mask: List<Boolean>): List<E> = filterIndexed { index, _ -> mask[index] }
 
 }

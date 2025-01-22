@@ -2,11 +2,11 @@ package com.jetbrains.edu.cognifire.codegeneration
 
 import com.intellij.lang.Language
 import com.intellij.openapi.progress.runBlockingCancellable
-import com.jetbrains.edu.cognifire.utils.RedundantTodoCleaner
 import com.intellij.openapi.project.Project
 import com.jetbrains.edu.cognifire.inspection.InspectionProcessor
 import com.jetbrains.edu.cognifire.models.CodeExpression
 import com.jetbrains.edu.cognifire.models.PromptExpression
+import com.jetbrains.edu.cognifire.utils.RedundantTodoCleaner
 import com.jetbrains.edu.cognifire.utils.toGeneratedCode
 import com.jetbrains.edu.cognifire.utils.toPrompt
 import com.jetbrains.educational.ml.cognifire.core.PromptSyncAssistant
@@ -21,24 +21,25 @@ class CodeGenerator(
   private val codeExpression: CodeExpression?
 ) {
 
-  val finalPromptToCodeTranslation = improvePromptToCode()
+  val finalProdeTranslation by lazy { improvePromptToCode() }
 
-  val promptToCodeLines = finalPromptToCodeTranslation
+  val promptToCodeLines = finalProdeTranslation
     .groupBy { it.promptLineNumber }
     .mapValues { promptGroup ->
       promptGroup.value.map { it.codeLineNumber }
     }
-  val codeToPromptLines = finalPromptToCodeTranslation
+  val codeToPromptLines = finalProdeTranslation
     .groupBy { it.codeLineNumber }
     .mapValues { promptGroup ->
       promptGroup.value.map { it.promptLineNumber }
     }
-  val generatedCode = finalPromptToCodeTranslation.toGeneratedCode()
-  val generatedPrompt = finalPromptToCodeTranslation.toPrompt()
+  val generatedCode = finalProdeTranslation.toGeneratedCode()
+  val generatedPrompt = finalProdeTranslation.toPrompt()
 
   private fun generatePromptToCode() =
     if (previousPromptToCode != null && codeExpression?.code != null && previousPromptToCode.toGeneratedCode() != codeExpression.code
-                          && previousPromptToCode.toPrompt().filter { !it.isWhitespace() } == promptExpression.prompt.filter { !it.isWhitespace() }) {
+        && previousPromptToCode.toPrompt().filter { !it.isWhitespace() } == promptExpression.prompt.filter { !it.isWhitespace() }
+    ) {
       syncPrompt(
         previousPromptToCode,
         codeExpression.code.lines().enumerate(0),
@@ -46,7 +47,8 @@ class CodeGenerator(
         promptExpression.functionSignature.toString()
       )
     } else if (previousPromptToCode != null && codeExpression?.code != null && previousPromptToCode.toGeneratedCode() != codeExpression.code
-             && previousPromptToCode.toPrompt() != promptExpression.prompt) {
+               && previousPromptToCode.toPrompt() != promptExpression.prompt
+    ) {
       getCodeFromPrompt(promptExpression.functionSignature.toString(), getEnumeratedPromptLines(promptExpression)) // TODO: handle conflict
     } else {
       getCodeFromPrompt(promptExpression.functionSignature.toString(), getEnumeratedPromptLines(promptExpression))
@@ -71,7 +73,12 @@ class CodeGenerator(
       .getOrThrow()
   }
 
-  private fun syncPrompt(previousPromptToCode: PromptToCodeContent, modifiedCode: String, modifiedCodeLineNumbers: Set<Int>, functionSignature: String) =
+  private fun syncPrompt(
+    previousPromptToCode: PromptToCodeContent,
+    modifiedCode: String,
+    modifiedCodeLineNumbers: Set<Int>,
+    functionSignature: String
+  ) =
     runBlockingCancellable {
       PromptSyncAssistant.syncPrompt(previousPromptToCode, modifiedCode, modifiedCodeLineNumbers, functionSignature).getOrThrow()
     }
