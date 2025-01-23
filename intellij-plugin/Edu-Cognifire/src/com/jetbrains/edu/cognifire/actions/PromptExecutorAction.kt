@@ -1,6 +1,7 @@
 package com.jetbrains.edu.cognifire.actions
 
 import com.intellij.notification.NotificationType.ERROR
+import com.intellij.notification.NotificationType.INFORMATION
 import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
@@ -96,8 +97,9 @@ class PromptExecutorAction(private val element: PsiElement, private val prodeId:
       execution()
     }
     catch (e: AiAssistantException) {
-      if (e.cause.toString() != EduCognifireBundle.message("exception.process.cancelled.exception")) {
-        project.notifyError(title = EduCognifireBundle.message("action.not.run.due.to.ai.assistant.exception"), content = e.message)
+      when (e.cause.toString()) {
+        CANCELLATION_CAUSE -> project.notifyInformation(title = EduCognifireBundle.message("action.not.run.due.to.cancellation"), content = "")
+        else -> project.notifyError(title = EduCognifireBundle.message("action.not.run.due.to.ai.assistant.exception"), content = e.message)
       }
     }
     catch (_: Throwable) {
@@ -198,23 +200,40 @@ class PromptExecutorAction(private val element: PsiElement, private val prodeId:
       title = title,
       content = content
     ).notify(this).also {
-      promptExpression?.let {
-        Logger.cognifireLogger.info(
-          """Lesson id: ${task.lesson.id}    Task id: ${task.id}    Action id: $prodeId
+      logNotification(title, content, promptExpression)
+    }
+
+  private fun Project.notifyInformation(title: String = "", content: String, promptExpression: PromptExpression? = null) {
+    EduNotificationManager.create(
+      type = INFORMATION,
+      title = title,
+      content = content
+    ).notify(this).also {
+      logNotification(title, content, promptExpression)
+    }
+  }
+
+  private fun logNotification(title: String = "", content: String, promptExpression: PromptExpression? = null) {
+    promptExpression?.let {
+      Logger.cognifireLogger.info(
+        """Lesson id: ${task.lesson.id}    Task id: ${task.id}    Action id: $prodeId
            | Error: $title
            | ErrorMessage: $content
            | Text prompt: ${it.prompt}
            | Code prompt: ${it.code}
         """.trimMargin()
-        )
-      } ?: run {
-        Logger.cognifireLogger.info(
-          """Lesson id: ${task.lesson.id}    Task id: ${task.id}    Action id: $prodeId
+      )
+    } ?: run {
+      Logger.cognifireLogger.info(
+        """Lesson id: ${task.lesson.id}    Task id: ${task.id}    Action id: $prodeId
            | Error: $title
            | ErrorMessage: $content
         """.trimMargin()
-        )
-      }
+      )
     }
+  }
 
+  companion object {
+    private const val CANCELLATION_CAUSE = "com.intellij.openapi.progress.IndicatorCancellationException"
+  }
 }
