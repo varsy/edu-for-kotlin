@@ -162,7 +162,7 @@ class SubmissionsManager(private val project: Project) : EduTestAware {
   fun prepareSubmissionsContentWhenLoggedIn(loadSolutions: () -> Unit = {}) {
     val course = course
     val submissionsProvider = course?.getSubmissionsProvider() ?: return
-    val communitySubmissionsProvider = course.getCommunitySubmissionsProvider() ?: return
+    val communitySubmissionsProvider = course.getCommunitySubmissionsProvider()
 
     CompletableFuture.runAsync({
       if (!isLoggedIn()) return@runAsync
@@ -172,7 +172,7 @@ class SubmissionsManager(private val project: Project) : EduTestAware {
       taskToolWindowView.showLoadingSubmissionsPanel(platformName)
       taskToolWindowView.showLoadingCommunityPanel(platformName)
       loadSubmissionsContent(course, submissionsProvider, loadSolutions)
-      loadCommunityContent(course, communitySubmissionsProvider)
+      communitySubmissionsProvider?.loadCommunityContent(course)
 
       notifySubmissionsChanged()
     }, ProcessIOExecutorService.INSTANCE)
@@ -262,8 +262,8 @@ class SubmissionsManager(private val project: Project) : EduTestAware {
     loadSolutions()
   }
 
-  private fun loadCommunityContent(course: Course, communitySubmissionsProvider: CommunitySubmissionsProvider) {
-    val courseSharedSolutions = communitySubmissionsProvider.loadCommunitySubmissions(course)
+  private fun CommunitySubmissionsProvider.loadCommunityContent(course: Course) {
+    val courseSharedSolutions = loadCommunitySubmissions(course)
     courseSharedSolutions.forEach { (taskId, sharedSolutions) ->
       communitySubmissions[taskId] = TaskCommunitySubmissions(sharedSolutions.toMutableList(), hasMore = true)
     }
