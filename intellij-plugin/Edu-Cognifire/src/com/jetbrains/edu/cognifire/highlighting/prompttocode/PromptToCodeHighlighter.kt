@@ -12,6 +12,7 @@ import com.jetbrains.edu.cognifire.highlighting.ListenerManager
 import com.jetbrains.edu.cognifire.highlighting.highlighers.LinkingHighlighter
 import com.jetbrains.edu.cognifire.highlighting.highlighers.UncommittedChangesHighlighter
 import com.jetbrains.edu.cognifire.highlighting.ProdeStateManager
+import com.jetbrains.edu.cognifire.highlighting.highlighers.GuardBlockHighlighter
 import com.jetbrains.edu.cognifire.models.BaseProdeExpression
 import com.jetbrains.edu.cognifire.models.CodeExpression
 import com.jetbrains.edu.cognifire.models.PromptExpression
@@ -193,30 +194,38 @@ class PromptToCodeHighlighter(private val project: Project, private val prodeId:
 
   private fun handleReadOnlyBlocks(codeExpression: CodeExpression, promptExpression: PromptExpression, event: DocumentEvent) {
     val document = event.document
-    val guardManager = GuardedBlockManager.getInstance()
     val currentPromptContent = getContent(document, promptExpression)
     val currentCodeContent = getContent(document, codeExpression)
+    val guardManager = GuardedBlockManager.getInstance()
+    highlighterManager.clearProdeHighlighters<GuardBlockHighlighter>(prodeId)
 
     when {
       event.offset in promptExpression.startOffset until promptExpression.endOffset
-      && currentPromptContent != initialPromptContent -> guardManager.addGuardedBlock(
+      && currentPromptContent != initialPromptContent -> addGuardedBlock(
         document,
-        codeExpression.startOffset,
-        codeExpression.endOffset,
-        prodeId
+        codeExpression,
+        prodeId,
+        guardManager
       )
 
       event.offset in codeExpression.startOffset until codeExpression.endOffset
-      && currentCodeContent != initialCodeContent -> guardManager.addGuardedBlock(
+      && currentCodeContent != initialCodeContent -> addGuardedBlock(
         document,
-        promptExpression.startOffset,
-        promptExpression.endOffset,
-        prodeId
+        promptExpression,
+        prodeId,
+        guardManager
       )
+
       else -> guardManager.removeGuardedBlock(prodeId, document)
     }
   }
 
+  private fun addGuardedBlock(document: Document, expression: BaseProdeExpression, prodeId: String, guardManager: GuardedBlockManager) {
+    with(expression) {
+      highlighterManager.addProdeHighlighter(GuardBlockHighlighter(startOffset, endOffset), prodeId, project)
+      guardManager.addGuardedBlock(document, startOffset, endOffset, prodeId)
+    }
+  }
 
   private fun showHighlighters(
     originLine: Int,
