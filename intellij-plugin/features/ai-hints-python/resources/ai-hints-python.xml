@@ -11,5 +11,6 @@
     <filesDiffer language="Python" implementationClass="com.jetbrains.edu.aiHints.python.PyFilesDiffer"/>
     <inspectionProvider language="Python" implementationClass="com.jetbrains.edu.aiHints.python.PyInspectionProvider"/>
     <stringExtractor language="Python" implementationClass="com.jetbrains.edu.aiHints.python.PyStringExtractor"/>
+    <functionDiffReducer language="Python" implementationClass="com.jetbrains.edu.aiHints.python.PyFunctionDiffReducer"/>
   </extensions>
 </idea-plugin>
