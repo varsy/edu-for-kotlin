@@ -10,5 +10,6 @@
     <functionSignatureResolver language="Python" implementationClass="com.jetbrains.edu.aiHints.python.PyFunctionSignatureResolver"/>
     <filesDiffer language="Python" implementationClass="com.jetbrains.edu.aiHints.python.PyFilesDiffer"/>
     <inspectionProvider language="Python" implementationClass="com.jetbrains.edu.aiHints.python.PyInspectionProvider"/>
+    <stringExtractor language="Python" implementationClass="com.jetbrains.edu.aiHints.python.PyStringExtractor"/>
   </extensions>
 </idea-plugin>
