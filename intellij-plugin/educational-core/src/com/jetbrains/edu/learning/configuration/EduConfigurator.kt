@@ -7,18 +7,23 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.profile.codeInspection.PROFILE_DIR
 import com.intellij.util.ui.EmptyIcon
 import com.jetbrains.edu.coursecreator.CCUtils
-import com.jetbrains.edu.learning.*
+import com.jetbrains.edu.learning.CourseInfoHolder
+import com.jetbrains.edu.learning.EduCourseBuilder
+import com.jetbrains.edu.learning.EduNames
 import com.jetbrains.edu.learning.checker.TaskCheckerProvider
 import com.jetbrains.edu.learning.compatibility.CourseCompatibilityProvider
 import com.jetbrains.edu.learning.compatibility.CourseCompatibilityProviderEP
 import com.jetbrains.edu.learning.courseFormat.Course
+import com.jetbrains.edu.learning.courseFormat.DescriptionFormat.Companion.taskDescriptionRegex
 import com.jetbrains.edu.learning.courseFormat.EduFormatNames
 import com.jetbrains.edu.learning.courseFormat.TaskFile
 import com.jetbrains.edu.learning.courseFormat.ext.getCodeTaskFile
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
 import com.jetbrains.edu.learning.marketplace.loadMarketplaceCourseStructure
 import com.jetbrains.edu.learning.newproject.EduProjectSettings
-import com.jetbrains.edu.learning.yaml.YamlFormatSynchronizer.isConfigFile
+import com.jetbrains.edu.learning.toCourseInfoHolder
+import com.jetbrains.edu.learning.yaml.YamlFormatSynchronizer.isLocalConfigFileName
+import com.jetbrains.edu.learning.yaml.YamlFormatSynchronizer.isRemoteConfigFileName
 import org.jetbrains.annotations.SystemIndependent
 import javax.swing.Icon
 
@@ -51,44 +56,38 @@ interface EduConfigurator<Settings : EduProjectSettings> {
   val testFileName: String
   val taskCheckerProvider: TaskCheckerProvider
 
-  /**
-   * Used in educator plugin to filter files to be packed into course archive
-   */
-  fun excludeFromArchive(holder: CourseInfoHolder<out Course?>, file: VirtualFile): Boolean {
-    val ancestorNames = mutableListOf<String>()
-    var parent: VirtualFile? = file
-    while (parent != null) {
-      ancestorNames.add(parent.name)
-      parent = parent.parent
+  fun courseFileAttributes(): AttributesEvaluator = AttributesEvaluator {
+    // all files starting with dot (.file)
+    path("""^\.""".toRegex()) {
+      excludeFromArchive()
     }
 
-    val name = file.name
-
-    val ideaFolderIndex = ancestorNames.indexOf(Project.DIRECTORY_STORE_FOLDER)
-
-    // Remove hidden files, except the .idea folder
-    for ((i, ancestorName) in ancestorNames.withIndex()) {
-      if (ancestorName.startsWith(".") && i != ideaFolderIndex) {
-        return true
+    dir(Project.DIRECTORY_STORE_FOLDER) {
+      dir(PROFILE_DIR, "scopes") {
+        includeIntoArchive()
       }
+      excludeFromArchive()
     }
 
-    // Project related files: inside .idea include only .idea/scopes and .idea/inspectionProfiles
-    if (ideaFolderIndex == 0) {
-      return false
-    }
-    else {
-      if (ideaFolderIndex >= 1) {
-        return ancestorNames[ideaFolderIndex - 1] !in INCLUDED_SETTINGS_SUBDIRECTORIES
-      }
+    extension("iml") {
+      excludeFromArchive()
     }
 
-    return "iml" == file.extension ||
-           // Course structure files
-           EduUtilsKt.isTaskDescriptionFile(name) || isConfigFile(file) ||
-           // Special files
-           ancestorNames.contains(CCUtils.GENERATED_FILES_FOLDER) || EduNames.HINTS == name || EduNames.STEPIK_IDS_JSON == name ||
-           EduNames.COURSE_IGNORE == name || EduFormatNames.COURSE_ICON_FILE == name
+    name(taskDescriptionRegex) {
+      excludeFromArchive()
+    }
+
+    name(pred { isLocalConfigFileName(it) || isRemoteConfigFileName(it) }) {
+      excludeFromArchive()
+    }
+
+    dir(CCUtils.GENERATED_FILES_FOLDER) {
+      excludeFromArchive()
+    }
+
+    name(*EXCLUDED_FILES) {
+      excludeFromArchive()
+    }
   }
 
   /**
@@ -192,9 +191,12 @@ interface EduConfigurator<Settings : EduProjectSettings> {
   fun getEnvironmentSettings(project: Project): Map<String, String> = mapOf()
 
   companion object {
-    val INCLUDED_SETTINGS_SUBDIRECTORIES = setOf(PROFILE_DIR, "scopes")
+    val EXCLUDED_FILES = arrayOf(EduNames.HINTS, EduNames.STEPIK_IDS_JSON, EduNames.COURSE_IGNORE, EduFormatNames.COURSE_ICON_FILE)
   }
 }
 
 fun EduConfigurator<*>.excludeFromArchive(project: Project, file: VirtualFile): Boolean =
   excludeFromArchive(project.toCourseInfoHolder(), file)
+
+fun EduConfigurator<*>.excludeFromArchive(holder: CourseInfoHolder<out Course?>, file: VirtualFile): Boolean =
+  courseFileAttributes().attributesForFile(holder, file).excludedFromArchive

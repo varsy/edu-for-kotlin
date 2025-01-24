@@ -20,7 +20,6 @@ import com.intellij.openapi.vfs.findFile
 import com.intellij.psi.PsiFileFactory
 import com.intellij.psi.codeStyle.CodeStyleManager
 import com.intellij.util.ui.JBUI
-import com.jetbrains.edu.learning.storage.persistEduFiles
 import com.jetbrains.edu.learning.*
 import com.jetbrains.edu.learning.EduUtilsKt.isStudentProject
 import com.jetbrains.edu.learning.courseFormat.Course
@@ -35,6 +34,7 @@ import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
 import com.jetbrains.edu.learning.messages.EduCoreBundle
 import com.jetbrains.edu.learning.storage.persistAdditionalFiles
+import com.jetbrains.edu.learning.storage.persistEduFiles
 import com.jetbrains.edu.learning.yaml.YamlConfigSettings.COURSE_CONFIG
 import com.jetbrains.edu.learning.yaml.YamlConfigSettings.LESSON_CONFIG
 import com.jetbrains.edu.learning.yaml.YamlConfigSettings.REMOTE_COURSE_CONFIG
@@ -206,11 +206,19 @@ object YamlFormatSynchronizer {
 
   fun isRemoteConfigFile(file: VirtualFile): Boolean {
     val name = file.name
+    return isRemoteConfigFileName(name)
+  }
+
+  fun isRemoteConfigFileName(name: String): Boolean {
     return REMOTE_COURSE_CONFIG == name || REMOTE_SECTION_CONFIG == name || REMOTE_LESSON_CONFIG == name || REMOTE_TASK_CONFIG == name
   }
 
   fun isLocalConfigFile(file: VirtualFile): Boolean {
     val name = file.name
+    return isLocalConfigFileName(name)
+  }
+
+  fun isLocalConfigFileName(name: String): Boolean {
     return COURSE_CONFIG == name || SECTION_CONFIG == name || LESSON_CONFIG == name || TASK_CONFIG == name
   }
 

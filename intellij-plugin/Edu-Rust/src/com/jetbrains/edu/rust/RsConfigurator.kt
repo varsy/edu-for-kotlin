@@ -2,11 +2,10 @@ package com.jetbrains.edu.rust
 
 import com.intellij.openapi.application.ApplicationInfo
 import com.intellij.openapi.util.BuildNumber
-import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.util.text.VersionComparatorUtil
 import com.jetbrains.edu.EducationalCoreIcons
-import com.jetbrains.edu.learning.CourseInfoHolder
 import com.jetbrains.edu.learning.EduCourseBuilder
+import com.jetbrains.edu.learning.configuration.AttributesEvaluator
 import com.jetbrains.edu.learning.configuration.EduConfigurator
 import com.jetbrains.edu.learning.courseFormat.Course
 import com.jetbrains.edu.learning.courseFormat.PluginInfos
@@ -39,18 +38,21 @@ class RsConfigurator : EduConfigurator<RsProjectSettings> {
   override val logo: Icon
     get() = EducationalCoreIcons.Language.Rust
 
-  override fun excludeFromArchive(holder: CourseInfoHolder<out Course?>, file: VirtualFile): Boolean {
-    // Cargo config file should be included into course even it's located in "hidden" `.cargo` directory
-    if (file.isCargoConfigDirOrFile(holder.courseDir)) return false
-    return super.excludeFromArchive(holder, file) || file.name == CargoConstants.LOCK_FILE ||
-           generateSequence(file, VirtualFile::getParent).any { it.name == CargoConstants.ProjectLayout.target }
-  }
+  override fun courseFileAttributes(): AttributesEvaluator = AttributesEvaluator(super.courseFileAttributes()) {
+    dir(".cargo") {
+      name(CargoConstants.CONFIG_TOML_FILE, CargoConstants.CONFIG_FILE) {
+        includeIntoArchive()
+      }
+      excludeFromArchive()
+    }
 
-  private fun VirtualFile.isCargoConfigDirOrFile(courseDir: VirtualFile): Boolean {
-    val cargoDir = courseDir.findChild(".cargo") ?: return false
-    if (cargoDir == this) return true
-    // Cargo config file should be included into course even it's located in "hidden" directory
-    return cargoDir.findChild(CargoConstants.CONFIG_TOML_FILE) == this || cargoDir.findChild(CargoConstants.CONFIG_FILE) == this
+    path(CargoConstants.ProjectLayout.target) {
+      excludeFromArchive()
+    }
+
+    name(CargoConstants.LOCK_FILE) {
+      excludeFromArchive()
+    }
   }
 
   override val isEnabled: Boolean

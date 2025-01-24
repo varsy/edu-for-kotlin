@@ -1,16 +1,15 @@
 package com.jetbrains.edu.scala.sbt
 
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.vfs.VirtualFile
 import com.jetbrains.edu.EducationalCoreIcons
 import com.jetbrains.edu.jvm.JdkProjectSettings
 import com.jetbrains.edu.jvm.jvmEnvironmentSettings
 import com.jetbrains.edu.jvm.stepik.fileName
-import com.jetbrains.edu.learning.CourseInfoHolder
 import com.jetbrains.edu.learning.EduCourseBuilder
 import com.jetbrains.edu.learning.EduNames
 import com.jetbrains.edu.learning.EduUtilsKt
 import com.jetbrains.edu.learning.checker.TaskCheckerProvider
+import com.jetbrains.edu.learning.configuration.AttributesEvaluator
 import com.jetbrains.edu.learning.configuration.EduConfigurator
 import com.jetbrains.edu.learning.courseFormat.Course
 import com.jetbrains.edu.learning.courseGeneration.GeneratorUtils.getInternalTemplateText
@@ -49,9 +48,10 @@ class ScalaSbtConfigurator : EduConfigurator<JdkProjectSettings> {
   override val defaultPlaceholderText: String
     get() = "/* TODO */"
 
-  override fun excludeFromArchive(holder: CourseInfoHolder<out Course?>, file: VirtualFile): Boolean {
-    return super.excludeFromArchive(holder, file) ||
-           generateSequence(file, VirtualFile::getParent).any { it.name == "target"}
+  override fun courseFileAttributes(): AttributesEvaluator = AttributesEvaluator(super.courseFileAttributes()) {
+    path("target") {
+      excludeFromArchive()
+    }
   }
 
   companion object {

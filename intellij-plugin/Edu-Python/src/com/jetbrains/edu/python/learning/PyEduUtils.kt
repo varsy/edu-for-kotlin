@@ -11,8 +11,8 @@ import com.intellij.openapi.module.ModuleManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.projectRoots.Sdk
 import com.intellij.openapi.util.io.FileUtil
-import com.intellij.openapi.vfs.VfsUtilCore
 import com.intellij.openapi.vfs.VirtualFile
+import com.jetbrains.edu.learning.configuration.AttributesEvaluator
 import com.jetbrains.edu.learning.courseDir
 import com.jetbrains.edu.learning.courseFormat.EduFormatNames.PYTHON_2_VERSION
 import com.jetbrains.edu.learning.courseFormat.EduFormatNames.PYTHON_3_VERSION
@@ -45,10 +45,14 @@ fun Task.getCurrentTaskFilePath(project: Project): String? {
   return getCurrentTaskVirtualFile(project)?.systemDependentPath
 }
 
-fun excludeFromArchive(file: VirtualFile): Boolean {
-  val path = file.path
-  val pathSegments = path.split(VfsUtilCore.VFS_SEPARATOR_CHAR)
-  return pathSegments.any { it in FOLDERS_TO_EXCLUDE } || path.endsWith(".pyc")
+internal fun pythonAttributesEvaluator(baseEvaluator: AttributesEvaluator): AttributesEvaluator = AttributesEvaluator(baseEvaluator) {
+  path(*FOLDERS_TO_EXCLUDE) {
+    excludeFromArchive()
+  }
+
+  extension("pyc") {
+    excludeFromArchive()
+  }
 }
 
 fun installRequiredPackages(project: Project, sdk: Sdk) {
@@ -92,7 +96,7 @@ fun getSupportedVersions(): List<String> {
 
 private val VirtualFile.systemDependentPath: String get() = FileUtil.toSystemDependentName(path)
 
-private val FOLDERS_TO_EXCLUDE: List<String> = listOf("__pycache__", "venv")
+private val FOLDERS_TO_EXCLUDE: Array<String> = arrayOf("__pycache__", "venv")
 
 // should be the same as [PyPackageManagerUI.PackagingTask.PACKAGING_GROUP_ID]
 private const val PY_PACKAGES_NOTIFICATION_GROUP = "Packaging"

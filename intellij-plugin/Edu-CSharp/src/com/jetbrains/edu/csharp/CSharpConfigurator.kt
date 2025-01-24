@@ -2,17 +2,15 @@ package com.jetbrains.edu.csharp
 
 import com.intellij.openapi.application.ApplicationInfo
 import com.intellij.openapi.util.BuildNumber
-import com.intellij.openapi.vfs.VirtualFile
 import com.jetbrains.edu.EducationalCoreIcons
 import com.jetbrains.edu.csharp.checker.CSharpTaskCheckerProvider
-import com.jetbrains.edu.learning.CourseInfoHolder
 import com.jetbrains.edu.learning.EduCourseBuilder
 import com.jetbrains.edu.learning.EduExperimentalFeatures
 import com.jetbrains.edu.learning.checker.TaskCheckerProvider
+import com.jetbrains.edu.learning.configuration.AttributesEvaluator
 import com.jetbrains.edu.learning.configuration.EduConfigurator
 import com.jetbrains.edu.learning.courseFormat.Course
 import com.jetbrains.edu.learning.isFeatureEnabled
-import com.jetbrains.edu.learning.pathRelativeToTask
 import com.jetbrains.rider.ideaInterop.fileTypes.sln.SolutionFileType
 import org.jetbrains.annotations.NonNls
 import javax.swing.Icon
@@ -36,11 +34,14 @@ class CSharpConfigurator : EduConfigurator<CSharpProjectSettings> {
   override val taskCheckerProvider: TaskCheckerProvider
     get() = CSharpTaskCheckerProvider()
 
-  override fun excludeFromArchive(holder: CourseInfoHolder<out Course?>, file: VirtualFile): Boolean {
-    if (super.excludeFromArchive(holder, file)) return true
-    return file.extension == SolutionFileType.defaultExtension
-           || file.pathRelativeToTask(holder).contains("$BIN_DIRECTORY/")
-           || file.pathRelativeToTask(holder).contains("$OBJ_DIRECTORY/")
+  override fun courseFileAttributes() = AttributesEvaluator(super.courseFileAttributes()) {
+    extension(SolutionFileType.defaultExtension) {
+      excludeFromArchive()
+    }
+
+    path(BIN_DIRECTORY, OBJ_DIRECTORY) {
+      excludeFromArchive()
+    }
   }
 
   override val defaultPlaceholderText: String
