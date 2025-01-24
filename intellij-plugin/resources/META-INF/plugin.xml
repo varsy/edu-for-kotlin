@@ -45,5 +45,6 @@
     <module name="ai-hints-python"/>
     <module name="ai-debugging-core"/>
     <module name="ai-debugging-jvm"/>
+    <module name="ai-debugging-kotlin"/>
   </content>
 </idea-plugin>

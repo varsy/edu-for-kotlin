@@ -17,6 +17,7 @@ import com.intellij.platform.ide.progress.withModalProgress
 import com.intellij.util.messages.MessageBusConnection
 import com.intellij.xdebugger.*
 import com.jetbrains.edu.aiDebugging.core.breakpoint.AIBreakPointService
+import com.jetbrains.edu.aiDebugging.core.breakpoint.IntermediateBreakpointProcessor
 import com.jetbrains.edu.aiDebugging.core.messages.EduAIDebuggingCoreBundle
 import com.jetbrains.edu.learning.EduUtilsKt
 import com.jetbrains.edu.learning.checker.CheckUtils.createTests
@@ -44,7 +45,13 @@ class AIDebugSessionService(private val project: Project, private val coroutineS
   private var breakpointHint: AIBreakpointHint? = null
   private var connection: MessageBusConnection? = null
 
-  fun runDebuggingSession(task: Task, description: TaskDescription, virtualFiles: List<VirtualFile>, testResult: CheckResult, closeAIDebuggingHint: () -> Unit) {
+  fun runDebuggingSession(
+    task: Task,
+    description: TaskDescription,
+    virtualFiles: List<VirtualFile>,
+    testResult: CheckResult,
+    closeAIDebuggingHint: () -> Unit
+  ) {
     coroutineScope.launch {
       withModalProgress(project, EduAIDebuggingCoreBundle.message("action.Educational.AiDebuggingNotification.modal.session")) {
         FixCodeForTestAssistant.getCodeFix(
@@ -55,9 +62,22 @@ class AIDebugSessionService(private val project: Project, private val coroutineS
       }.onSuccess { fixes ->
         val language = project.course?.languageById ?: error("Language is not found")
         val settings = getRunSettingsForFailedTest(task, testResult)
-        fixes.forEach {
-          val virtualFile = virtualFiles.firstOrNull { file -> file.name == it.fileName } ?: error("Virtual file is not found")
-          project.getService(AIBreakPointService::class.java).toggleLineBreakpoint(language, virtualFile, it.wrongCodeLineNumber)
+        fixes.groupBy { it.fileName }.forEach { (fileName, fixesForFile) ->
+          val virtualFile = virtualFiles.firstOrNull { file -> file.name == fileName } ?: error("Virtual file is not found")
+          fixesForFile.forEach {
+            project.getService(AIBreakPointService::class.java).toggleLineBreakpoint(language, virtualFile, it.wrongCodeLineNumber)
+          }
+          runReadAction {
+            IntermediateBreakpointProcessor.calculateIntermediateBreakpointPositions(
+              virtualFile,
+              fixesForFile.map { it.wrongCodeLineNumber }.toList(),
+              project,
+              language
+            )
+          }.forEach { position ->
+            // TODO: should be placed on the references or on the next line?
+            project.getService(AIBreakPointService::class.java).toggleLineBreakpoint(language, virtualFile, position)
+          }
         }
         runWithTests(task, closeAIDebuggingHint) {
           startDebugSession(settings)

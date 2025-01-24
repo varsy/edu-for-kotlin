@@ -1,0 +1,12 @@
+<idea-plugin package="com.jetbrains.edu.aiDebugging.kotlin">
+  <dependencies>
+    <!--suppress PluginXmlValidity -->
+    <module name="ai-debugging-core"/>
+    <plugin id="org.jetbrains.kotlin"/>
+  </dependencies>
+
+  <extensions defaultExtensionNs="aiDebugging">
+    <intermediateBreakpointProcessor language="kotlin" implementationClass="com.jetbrains.edu.aiDebugging.kotlin.KtIntermediateBreakpointProcessor"/>
+  </extensions>
+
+</idea-plugin>

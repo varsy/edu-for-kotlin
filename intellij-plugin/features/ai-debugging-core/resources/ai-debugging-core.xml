@@ -1,11 +1,6 @@
 <idea-plugin package="com.jetbrains.edu.aiDebugging.core">
   <resource-bundle>messages.EduAIDebuggingCoreBundle</resource-bundle>
 
-  <dependencies>
-    <!--suppress PluginXmlValidity -->
-    <module name="AI"/>
-  </dependencies>
-
   <extensions defaultExtensionNs="com.intellij">
     <!--suppress PluginXmlValidity -->
     <postStartupActivity implementation="com.jetbrains.edu.aiDebugging.core.breakpoint.AIBreakPointsStartupActivity"/>
@@ -21,6 +16,12 @@
                     dynamic="true">
       <with attribute="implementationClass"
             implements="com.jetbrains.edu.aiDebugging.core.breakpoint.BreakpointTypeManager"/>
+    </extensionPoint>
+    <extensionPoint qualifiedName="aiDebugging.intermediateBreakpointProcessor"
+                    beanClass="com.intellij.lang.LanguageExtensionPoint"
+                    dynamic="true">
+      <with attribute="implementationClass"
+            implements="com.jetbrains.edu.aiDebugging.core.breakpoint.IntermediateBreakpointProcessor"/>
     </extensionPoint>
   </extensionPoints>
 </idea-plugin>
