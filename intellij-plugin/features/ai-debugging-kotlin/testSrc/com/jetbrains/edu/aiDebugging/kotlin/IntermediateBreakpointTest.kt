@@ -95,14 +95,16 @@ class IntermediateBreakpointTest(
     @JvmStatic
     fun data(): Collection<Array<Any>> = listOf(
       arrayOf(listOf(1), listOf(2, 29)), // test function
-      arrayOf(listOf(2), listOf(3, 5, 6, 23, 24)), // test property
-      arrayOf(listOf(5), listOf(3, 5, 6, 23, 24)), // test BinaryExpression
-      arrayOf(listOf(11), listOf(12)), // test for
-      arrayOf(listOf(3), listOf(4, 7, 8)), // test if
-      arrayOf(listOf(15), listOf(16, 17, 19)), // test when
-      arrayOf(listOf(23), listOf(24)), // test while
+      arrayOf(listOf(2), listOf(3, 5, 6, 23, 24) + functionCallLines), // test property
+      arrayOf(listOf(5), listOf(3, 5, 6, 23, 24) + functionCallLines), // test BinaryExpression
+      arrayOf(listOf(11), listOf(12) + functionCallLines), // test for
+      arrayOf(listOf(3), listOf(4, 7, 8) + functionCallLines), // test if
+      arrayOf(listOf(15), listOf(16, 17, 19) + functionCallLines), // test when
+      arrayOf(listOf(23), listOf(24) + functionCallLines), // test while
       arrayOf(listOf(1, 2, 5), listOf(2, 3, 5, 6, 23, 24, 29)), // test multiple lines
     )
+
+    private val functionCallLines = listOf(29)
     
     private val language = KotlinLanguage.INSTANCE
   }

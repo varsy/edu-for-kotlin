@@ -13,6 +13,10 @@ abstract class IntermediateBreakpointProcessor {
 
   abstract fun findBreakpointLines(psiElement: PsiElement, document: Document, psiFile: PsiFile): List<Int>
 
+  abstract fun getCalleeExpressions(psiFile: PsiFile): List<PsiElement>
+
+  abstract fun getParentFunctionName(element: PsiElement): String?
+
   protected fun Document.getAllReferencesLines(element: PsiElement) =
     ReferencesSearch.search(element).findAll().mapNotNull {
       getLineNumber(it.element)
@@ -32,10 +36,12 @@ abstract class IntermediateBreakpointProcessor {
     ): List<Int> {
       val intermediateBreakpointProcessor = EP_NAME.forLanguage(language) ?: error("${EP_NAME.name} is not implemented for $language")
       val psiFile = PsiManager.getInstance(project).findFile(virtualFile)
-      val document = psiFile?.viewProvider?.document
+      val document = psiFile?.viewProvider?.document ?: return emptyList()
       return wrongCodeLineNumbers.map { wrongCodeLineNumber ->
-        val psiElement = document?.getPsiElementAtLine(psiFile, wrongCodeLineNumber) ?: return emptyList()
-        intermediateBreakpointProcessor.findBreakpointLines(psiElement, document, psiFile)
+        val psiElement = document.getPsiElementAtLine(psiFile, wrongCodeLineNumber) ?: return emptyList()
+        val breakpointLines = intermediateBreakpointProcessor.findBreakpointLines(psiElement, document, psiFile)
+        val functionCalls = getParentFunctionCallLines(psiElement, psiFile, document, intermediateBreakpointProcessor)
+        breakpointLines + functionCalls
       }.flatten().distinct()
     }
 
@@ -52,6 +58,17 @@ abstract class IntermediateBreakpointProcessor {
         }
       })
       return result
+    }
+
+    private fun getParentFunctionCallLines(
+      element: PsiElement,
+      psiFile: PsiFile,
+      document: Document,
+      intermediateBreakpointProcessor: IntermediateBreakpointProcessor
+    ): List<Int> {
+      val parentFunctionName = intermediateBreakpointProcessor.getParentFunctionName(element) ?: return emptyList()
+      return intermediateBreakpointProcessor.getCalleeExpressions(psiFile).filter { it.text == parentFunctionName }
+        .map { document.getLineNumber(it.textRange.startOffset) }
     }
 
   }
