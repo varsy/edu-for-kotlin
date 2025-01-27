@@ -4,13 +4,31 @@ import com.intellij.psi.PsiElement
 import com.jetbrains.edu.aiDebugging.core.slicing.PsiElementToDependencies
 import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.psi.psiUtil.blockExpressionsOrSingle
+import kotlin.collections.iterator
 
-class ControlDependency(psiElement: PsiElement) {
+/**
+ * Represents a control dependency for a Kotlin function, enabling the construction of dependency graphs.
+ *
+ * This class computes forward and backward control-dependency relationships between various code elements
+ * within the given Kotlin function (`KtFunction`).
+ *
+ * @constructor Initializes the dependency analysis for the provided function and computes
+ * control dependencies for all reachable code elements.
+ *
+ * @param ktFunction The Kotlin function for which control dependencies are analyzed.
+ *
+ * @property dependenciesForward A mapping from each code element to the set of other elements
+ * it forwards control flow to.
+ *
+ * @property dependenciesBackward A mapping from each code element to the set of other elements
+ * it receives control flow from.
+ */
+class FunctionControlDependency(ktFunction: KtFunction) {
   val dependenciesForward = mutableMapOf<PsiElement, HashSet<PsiElement>>()
   val dependenciesBackward = mutableMapOf<PsiElement, HashSet<PsiElement>>()
 
   init {
-    processControlDependency(psiElement)
+    processControlDependency(ktFunction)
   }
 
   private fun processControlDependency(psiElement: PsiElement) {
@@ -32,7 +50,7 @@ class ControlDependency(psiElement: PsiElement) {
       is KtWhenExpression -> {
         psiElement.entries.forEach { entry ->
           entry.expression?.blockExpressionsOrSingle()?.forEachReachable {
-            addDependency(psiElement, it)
+            psiElement.addDependency(it)
             processControlDependency(it)
           }
         }
@@ -48,16 +66,16 @@ class ControlDependency(psiElement: PsiElement) {
 
   private fun PsiElement.addAndProcesNext(psiElement: PsiElement) {
     children.forEachReachable {
-      addDependency(psiElement, it)
+      psiElement.addDependency(it)
       processControlDependency(it)
     }
   }
 
-  fun Sequence<PsiElement>.forEachReachable(action: (PsiElement) -> Unit) = iterator().forEachReachable(action)
+  private fun Sequence<PsiElement>.forEachReachable(action: (PsiElement) -> Unit) = iterator().forEachReachable(action)
 
-  fun Array<PsiElement>.forEachReachable(action: (PsiElement) -> Unit) = iterator().forEachReachable(action)
+  private fun Array<PsiElement>.forEachReachable(action: (PsiElement) -> Unit) = iterator().forEachReachable(action)
 
-  fun Iterator<PsiElement>.forEachReachable(action: (PsiElement) -> Unit) {
+  private fun Iterator<PsiElement>.forEachReachable(action: (PsiElement) -> Unit) {
     for (element in this) {
       if (element is KtReturnExpression || element is KtContinueExpression || element is KtBreakExpression) {
         break
@@ -66,18 +84,13 @@ class ControlDependency(psiElement: PsiElement) {
     }
   }
 
-  private fun addDependency(psiElement1: PsiElement, psiElement2: PsiElement) {
-    dependenciesForward.addIfAbsent(psiElement1, psiElement2)
-    dependenciesBackward.addIfAbsent(psiElement2, psiElement1)
+  private fun PsiElement.addDependency(other: PsiElement) {
+    dependenciesForward.addIfAbsent(this, other)
+    dependenciesBackward.addIfAbsent(other, this)
   }
 
-  private fun PsiElementToDependencies.addIfAbsent(psiElement1: PsiElement, psiElement2: PsiElement) {
-    if (!this.contains(psiElement1)) {
-      this[psiElement1] = hashSetOf(psiElement2)
-    }
-    else {
-      this[psiElement1]?.add(psiElement2)
-    }
+  private fun PsiElementToDependencies.addIfAbsent(from: PsiElement, to: PsiElement) {
+    getOrPut(from) { hashSetOf() }.add(to)
   }
 
 }
