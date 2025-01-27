@@ -51,4 +51,10 @@ class KtIntermediateBreakpointProcessor : IntermediateBreakpointProcessor() {
     if (expression is KtBlockExpression) getLineNumber(expression) + 1
     else getLineNumber(expression)
 
+  override fun getCalleeExpressions(psiFile: PsiFile): List<PsiElement> =
+    PsiTreeUtil.collectElementsOfType(psiFile, KtCallExpression::class.java).mapNotNull { it.calleeExpression }
+
+  override fun getParentFunctionName(element: PsiElement): String? =
+    PsiTreeUtil.getParentOfType(element, KtNamedFunction::class.java)?.name
+
 }
