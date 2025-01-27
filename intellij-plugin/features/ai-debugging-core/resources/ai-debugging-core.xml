@@ -23,5 +23,11 @@
       <with attribute="implementationClass"
             implements="com.jetbrains.edu.aiDebugging.core.breakpoint.IntermediateBreakpointProcessor"/>
     </extensionPoint>
+    <extensionPoint qualifiedName="aiDebugging.sliceManager"
+                    beanClass="com.intellij.lang.LanguageExtensionPoint"
+                    dynamic="true">
+      <with attribute="implementationClass"
+            implements="com.jetbrains.edu.aiDebugging.core.slicing.SliceManager"/>
+    </extensionPoint>
   </extensionPoints>
 </idea-plugin>

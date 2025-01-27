@@ -6,6 +6,7 @@
   </dependencies>
 
   <extensions defaultExtensionNs="aiDebugging">
+    <sliceManager language="kotlin" implementationClass="com.jetbrains.edu.aiDebugging.kotlin.slice.KSliceManager"/>
     <intermediateBreakpointProcessor language="kotlin" implementationClass="com.jetbrains.edu.aiDebugging.kotlin.KtIntermediateBreakpointProcessor"/>
   </extensions>
 
