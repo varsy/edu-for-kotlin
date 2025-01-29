@@ -7,6 +7,7 @@ import com.intellij.openapi.project.Project
 import com.jetbrains.edu.cognifire.inspection.InspectionProcessor
 import com.jetbrains.edu.cognifire.models.CodeExpression
 import com.jetbrains.edu.cognifire.models.PromptExpression
+import com.jetbrains.edu.cognifire.utils.FunctionNamePlaceHolderSubstitutor
 import com.jetbrains.edu.cognifire.utils.toGeneratedCode
 import com.jetbrains.edu.cognifire.utils.toPrompt
 import com.jetbrains.educational.ml.cognifire.core.PromptSyncAssistant
@@ -43,21 +44,23 @@ class CodeGenerator(
         previousPromptToCode,
         codeExpression.code.lines().enumerate(0),
         getSetOfModifiedCodeLines(previousPromptToCode.toGeneratedCode(), codeExpression.code),
-        promptExpression.functionSignature.toString()
+        promptExpression.functionSignature.toStringWithPlaceHolder()
       )
     } else if (previousPromptToCode != null && codeExpression?.code != null && previousPromptToCode.toGeneratedCode() != codeExpression.code
              && previousPromptToCode.toPrompt() != promptExpression.prompt) {
-      getCodeFromPrompt(promptExpression.functionSignature.toString(), getEnumeratedPromptLines(promptExpression)) // TODO: handle conflict
+      getCodeFromPrompt(promptExpression.functionSignature.toStringWithPlaceHolder(), getEnumeratedPromptLines(promptExpression)) // TODO: handle conflict
     } else {
-      getCodeFromPrompt(promptExpression.functionSignature.toString(), getEnumeratedPromptLines(promptExpression))
+      getCodeFromPrompt(promptExpression.functionSignature.toStringWithPlaceHolder(), getEnumeratedPromptLines(promptExpression))
     }
 
   private fun improvePromptToCode(): PromptToCodeContent {
+    val promptToCodeSubstitutedFunctionName =
+      FunctionNamePlaceHolderSubstitutor.substitutePlaceHolders(generatePromptToCode().content, promptExpression.functionSignature.getNonFqName())
     val promptToCodeClearedFromWrongTodos =
-      RedundantTodoCleaner.deleteWrongTodo(generatePromptToCode().content, promptExpression.functionSignature)
+      RedundantTodoCleaner.deleteWrongTodo(promptToCodeSubstitutedFunctionName, promptExpression.functionSignature)
     return InspectionProcessor.applyInspections(
       promptToCodeClearedFromWrongTodos,
-      promptExpression.functionSignature.toString(),
+      promptExpression.functionSignature.toStringWithPlaceHolder(),
       project,
       language
     ) ?: promptToCodeClearedFromWrongTodos
