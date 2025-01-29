@@ -7,12 +7,12 @@ import com.intellij.openapi.project.DumbService
 import com.intellij.util.asSafely
 import com.jetbrains.edu.ai.translation.statistics.EduAIFeaturesCounterUsageCollector
 import com.jetbrains.edu.aiHints.core.EduAIHintsProcessor
+import com.jetbrains.edu.aiHints.core.HintStateManager
 import com.jetbrains.edu.aiHints.core.HintsLoader
 import com.jetbrains.edu.aiHints.core.messages.EduAIHintsCoreBundle
 import com.jetbrains.edu.learning.EduExperimentalFeatures
 import com.jetbrains.edu.learning.EduUtilsKt.showPopup
 import com.jetbrains.edu.learning.actions.ActionWithProgressIcon
-import com.jetbrains.edu.learning.actions.EduAIHintsUtils
 import com.jetbrains.edu.learning.actions.EduAIHintsUtils.GET_HINT_ACTION_ID
 import com.jetbrains.edu.learning.actions.EduActionUtils.getCurrentTask
 import com.jetbrains.edu.learning.agreement.UserAgreementSettings
@@ -39,7 +39,7 @@ class GetHint : ActionWithProgressIcon() {
     val isFailedEduTask = task is EduTask && task.status == CheckStatus.Failed
     e.presentation.isVisible =
       isMarketplaceStudyCourse && isFailedEduTask && EduAIHintsProcessor.forCourse(course) != null
-    e.presentation.isEnabled = EduAIHintsUtils.HintStateManager.isDefault(project)
+    e.presentation.isEnabled = HintStateManager.isDefault(project)
   }
 
   override fun actionPerformed(e: AnActionEvent) {

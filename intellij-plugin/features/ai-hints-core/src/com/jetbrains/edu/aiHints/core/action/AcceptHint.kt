@@ -6,10 +6,10 @@ import com.intellij.openapi.actionSystem.Presentation
 import com.intellij.openapi.actionSystem.ex.ActionUtil
 import com.intellij.openapi.project.Project
 import com.jetbrains.edu.ai.translation.statistics.EduAIFeaturesCounterUsageCollector
+import com.jetbrains.edu.aiHints.core.HintStateManager
 import com.jetbrains.edu.aiHints.core.messages.EduAIHintsCoreBundle
 import com.jetbrains.edu.learning.EduUtilsKt.isStudentProject
 import com.jetbrains.edu.learning.actions.ApplyCodeAction
-import com.jetbrains.edu.learning.actions.EduAIHintsUtils
 import com.jetbrains.edu.learning.actions.EduActionUtils.getCurrentTask
 import com.jetbrains.edu.learning.notification.EduNotificationManager
 import com.jetbrains.edu.learning.taskToolWindow.ui.TaskToolWindowView
@@ -36,7 +36,7 @@ class AcceptHint : ApplyCodeAction() {
   }
 
   override fun afterActionPerformed(project: Project) {
-    EduAIHintsUtils.HintStateManager.getInstance(project).acceptHint()
+    HintStateManager.getInstance(project).acceptHint()
     val task = project.getCurrentTask() ?: return
     TaskToolWindowView.getInstance(project).updateCheckPanel(task)
     EduAIFeaturesCounterUsageCollector.codeHintAccepted(task)
