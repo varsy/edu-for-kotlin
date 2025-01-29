@@ -9,14 +9,10 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
 import com.intellij.ui.InlineBanner
 import com.intellij.util.Alarm
-import com.intellij.util.ui.AsyncProcessIcon
-import com.intellij.util.ui.JBDimension
-import com.intellij.util.ui.JBEmptyBorder
-import com.intellij.util.ui.JBUI
-import com.intellij.util.ui.UIUtil
+import com.intellij.util.ui.*
 import com.jetbrains.edu.learning.actions.*
 import com.jetbrains.edu.learning.actions.EduAIHintsUtils.GET_HINT_ACTION_ID
-import com.jetbrains.edu.learning.actions.EduAIHintsUtils.isGetHintAvailable
+import com.jetbrains.edu.learning.actions.EduAIHintsUtils.getHintActionPresentation
 import com.jetbrains.edu.learning.checker.CheckUtils.getCustomRunConfigurationForRunner
 import com.jetbrains.edu.learning.course
 import com.jetbrains.edu.learning.courseFormat.CheckResult
@@ -86,7 +82,7 @@ class CheckPanel(private val project: Project, private val parentDisposable: Dis
   }
 
   fun updateCheckDetails(task: Task, result: CheckResult? = null) {
-    updateGetHintButtonWrapper(task)
+    updateGetHintButtonWrapper()
     checkFinishedPanel.removeAll()
     checkFinishedPanel.addNextTaskButton(task)
     checkFinishedPanel.addRetryButton(task)
@@ -189,10 +185,9 @@ class CheckPanel(private val project: Project, private val parentDisposable: Dis
     }
   }
 
-  private fun updateGetHintButtonWrapper(task: Task) {
+  private fun updateGetHintButtonWrapper() {
     getHintButtonWrapper.removeAll()
-
-    if (isGetHintAvailable(task) && EduAIHintsUtils.HintStateManager.isDefault(project)) {
+    if (getHintActionPresentation(project).isEnabledAndVisible) {
       val action = ActionManager.getInstance().getAction(GET_HINT_ACTION_ID) as ActionWithProgressIcon
       getHintButtonWrapper.add(CheckPanelButtonComponent(action = action), BorderLayout.WEST)
     }
