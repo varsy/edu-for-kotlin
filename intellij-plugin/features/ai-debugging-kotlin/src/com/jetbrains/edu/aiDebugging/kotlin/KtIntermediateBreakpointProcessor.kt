@@ -13,9 +13,7 @@ class KtIntermediateBreakpointProcessor : IntermediateBreakpointProcessor() {
 
       is KtProperty -> document.getAllReferencesLines(psiElement)
 
-      is KtBinaryExpression -> (psiElement.left as? KtNameReferenceExpression)
-                                 ?.reference?.resolve()
-                                 ?.let { document.getAllReferencesLines(it) } ?: emptyList()
+      is KtBinaryExpression -> psiElement.resolveReferencesLines(document)
 
       is KtForExpression -> psiElement.loopParameter?.let { document.getAllReferencesLines(it) } ?: emptyList()
 
@@ -34,12 +32,25 @@ class KtIntermediateBreakpointProcessor : IntermediateBreakpointProcessor() {
         entry.expression?.let { document.getLineWithBlockAdjustment(it) }
       }.distinct()
 
-      is KtWhileExpressionBase -> psiElement.body
-        ?.let { document.getLineWithBlockAdjustment(it) }
-        ?.let { listOf(it) } ?: emptyList()
+      is KtWhileExpressionBase -> buildList {
+        psiElement.body
+          ?.let { document.getLineWithBlockAdjustment(it) }
+          ?.let { add(it) }
+        psiElement.condition
+          ?.resolveReferencesLines(document)
+          ?.let { addAll(it) }
+      }
 
       else -> emptyList()
     }
+
+  private fun PsiElement.resolveReferencesLines(document: Document) =
+    getNameReferenceExpressions().mapNotNull { referenceExpression ->
+      referenceExpression?.reference?.resolve()?.let { document.getAllReferencesLines(it) }
+    }.flatten().distinct()
+
+  private fun PsiElement.getNameReferenceExpressions() =
+    PsiTreeUtil.collectElementsOfType(this, KtNameReferenceExpression::class.java)
 
   private fun KtIfExpression.getIfEntries(): List<KtExpression> =
     when (val elseExpression = `else`) {

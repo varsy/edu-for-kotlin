@@ -55,7 +55,7 @@ class IntermediateBreakpointTest(
                       var a = 10
                       if (a > 5 && a < 5) {
                           println("Valid")
-                          a = a + 5
+                          a = a + name.toInt()
                       } else if (a > 10) {
                           println("Valid")
                       } else println("Invalid")
@@ -94,18 +94,24 @@ class IntermediateBreakpointTest(
     @Parameterized.Parameters(name = "{1}")
     @JvmStatic
     fun data(): Collection<Array<Any>> = listOf(
-      arrayOf(listOf(1), listOf(2, 29)), // test function
-      arrayOf(listOf(2), listOf(3, 5, 6, 23, 24) + functionCallLines), // test property
-      arrayOf(listOf(5), listOf(3, 5, 6, 23, 24) + functionCallLines), // test BinaryExpression
+      arrayOf(listOf(1), functionStartLines + functionCallLines), // test function
+      arrayOf(listOf(2), propertyUsesLines + functionCallLines), // test property
+      arrayOf(listOf(5), parameterUsesLines + propertyUsesLines + functionCallLines), // test BinaryExpression
       arrayOf(listOf(11), listOf(12) + functionCallLines), // test for
       arrayOf(listOf(3), listOf(4, 7, 8) + functionCallLines), // test if
       arrayOf(listOf(15), listOf(16, 17, 19) + functionCallLines), // test when
-      arrayOf(listOf(23), listOf(24) + functionCallLines), // test while
-      arrayOf(listOf(1, 2, 5), listOf(2, 3, 5, 6, 23, 24, 29)), // test multiple lines
+      arrayOf(listOf(23), propertyUsesLines + functionCallLines), // test while
+      arrayOf(listOf(1, 2, 5), functionStartLines + functionCallLines + parameterUsesLines + propertyUsesLines), // test multiple lines
     )
 
     private val functionCallLines = listOf(29)
-    
+
+    private val propertyUsesLines = listOf(3, 5, 6, 23, 24)
+
+    private val parameterUsesLines = listOf(6, 15)
+
+    private val functionStartLines = listOf(2)
+
     private val language = KotlinLanguage.INSTANCE
   }
 }
