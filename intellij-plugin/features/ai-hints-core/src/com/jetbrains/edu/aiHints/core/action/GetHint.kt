@@ -35,7 +35,7 @@ class GetHint : ActionWithProgressIcon() {
     val project = e.project ?: return
     val course = project.course.asSafely<EduCourse>() ?: return
     val task = project.getCurrentTask() ?: return
-    val isMarketplaceStudyCourse = course.isMarketplace && course.isStudy
+    val isMarketplaceStudyCourse = course.isMarketplaceRemote && course.isStudy
     val isFailedEduTask = task is EduTask && task.status == CheckStatus.Failed
     e.presentation.isVisible =
       isMarketplaceStudyCourse && isFailedEduTask && EduAIHintsProcessor.forCourse(course) != null
