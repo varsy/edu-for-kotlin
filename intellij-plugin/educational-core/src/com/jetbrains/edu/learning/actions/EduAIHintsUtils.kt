@@ -28,7 +28,7 @@ object EduAIHintsUtils {
    * @see <a href="https://youtrack.jetbrains.com/issue/EDU-7584">EDU-7584</a>
    */
   fun getHintActionPresentation(project: Project): Presentation {
-    val action = ActionManager.getInstance().getAction(GET_HINT_ACTION_ID) as ActionWithProgressIcon
+    val action = ActionManager.getInstance().getAction(GET_HINT_ACTION_ID)
     // BACKCOMPAT: 2024.2 Replace with [AnActionEvent.createEvent]
     @Suppress("DEPRECATION", "removal")
     val anActionEvent = AnActionEvent.createFromInputEvent(
