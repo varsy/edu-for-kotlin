@@ -60,7 +60,7 @@ class CodeGenerator(
       RedundantTodoCleaner.deleteWrongTodo(promptToCodeSubstitutedFunctionName, promptExpression.functionSignature)
     return InspectionProcessor.applyInspections(
       promptToCodeClearedFromWrongTodos,
-      promptExpression.functionSignature.toStringWithPlaceHolder(),
+      promptExpression.functionSignature.toString(),
       project,
       language
     ) ?: promptToCodeClearedFromWrongTodos

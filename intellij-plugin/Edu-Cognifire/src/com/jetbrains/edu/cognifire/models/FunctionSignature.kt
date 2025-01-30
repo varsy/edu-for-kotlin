@@ -5,21 +5,18 @@ data class FunctionSignature(
   val functionParameters: List<FunctionArgument>,
   val returnType: String
 ) {
-  override fun toString(): String {
+  override fun toString(): String = toString(name)
+
+  fun toStringWithPlaceHolder(): String = toString(PLACEHOLDER)
+
+  fun getNonFqName(): String = name.slice(name.lastIndexOf (".")+1 until name.lastIndex+1)
+
+  private fun toString(name: String): String {
     val parameterListString = functionParameters.joinToString(ARGUMENT_SEPARATOR) { param ->
       "${param.name}: ${param.type}"
     }
     return "fun $name ($parameterListString): $returnType"
   }
-
-  fun toStringWithPlaceHolder(): String {
-    val parameterListString = functionParameters.joinToString(ARGUMENT_SEPARATOR) { param ->
-      "${param.name}: ${param.type}"
-    }
-    return "fun $PLACEHOLDER ($parameterListString): $returnType"
-  }
-
-  fun getNonFqName(): String = name.slice(name.lastIndexOf (".")+1 until name.lastIndex+1)
 
   companion object {
     private const val ARGUMENT_SEPARATOR = ", "
