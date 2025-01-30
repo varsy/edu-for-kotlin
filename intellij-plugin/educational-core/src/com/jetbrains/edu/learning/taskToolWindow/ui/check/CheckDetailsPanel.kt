@@ -103,7 +103,7 @@ class CheckDetailsPanel(project: Project, task: Task, checkResult: CheckResult, 
     }
 
     // Show peek solution and (or) community solutions for Marketplace student courses when task is not solved and AI Hints are unavailable
-    if (project.isMarketplaceStudentCourse() && !checkResult.isSolved && !getHintActionPresentation(project).isVisible) {
+    if (project.isMarketplaceStudentCourse() && !checkResult.isSolved && !getHintActionPresentation(project).isVisible()) {
       val communityLinkPanel =
         if (task.canShowSolution()) MarketplacePeekSolutionPanel(project, task) else LinkToCommunitySolutionsPanel(project, task)
       linksPanel.add(communityLinkPanel, BorderLayout.NORTH)

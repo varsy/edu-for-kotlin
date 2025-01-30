@@ -3,7 +3,6 @@ package com.jetbrains.edu.learning.actions
 import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
-import com.intellij.openapi.actionSystem.Presentation
 import com.intellij.openapi.actionSystem.ex.ActionUtil
 import com.intellij.openapi.actionSystem.impl.SimpleDataContext
 import com.intellij.openapi.application.runReadAction
@@ -27,7 +26,7 @@ object EduAIHintsUtils {
    *
    * @see <a href="https://youtrack.jetbrains.com/issue/EDU-7584">EDU-7584</a>
    */
-  fun getHintActionPresentation(project: Project): Presentation {
+  fun getHintActionPresentation(project: Project): GetHintAvailability {
     val action = ActionManager.getInstance().getAction(GET_HINT_ACTION_ID)
     // BACKCOMPAT: 2024.2 Replace with [AnActionEvent.createEvent]
     @Suppress("DEPRECATION", "removal")
@@ -38,6 +37,18 @@ object EduAIHintsUtils {
       SimpleDataContext.builder().add(CommonDataKeys.PROJECT, project).build()
     )
     runReadAction { ActionUtil.performDumbAwareUpdate(action, anActionEvent, false) }
-    return anActionEvent.presentation
+    return when {
+      anActionEvent.presentation.isEnabledAndVisible -> GetHintAvailability.AVAILABLE
+      anActionEvent.presentation.isVisible -> GetHintAvailability.VISIBLE
+      else -> GetHintAvailability.HIDDEN
+    }
+  }
+
+  enum class GetHintAvailability {
+    AVAILABLE, VISIBLE, HIDDEN;
+
+    fun isAvailable(): Boolean = this == AVAILABLE
+
+    fun isVisible(): Boolean = this == VISIBLE
   }
 }
