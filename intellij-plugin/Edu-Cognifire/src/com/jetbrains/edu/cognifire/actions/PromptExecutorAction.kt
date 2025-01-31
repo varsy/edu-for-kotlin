@@ -1,6 +1,8 @@
 package com.jetbrains.edu.cognifire.actions
 
+import com.intellij.notification.NotificationType
 import com.intellij.notification.NotificationType.ERROR
+import com.intellij.notification.NotificationType.INFORMATION
 import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
@@ -39,6 +41,7 @@ import com.jetbrains.edu.learning.courseFormat.tasks.Task
 import com.jetbrains.edu.learning.notification.EduNotificationManager
 import com.jetbrains.edu.learning.taskToolWindow.ui.TaskToolWindowView
 import com.jetbrains.educational.ml.core.exception.AiAssistantException
+import java.util.concurrent.CancellationException
 
 /**
  * An action class responsible for handling the running of `prompt` DSL (Domain-Specific Language) elements.
@@ -60,7 +63,7 @@ class PromptExecutorAction(private val element: PsiElement, private val prodeId:
 
     val promptExpression = PromptExpressionParser.parsePromptExpression(element, element.language)
     if (promptExpression == null) {
-      project.notifyError(
+      project.notify(
         EduCognifireBundle.message("action.not.run.due.to.nested.block.title"),
         EduCognifireBundle.message("action.not.run.due.to.nested.block.text")
       )
@@ -89,18 +92,21 @@ class PromptExecutorAction(private val element: PsiElement, private val prodeId:
     val codeGenerationState = CodeGenerationState.getInstance(project)
 
     if (!codeGenerationState.lock()) {
-      project.notifyError(content = EduCognifireBundle.message("action.already.running"))
+      project.notify(type = ERROR, content = EduCognifireBundle.message("action.already.running"))
       return
     }
     try {
       execution()
     }
     catch (e: AiAssistantException) {
-      project.notifyError(title = EduCognifireBundle.message("action.not.run.due.to.ai.assistant.exception"), content = e.message)
+      when (e.cause) {
+        is CancellationException -> project.notify(type = INFORMATION, title = EduCognifireBundle.message("action.not.run.due.to.cancellation"), content = "")
+        else -> project.notify( type = ERROR, title = EduCognifireBundle.message("action.not.run.due.to.ai.assistant.exception"), content = e.message)
+      }
     }
     catch (_: Throwable) {
       CodeGenerationState.getInstance(project).unlock()
-      project.notifyError(content = EduCognifireBundle.message("action.not.run.due.to.unknown.exception"))
+      project.notify(type = ERROR, content = EduCognifireBundle.message("action.not.run.due.to.unknown.exception"))
     } finally {
       CodeGenerationState.getInstance(project).unlock()
       getDocument()?.setReadOnly(false)
@@ -116,7 +122,7 @@ class PromptExecutorAction(private val element: PsiElement, private val prodeId:
     val unparsableSentences = GrammarParser.getUnparsableSentences(promptExpression)
 
     if (unparsableSentences.isNotEmpty()) {
-      project.notifyError(
+      project.notify(
         EduCognifireBundle.message("action.not.run.due.to.incorrect.grammar.title"),
         EduCognifireBundle.message("action.not.run.due.to.incorrect.grammar.text"),
         promptExpression
@@ -190,9 +196,9 @@ class PromptExecutorAction(private val element: PsiElement, private val prodeId:
     return ProdeExpression(newPromptExpression, codeExpression)
   }
 
-  private fun Project.notifyError(title: String = "", content: String, promptExpression: PromptExpression? = null) =
+  private fun Project.notify(title: String = "", content: String, promptExpression: PromptExpression? = null, type: NotificationType = ERROR) {
     EduNotificationManager.create(
-      type = ERROR,
+      type = type,
       title = title,
       content = content
     ).notify(this).also {
@@ -214,5 +220,5 @@ class PromptExecutorAction(private val element: PsiElement, private val prodeId:
         )
       }
     }
-
+  }
 }
