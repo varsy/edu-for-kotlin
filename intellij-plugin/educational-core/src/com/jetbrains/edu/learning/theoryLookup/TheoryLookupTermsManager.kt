@@ -2,10 +2,12 @@ package com.jetbrains.edu.learning.theoryLookup
 
 import com.intellij.openapi.components.*
 import com.intellij.openapi.project.Project
+import com.intellij.util.xmlb.annotations.Attribute
+import com.intellij.util.xmlb.annotations.Tag
 import com.intellij.util.xmlb.annotations.XCollection
 import com.jetbrains.edu.learning.EduTestAware
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
-import com.jetbrains.educational.ml.theory.lookup.term.Term
+import com.jetbrains.educational.terms.format.Term
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import org.jetbrains.annotations.VisibleForTesting
@@ -40,8 +42,7 @@ class TheoryLookupTermsManager : PersistentStateComponent<TheoryLookupTermsManag
     val state = TermsState()
     val properties = _theoryLookupProperties.value ?: return state
     state.taskTerms = properties.terms.entries.associateTo(mutableMapOf()) { (taskId, terms) ->
-      //TODO(serialize terms properly)
-      taskId to terms.associate { it.value to it.definition }
+      taskId to terms.map { it.asStoredTerm() }
     }
     return state
   }
@@ -49,16 +50,25 @@ class TheoryLookupTermsManager : PersistentStateComponent<TheoryLookupTermsManag
   override fun loadState(state: TermsState) {
     val taskTerms = mutableMapOf<Int, List<Term>>()
     for ((taskId, terms) in state.taskTerms) {
-      //TODO(serialize terms properly)
-      taskTerms[taskId] = terms.entries.map { Term(it.key, it.value) }
+      taskTerms[taskId] = terms.map { it.asTerm() }
     }
 
     _theoryLookupProperties.value = TheoryLookupProperties(taskTerms)
   }
 
+  @Tag("Term")
+  data class StoredTerm(
+    @Attribute var value: String,
+    @Attribute var definition: String
+  ) {
+    fun asTerm(): Term = Term(value, definition)
+  }
+
+  private fun Term.asStoredTerm(): StoredTerm = StoredTerm(value, definition)
+
   class TermsState : BaseState() {
     @get:XCollection(style = XCollection.Style.v2)
-    var taskTerms by map<Int, Map<String, String>>()
+    var taskTerms by map<Int, List<StoredTerm>>()
   }
 
   companion object {

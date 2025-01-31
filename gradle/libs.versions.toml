@@ -9,10 +9,9 @@ retrofit = "2.9.0"
 annotations = { group = "org.jetbrains", name = "annotations", version = "23.0.0" }
 clikt-core = { module = "com.github.ajalt.clikt:clikt-core", version = "5.0.1" }
 converter-jackson = { group = "com.squareup.retrofit2", name = "converter-jackson", version.ref = "retrofit" }
-edu-ai-format = { group = "com.jetbrains.edu", name = "edu-ai-format", version = "0.0.9" }
+edu-ai-format = { group = "com.jetbrains.edu", name = "edu-ai-format", version = "0.0.10" }
 educational-ml-library-core = { group = "com.jetbrains.educational.ml", name = "educational-ml-library-core", version.ref = "educational-ml-library" }
 educational-ml-library-hints = { group = "com.jetbrains.educational.ml", name = "educational-ml-library-hints", version.ref = "educational-ml-library" }
-educational-ml-library-theory-lookup = { group = "com.jetbrains.educational.ml", name = "educational-ml-library-theory-lookup", version.ref = "educational-ml-library" }
 jackson-dataformat-yaml = { group = "com.fasterxml.jackson.dataformat", name = "jackson-dataformat-yaml", version.ref = "jackson" }
 jackson-datatype-jsr310 = { group = "com.fasterxml.jackson.datatype", name = "jackson-datatype-jsr310", version.ref = "jackson" }
 jackson-module-kotlin = { group = "com.fasterxml.jackson.module", name = "jackson-module-kotlin", version.ref = "jackson" }

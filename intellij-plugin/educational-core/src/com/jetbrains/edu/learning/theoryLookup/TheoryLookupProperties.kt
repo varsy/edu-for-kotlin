@@ -1,6 +1,6 @@
 package com.jetbrains.edu.learning.theoryLookup
 
-import com.jetbrains.educational.ml.theory.lookup.term.Term
+import com.jetbrains.educational.terms.format.Term
 
 //TODO(add terms version)
 data class TheoryLookupProperties(

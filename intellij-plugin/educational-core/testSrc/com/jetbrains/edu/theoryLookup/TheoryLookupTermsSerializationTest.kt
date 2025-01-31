@@ -6,7 +6,7 @@ import com.jetbrains.edu.learning.courseFormat.Course
 import com.jetbrains.edu.learning.courseFormat.CourseMode
 import com.jetbrains.edu.learning.findTask
 import com.jetbrains.edu.learning.theoryLookup.TheoryLookupTermsManager
-import com.jetbrains.educational.ml.theory.lookup.term.Term
+import com.jetbrains.educational.terms.format.Term
 import org.junit.Test
 
 class TheoryLookupTermsSerializationTest : EduSettingsServiceTestBase() {
@@ -37,10 +37,10 @@ class TheoryLookupTermsSerializationTest : EduSettingsServiceTestBase() {
             <map>
               <entry key="100">
                 <value>
-                  <map>
-                    <entry key="A" value="B" />
-                    <entry key="B" value="C" />
-                  </map>
+                  <list>
+                    <Term value="A" definition="B" />
+                    <Term value="B" definition="C" />
+                  </list>
                 </value>
               </entry>
             </map>
@@ -55,10 +55,10 @@ class TheoryLookupTermsSerializationTest : EduSettingsServiceTestBase() {
             <map>
               <entry key="100">
                 <value>
-                  <map>
-                    <entry key="X" value="Y" />
-                    <entry key="Y" value="Z" />
-                  </map>
+                  <list>
+                    <Term value="X" definition="Y" />
+                    <Term value="Y" definition="Z" />
+                  </list>
                 </value>
               </entry>
             </map>
