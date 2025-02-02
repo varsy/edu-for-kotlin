@@ -7,7 +7,6 @@ import com.intellij.openapi.components.service
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.progress.blockingContext
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.NlsContexts.NotificationContent
 import com.intellij.platform.ide.progress.withBackgroundProgress
 import com.jetbrains.edu.ai.AIServiceLoader
 import com.jetbrains.edu.ai.error.AIServiceError
@@ -36,20 +35,17 @@ import com.jetbrains.educational.translation.format.CourseTranslationResponse
 import com.jetbrains.educational.translation.format.TranslatedText
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.sync.Mutex
 import java.io.IOException
 
 @Service(Service.Level.PROJECT)
-class TranslationLoader(private val project: Project, private val scope: CoroutineScope) {
-  private val mutex = Mutex()
-
+class TranslationLoader(project: Project, scope: CoroutineScope) : AIServiceLoader(project, scope) {
   init {
     scope.launch {
       TranslationSettings.getInstance().autoTranslationSettings.collectLatest { properties ->
         if (properties == null) return@collectLatest
         val course = project.course as? EduCourse ?: return@collectLatest
         if (TranslationProjectSettings.isCourseTranslated(project)) return@collectLatest
-        if (isRunning(project)) return@collectLatest
+        if (isRunning) return@collectLatest
         if (properties.autoTranslate) {
           val language = properties.language
           if (!language.isSameLanguage(course)) {
@@ -151,25 +147,6 @@ class TranslationLoader(private val project: Project, private val scope: Corouti
     }
   }
 
-  private inline fun runInBackgroundExclusively(
-    @NotificationContent lockNotAcquiredNotificationText: String,
-    crossinline action: suspend () -> Unit
-  ) {
-    scope.launch {
-      if (mutex.tryLock()) {
-        try {
-          action()
-        }
-        finally {
-          mutex.unlock()
-        }
-      }
-      else {
-        AITranslationNotificationManager.showErrorNotification(project, message = lockNotAcquiredNotificationText)
-      }
-    }
-  }
-
   private suspend fun fetchTranslation(
     course: EduCourse,
     language: TranslationLanguage
@@ -256,7 +233,5 @@ class TranslationLoader(private val project: Project, private val scope: Corouti
     private val LOG = Logger.getInstance(TranslationLoader::class.java)
 
     fun getInstance(project: Project): TranslationLoader = project.service()
-
-    fun isRunning(project: Project): Boolean = getInstance(project).mutex.isLocked
   }
 }

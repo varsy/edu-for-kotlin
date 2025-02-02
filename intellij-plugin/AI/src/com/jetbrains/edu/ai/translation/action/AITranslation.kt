@@ -52,7 +52,7 @@ class AITranslation : AITranslationActionBase() {
       EducationalAIIcons.Translation
     }
 
-    e.presentation.isEnabledAndVisible = !TranslationLoader.isRunning(project)
+    e.presentation.isEnabledAndVisible = !TranslationLoader.getInstance(project).isRunning
   }
 
   private fun createTooltip(): GotItTooltip {

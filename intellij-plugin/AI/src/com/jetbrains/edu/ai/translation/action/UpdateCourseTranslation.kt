@@ -26,7 +26,7 @@ class UpdateCourseTranslation : AITranslationActionBase() {
     val course = project.course as? EduCourse ?: return
     if (isActionUnavailable(project, course)) return
     if (!TranslationProjectSettings.isCourseTranslated(project)) return
-    e.presentation.isEnabledAndVisible = !TranslationLoader.isRunning(project)
+    e.presentation.isEnabledAndVisible = !TranslationLoader.getInstance(project).isRunning
   }
 
   companion object {

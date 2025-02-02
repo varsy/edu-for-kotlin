@@ -23,7 +23,7 @@ class ResetCourseTranslation : AITranslationActionBase() {
     val project = e.project ?: return
     val course = project.course as? EduCourse ?: return
     if (isActionUnavailable(project, course)) return
-    e.presentation.isEnabledAndVisible = !TranslationLoader.isRunning(project)
+    e.presentation.isEnabledAndVisible = !TranslationLoader.getInstance(project).isRunning
   }
 
   companion object {
