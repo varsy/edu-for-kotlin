@@ -48,7 +48,7 @@ import com.jetbrains.edu.learning.taskToolWindow.ui.navigationMap.NavigationMapT
 import com.jetbrains.edu.learning.taskToolWindow.ui.tab.TabManager
 import com.jetbrains.edu.learning.taskToolWindow.ui.tab.TabType
 import com.jetbrains.edu.learning.taskToolWindow.ui.tab.TabType.SUBMISSIONS_TAB
-import com.jetbrains.edu.learning.theoryLookup.TheoryLookupTermsManager
+import com.jetbrains.edu.learning.ai.terms.TermsProjectSettings
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
@@ -76,7 +76,7 @@ class TaskToolWindowViewImpl(project: Project, scope: CoroutineScope) : TaskTool
           ProjectView.getInstance(project).refresh()
         }
       }
-      TheoryLookupTermsManager.getInstance(project).theoryLookupProperties.collectLatest {
+      TermsProjectSettings.getInstance(project).termsProperties.collectLatest {
         withContext(Dispatchers.EDT) {
           updateTaskDescription()
         }

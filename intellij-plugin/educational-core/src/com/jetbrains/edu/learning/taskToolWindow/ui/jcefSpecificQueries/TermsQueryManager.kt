@@ -12,7 +12,7 @@ import com.jetbrains.edu.learning.courseFormat.tasks.TheoryTask
 import com.jetbrains.edu.learning.selectedTaskFile
 import com.jetbrains.edu.learning.taskToolWindow.TERM_CLASS
 import com.jetbrains.edu.learning.taskToolWindow.ui.JsEventData
-import com.jetbrains.edu.learning.theoryLookup.TheoryLookupTermsManager
+import com.jetbrains.edu.learning.ai.terms.TermsProjectSettings
 import org.cef.browser.CefBrowser
 import org.cef.browser.CefFrame
 import org.cef.handler.CefLoadHandlerAdapter
@@ -102,7 +102,7 @@ class TermsQueryManager private constructor(
     val termTitle = parsedData.term
 
     val task = project.selectedTaskFile?.task ?: return
-    val definition = TheoryLookupTermsManager.getInstance(project).getTaskTerms(task)?.find { it.value == termTitle }?.definition ?: return
+    val definition = TermsProjectSettings.getInstance(project).getTaskTerms(task)?.find { it.value == termTitle }?.definition ?: return
 
     val isBelowMiddle = parsedData.y < component.height / 2
     val position = if (isBelowMiddle) Balloon.Position.below else Balloon.Position.above

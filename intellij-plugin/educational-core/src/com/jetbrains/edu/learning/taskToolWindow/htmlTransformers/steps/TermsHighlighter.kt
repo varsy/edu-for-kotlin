@@ -3,17 +3,17 @@ package com.jetbrains.edu.learning.taskToolWindow.htmlTransformers.steps
 import com.jetbrains.edu.learning.taskToolWindow.*
 import com.jetbrains.edu.learning.taskToolWindow.htmlTransformers.HtmlTransformer
 import com.jetbrains.edu.learning.taskToolWindow.htmlTransformers.HtmlTransformerContext
-import com.jetbrains.edu.learning.theoryLookup.TheoryLookupTermsManager
+import com.jetbrains.edu.learning.ai.terms.TermsProjectSettings
 import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
 import org.jsoup.nodes.TextNode
 
 /**
  * Highlights terms in an HTML document by adding dashed underline style to the occurrences of the terms.
- * Takes terms from the [TheoryLookupTermsManager] object.
+ * Takes terms from the [TermsProjectSettings] object.
  *
  * @see HtmlTransformer
- * @see TheoryLookupTermsManager
+ * @see TermsProjectSettings
  */
 object TermsHighlighter : HtmlTransformer {
   // TODO: filter code blocks and other tags
@@ -22,7 +22,7 @@ object TermsHighlighter : HtmlTransformer {
   private fun Element.isValidTag(): Boolean = tagName() !in INVALID_TAGS
 
   override fun transform(html: Document, context: HtmlTransformerContext): Document {
-    val terms = TheoryLookupTermsManager.getInstance(context.project).getTaskTerms(context.task)?.map { it.value }
+    val terms = TermsProjectSettings.getInstance(context.project).getTaskTerms(context.task)?.map { it.value }
     if (terms.isNullOrEmpty()) return html
     for (termTitle in terms) {
       formatTermOccurrences(html, termTitle)
