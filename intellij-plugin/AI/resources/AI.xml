@@ -40,7 +40,9 @@
 
     <applicationService serviceImplementation="com.jetbrains.edu.ai.translation.settings.TranslationSettings"/>
 
-    <postStartupActivity implementation="com.jetbrains.edu.ai.translation.TranslationStartupActivity"/>
+    <applicationService serviceImplementation="com.jetbrains.edu.ai.terms.settings.TheoryLookupSettings"/>
+
+    <postStartupActivity implementation="com.jetbrains.edu.ai.AIStartupActivity"/>
 
     <registryKey key="edu.ai.translation.update.check.interval"
                  description="Sets the course translation update check interval in seconds"
@@ -49,6 +51,7 @@
 
   <extensions defaultExtensionNs="Educational">
     <AIOptionsProvider instance="com.jetbrains.edu.ai.translation.settings.TranslationOptions"/>
+    <AIOptionsProvider instance="com.jetbrains.edu.ai.terms.settings.TheoryLookupOptions"/>
   </extensions>
 
   <projectListeners>
