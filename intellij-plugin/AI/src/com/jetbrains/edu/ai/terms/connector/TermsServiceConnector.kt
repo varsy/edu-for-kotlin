@@ -1,55 +1,55 @@
-package com.jetbrains.edu.ai.translation.connector
+package com.jetbrains.edu.ai.terms.connector
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
 import com.jetbrains.edu.ai.connector.AIServiceConnector
 import com.jetbrains.edu.ai.error.AIServiceError
-import com.jetbrains.edu.ai.error.TranslationError
-import com.jetbrains.edu.ai.translation.service.TranslationService
+import com.jetbrains.edu.ai.error.TermsServiceError
+import com.jetbrains.edu.ai.terms.service.TermsService
 import com.jetbrains.edu.learning.Ok
 import com.jetbrains.edu.learning.Result
 import com.jetbrains.edu.learning.network.HTTP_UNAVAILABLE_FOR_LEGAL_REASONS
 import com.jetbrains.edu.learning.network.createRetrofitBuilder
 import com.jetbrains.educational.core.format.enum.TranslationLanguage
-import com.jetbrains.educational.translation.format.CourseTranslationResponse
-import com.jetbrains.educational.translation.format.domain.TranslationVersion
+import com.jetbrains.educational.terms.format.CourseTermsResponse
+import com.jetbrains.educational.terms.format.domain.TermsVersion
 import retrofit2.converter.jackson.JacksonConverterFactory
 import java.net.HttpURLConnection.*
 
 @Service(Service.Level.APP)
-class TranslationServiceConnector : AIServiceConnector() {
-  override val service: TranslationService
-    get() = translationService()
+class TermsServiceConnector : AIServiceConnector() {
+  override val service: TermsService
+    get() = termsService()
 
-  private fun translationService(): TranslationService {
+  private fun termsService(): TermsService {
     val objectMapper = jacksonObjectMapper()
     val factory = JacksonConverterFactory.create(objectMapper)
     return createRetrofitBuilder(aiServiceUrl, connectionPool)
       .addConverterFactory(factory)
       .build()
-      .create(TranslationService::class.java)
+      .create(TermsService::class.java)
   }
 
-  suspend fun getLatestTranslationVersion(
+  suspend fun getLatestTermsVersion(
     marketplaceId: Int,
     updateVersion: Int,
     language: TranslationLanguage
-  ): Result<TranslationVersion, AIServiceError> =
+  ): Result<TermsVersion, AIServiceError> =
     networkCall {
       service
-        .getLatestCourseTranslationVersion(marketplaceId, updateVersion, language.name)
+        .getLatestCourseTermsVersion(marketplaceId, updateVersion, language.name)
         .handleResponse()
     }
 
-  suspend fun getTranslatedCourse(
+  suspend fun getCourseTerms(
     marketplaceId: Int,
     updateVersion: Int,
     language: TranslationLanguage
-  ): Result<CourseTranslationResponse, AIServiceError> =
+  ): Result<CourseTermsResponse, AIServiceError> =
     networkCall {
       service
-        .getTranslatedCourse(marketplaceId, updateVersion, language.name)
+        .getCourseTerms(marketplaceId, updateVersion, language.name)
         .handleResponse()
     }
 
@@ -57,13 +57,13 @@ class TranslationServiceConnector : AIServiceConnector() {
     return when {
       code == HTTP_OK && result != null -> Ok(result)
       code == HTTP_UNAVAILABLE || result == null -> AIServiceError.ServiceUnavailable.asErr()
-      code == HTTP_NOT_FOUND -> TranslationError.NoTranslation.asErr()
-      code == HTTP_UNAVAILABLE_FOR_LEGAL_REASONS -> TranslationError.TranslationUnavailableForLegalReasons.asErr()
-      else -> AIServiceError.ConnectionError.asErr()
+      code == HTTP_NOT_FOUND -> TermsServiceError.NoTerms.asErr()
+      code == HTTP_UNAVAILABLE_FOR_LEGAL_REASONS -> TermsServiceError.TermsUnavailableForLegalReason.asErr()
+      else -> AIServiceError.ConnectionError.asErr ()
     }
   }
 
   companion object {
-    fun getInstance(): TranslationServiceConnector = service()
+    fun getInstance(): TermsServiceConnector = service()
   }
 }

@@ -3,7 +3,7 @@ package com.jetbrains.edu.ai.translation.statistics
 import com.intellij.internal.statistic.eventLog.EventLogGroup
 import com.intellij.internal.statistic.eventLog.events.EventPair
 import com.intellij.internal.statistic.service.fus.collectors.CounterUsagesCollector
-import com.jetbrains.edu.ai.translation.TranslationError
+import com.jetbrains.edu.ai.error.AIServiceError
 import com.jetbrains.edu.ai.translation.settings.TranslationSettings
 import com.jetbrains.edu.ai.translation.statistics.EduAITranslationEventFields.ALWAYS_TRANSLATE_FIELD
 import com.jetbrains.edu.ai.translation.statistics.EduAITranslationEventFields.ORIGINAL_LANG_FIELD
@@ -99,22 +99,22 @@ class EduAITranslationCounterUsageCollector : CounterUsagesCollector() {
     fun translationFinishedWithError(
       course: EduCourse,
       translationLanguage: TranslationLanguage,
-      translationError: TranslationError
+      translationError: AIServiceError
     ) = TRANSLATION_FINISHED_WITH_ERROR_EVENT.log(
       COURSE_ID_FIELD.with(course.id),
       ORIGINAL_LANG_FIELD.with(course.languageCode),
       TRANSLATION_LANG_FIELD.with(translationLanguage),
-      TRANSLATION_ERROR_FIELD.with(translationError)
+      TRANSLATION_ERROR_FIELD.with(translationError.toStatisticsFormat())
     )
 
     fun translationLanguagePickerOpened(course: EduCourse) = TRANSLATION_LANGUAGE_PICKER_OPENED_EVENT.log(course.id)
 
-    fun translationRetried(course: EduCourse, translationLanguage: TranslationLanguage, translationError: TranslationError) =
+    fun translationRetried(course: EduCourse, translationLanguage: TranslationLanguage, translationError: AIServiceError) =
       TRANSLATION_RETRIED_EVENT.log(
         COURSE_ID_FIELD.with(course.id),
         ORIGINAL_LANG_FIELD.with(course.languageCode),
         TRANSLATION_LANG_FIELD.with(translationLanguage),
-        TRANSLATION_ERROR_FIELD.with(translationError),
+        TRANSLATION_ERROR_FIELD.with(translationError.toStatisticsFormat()),
       )
 
     fun translationStarted(course: EduCourse, translationLanguage: TranslationLanguage) =
