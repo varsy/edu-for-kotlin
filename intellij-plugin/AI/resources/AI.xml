@@ -18,6 +18,13 @@
 
     <action id="Educational.UpdateCourseTranslation"
             class="com.jetbrains.edu.ai.translation.action.UpdateCourseTranslation"/>
+
+    <action id="Educational.ResetCourseTerms"
+            class="com.jetbrains.edu.ai.terms.action.ResetCourseTerms"
+            internal="true"/>
+
+    <action id="Educational.UpdateCourseTerms"
+            class="com.jetbrains.edu.ai.terms.action.UpdateCourseTerms"/>
   </actions>
 
   <extensionPoints>
