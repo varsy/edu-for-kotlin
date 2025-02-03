@@ -1,2 +1,8 @@
 <idea-plugin package="com.jetbrains.edu.ai.clippy.assistant">
+  <resource-bundle>messages.EduAIClippyAssistantBundle</resource-bundle>
+
+  <actions>
+    <action id="Educational.Student.ShowClippyAssistant"
+            class="com.jetbrains.edu.ai.clippy.assistant.action.ShowClippyAssistant"/>
+  </actions>
 </idea-plugin>
