@@ -316,6 +316,7 @@ dependencies {
     pluginModule(implementation(project("github")))
     pluginModule(implementation(project("remote-env")))
     pluginModule(implementation(project("features:command-line")))
+    pluginModule(implementation(project("features:ai-clippy-assistant")))
     pluginModule(implementation(project("features:ai-hints-core")))
     pluginModule(implementation(project("features:ai-hints-kotlin")))
     pluginModule(implementation(project("features:ai-hints-python")))
@@ -1022,6 +1023,18 @@ project("features:ai-hints-python") {
     testImplementation(project(":intellij-plugin:educational-core", "testOutput"))
     testImplementation(project(":intellij-plugin:features:ai-hints-core", "testOutput"))
     testImplementation(project(":intellij-plugin:Edu-Python"))
+  }
+}
+
+project("features:ai-clippy-assistant") {
+  dependencies {
+    intellijPlatform {
+      intellijIde(project, baseVersion)
+    }
+
+    implementation(project(":intellij-plugin:educational-core"))
+
+    testImplementation(project(":intellij-plugin:educational-core", "testOutput"))
   }
 }
 
