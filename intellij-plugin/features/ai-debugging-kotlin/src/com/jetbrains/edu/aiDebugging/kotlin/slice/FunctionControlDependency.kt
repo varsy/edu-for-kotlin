@@ -1,10 +1,8 @@
 package com.jetbrains.edu.aiDebugging.kotlin.slice
 
 import com.intellij.psi.PsiElement
-import com.jetbrains.edu.aiDebugging.core.slicing.PsiElementToDependencies
 import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.psi.psiUtil.blockExpressionsOrSingle
-import kotlin.collections.iterator
 
 /**
  * Represents a control dependency for a Kotlin function, enabling the construction of dependency graphs.
@@ -23,9 +21,7 @@ import kotlin.collections.iterator
  * @property dependenciesBackward A mapping from each code element to the set of other elements
  * it receives control flow from.
  */
-class FunctionControlDependency(ktFunction: KtFunction) {
-  val dependenciesForward = mutableMapOf<PsiElement, HashSet<PsiElement>>()
-  val dependenciesBackward = mutableMapOf<PsiElement, HashSet<PsiElement>>()
+class FunctionControlDependency(ktFunction: KtFunction) : FunctionDependency() {
 
   init {
     processControlDependency(ktFunction)
@@ -70,27 +66,4 @@ class FunctionControlDependency(ktFunction: KtFunction) {
       processControlDependency(it)
     }
   }
-
-  private fun Sequence<PsiElement>.forEachReachable(action: (PsiElement) -> Unit) = iterator().forEachReachable(action)
-
-  private fun Array<PsiElement>.forEachReachable(action: (PsiElement) -> Unit) = iterator().forEachReachable(action)
-
-  private fun Iterator<PsiElement>.forEachReachable(action: (PsiElement) -> Unit) {
-    for (element in this) {
-      if (element is KtReturnExpression || element is KtContinueExpression || element is KtBreakExpression) {
-        break
-      }
-      action(element)
-    }
-  }
-
-  private fun PsiElement.addDependency(other: PsiElement) {
-    dependenciesForward.addIfAbsent(this, other)
-    dependenciesBackward.addIfAbsent(other, this)
-  }
-
-  private fun PsiElementToDependencies.addIfAbsent(from: PsiElement, to: PsiElement) {
-    getOrPut(from) { hashSetOf() }.add(to)
-  }
-
 }

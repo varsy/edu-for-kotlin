@@ -121,6 +121,35 @@ class FunctionDataDependencyTest
     }
     b += a + 1
   }
+  
+  fun complexTest() {
+     var a = 10
+    var b = a * 2
+    for (q in 0..a) {
+      while (b > 10) {
+        b += q
+      }
+      a += 1
+      if (b > q) {
+        a += 2
+      }
+      else {
+        b += a
+      }
+      when (a) {
+        1 -> {
+          println(a)
+        }
+
+        2 -> {
+          b += 2
+        }
+        else -> println(b)
+      }
+    }
+    val c = a + b
+    b += a + c
+  }
             """.trimIndent()
           )
         }
@@ -188,6 +217,25 @@ class FunctionDataDependencyTest
           "a += 2" to setOf("var a = 1"),
           "b += a" to setOf("var a = 1", "var b = a * 2"),
           "b += a + 1" to setOf("var a = 1", "b += a", "a += 2", "var b = a * 2")
+        )
+      ),
+      arrayOf(
+        "complexTest",
+        mapOf(
+          "var b = a * 2" to setOf("var a = 10"),
+          "for (q in 0..a) {" to setOf("var a = 10"),
+          "while (b > 10) {" to setOf("var b = a * 2", "b += q"),
+          "b += q" to setOf("var b = a * 2", "q"),
+          "a += 1" to setOf("var a = 10"),
+          "if (b > q) {" to setOf("var b = a * 2", "b += q", "q"),
+          "a += 2" to setOf("var a = 10", "a += 1"),
+          "b += a" to setOf("var a = 10", "var b = a * 2", "b += q", "a += 1"),
+          "when (a) {" to setOf("var a = 10", "a += 1", "a += 2"),
+          "println(a)" to setOf("var a = 10", "a += 1", "a += 2"),
+          "b += 2" to setOf("var b = a * 2", "b += q", "b += a"),
+          "println(b)" to setOf("var b = a * 2", "b += q", "b += a"),
+          "val c = a + b" to setOf("var a = 10", "var b = a * 2", "b += q", "b += a", "b += 2", "a += 1", "a += 2"),
+          "b += a + c" to setOf("var a = 10", "var b = a * 2", "b += q", "b += a", "b += 2", "a += 1", "a += 2", "val c = a + b")
         )
       )
     )

@@ -1,33 +1,40 @@
 package com.jetbrains.edu.aiDebugging.kotlin.slice
 
 import com.intellij.psi.PsiElement
-import com.intellij.psi.util.PsiTreeUtil
-import com.jetbrains.edu.aiDebugging.core.slicing.PsiElementToDependencies
 import org.jetbrains.kotlin.idea.completion.reference
-import org.jetbrains.kotlin.lexer.KtSingleValueToken
-import org.jetbrains.kotlin.psi.KtBinaryExpression
-import org.jetbrains.kotlin.psi.KtBlockExpression
-import org.jetbrains.kotlin.psi.KtCallExpression
-import org.jetbrains.kotlin.psi.KtForExpression
-import org.jetbrains.kotlin.psi.KtFunction
-import org.jetbrains.kotlin.psi.KtIfExpression
-import org.jetbrains.kotlin.psi.KtOperationReferenceExpression
-import org.jetbrains.kotlin.psi.KtPostfixExpression
-import org.jetbrains.kotlin.psi.KtProperty
-import org.jetbrains.kotlin.psi.KtReferenceExpression
-import org.jetbrains.kotlin.psi.KtWhenExpression
-import org.jetbrains.kotlin.psi.KtWhileExpression
+import org.jetbrains.kotlin.psi.*
 
-class FunctionDataDependency(psiElement: PsiElement) {
-
-  val dependenciesForward = mutableMapOf<PsiElement, HashSet<PsiElement>>()
-  val dependenciesBackward = mutableMapOf<PsiElement, HashSet<PsiElement>>()
+/**
+ * Represents a data dependency analyzer for a Kotlin function, allowing the construction of data dependency graphs.
+ *
+ * This class computes forward and backward data-dependency relationships between various code elements
+ * within the given Kotlin function (`KtFunction`).
+ *
+ * @constructor Initializes the dependency analysis for the provided function and computes
+ * data dependencies for all referenced code elements.
+ *
+ * @param psiElement The root PSI element (commonly a function) for which data dependencies are analyzed.
+ *
+ * @property dependenciesForward A mapping from each code element to the set of other code elements
+ * to which its data dependencies are forwarded.
+ *
+ * @property dependenciesBackward A mapping from each code element to the set of other code elements
+ * from which it receives data dependencies.
+ */
+class FunctionDataDependency(psiElement: PsiElement) : FunctionDependency() {
 
   init {
-    processReferences(psiElement, mutableMapOf<PsiElement, HashSet<PsiElement>>())
+    processReferences(psiElement, mutableMapOf())
   }
 
 
+  /**
+   * Processes the references within the provided PsiElement, managing dependencies and scope definitions.
+   *
+   * @param psiElement The PSI element to be analyzed and processed for references.
+   * @param definedVariables A mapping of PSI elements to their defined references.
+   * @param outerScopeDefinitions A list of dependencies from outer scopes to be considered during processing. Defaults to an empty list.
+   */
   private fun processReferences(
     psiElement: PsiElement,
     definedVariables: PsiElementToDependencies,
@@ -37,8 +44,7 @@ class FunctionDataDependency(psiElement: PsiElement) {
 
       is KtFunction -> {
         psiElement.valueParameterList?.parameters?.forEach {
-          definedVariables.addIfAbsent(it)
-          outerScopeDefinitions.forEach { dependency -> dependency.addIfAbsent(it) }
+          definedVariables.addIfAbsent(it, outerScopes = outerScopeDefinitions)
         }
         psiElement.bodyBlockExpression?.statements?.forEach {
           processReferences(it, definedVariables, outerScopeDefinitions)
@@ -46,17 +52,10 @@ class FunctionDataDependency(psiElement: PsiElement) {
       }
 
       is KtProperty -> {
-        definedVariables.addIfAbsent(psiElement)
-        outerScopeDefinitions.forEach { dependency -> dependency.addIfAbsent(psiElement) }
+        definedVariables.addIfAbsent(psiElement, outerScopes = outerScopeDefinitions)
         psiElement.initializer?.let {
-          it.getVariableReferences().forEach {
-            it.reference()?.resolve()?.let { referenceTo ->
-              psiElement.addDependency(referenceTo)
-              definedVariables[referenceTo]?.forEach {
-                psiElement.addDependency(it)
-              }
-            }
-
+          it.getVariableReferences().forEach { reference ->
+            psiElement.addReferences(reference, definedVariables)
           }
         }
       }
@@ -69,41 +68,28 @@ class FunctionDataDependency(psiElement: PsiElement) {
                 psiElement.addDependency(it)
               }
             }
-            definedVariables.addIfAbsent(referenceTo, psiElement)
-            outerScopeDefinitions.forEach { dependency -> dependency.addIfAbsent(referenceTo, psiElement) }
             psiElement.addDependency(referenceTo)
+            definedVariables.addIfAbsent(referenceTo, psiElement, outerScopeDefinitions)
           }
           psiElement.right?.getVariableReferences()?.forEach {
-            it.reference()?.resolve()?.let { referenceTo ->
-              psiElement.addDependency(referenceTo)
-              definedVariables[referenceTo]?.forEach {
-                psiElement.addDependency(it)
-              }
-            }
+            psiElement.addReferences(it, definedVariables)
           }
         }
       }
 
       is KtPostfixExpression -> {
         psiElement.baseExpression?.reference()?.resolve()?.let {
-          definedVariables.addIfAbsent(it, psiElement)
-          outerScopeDefinitions.forEach { dependency -> dependency.addIfAbsent(it, psiElement) }
+          definedVariables.addIfAbsent(it, psiElement, outerScopeDefinitions)
           psiElement.addDependency(it)
         }
       }
 
       is KtForExpression -> {
         psiElement.loopParameter?.let {
-          definedVariables.addIfAbsent(it)
-          outerScopeDefinitions.forEach { dependency -> dependency.addIfAbsent(it) }
+          definedVariables.addIfAbsent(it, outerScopes = outerScopeDefinitions)
         }
         psiElement.loopRange?.getVariableReferences()?.forEach {
-          it.reference()?.resolve()?.let { referenceTo ->
-            psiElement.addDependency(referenceTo)
-            definedVariables[referenceTo]?.forEach {
-              psiElement.addDependency(it)
-            }
-          }
+          psiElement.addReferences(it, definedVariables)
         }
         psiElement.body?.children?.forEach {
           definedVariables.searchElements(it, outerScopeDefinitions)
@@ -119,12 +105,7 @@ class FunctionDataDependency(psiElement: PsiElement) {
         }
 
         psiElement.condition?.getVariableReferences()?.forEach {
-          it.reference()?.resolve()?.let { referenceTo ->
-            psiElement.addDependency(referenceTo)
-            definedVariables[referenceTo]?.forEach {
-              psiElement.addDependency(it)
-            }
-          }
+          psiElement.addReferences(it, definedVariables)
         }
         psiElement.body?.children?.forEach {
           processReferences(it, definedVariables, outerScopeDefinitions)
@@ -133,39 +114,29 @@ class FunctionDataDependency(psiElement: PsiElement) {
 
       is KtCallExpression -> {
         psiElement.valueArgumentList?.arguments?.forEach {
-          it.getArgumentExpression()?.getVariableReferences()?.forEach {
-            it.reference()?.resolve()?.let { referenceTo ->
-              psiElement.addDependency(referenceTo)
-              definedVariables[referenceTo]?.forEach {
-                psiElement.addDependency(it)
-              }
-            }
+          it.getArgumentExpression()?.getVariableReferences()?.forEach { reference ->
+            psiElement.addReferences(reference, definedVariables)
           }
         }
       }
 
       is KtWhenExpression -> {
-        psiElement.subjectExpression?.let {
-          if (it is KtReferenceExpression) {
-            it.reference()?.resolve()?.let { referenceTo ->
-              psiElement.addDependency(referenceTo)
-              definedVariables[referenceTo]?.forEach {
-                psiElement.addDependency(it)
+        psiElement.subjectExpression
+          ?.takeIf { it is KtReferenceExpression }
+          ?.let { psiElement.addReferences(it as KtReferenceExpression, definedVariables) }
+        val stateSnapshot = definedVariables.copy()
+        psiElement.entries.forEach { entry ->
+          val expression = entry.expression
+          when (expression) {
+            is KtBlockExpression -> {
+              val blockState = stateSnapshot.copy()
+              expression.statements.forEach { statement ->
+                processReferences(statement, blockState, outerScopeDefinitions + definedVariables)
               }
             }
-          }
-        }
-        val state = definedVariables.copy()
-        psiElement.entries.forEach {
-          with(it.expression) {
-            if (this is KtBlockExpression) {
-              val statement = state.copy()
-              this.statements.forEach {
-                processReferences(it, statement, outerScopeDefinitions + definedVariables)
-              }
-            }
-            else {
-              this?.let { processReferences(it, state.copy(), outerScopeDefinitions + definedVariables) }
+
+            else -> {
+              expression?.let { processReferences(it, stateSnapshot.copy(), outerScopeDefinitions + definedVariables) }
             }
           }
         }
@@ -173,26 +144,30 @@ class FunctionDataDependency(psiElement: PsiElement) {
 
       is KtIfExpression -> { // TODO add elif expression
         psiElement.condition?.getVariableReferences()?.forEach {
-          it.reference()?.resolve()?.let { referenceTo ->
-            psiElement.addDependency(referenceTo)
-            definedVariables[referenceTo]?.forEach {
-              psiElement.addDependency(it)
-            }
-          }
+          psiElement.addReferences(it, definedVariables)
         }
-        val state = definedVariables.copy()
+        val stateSnapshot = definedVariables.copy()
         psiElement.then?.let {
-          val brachState = state.copy()
-          it.children.forEach {
-            processReferences(it, brachState, outerScopeDefinitions + definedVariables)
+          val brachState = stateSnapshot.copy()
+          it.children.forEach { element ->
+            processReferences(element, brachState, outerScopeDefinitions + definedVariables)
           }
         }
         psiElement.`else`?.let {
-          val brachState = state.copy()
-          it.children.forEach {
-            processReferences(it, brachState, outerScopeDefinitions + definedVariables)
+          val brachState = stateSnapshot.copy()
+          it.children.forEach { element ->
+            processReferences(element, brachState, outerScopeDefinitions + definedVariables)
           }
         }
+      }
+    }
+  }
+
+  private fun PsiElement.addReferences(other: KtReferenceExpression, definedVariables: PsiElementToDependencies) {
+    other.reference()?.resolve()?.let { referenceTo ->
+      addDependency(referenceTo)
+      definedVariables[referenceTo]?.forEach {
+        addDependency(it)
       }
     }
   }
@@ -205,53 +180,16 @@ class FunctionDataDependency(psiElement: PsiElement) {
       is KtBinaryExpression -> {
         if (psiElement.operationReference.operationSignTokenType.isChange()) {
           psiElement.left?.reference()?.resolve()?.let {
-            addIfAbsent(it, psiElement)
-            outerScopeDefinitions?.forEach { dependency -> dependency.addIfAbsent(it, psiElement) }
+            addIfAbsent(it, psiElement, outerScopeDefinitions)
           }
         }
       }
 
       is KtPostfixExpression -> {
         psiElement.baseExpression?.reference()?.resolve()?.let {
-          addIfAbsent(it, psiElement)
-          outerScopeDefinitions?.forEach { dependency -> dependency.addIfAbsent(it, psiElement) }
+          addIfAbsent(it, psiElement, outerScopeDefinitions)
         }
       }
     }
-  }
-
-  private fun PsiElement.addDependency(other: PsiElement) {
-    dependenciesForward.addIfAbsent(this, other)
-    dependenciesBackward.addIfAbsent(other, this)
-  }
-
-  private fun PsiElementToDependencies.addAll(from: PsiElement, others: Collection<PsiElement> = emptySet()) {
-    getOrPut(from) { hashSetOf() }.addAll(others)
-  }
-
-  private fun PsiElementToDependencies.addIfAbsent(from: PsiElement, to: PsiElement? = null) {
-    getOrPut(from) { hashSetOf() }.also { collection ->
-      to?.let {
-        collection.add(it)
-      }
-    }
-  }
-
-  private fun PsiElement.getVariableReferences() =
-    if (this is KtReferenceExpression) {
-      listOf(this)
-    }
-    else {
-      PsiTreeUtil.findChildrenOfType<KtReferenceExpression>(this, KtReferenceExpression::class.java)
-        .filter { it !is KtOperationReferenceExpression }
-    }
-
-  private fun KtSingleValueToken?.isChange() = this != null && this.value in operations
-
-  private fun PsiElementToDependencies.copy() = mapValues { it.value.toHashSet() }.toMutableMap()
-
-  companion object {
-    private val changeOperations = listOf("+=", "*=", "-=", "/=")
-    private val operations = listOf("=") + changeOperations
   }
 }

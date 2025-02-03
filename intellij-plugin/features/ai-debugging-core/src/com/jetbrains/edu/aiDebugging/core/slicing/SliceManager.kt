@@ -6,8 +6,6 @@ import com.intellij.openapi.editor.Document
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 
-typealias PsiElementToDependencies = MutableMap<PsiElement, HashSet<PsiElement>>
-
 interface SliceManager {
 
   // TODO change return type to Tree<?>
