@@ -7,8 +7,8 @@ import com.intellij.openapi.components.service
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.progress.blockingContext
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.util.NlsContexts.NotificationContent
 import com.intellij.platform.ide.progress.withBackgroundProgress
-import com.jetbrains.edu.ai.AIServiceLoader
 import com.jetbrains.edu.ai.error.AIServiceError
 import com.jetbrains.edu.ai.messages.EduAIBundle
 import com.jetbrains.edu.ai.translation.connector.TranslationServiceConnector
@@ -35,10 +35,16 @@ import com.jetbrains.educational.translation.format.CourseTranslationResponse
 import com.jetbrains.educational.translation.format.TranslatedText
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.sync.Mutex
 import java.io.IOException
 
 @Service(Service.Level.PROJECT)
-class TranslationLoader(project: Project, scope: CoroutineScope) : AIServiceLoader(project, scope) {
+class TranslationLoader(private val project: Project, private val scope: CoroutineScope) {
+  private val mutex = Mutex()
+
+  val isRunning: Boolean
+    get() = mutex.isLocked
+
   init {
     scope.launch {
       TranslationSettings.getInstance().autoTranslationSettings.collectLatest { properties ->
@@ -223,6 +229,25 @@ class TranslationLoader(project: Project, scope: CoroutineScope) : AIServiceLoad
     catch (exception: IOException) {
       LOG.error("Failed to delete ${translationLanguage.label} translation file", exception)
       throw exception
+    }
+  }
+
+  private inline fun runInBackgroundExclusively(
+    @NotificationContent lockNotAcquiredNotificationText: String,
+    crossinline action: suspend () -> Unit
+  ) {
+    scope.launch {
+      if (mutex.tryLock()) {
+        try {
+          action()
+        }
+        finally {
+          mutex.unlock()
+        }
+      }
+      else {
+        AITranslationNotificationManager.showErrorNotification(project, message = lockNotAcquiredNotificationText)
+      }
     }
   }
 

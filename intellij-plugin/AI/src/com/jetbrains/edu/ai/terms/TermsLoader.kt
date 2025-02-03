@@ -4,8 +4,8 @@ import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.util.NlsContexts.NotificationContent
 import com.intellij.platform.ide.progress.withBackgroundProgress
-import com.jetbrains.edu.ai.AIServiceLoader
 import com.jetbrains.edu.ai.error.AIServiceError
 import com.jetbrains.edu.ai.messages.EduAIBundle
 import com.jetbrains.edu.ai.terms.connector.TermsServiceConnector
@@ -27,10 +27,16 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.withContext
 
 @Service(Service.Level.PROJECT)
-class TermsLoader(project: Project, scope: CoroutineScope) : AIServiceLoader(project, scope) {
+class TermsLoader(private val project: Project, private val scope: CoroutineScope) {
+  private val mutex = Mutex()
+
+  val isRunning: Boolean
+    get() = mutex.isLocked
+
   init {
     scope.launch {
       TheoryLookupSettings.getInstance().theoryLookupProperties.collectLatest { properties ->
@@ -150,6 +156,25 @@ class TermsLoader(project: Project, scope: CoroutineScope) : AIServiceLoader(pro
         AITranslationNotificationManager.showErrorNotification(project, message = courseTerms.error.message(), actionLabel = actionLabel)
       }
       courseTerms
+    }
+  }
+
+  private inline fun runInBackgroundExclusively(
+    @NotificationContent lockNotAcquiredNotificationText: String,
+    crossinline action: suspend () -> Unit
+  ) {
+    scope.launch {
+      if (mutex.tryLock()) {
+        try {
+          action()
+        }
+        finally {
+          mutex.unlock()
+        }
+      }
+      else {
+        AITranslationNotificationManager.showErrorNotification(project, message = lockNotAcquiredNotificationText)
+      }
     }
   }
 
