@@ -38,11 +38,11 @@ open class JsConfigurator : EduConfigurator<JsNewProjectSettings> {
     get() = !PlatformUtils.isRider()
 
   override fun courseFileAttributes(): AttributesEvaluator = AttributesEvaluator(super.courseFileAttributes()) {
-    path("node_modules") {
+    dir("node_modules", direct = false) {
       excludeFromArchive()
     }
 
-    name("package-lock.json") {
+    file("package-lock.json") {
       excludeFromArchive()
     }
   }

@@ -19,11 +19,11 @@ abstract class GradleConfiguratorBase : EduConfigurator<JdkProjectSettings> {
   abstract override val courseBuilder: GradleCourseBuilderBase
 
   override fun courseFileAttributes(): AttributesEvaluator = AttributesEvaluator(super.courseFileAttributes()) {
-    name(SETTINGS_GRADLE) {
+    /*name(SETTINGS_GRADLE) {
       includeIntoArchive()
-    }
+    }*/
 
-    path(*FOLDERS_TO_EXCLUDE) {
+    name(*FOLDERS_TO_EXCLUDE) {
       excludeFromArchive()
     }
 

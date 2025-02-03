@@ -67,23 +67,36 @@ class AttributesBuilderContext(private val specificity: Int = 0) {
     }
   }
 
-  fun dir(vararg args: Any, subRules: AttributesBuilderContext.() -> Unit) = addRule(args, subRules) { arg, pathSegments ->
-    val first = pathSegments.getOrNull(0) ?: return@addRule null
-    if (accepts(arg, first)) pathSegments.drop(1) else null
-  }
+  fun dir(
+    vararg args: Any,
+    direct: Boolean = true,
+    subRules: AttributesBuilderContext.() -> Unit
+  ) = addRule(args, subRules) { arg, pathSegments ->
+    if (pathSegments.size < 2) return@addRule null // not a directory
 
-  fun name(vararg args: Any, subRules: AttributesBuilderContext.() -> Unit) = addRule(args, subRules) { arg, pathSegments ->
-    val pathSegment = pathSegments.lastOrNull() ?: return@addRule null
-    if (accepts(arg, pathSegment)) listOf() else null
-  }
+    val searchRange = if (direct) 0 until 1 else 0 until pathSegments.size - 1 // the last element is "" for directories
 
-  fun path(vararg args: Any, subRules: AttributesBuilderContext.() -> Unit) = addRule(args, subRules) { arg, pathSegments ->
-    for ((i, pathSegment) in pathSegments.withIndex()) {
-      if (accepts(arg, pathSegment)) {
-        return@addRule pathSegments.drop(i + 1)
+    var index = -1
+    for (i in searchRange) {
+      if (accepts(arg, pathSegments[i])) {
+        index = i
+        break
       }
     }
-    return@addRule null
+    if (index == -1) return@addRule null
+
+    val isItself = index == pathSegments.lastIndex - 1 && pathSegments.lastOrNull() == ""
+
+    return@addRule pathSegments.drop(index + 1)
+  }
+
+  fun any(subRules: AttributesBuilderContext.() -> Unit) = addRule(arrayOf(pred { true }), subRules) { _, pathSegments -> pathSegments}
+
+  fun file(vararg args: Any, direct: Boolean = false, subRules: AttributesBuilderContext.() -> Unit) = addRule(args, subRules) { arg, pathSegments ->
+    val pathSegment = pathSegments.lastOrNull() ?: return@addRule null
+    if (pathSegment == "") return@addRule null // this is a directory
+    if (pathSegments.size > 1 && direct) return@addRule null
+    if (accepts(arg, pathSegment)) listOf() else null
   }
 
   fun extension(vararg args: Any, subRules: AttributesBuilderContext.() -> Unit) = addRule(args, subRules) { arg, pathSegments ->
@@ -108,7 +121,8 @@ class AttributesEvaluator(base: AttributesEvaluator? = null, rulesBuilder: Attri
     val attributes = CourseFileAttributesMutable()
 
     val relativePath = FileUtil.getRelativePath(holder.courseDir.path, file.path, VFS_SEPARATOR_CHAR) ?: return attributes.toImmutable()
-    val pathSegments = relativePath.split('/')
+    val relativePathFixedForDirectory = if (file.isDirectory) relativePath + VFS_SEPARATOR_CHAR else relativePath
+    val pathSegments = relativePathFixedForDirectory.split('/')
 
     for (rule in rules.sortedBy { it.specificity }) {
       if (rule.pathModifier(pathSegments) != null) {

@@ -49,7 +49,7 @@ class ScalaSbtConfigurator : EduConfigurator<JdkProjectSettings> {
     get() = "/* TODO */"
 
   override fun courseFileAttributes(): AttributesEvaluator = AttributesEvaluator(super.courseFileAttributes()) {
-    path("target") {
+    dirName("target") {
       excludeFromArchive()
     }
   }

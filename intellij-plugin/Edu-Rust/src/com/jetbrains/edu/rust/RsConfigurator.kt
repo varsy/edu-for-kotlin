@@ -46,7 +46,7 @@ class RsConfigurator : EduConfigurator<RsProjectSettings> {
       excludeFromArchive()
     }
 
-    path(CargoConstants.ProjectLayout.target) {
+    dirName(CargoConstants.ProjectLayout.target) {
       excludeFromArchive()
     }
 

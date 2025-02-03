@@ -57,35 +57,52 @@ interface EduConfigurator<Settings : EduProjectSettings> {
   val taskCheckerProvider: TaskCheckerProvider
 
   fun courseFileAttributes(): AttributesEvaluator = AttributesEvaluator {
-    // all files starting with dot (.file)
-    path("""^\.""".toRegex()) {
+    // all files and directories starting with dot (.file)
+    name("""^\.""".toRegex()) {
       excludeFromArchive()
     }
 
     dir(Project.DIRECTORY_STORE_FOLDER) {
+
+      excludeFromArchive()
+
+      any {
+
+      }
+    }
+
+    // .idea
+    dir(Project.DIRECTORY_STORE_FOLDER) {
       dir(PROFILE_DIR, "scopes") {
         includeIntoArchive()
+
+        any {
+          includeIntoArchive()
+        }
       }
-      excludeFromArchive()
+
+      any {
+        excludeFromArchive()
+      }
     }
 
     extension("iml") {
       excludeFromArchive()
     }
 
-    name(taskDescriptionRegex) {
+    file(taskDescriptionRegex) {
       excludeFromArchive()
     }
 
-    name(pred { isLocalConfigFileName(it) || isRemoteConfigFileName(it) }) {
+    file(pred { isLocalConfigFileName(it) || isRemoteConfigFileName(it) }) {
       excludeFromArchive()
     }
 
-    dir(CCUtils.GENERATED_FILES_FOLDER) {
+    dir(CCUtils.GENERATED_FILES_FOLDER, direct = true) {
       excludeFromArchive()
     }
 
-    name(*EXCLUDED_FILES) {
+    file(*EXCLUDED_FILES) {
       excludeFromArchive()
     }
   }

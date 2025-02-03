@@ -1,4 +1,5 @@
 @file:JvmName("PyEduUtils")
+
 package com.jetbrains.edu.python.learning
 
 import com.intellij.execution.ExecutionException
@@ -46,7 +47,7 @@ fun Task.getCurrentTaskFilePath(project: Project): String? {
 }
 
 internal fun pythonAttributesEvaluator(baseEvaluator: AttributesEvaluator): AttributesEvaluator = AttributesEvaluator(baseEvaluator) {
-  path(*FOLDERS_TO_EXCLUDE) {
+  dir(*FOLDERS_TO_EXCLUDE, direct = true) {
     excludeFromArchive()
   }
 
@@ -73,14 +74,18 @@ fun installRequiredPackages(project: Project, sdk: Sdk) {
         }
         val notificationsConfiguration = NotificationsConfigurationImpl.getInstanceImpl()
         val oldSettings = NotificationsConfigurationImpl.getSettings(PY_PACKAGES_NOTIFICATION_GROUP)
-        notificationsConfiguration.changeSettings(PY_PACKAGES_NOTIFICATION_GROUP,
-                                                  NotificationDisplayType.NONE, true, false)
+        notificationsConfiguration.changeSettings(
+          PY_PACKAGES_NOTIFICATION_GROUP,
+          NotificationDisplayType.NONE, true, false
+        )
 
         // IDE will try to show notification after listener's `finished` in invokeLater
         ApplicationManager.getApplication().invokeLater {
-          notificationsConfiguration.changeSettings(PY_PACKAGES_NOTIFICATION_GROUP,
-                                                    oldSettings.displayType, oldSettings.isShouldLog,
-                                                    oldSettings.isShouldReadAloud)
+          notificationsConfiguration.changeSettings(
+            PY_PACKAGES_NOTIFICATION_GROUP,
+            oldSettings.displayType, oldSettings.isShouldLog,
+            oldSettings.isShouldReadAloud
+          )
         }
       }
     }).install(requirements, emptyList())

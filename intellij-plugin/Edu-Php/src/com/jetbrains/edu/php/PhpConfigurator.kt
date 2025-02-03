@@ -41,11 +41,11 @@ class PhpConfigurator : EduConfigurator<PhpProjectSettings> {
   override fun isTestFile(task: Task, path: String): Boolean = super.isTestFile(task, path) || path == testFileName
 
   override fun courseFileAttributes(): AttributesEvaluator = AttributesEvaluator(super.courseFileAttributes()) {
-    path(ComposerUtils.VENDOR_DIR_DEFAULT_NAME) {
+    dir(ComposerUtils.VENDOR_DIR_DEFAULT_NAME, direct = false) {
       excludeFromArchive()
     }
 
-    name(ComposerUtils.COMPOSER_PHAR_NAME) {
+    file(ComposerUtils.COMPOSER_PHAR_NAME) {
       excludeFromArchive()
     }
   }

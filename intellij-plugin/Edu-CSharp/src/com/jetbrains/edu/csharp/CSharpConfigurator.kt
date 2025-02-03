@@ -39,7 +39,7 @@ class CSharpConfigurator : EduConfigurator<CSharpProjectSettings> {
       excludeFromArchive()
     }
 
-    path(BIN_DIRECTORY, OBJ_DIRECTORY) {
+    dir(BIN_DIRECTORY, OBJ_DIRECTORY, direct = false) {
       excludeFromArchive()
     }
   }
