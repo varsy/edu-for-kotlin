@@ -4,11 +4,11 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiManager
-import com.intellij.psi.util.PsiTreeUtil
 import com.jetbrains.edu.jvm.MainFileProvider
-import org.jetbrains.kotlin.idea.isMainFunction
+import org.jetbrains.kotlin.idea.base.codeInsight.KotlinMainFunctionDetector
+import org.jetbrains.kotlin.idea.base.codeInsight.findMain
 import org.jetbrains.kotlin.idea.run.KotlinRunConfigurationProducer
-import org.jetbrains.kotlin.psi.KtElement
+import org.jetbrains.kotlin.psi.KtFile
 
 class KtMainFileProvider : MainFileProvider {
   override fun findMainClassName(project: Project, file: VirtualFile): String? {
@@ -18,7 +18,7 @@ class KtMainFileProvider : MainFileProvider {
   }
 
   override fun findMainPsi(project: Project, file: VirtualFile): PsiElement? {
-    val psiFile = PsiManager.getInstance(project).findFile(file) ?: return null
-    return PsiTreeUtil.findChildrenOfType(psiFile, KtElement::class.java).find { it.isMainFunction() }
+    val psiFile = PsiManager.getInstance(project).findFile(file) as? KtFile ?: return null
+    return KotlinMainFunctionDetector.getInstanceDumbAware(project).findMain(psiFile)
   }
 }

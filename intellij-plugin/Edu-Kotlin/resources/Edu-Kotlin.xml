@@ -9,6 +9,10 @@
     <plugin id="JUnit"/>
   </dependencies>
 
+  <extensions defaultExtensionNs="org.jetbrains.kotlin">
+    <supportsKotlinPluginMode supportsK2="true" />
+  </extensions>
+
   <extensions defaultExtensionNs="Educational">
     <configurator implementationClass="com.jetbrains.edu.kotlin.KtConfigurator" language="kotlin"/>
     <xPluginConfigurator implementation="com.jetbrains.edu.kotlin.x.KtXConfigurator"/>

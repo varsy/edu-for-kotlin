@@ -1,5 +1,6 @@
 package com.jetbrains.edu.aiHints.kotlin.impl
 
+import com.intellij.openapi.application.runReadAction
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiRecursiveElementVisitor
@@ -8,9 +9,9 @@ import com.jetbrains.edu.aiHints.core.api.FunctionSignaturesManager
 import com.jetbrains.edu.aiHints.core.context.FunctionParameter
 import com.jetbrains.edu.aiHints.core.context.FunctionSignature
 import com.jetbrains.edu.aiHints.core.context.SignatureSource
-import org.jetbrains.kotlin.idea.caches.resolve.analyzeWithContentAndGetResult
+import org.jetbrains.kotlin.analysis.api.analyze
+import org.jetbrains.kotlin.analysis.api.symbols.name
 import org.jetbrains.kotlin.psi.KtNamedFunction
-import org.jetbrains.kotlin.resolve.BindingContext
 
 object KtFunctionSignaturesManager : FunctionSignaturesManager {
   override fun getFunctionBySignature(psiFile: PsiFile, functionName: String): PsiElement? {
@@ -52,22 +53,25 @@ object KtFunctionSignaturesManager : FunctionSignaturesManager {
     return functionSignatures
   }
 
-  internal fun KtNamedFunction.generateSignature(signatureSource: SignatureSource): FunctionSignature? {
-    val context = analyzeWithContentAndGetResult()
-    context.bindingContext[BindingContext.FUNCTION, this]?.let { functionDescriptor ->
-      return FunctionSignature(
-        functionDescriptor.name.toString(),
-        functionDescriptor.valueParameters.map {
+  internal fun KtNamedFunction.generateSignature(signatureSource: SignatureSource): FunctionSignature? = runReadAction {
+    val ktFunction = this
+
+    analyze(ktFunction) {
+      val kaFunction = ktFunction.symbol
+      val name = kaFunction.name ?: return@runReadAction null
+
+      FunctionSignature(
+        name.toString(),
+        kaFunction.valueParameters.map {
           FunctionParameter(
             it.name.toString(),
-            it.type.toString()
+            it.returnType.toString()
           )
         },
-        functionDescriptor.returnType.toString(),
+        kaFunction.returnType.toString(),
         signatureSource,
-        bodyExpression?.text?.lines()?.size
+        ktFunction.bodyExpression?.text?.lines()?.size
       )
     }
-    return null
   }
 }
