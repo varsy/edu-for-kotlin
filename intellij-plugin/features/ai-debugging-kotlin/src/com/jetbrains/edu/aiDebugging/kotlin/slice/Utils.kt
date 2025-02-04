@@ -12,6 +12,20 @@ import org.jetbrains.kotlin.psi.KtReturnExpression
 private val reflectedAssignmentOperators = listOf("+=", "*=", "-=", "/=")
 private val assignmentOperators = listOf("=") + reflectedAssignmentOperators
 
+/**
+ * Adds a dependency mapping from the `from` element to the `to` element in the current `PsiElementToDependencies`
+ * map, ensuring that the dependency is added only if it does not already exist.
+ *
+ * Additionally, if the `outerScopes` parameter is provided, the same dependency is added to each of the
+ * outer scope dependencies recursively.
+ *
+ * If `to` is `null` `from` just added as a key for further use.
+ *
+ * @param from The source `PsiElement` representing the key in the dependencies map.
+ * @param to The target `PsiElement` to be added as a dependency for the `from` element. Can be `null`.
+ * @param outerScopes A collection of other `PsiElementToDependencies` maps representing outer scopes where
+ * the dependency should also be added. Defaults to `null`.
+ */
 fun PsiElementToDependencies.addIfAbsent(
   from: PsiElement,
   to: PsiElement? = null,
@@ -28,15 +42,13 @@ fun PsiElementToDependencies.addIfAbsent(
 }
 
 fun PsiElement.getVariableReferences() =
-  if (this is KtReferenceExpression) {
-    listOf(this)
-  }
-  else {
-    PsiTreeUtil.findChildrenOfType(this, KtReferenceExpression::class.java)
+  when (this) {
+    is KtReferenceExpression -> listOf(this)
+    else -> PsiTreeUtil.findChildrenOfType(this, KtReferenceExpression::class.java)
       .filter { it !is KtOperationReferenceExpression }
   }
 
-fun KtSingleValueToken?.isChange() = this != null && this.value in assignmentOperators
+fun KtSingleValueToken?.isAssigment() = this != null && this.value in assignmentOperators
 
 fun PsiElementToDependencies.copy() = mapValues { it.value.toHashSet() }.toMutableMap()
 

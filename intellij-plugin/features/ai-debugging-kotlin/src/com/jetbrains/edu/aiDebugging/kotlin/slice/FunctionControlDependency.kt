@@ -66,4 +66,9 @@ class FunctionControlDependency(ktFunction: KtFunction) : FunctionDependency() {
       processControlDependency(it)
     }
   }
+
+  override fun PsiElement.addDependency(other: PsiElement) {
+    dependenciesForward.addIfAbsent(this, other)
+    dependenciesBackward.addIfAbsent(other, this)
+  }
 }

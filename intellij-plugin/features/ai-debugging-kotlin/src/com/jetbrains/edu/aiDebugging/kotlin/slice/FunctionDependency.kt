@@ -8,9 +8,5 @@ abstract class FunctionDependency {
   val dependenciesForward = mutableMapOf<PsiElement, HashSet<PsiElement>>()
   val dependenciesBackward = mutableMapOf<PsiElement, HashSet<PsiElement>>()
 
-
-  protected fun PsiElement.addDependency(other: PsiElement) {
-    dependenciesForward.addIfAbsent(this, other)
-    dependenciesBackward.addIfAbsent(other, this)
-  }
+  abstract fun PsiElement.addDependency(other: PsiElement)
 }

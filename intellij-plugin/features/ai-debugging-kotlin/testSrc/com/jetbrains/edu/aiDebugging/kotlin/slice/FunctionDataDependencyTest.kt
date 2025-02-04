@@ -32,7 +32,7 @@ class FunctionDataDependencyTest
       assertNotNull("psi File for the virtual file `$virtualFile` is null", psiFile)
       val ktFunction = PsiTreeUtil.findChildrenOfType(psiFile, KtFunction::class.java).find { it.name == ktFunctionName }
       checkNotNull(ktFunction) { "psi function with name `$ktFunctionName` hasn't been found" }
-      val actual = FunctionDataDependency(ktFunction).dependenciesForward.mapValues { (_, dependencies) ->
+      val actual = FunctionDataDependency(ktFunction).dependenciesBackward.mapValues { (_, dependencies) ->
         dependencies.map { it.text }.toHashSet()
       }.mapKeys { it.key.text.split("\n").firstOrNull()?.trimIndent() } // to simplify expected data
       assertEquals(expectedDependencies, actual)
@@ -68,6 +68,8 @@ class FunctionDataDependencyTest
       var s = a + b
       var q = s + 3 + b
     }
+    
+    fun simpleInlineFunction(a: Int) : Boolean = a++
     
       fun functionWhileLoopTest() {
         var n = readln().toInt()
@@ -177,6 +179,10 @@ class FunctionDataDependencyTest
           "var q = s + 3 + b" to setOf("var s = a + b", "var b = 2", "b += 3"),
           "b += 3" to setOf("var b = 2")
         )
+      ),
+      arrayOf(
+        "simpleInlineFunction",
+        mapOf("a++" to setOf("a: Int"))
       ),
       arrayOf(
         "functionWhileLoopTest",
