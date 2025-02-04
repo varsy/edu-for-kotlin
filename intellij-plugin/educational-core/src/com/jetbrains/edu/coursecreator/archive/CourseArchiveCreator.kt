@@ -67,8 +67,9 @@ class CourseArchiveCreator(
 
     ThreadingAssertions.assertEventDispatchThread()
 
-    val result = prepareCourseCopy(course).
-      flatMap { courseCopy -> generateArchive(courseCopy) }
+    val result = prepareCourseCopy(course)
+        .flatMap { validateCourse(it) }
+        .flatMap { courseCopy -> generateArchive(courseCopy) }
 
     return when (result) {
       is Err -> {
@@ -115,6 +116,11 @@ class CourseArchiveCreator(
       if (e is ProcessCanceledException) throw e
       Err(OtherError(e))
     }
+  }
+
+  private fun validateCourse(course: Course): Result<Course, CourseArchiveError> {
+    val items = StudyItemIdGenerator.getInstance(project).collectItemsWithDuplicateIds(course)
+    return if (items.isEmpty()) Ok(course) else Err(DuplicateIdsError(items))
   }
 
   private fun generateArchive(course: Course): Result<Unit, CourseArchiveError> {

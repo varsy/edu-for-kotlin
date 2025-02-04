@@ -25,7 +25,6 @@ import com.jetbrains.edu.learning.yaml.YamlConfigSettings.configFileName
 import org.junit.Test
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.test.assertIs
 
 class CCCreateCourseArchiveTest : CourseArchiveTestBase() {
 
@@ -336,9 +335,7 @@ class CCCreateCourseArchiveTest : CourseArchiveTestBase() {
 
     assertNull("No open file is expected", FileEditorManagerEx.getInstanceEx(project).currentFile)
 
-    val result = createCourseArchive(course)
-    assertIs<Err<*>>(result)
-    assertIs<BrokenPlaceholderError>(result.error)
+    createCourseArchiveWithError<BrokenPlaceholderError>(course)
 
     val navigatedFile = FileEditorManagerEx.getInstanceEx(project).currentFile ?: error("Navigated file should not be null here")
     assertEquals(task.configFileName, navigatedFile.name)

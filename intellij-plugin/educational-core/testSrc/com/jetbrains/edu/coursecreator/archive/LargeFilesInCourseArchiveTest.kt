@@ -2,13 +2,10 @@ package com.jetbrains.edu.coursecreator.archive
 
 import com.intellij.openapi.util.io.FileUtilRt
 import com.jetbrains.edu.learning.EDU_TEST_BIN
-import com.jetbrains.edu.learning.Err
-import com.jetbrains.edu.learning.courseFormat.Course
 import com.jetbrains.edu.learning.courseFormat.CourseMode
 import com.jetbrains.edu.learning.courseFormat.InMemoryBinaryContents
 import com.jetbrains.edu.learning.courseFormat.getBinaryFileLimit
 import org.junit.Test
-import kotlin.test.assertIs
 
 class LargeFilesInCourseArchiveTest : CourseArchiveTestBase() {
 
@@ -22,7 +19,7 @@ class LargeFilesInCourseArchiveTest : CourseArchiveTestBase() {
       }
     }
 
-    testHugeBinaryFileInCourseArchive(course)
+    createCourseArchiveWithError<HugeBinaryFileError>(course)
   }
 
   @Test
@@ -35,7 +32,7 @@ class LargeFilesInCourseArchiveTest : CourseArchiveTestBase() {
       }
     }
 
-    testHugeBinaryFileInCourseArchive(course)
+    createCourseArchiveWithError<HugeBinaryFileError>(course)
   }
 
   @Test
@@ -44,12 +41,6 @@ class LargeFilesInCourseArchiveTest : CourseArchiveTestBase() {
       additionalFile("file.$EDU_TEST_BIN", InMemoryBinaryContents(ByteArray(FileUtilRt.LARGE_FOR_CONTENT_LOADING + 1)))
     }
 
-    testHugeBinaryFileInCourseArchive(course)
-  }
-
-  private fun testHugeBinaryFileInCourseArchive(course: Course) {
-    val result = createCourseArchive(course)
-    assertIs<Err<*>>(result, "Course creation must generate an error message")
-    assertIs<HugeBinaryFileError>(result.error)
+    createCourseArchiveWithError<HugeBinaryFileError>(course)
   }
 }

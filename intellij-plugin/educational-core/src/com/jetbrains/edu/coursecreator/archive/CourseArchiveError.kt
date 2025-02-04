@@ -9,6 +9,7 @@ import com.jetbrains.edu.learning.courseDir
 import com.jetbrains.edu.learning.courseFormat.ext.getDir
 import com.jetbrains.edu.learning.exceptions.BrokenPlaceholderException
 import com.jetbrains.edu.learning.exceptions.HugeBinaryFileException
+import com.jetbrains.edu.learning.marketplace.DuplicateIdMap
 import com.jetbrains.edu.learning.messages.EduCoreBundle
 import com.jetbrains.edu.learning.notification.EduNotificationManager
 import com.jetbrains.edu.learning.yaml.YamlConfigSettings.TASK_CONFIG
@@ -52,4 +53,20 @@ class AdditionalFileNotFoundError(e: FileNotFoundException) : ExceptionCourseArc
 class OtherError(e: Throwable, private val errorMessage: @Nls String? = null) : ExceptionCourseArchiveError<Throwable>(e) {
   override val message: String
     get() = errorMessage ?: EduCoreBundle.message("error.failed.to.create.course.archive.notification.title")
+}
+
+data class DuplicateIdsError(val items: DuplicateIdMap) : CourseArchiveError {
+  override val message: String
+    get() {
+      val htmlItemList = buildString {
+        appendLine("<ul>")
+        for (itemsWithSameId in items.values) {
+          // TODO: add links to the corresponding config
+          appendLine(itemsWithSameId.joinToString(", ", prefix = "<li>", postfix = "</li>") { it.presentableName })
+        }
+        appendLine("</ul>")
+      }
+
+      return EduCoreBundle.message("error.failed.to.create.course.archive.duplicate.ids.message", htmlItemList)
+    }
 }

@@ -13,6 +13,8 @@ import com.jetbrains.edu.learning.yaml.YamlFormatSynchronizer
 import org.jetbrains.annotations.VisibleForTesting
 import kotlin.random.Random
 
+typealias DuplicateIdMap = Map<Int, List<StudyItem>>
+
 @Service(Service.Level.PROJECT)
 class StudyItemIdGenerator(private val project: Project) {
 
@@ -50,6 +52,19 @@ class StudyItemIdGenerator(private val project: Project) {
 
     // Dump info about new ids to `*-remote-info.yaml` files
     YamlFormatSynchronizer.saveRemoteInfo(course)
+  }
+
+  fun collectItemsWithDuplicateIds(course: Course): DuplicateIdMap {
+    val idToItems = hashMapOf<Int, MutableList<StudyItem>>()
+    course.visitItems { item ->
+      // item doesn't have remote id
+      if (item.id == 0) return@visitItems
+
+      val items = idToItems.getOrPut(item.id) { mutableListOf() }
+      items += item
+    }
+
+    return idToItems.filterValues { it.size > 1 }
   }
 
   @VisibleForTesting

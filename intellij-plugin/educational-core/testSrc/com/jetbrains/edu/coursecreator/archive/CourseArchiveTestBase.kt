@@ -5,6 +5,7 @@ import com.jetbrains.edu.learning.cipher.Cipher
 import com.jetbrains.edu.learning.cipher.NoOpCipher
 import com.jetbrains.edu.learning.courseFormat.Course
 import java.io.File
+import kotlin.test.assertIs
 
 abstract class CourseArchiveTestBase : EduActionTestCase() {
 
@@ -45,6 +46,12 @@ abstract class CourseArchiveTestBase : EduActionTestCase() {
     return createCourseArchive(course, cipher).onError { error ->
       kotlin.test.fail("Course creation failed with error: (${error.javaClass}) ${error.message}")
     }
+  }
+
+  protected inline fun <reified T : CourseArchiveError> createCourseArchiveWithError(course: Course): T {
+    val result = createCourseArchive(course)
+    assertIs<Err<*>>(result, "Course creation must generate an error message")
+    return assertIs<T>(result.error, "Error must be of type ${T::class.simpleName}")
   }
 
   private fun collectExpectedCourseArchiveContent(): CourseArchiveContent {

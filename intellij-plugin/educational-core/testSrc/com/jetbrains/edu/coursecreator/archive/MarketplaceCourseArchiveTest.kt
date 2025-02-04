@@ -226,6 +226,22 @@ class MarketplaceCourseArchiveTest : CourseArchiveTestBase() {
     doTest(course)
   }
 
+  @Test
+  fun `test duplicate ids in course`() {
+    val course = courseWithFiles(courseMode = CourseMode.EDUCATOR, description = "my summary") {
+      lesson {
+        eduTask("task1", stepId = 1) {
+          taskFile("Task.kt")
+        }
+        eduTask("task2", stepId = 1) {
+          taskFile("Task.kt")
+        }
+      }
+    }
+
+    createCourseArchiveWithError<DuplicateIdsError>(course)
+  }
+
   override fun getTestDataPath(): String {
     return super.getTestDataPath() + "/archive/marketplaceCourseArchive"
   }
