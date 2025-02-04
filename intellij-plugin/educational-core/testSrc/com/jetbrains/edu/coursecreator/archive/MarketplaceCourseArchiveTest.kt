@@ -219,7 +219,7 @@ class MarketplaceCourseArchiveTest : CourseArchiveTestBase() {
     // Change `*-remote-info.yaml`s to ensure it will not equal to the original one
     runWriteAction {
       findFile("lesson1/task1/${REMOTE_TASK_CONFIG}").writeText("id: 11")
-      findFile("lesson1/${REMOTE_LESSON_CONFIG}").writeText("id: 11")
+      findFile("lesson1/${REMOTE_LESSON_CONFIG}").writeText("id: 12")
       FileDocumentManager.getInstance().saveAllDocuments()
     }
 

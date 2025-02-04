@@ -6,11 +6,11 @@
   "course_type" : "PyCharm",
   "items" : [
     {
-      "id" : 1,
+      "id" : 2,
       "title" : "lesson1",
       "task_list" : [
         {
-          "id" : 1,
+          "id" : 3,
           "name" : "task1",
           "files" : {
             "taskFile1.txt" : {

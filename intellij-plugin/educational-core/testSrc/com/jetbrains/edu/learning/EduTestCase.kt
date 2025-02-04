@@ -267,8 +267,10 @@ abstract class EduTestCase : BasePlatformTestCase() {
   }
 
   protected fun Course.asRemote(courseMode: CourseMode = CourseMode.EDUCATOR): EduCourse {
+    var idCounter = 0
+
     val remoteCourse = EduCourse()
-    remoteCourse.id = 1
+    remoteCourse.id = ++idCounter
     remoteCourse.name = name
     remoteCourse.courseMode = courseMode
     remoteCourse.items = Lists.newArrayList(items)
@@ -277,30 +279,27 @@ abstract class EduTestCase : BasePlatformTestCase() {
     remoteCourse.description = description
     remoteCourse.additionalFiles = additionalFiles
 
-    var hasSections = false
     for (item in remoteCourse.items) {
       if (item is Section) {
-        item.id = item.index
+        item.id = ++idCounter
         for (lesson in item.lessons) {
-          lesson.id = lesson.index
+          lesson.id = ++idCounter
           for (task in lesson.taskList) {
-            task.id = task.index
+            task.id = ++idCounter
           }
         }
-        hasSections = true
       }
 
       if (item is Lesson) {
-        item.id = item.index
+        item.id = ++idCounter
         for (task in item.taskList) {
-          task.id = task.index
+          task.id = ++idCounter
         }
       }
     }
 
-    if (!hasSections) {
-      remoteCourse.sectionIds = listOf(1)
-    }
+    remoteCourse.sectionIds = remoteCourse.sections.map { it.id }
+
     remoteCourse.init(true)
     StudyTaskManager.getInstance(project).course = remoteCourse
     return remoteCourse
