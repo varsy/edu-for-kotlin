@@ -352,6 +352,7 @@ tasks {
     autoReload = false
     jvmArgs("-Xmx2g")
     jvmArgs("-Dide.experimental.ui=true")
+    jvmArgs("-Didea.kotlin.plugin.use.k2=true")
 
     // Uncomment to show localized messages
     // jvmArgs("-Didea.l10n=true")
@@ -625,8 +626,7 @@ project("Edu-Kotlin") {
 
     tasks.test {
       jvmArgumentProviders += CommandLineArgumentProvider {
-        // Force turning Kotlin V2 off in IDE, otherwise our Kotlin module does not load. Remove after EDU-7532
-        listOf("-Didea.kotlin.plugin.use.k2=false")
+        listOf("-Didea.kotlin.plugin.use.k2=true")
       }
     }
 
