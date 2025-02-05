@@ -18,11 +18,12 @@ import javax.swing.JButton
 
 class LikeBlock(
   @NlsContexts.Label private val label: String,
-  private val jsonElementName: String
+  private val jsonElementName: String,
+  defaultLikeness: FeedbackLikenessAnswer = FeedbackLikenessAnswer.NO_ANSWER
 ) : FeedbackBlock, TextDescriptionProvider, JsonDataProvider {
   private var answer: FeedbackLikenessAnswer = FeedbackLikenessAnswer.NO_ANSWER
-  private val likeOption = LikeOption()
-  private val dislikeOption = DislikeOption()
+  private val likeOption = LikeOption(defaultLikeness)
+  private val dislikeOption = DislikeOption(defaultLikeness)
 
   override fun addToPanel(panel: Panel) {
     panel.apply {
@@ -51,9 +52,9 @@ class LikeBlock(
     }
   }
 
-  private inner class LikeOption : FeedbackOption(AllIcons.Ide.Like, AllIcons.Ide.LikeSelected) {
+  private inner class LikeOption(defaultLikeness: FeedbackLikenessAnswer) : FeedbackOption(AllIcons.Ide.Like, AllIcons.Ide.LikeSelected) {
     init {
-      action = object : AbstractAction(null, unselectedIcon) {
+      action = object : AbstractAction(null, if (defaultLikeness == FeedbackLikenessAnswer.LIKE) mySelectedIcon else myUnselectedIcon) {
         override fun actionPerformed(e: ActionEvent?) {
           answer = FeedbackLikenessAnswer.LIKE
           isSelected = true
@@ -63,9 +64,9 @@ class LikeBlock(
     }
   }
 
-  private inner class DislikeOption : FeedbackOption(AllIcons.Ide.Dislike, AllIcons.Ide.DislikeSelected) {
+  private inner class DislikeOption(defaultLikeness: FeedbackLikenessAnswer) : FeedbackOption(AllIcons.Ide.Dislike, AllIcons.Ide.DislikeSelected) {
     init {
-      action = object : AbstractAction(null, unselectedIcon) {
+      action = object : AbstractAction(null, if (defaultLikeness == FeedbackLikenessAnswer.DISLIKE) mySelectedIcon else myUnselectedIcon) {
         override fun actionPerformed(e: ActionEvent?) {
           answer = FeedbackLikenessAnswer.DISLIKE
           isSelected = true
@@ -75,14 +76,14 @@ class LikeBlock(
     }
   }
 
-  private abstract inner class FeedbackOption(val unselectedIcon: Icon, private val selectedIcon: Icon) : JButton() {
+  private abstract inner class FeedbackOption(protected val myUnselectedIcon: Icon, protected val mySelectedIcon: Icon) : JButton() {
     init {
       putClientProperty("styleTag", true)
       isFocusable = false
     }
 
     override fun setSelected(b: Boolean) {
-      icon = if (b) selectedIcon else unselectedIcon
+      icon = if (b) mySelectedIcon else myUnselectedIcon
       if (getClientProperty("JComponent.outline") != null) {
         putClientProperty("JComponent.outline", null)
         repaint()
@@ -107,7 +108,7 @@ class LikeBlock(
     }
   }
 
-  private enum class FeedbackLikenessAnswer(val result: String) {
+  enum class FeedbackLikenessAnswer(val result: String) {
     NO_ANSWER("no answer"),
     LIKE("like"),
     DISLIKE("dislike")

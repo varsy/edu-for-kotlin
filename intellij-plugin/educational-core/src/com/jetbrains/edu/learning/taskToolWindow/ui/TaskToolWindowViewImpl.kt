@@ -14,7 +14,7 @@ import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.wm.ToolWindow
-import com.intellij.ui.InlineBanner
+import com.intellij.ui.InlineBannerBase
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.content.ContentFactory
 import com.intellij.ui.util.maximumHeight
@@ -308,11 +308,11 @@ class TaskToolWindowViewImpl(project: Project, scope: CoroutineScope) : TaskTool
     else null
   }
 
-  override fun addInlineBanner(inlineBanner: InlineBanner) {
+  override fun addInlineBanner(inlineBanner: InlineBannerBase) {
     tabManager.descriptionTab.addInlineBanner(inlineBanner)
   }
 
-  override fun addInlineBannerToCheckPanel(inlineBanner: InlineBanner) {
+  override fun addInlineBannerToCheckPanel(inlineBanner: InlineBannerBase) {
     checkPanel.addHint(inlineBanner)
     checkPanel.revalidate()
   }

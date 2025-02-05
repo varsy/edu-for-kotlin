@@ -7,7 +7,7 @@ import com.intellij.openapi.actionSystem.ActionToolbar
 import com.intellij.openapi.actionSystem.impl.ActionToolbarImpl
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
-import com.intellij.ui.InlineBanner
+import com.intellij.ui.InlineBannerBase
 import com.intellij.util.Alarm
 import com.intellij.util.ui.AsyncProcessIcon
 import com.intellij.util.ui.JBDimension
@@ -126,7 +126,7 @@ class CheckPanel(private val project: Project, private val parentDisposable: Dis
     updateCheckDetails(task)
   }
 
-  fun addHint(inlineBanner: InlineBanner) {
+  fun addHint(inlineBanner: InlineBannerBase) {
     checkDetailsPlaceholder.add(inlineBanner, BorderLayout.NORTH)
   }
 

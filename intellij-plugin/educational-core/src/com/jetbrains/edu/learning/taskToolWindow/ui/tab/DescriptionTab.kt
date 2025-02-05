@@ -3,7 +3,7 @@ package com.jetbrains.edu.learning.taskToolWindow.ui.tab
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
-import com.intellij.ui.InlineBanner
+import com.intellij.ui.InlineBannerBase
 import com.intellij.ui.components.panels.VerticalLayout
 import com.intellij.util.ui.JBUI
 import com.jetbrains.edu.learning.JavaUILibrary
@@ -56,7 +56,7 @@ class DescriptionTab(project: Project) : TaskToolWindowTab(project, TabType.DESC
     taskTextToolWindow.updateTaskSpecificPanel(task)
   }
 
-  fun addInlineBanner(inlineBanner: InlineBanner) {
+  fun addInlineBanner(inlineBanner: InlineBannerBase) {
     inlineBannersPanel.add(inlineBanner)
   }
 

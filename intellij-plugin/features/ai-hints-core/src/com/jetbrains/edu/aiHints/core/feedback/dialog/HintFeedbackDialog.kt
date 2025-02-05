@@ -7,13 +7,15 @@ import com.intellij.platform.feedback.dialog.uiBlocks.FeedbackBlock
 import com.intellij.platform.feedback.dialog.uiBlocks.TextAreaBlock
 import com.intellij.ui.dsl.builder.Panel
 import com.jetbrains.edu.ai.translation.ui.LikeBlock
+import com.jetbrains.edu.ai.translation.ui.LikeBlock.FeedbackLikenessAnswer
 import com.jetbrains.edu.aiHints.core.feedback.data.HintFeedbackCommonInfoData
 import com.jetbrains.edu.aiHints.core.messages.EduAIHintsCoreBundle
 import com.jetbrains.edu.learning.messages.EduCoreBundle
 import com.jetbrains.edu.learning.notification.EduNotificationManager
 
 abstract class HintFeedbackDialog<T : SystemDataJsonSerializable>(
-  private val project: Project
+  private val project: Project,
+  defaultLikeness: FeedbackLikenessAnswer = FeedbackLikenessAnswer.NO_ANSWER
 ) : BlockBasedFeedbackDialog<T>(project, false) {
   override val myFeedbackReportId: String = "edu_ai_hints_feedback"
 
@@ -23,7 +25,8 @@ abstract class HintFeedbackDialog<T : SystemDataJsonSerializable>(
   override val myBlocks: List<FeedbackBlock> = listOf(
     LikeBlock(
       EduAIHintsCoreBundle.message("hints.feedback.like.label"),
-      "hints_likeness"
+      "hints_likeness",
+      defaultLikeness
     ),
     TextAreaBlock("", "hints_experience")
       .setPlaceholder(EduCoreBundle.message("ui.feedback.dialog.textarea.optional.label"))

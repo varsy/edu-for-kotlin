@@ -2,8 +2,12 @@ package com.jetbrains.edu.aiHints.core.ui
 
 import com.intellij.openapi.editor.markup.RangeHighlighter
 import com.intellij.openapi.project.Project
+import com.intellij.platform.feedback.dialog.CommonFeedbackSystemData
 import com.intellij.util.asSafely
 import com.jetbrains.edu.ai.translation.statistics.EduAIFeaturesCounterUsageCollector
+import com.jetbrains.edu.aiHints.core.feedback.FeedbackLikenessSubmit
+import com.jetbrains.edu.aiHints.core.feedback.data.CodeHintFeedbackInfoData
+import com.jetbrains.edu.aiHints.core.feedback.data.CodeHintFeedbackSystemInfoData
 import com.jetbrains.edu.aiHints.core.feedback.dialog.CodeHintFeedbackDialog
 import com.jetbrains.edu.aiHints.core.messages.EduAIHintsCoreBundle
 import com.jetbrains.edu.learning.course
@@ -34,11 +38,18 @@ class CodeHintInlineBanner(
     return this
   }
 
-  fun addFeedbackLink(task: Task, studentSolution: String, textHint: TextHint, codeHint: CodeHint): CodeHintInlineBanner {
+  fun addFeedbackButtons(task: Task, studentSolution: String, textHint: TextHint, codeHint: CodeHint): CodeHintInlineBanner {
     val project = task.project ?: return this
     val course = project.course.asSafely<EduCourse>() ?: return this
-    addAction(EduAIHintsCoreBundle.message("hints.feedback.action.link")) {
-      CodeHintFeedbackDialog(project, course, task, studentSolution, textHint, codeHint).show()
+
+    addLikeDislikeActions {
+      FeedbackLikenessSubmit.sendFeedbackData(getLikeness(), CodeHintFeedbackSystemInfoData(
+        CommonFeedbackSystemData.getCurrentData(),
+        CodeHintFeedbackInfoData.create(course, task, studentSolution, textHint, codeHint)
+      ))
+    }
+    addCommentAction {
+      CodeHintFeedbackDialog(project, course, task, studentSolution, textHint, codeHint, getLikeness()).show()
     }
     return this
   }

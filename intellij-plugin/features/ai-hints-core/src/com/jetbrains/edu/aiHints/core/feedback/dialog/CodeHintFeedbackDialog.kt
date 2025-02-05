@@ -3,6 +3,7 @@ package com.jetbrains.edu.aiHints.core.feedback.dialog
 import com.intellij.openapi.project.Project
 import com.intellij.platform.feedback.dialog.CommonFeedbackSystemData
 import com.intellij.platform.feedback.dialog.showFeedbackSystemInfoDialog
+import com.jetbrains.edu.ai.translation.ui.LikeBlock.FeedbackLikenessAnswer
 import com.jetbrains.edu.aiHints.core.feedback.data.CodeHintFeedbackInfoData
 import com.jetbrains.edu.aiHints.core.feedback.data.CodeHintFeedbackSystemInfoData
 import com.jetbrains.edu.aiHints.core.messages.EduAIHintsCoreBundle
@@ -18,7 +19,8 @@ class CodeHintFeedbackDialog(
   private val studentSolution: String,
   private val textHint: TextHint,
   private val codeHint: CodeHint,
-) : HintFeedbackDialog<CodeHintFeedbackSystemInfoData>(project) {
+  defaultLikeness: FeedbackLikenessAnswer = FeedbackLikenessAnswer.NO_ANSWER
+) : HintFeedbackDialog<CodeHintFeedbackSystemInfoData>(project, defaultLikeness) {
 
   override val myShowFeedbackSystemInfoDialog: () -> Unit = {
     showFeedbackSystemInfoDialog(project, mySystemInfoData.commonSystemInfo) {
