@@ -19,7 +19,7 @@ class TextHintInlineBanner(
   task: Task,
   message: @Nls String,
 ) : HintInlineBanner(project, task, message) {
-  fun addFeedbackButtons(task: Task, studentSolution: String, textHint: TextHint): TextHintInlineBanner {
+  fun addFeedbackLikenessButtons(task: Task, studentSolution: String, textHint: TextHint): TextHintInlineBanner {
     val project = task.project ?: return this
     val course = project.course.asSafely<EduCourse>() ?: return this
     addLikeDislikeActions {
@@ -28,6 +28,12 @@ class TextHintInlineBanner(
         TextHintFeedbackInfoData.create(course, task, studentSolution, textHint)
       ))
     }
+    return this
+  }
+
+  fun addFeedbackCommentButton(task: Task, studentSolution: String, textHint: TextHint): TextHintInlineBanner {
+    val project = task.project ?: return this
+    val course = project.course.asSafely<EduCourse>() ?: return this
     addCommentAction {
       TextHintFeedbackDialog(project, course, task, studentSolution, textHint, getLikeness()).show()
     }

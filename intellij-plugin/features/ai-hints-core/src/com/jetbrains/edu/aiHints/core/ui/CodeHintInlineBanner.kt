@@ -38,7 +38,7 @@ class CodeHintInlineBanner(
     return this
   }
 
-  fun addFeedbackButtons(task: Task, studentSolution: String, textHint: TextHint, codeHint: CodeHint): CodeHintInlineBanner {
+  fun addFeedbackLikenessButtons(task: Task, studentSolution: String, textHint: TextHint, codeHint: CodeHint): CodeHintInlineBanner {
     val project = task.project ?: return this
     val course = project.course.asSafely<EduCourse>() ?: return this
 
@@ -48,6 +48,13 @@ class CodeHintInlineBanner(
         CodeHintFeedbackInfoData.create(course, task, studentSolution, textHint, codeHint)
       ))
     }
+    return this
+  }
+
+  fun addFeedbackCommentButton(task: Task, studentSolution: String, textHint: TextHint, codeHint: CodeHint): CodeHintInlineBanner {
+    val project = task.project ?: return this
+    val course = project.course.asSafely<EduCourse>() ?: return this
+
     addCommentAction {
       CodeHintFeedbackDialog(project, course, task, studentSolution, textHint, codeHint, getLikeness()).show()
     }

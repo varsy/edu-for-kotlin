@@ -67,7 +67,8 @@ class HintsLoader(private val project: Project, private val scope: CoroutineScop
           withContext(Dispatchers.EDT) {
             val errorMessage = AiAssistantException.get(it).message
             ErrorHintInlineBanner(project, task, errorMessage) { getHint(task) }
-              .addFeedbackButtons(task, taskFileText, errorMessage)
+              .addFeedbackLikenessButtons(task, taskFileText, errorMessage)
+              .addFeedbackCommentButton(task, taskFileText, errorMessage)
               .display()
           }
           return@launch
@@ -79,14 +80,16 @@ class HintsLoader(private val project: Project, private val scope: CoroutineScop
             val highlighter = highlightFirstCodeDiffPositionOrNull(project, taskVirtualFile, taskFileText, codeHint.code)
             CodeHintInlineBanner(project, task, hint.textHint.text, highlighter)
               .addCodeHint { showInCodeAction(project, taskVirtualFile, taskFileText, codeHint.code) }
-              .addFeedbackButtons(task, taskFileText, hint.textHint, codeHint)
+              .addFeedbackLikenessButtons(task, taskFileText, hint.textHint, codeHint)
+              .addFeedbackCommentButton(task, taskFileText, hint.textHint, codeHint)
               .display()
           }
           return@launch
         }
         withContext(Dispatchers.EDT) {
           TextHintInlineBanner(project, task, hint.textHint.text)
-            .addFeedbackButtons(task, taskFileText, hint.textHint)
+            .addFeedbackLikenessButtons(task, taskFileText, hint.textHint)
+            .addFeedbackCommentButton(task, taskFileText, hint.textHint)
             .display()
         }
       }

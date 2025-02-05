@@ -31,16 +31,21 @@ class ErrorHintInlineBanner(
     }
   }
 
-  fun addFeedbackButtons(task: Task, taskFileText: String, errorMessage: String): ErrorHintInlineBanner {
+  fun addFeedbackLikenessButtons(task: Task, taskFileText: String, errorMessage: String): ErrorHintInlineBanner {
     val project = task.project ?: return this
     val course = project.course.asSafely<EduCourse>() ?: return this
     addLikeDislikeActions {
       FeedbackLikenessSubmit.sendFeedbackData(getLikeness(), ErrorHintFeedbackSystemInfoData(
         CommonFeedbackSystemData.getCurrentData(),
         ErrorHintFeedbackInfoData.create(course, task, taskFileText, errorMessage)
-      )
-      )
+      ))
     }
+    return this
+  }
+
+  fun addFeedbackCommentButton(task: Task, taskFileText: String, errorMessage: String): ErrorHintInlineBanner {
+    val project = task.project ?: return this
+    val course = project.course.asSafely<EduCourse>() ?: return this
     addCommentAction {
       ErrorHintFeedbackDialog(project, course, task, taskFileText, errorMessage, getLikeness()).show()
     }
