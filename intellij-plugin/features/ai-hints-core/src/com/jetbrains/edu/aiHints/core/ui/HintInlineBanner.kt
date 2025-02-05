@@ -142,24 +142,27 @@ open class HintInlineBanner(
     actionsPanel.isVisible = true
     val likeLabel = JLabel(AllIcons.Ide.LikeDimmed)
     val dislikeLabel = JLabel(AllIcons.Ide.DislikeDimmed)
-    likeLabel.addMouseListener(object : MouseAdapter() {
-      override fun mouseClicked(e: MouseEvent?) {
-        likeLabel.icon = AllIcons.Ide.LikeSelected
-        dislikeLabel.icon = AllIcons.Ide.DislikeDimmed
-        likeness = FeedbackLikenessAnswer.LIKE
-        onChange()
-      }
-    })
-    dislikeLabel.addMouseListener(object : MouseAdapter() {
-      override fun mouseClicked(e: MouseEvent?) {
-        dislikeLabel.icon = AllIcons.Ide.DislikeSelected
-        likeLabel.icon = AllIcons.Ide.LikeDimmed
-        likeness = FeedbackLikenessAnswer.DISLIKE
-        onChange()
-      }
-    })
+    likeLabel.setupToggleWith(dislikeLabel, AllIcons.Ide.LikeSelected, AllIcons.Ide.DislikeDimmed, FeedbackLikenessAnswer.LIKE, onChange)
+    dislikeLabel.setupToggleWith(likeLabel, AllIcons.Ide.DislikeSelected, AllIcons.Ide.LikeDimmed, FeedbackLikenessAnswer.DISLIKE, onChange)
     iconActionPanel.add(likeLabel, iconActionPanel.componentCount - 1)
     iconActionPanel.add(dislikeLabel, iconActionPanel.componentCount - 1)
+  }
+
+  private fun JLabel.setupToggleWith(
+    otherLabel: JLabel,
+    selectedIcons: Icon,
+    unselectedIcon: Icon,
+    newLikeness: FeedbackLikenessAnswer,
+    onChange: () -> Unit = {}
+  ) {
+    addMouseListener(object : MouseAdapter() {
+      override fun mouseClicked(e: MouseEvent?) {
+        icon = selectedIcons
+        otherLabel.icon = unselectedIcon
+        likeness = newLikeness
+        onChange()
+      }
+    })
   }
 
   fun addCommentAction(action: Runnable = Runnable { }): InlineBannerBase {
