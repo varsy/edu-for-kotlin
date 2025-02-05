@@ -1,10 +1,14 @@
 package com.jetbrains.edu.coursecreator.archive
 
+import com.intellij.notification.Notification
+import com.intellij.notification.NotificationType
+import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.NlsContexts.NotificationContent
 import com.intellij.openapi.util.NlsContexts.NotificationTitle
 import com.intellij.util.concurrency.annotations.RequiresEdt
+import com.jetbrains.edu.coursecreator.actions.marketplace.RegenerateDuplicateIds
 import com.jetbrains.edu.learning.courseDir
 import com.jetbrains.edu.learning.courseFormat.ext.getDir
 import com.jetbrains.edu.learning.exceptions.BrokenPlaceholderException
@@ -21,10 +25,14 @@ interface CourseArchiveError {
   val message: @NotificationContent String
 
   /**
-   * Shows error notification with specified [title]
+   * Creates notification for particular error.
+   * It's supposed to be overridden if the notification requires additional custom elements:
+   * actions, notification listeners, etc.
+   *
+   * See [showNotification]
    */
-  fun showNotification(project: Project, @NotificationTitle title: String) {
-    EduNotificationManager.showErrorNotification(project, title, message)
+  fun notification(@NotificationTitle title: String): Notification {
+    return EduNotificationManager.create(NotificationType.ERROR, title, message)
   }
 
   /**
@@ -32,6 +40,13 @@ interface CourseArchiveError {
    */
   @RequiresEdt
   fun immediateAction(project: Project) {}
+}
+
+/**
+ * Shows notification with specified [title] associated with particular [CourseArchiveError]
+ */
+fun CourseArchiveError.showNotification(project: Project, @NotificationTitle title: String) {
+  notification(title).notify(project)
 }
 
 abstract class ExceptionCourseArchiveError<T : Throwable>(val exception: T) : CourseArchiveError {
@@ -69,4 +84,9 @@ data class DuplicateIdsError(val items: DuplicateIdMap) : CourseArchiveError {
 
       return EduCoreBundle.message("error.failed.to.create.course.archive.duplicate.ids.message", htmlItemList)
     }
+
+  override fun notification(title: String): Notification {
+    return super.notification(title)
+      .addAction(ActionManager.getInstance().getAction(RegenerateDuplicateIds.ACTION_ID))
+  }
 }

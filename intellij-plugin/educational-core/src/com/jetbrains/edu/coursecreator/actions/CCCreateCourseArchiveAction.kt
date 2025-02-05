@@ -12,6 +12,7 @@ import com.jetbrains.edu.coursecreator.CCNotificationUtils
 import com.jetbrains.edu.coursecreator.CCUtils.askToWrapTopLevelLessons
 import com.jetbrains.edu.coursecreator.CCUtils.isCourseCreator
 import com.jetbrains.edu.coursecreator.archive.CourseArchiveCreator
+import com.jetbrains.edu.coursecreator.archive.showNotification
 import com.jetbrains.edu.coursecreator.ui.CCCreateCourseArchiveDialog
 import com.jetbrains.edu.learning.StudyTaskManager
 import com.jetbrains.edu.learning.courseFormat.Course

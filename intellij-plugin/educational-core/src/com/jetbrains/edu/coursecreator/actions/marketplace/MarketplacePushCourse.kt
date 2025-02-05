@@ -15,6 +15,7 @@ import com.jetbrains.edu.coursecreator.CCNotificationUtils
 import com.jetbrains.edu.coursecreator.CCUtils.addGluingSlash
 import com.jetbrains.edu.coursecreator.CCUtils.isCourseCreator
 import com.jetbrains.edu.coursecreator.archive.CourseArchiveCreator
+import com.jetbrains.edu.coursecreator.archive.showNotification
 import com.jetbrains.edu.learning.StudyTaskManager
 import com.jetbrains.edu.learning.courseFormat.EduCourse
 import com.jetbrains.edu.learning.invokeLater

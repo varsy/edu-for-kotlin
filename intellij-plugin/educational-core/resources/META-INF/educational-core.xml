@@ -184,6 +184,9 @@
 
     <action class="com.jetbrains.edu.coursecreator.actions.CCCreateCoursePreview" id="Educational.Educator.CreateCoursePreview"/>
 
+    <action id="Educational.Educator.RegenerateDuplicateIds"
+            class="com.jetbrains.edu.coursecreator.actions.marketplace.RegenerateDuplicateIds"/>
+
     <group id="Educational.Educator.CourseCreator.FrameworkLesson" popup="false"
            class="com.jetbrains.edu.coursecreator.actions.CCFrameworkLessonActionGroup">
       <action id="Educational.Educator.SyncChangesWithNextTasks"

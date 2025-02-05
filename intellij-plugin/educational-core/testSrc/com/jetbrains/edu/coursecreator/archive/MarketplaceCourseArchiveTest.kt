@@ -1,9 +1,13 @@
 package com.jetbrains.edu.coursecreator.archive
 
+import com.intellij.ide.DataManager
+import com.intellij.notification.Notification
+import com.intellij.openapi.actionSystem.impl.SimpleDataContext
 import com.intellij.openapi.application.runWriteAction
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.writeText
+import com.intellij.testFramework.PlatformTestUtil
 import com.jetbrains.edu.coursecreator.yaml.createConfigFiles
 import com.jetbrains.edu.learning.configurators.FakeGradleBasedLanguage
 import com.jetbrains.edu.learning.courseDir
@@ -11,13 +15,16 @@ import com.jetbrains.edu.learning.courseFormat.CourseMode
 import com.jetbrains.edu.learning.courseFormat.JBAccountUserInfo
 import com.jetbrains.edu.learning.courseFormat.Vendor
 import com.jetbrains.edu.learning.courseFormat.ext.getDir
+import com.jetbrains.edu.learning.findTask
 import com.jetbrains.edu.learning.marketplace.StudyItemIdGenerator
 import com.jetbrains.edu.learning.marketplace.addVendor
 import com.jetbrains.edu.learning.marketplace.api.MarketplaceAccount
 import com.jetbrains.edu.learning.marketplace.mockJBAccount
 import com.jetbrains.edu.learning.marketplace.settings.MarketplaceSettings
+import com.jetbrains.edu.learning.messages.EduCoreBundle
 import com.jetbrains.edu.learning.mockService
 import com.jetbrains.edu.learning.navigation.NavigationUtils.getFirstTask
+import com.jetbrains.edu.learning.testAction
 import com.jetbrains.edu.learning.yaml.YamlConfigSettings.REMOTE_LESSON_CONFIG
 import com.jetbrains.edu.learning.yaml.YamlConfigSettings.REMOTE_TASK_CONFIG
 import io.mockk.every
@@ -240,6 +247,43 @@ class MarketplaceCourseArchiveTest : CourseArchiveTestBase() {
     }
 
     createCourseArchiveWithError<DuplicateIdsError>(course)
+  }
+
+  @Test
+  fun `test duplicate ids notification action`() {
+    val course = courseWithFiles(courseMode = CourseMode.EDUCATOR, description = "my summary") {
+      lesson("lesson1") {
+        eduTask("task1", stepId = 1) {
+          taskFile("Task.txt")
+        }
+        eduTask("task2", stepId = 1) {
+          taskFile("Task.txt")
+        }
+      }
+    }
+
+    val duplicateIdsError = createCourseArchiveWithError<DuplicateIdsError>(course)
+
+    val notification = duplicateIdsError.notification("test title")
+
+    val action = notification.actions.single {
+      // Simple additional check not to get the wrong action in the future
+      it.templatePresentation.text == EduCoreBundle.message("action.Educational.Educator.RegenerateDuplicateIds.text")
+    }
+
+    @Suppress("DEPRECATION")
+    val context = SimpleDataContext.builder()
+      .setParent(DataManager.getInstance().dataContext)
+      .add(Notification.KEY, notification)
+      .build()
+
+    testAction(action, context)
+    // We know that this particular action should expire the notification,
+    // so here we use this knowledge as a signal that the action finished.
+    PlatformTestUtil.waitWhileBusy { !notification.isExpired }
+
+    assertEquals(2, course.findTask("lesson1", "task1").id)
+    assertEquals(3, course.findTask("lesson1", "task2").id)
   }
 
   override fun getTestDataPath(): String {
