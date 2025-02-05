@@ -188,6 +188,11 @@ open class HintInlineBanner(
     titlePanel.background = background
     titlePanel.add(message)
     centerPanel.add(titlePanel)
+
+    val myButtonPanel = JPanel()
+    myButtonPanel.preferredSize = JBDimension(22, 16)
+    myButtonPanel.isOpaque = isOpaque
+    titlePanel.add(myButtonPanel, BorderLayout.EAST)
   }
 
   private fun setActions() {
@@ -239,6 +244,7 @@ open class HintInlineBanner(
       }
     }
     button.preferredSize = JBDimension(26, 26)
+    button.isVisible = true
     return button
   }
 
