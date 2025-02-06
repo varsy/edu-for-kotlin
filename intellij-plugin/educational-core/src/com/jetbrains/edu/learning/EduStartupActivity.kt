@@ -1,9 +1,13 @@
 package com.jetbrains.edu.learning
 
+import com.intellij.execution.ExecutionListener
+import com.intellij.execution.ExecutionManager
+import com.intellij.execution.OutputListener
+import com.intellij.execution.process.ProcessEvent
+import com.intellij.execution.process.ProcessHandler
+import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.ide.projectView.ProjectView
 import com.intellij.ide.util.PropertiesComponent
-import com.intellij.notification.BrowseNotificationAction
-import com.intellij.notification.NotificationType.WARNING
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.runInEdt
 import com.intellij.openapi.application.runWriteAction
@@ -28,8 +32,9 @@ import com.jetbrains.edu.learning.EduNames.COURSE_IGNORE
 import com.jetbrains.edu.learning.EduUtilsKt.isEduProject
 import com.jetbrains.edu.learning.EduUtilsKt.isNewlyCreated
 import com.jetbrains.edu.learning.EduUtilsKt.isStudentProject
+import com.jetbrains.edu.learning.ai.errorExplanation.ErrorExplanationConnector
+import com.jetbrains.edu.learning.ai.errorExplanation.ErrorExplanationManager
 import com.jetbrains.edu.learning.courseFormat.Course
-import com.jetbrains.edu.learning.courseFormat.EduFormatNames
 import com.jetbrains.edu.learning.courseFormat.FrameworkLesson
 import com.jetbrains.edu.learning.courseFormat.TaskFile
 import com.jetbrains.edu.learning.courseFormat.ext.configurator
@@ -43,7 +48,6 @@ import com.jetbrains.edu.learning.messages.EduCoreBundle
 import com.jetbrains.edu.learning.navigation.NavigationUtils
 import com.jetbrains.edu.learning.navigation.NavigationUtils.setHighlightLevelForFilesInTask
 import com.jetbrains.edu.learning.newproject.coursesStorage.CoursesStorage
-import com.jetbrains.edu.learning.notification.EduNotificationManager
 import com.jetbrains.edu.learning.projectView.CourseViewPane
 import com.jetbrains.edu.learning.statistics.EduCounterUsageCollector
 import com.jetbrains.edu.learning.submissions.SubmissionSettings
@@ -96,6 +100,27 @@ class EduStartupActivity : StartupActivity.DumbAware {
       }
 
       SyncChangesStateManager.getInstance(project).updateSyncChangesState(course)
+
+      project.messageBus.connect().subscribe(ExecutionManager.EXECUTION_TOPIC, object : ExecutionListener {
+        override fun processStarted(executorId: String, env: ExecutionEnvironment, handler: ProcessHandler) {
+          super.processStarted(executorId, env, handler)
+          handler.addProcessListener(object : OutputListener() {
+            override fun startNotified(event: ProcessEvent) {
+              LOG.info("Process execution started.")
+            }
+
+            override fun processTerminated(event: ProcessEvent) {
+              super.processTerminated(event)
+              LOG.info("Process terminated with exit code: ${event.exitCode}")
+              if (output.exitCode != 0) {
+                // Sometimes error messages and stack traces are in the stdout instead of stderr. For example, JS
+                val outputErrorMessage = if (output.stderr.isNotEmpty()) output.stderr else output.stdout
+                ErrorExplanationManager.getInstance(project).getErrorExplanation(outputErrorMessage)
+              }
+            }
+          })
+        }
+      })
 
       runWriteAction {
         if (project.isStudentProject()) {
