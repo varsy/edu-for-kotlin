@@ -19,12 +19,7 @@ class KtMainFileProvider : MainFileProvider {
   }
 
   override fun findMainPsi(project: Project, file: VirtualFile): PsiElement? {
-    val psiFile = PsiManager.getInstance(project).findFile(file) ?: return null
-
-    val mainFunctionDetector = KotlinMainFunctionDetector.getInstanceDumbAware(project)
-    return PsiTreeUtil.findChildrenOfType(psiFile, KtElement::class.java).find {
-      val function = it as? KtNamedFunction ?: return@find false
-      mainFunctionDetector.isMain(function)
-    }
+    val psiFile = PsiManager.getInstance(project).findFile(file) as? KtFile ?: return null
+    return KotlinMainFunctionDetector.getInstanceDumbAware(project).findMain(psiFile)
   }
 }
