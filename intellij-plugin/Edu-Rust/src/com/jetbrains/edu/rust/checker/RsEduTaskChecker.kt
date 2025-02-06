@@ -33,7 +33,7 @@ class RsEduTaskChecker(project: Project, envChecker: EnvironmentChecker, task: E
 
     val cargo = project.rustSettings.toolchain?.cargo() ?: return CheckResult(CheckStatus.Failed, message("error.no.toolchain"))
     val processOutput = cargo.toGeneralCommandLine(project, cmd).executeCargoCommandLine()
-    return RsStderrAnalyzer.tryToGetCheckResult(processOutput.stdout) ?: super.computePossibleErrorResult(indicator, stderr)
+    return RsStderrAnalyzer().tryToGetCheckResult(processOutput.stdout) ?: super.computePossibleErrorResult(indicator, stderr)
   }
 
   override val preferredConfigurationType: ConfigurationType

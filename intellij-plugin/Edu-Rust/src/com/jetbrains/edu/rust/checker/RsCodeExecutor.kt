@@ -41,7 +41,7 @@ class RsCodeExecutor : CodeExecutor {
       Ok(output.prepareToCheck())
     }
     else {
-      Err(RsStderrAnalyzer.tryToGetCheckResult(processOutput.stdout) ?: CheckResult.failedToCheck)
+      Err(RsStderrAnalyzer().tryToGetCheckResult(processOutput.stdout) ?: CheckResult.failedToCheck)
     }
   }
 

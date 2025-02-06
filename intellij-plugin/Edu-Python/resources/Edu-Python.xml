@@ -32,5 +32,6 @@
                   language="Python"
                   environment="unittest"
                   displayName="Python"/>
+    <stderrAnalyzer implementationClass="com.jetbrains.edu.python.learning.checker.PyStderrAnalyzer" language="Python"/>
   </extensions>
 </idea-plugin>

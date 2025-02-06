@@ -38,7 +38,7 @@ class PyNewEduTaskChecker(task: EduTask, envChecker: EnvironmentChecker, project
   }
 
   override fun computePossibleErrorResult(indicator: ProgressIndicator, stderr: String): CheckResult =
-    PyStderrAnalyzer.tryToGetCheckResult(stderr) ?: CheckResult.SOLVED
+    PyStderrAnalyzer().tryToGetCheckResult(stderr) ?: CheckResult.SOLVED
 
   override fun createTestResultCollector(): TestResultCollector = PyTestResultCollector()
 

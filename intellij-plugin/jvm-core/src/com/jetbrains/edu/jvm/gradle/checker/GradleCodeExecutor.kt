@@ -16,5 +16,5 @@ open class GradleCodeExecutor : CodeExecutor {
       else -> runGradleRunTask(project, task, indicator)
     }
 
-  override fun tryToExtractCheckResultError(errorOutput: String): CheckResult? = GradleStderrAnalyzer.tryToGetCheckResult(errorOutput)
+  override fun tryToExtractCheckResultError(errorOutput: String): CheckResult? = GradleStderrAnalyzer().tryToGetCheckResult(errorOutput)
 }

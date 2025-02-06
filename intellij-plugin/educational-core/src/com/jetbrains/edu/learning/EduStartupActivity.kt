@@ -32,13 +32,14 @@ import com.jetbrains.edu.learning.EduNames.COURSE_IGNORE
 import com.jetbrains.edu.learning.EduUtilsKt.isEduProject
 import com.jetbrains.edu.learning.EduUtilsKt.isNewlyCreated
 import com.jetbrains.edu.learning.EduUtilsKt.isStudentProject
-import com.jetbrains.edu.learning.ai.errorExplanation.ErrorExplanationConnector
 import com.jetbrains.edu.learning.ai.errorExplanation.ErrorExplanationManager
+import com.jetbrains.edu.learning.checker.CheckUtils
 import com.jetbrains.edu.learning.courseFormat.Course
 import com.jetbrains.edu.learning.courseFormat.FrameworkLesson
 import com.jetbrains.edu.learning.courseFormat.TaskFile
 import com.jetbrains.edu.learning.courseFormat.ext.configurator
 import com.jetbrains.edu.learning.courseFormat.ext.isPreview
+import com.jetbrains.edu.learning.courseFormat.ext.languageById
 import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
 import com.jetbrains.edu.learning.courseFormat.stepik.StepikCourse
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
@@ -52,7 +53,6 @@ import com.jetbrains.edu.learning.projectView.CourseViewPane
 import com.jetbrains.edu.learning.statistics.EduCounterUsageCollector
 import com.jetbrains.edu.learning.submissions.SubmissionSettings
 import com.jetbrains.edu.learning.yaml.YamlFormatSynchronizer
-import org.jetbrains.annotations.NonNls
 import org.jetbrains.annotations.VisibleForTesting
 
 class EduStartupActivity : StartupActivity.DumbAware {
@@ -104,6 +104,7 @@ class EduStartupActivity : StartupActivity.DumbAware {
       project.messageBus.connect().subscribe(ExecutionManager.EXECUTION_TOPIC, object : ExecutionListener {
         override fun processStarted(executorId: String, env: ExecutionEnvironment, handler: ProcessHandler) {
           super.processStarted(executorId, env, handler)
+          if (env.getUserData(CheckUtils.EDU_ENV_KEY) == true) return
           handler.addProcessListener(object : OutputListener() {
             override fun startNotified(event: ProcessEvent) {
               LOG.info("Process execution started.")
@@ -115,7 +116,8 @@ class EduStartupActivity : StartupActivity.DumbAware {
               if (output.exitCode != 0) {
                 // Sometimes error messages and stack traces are in the stdout instead of stderr. For example, JS
                 val outputErrorMessage = if (output.stderr.isNotEmpty()) output.stderr else output.stdout
-                ErrorExplanationManager.getInstance(project).getErrorExplanation(outputErrorMessage)
+                val language = course.languageById ?: return
+                ErrorExplanationManager.getInstance(project).getErrorExplanation(language, outputErrorMessage)
               }
             }
           })

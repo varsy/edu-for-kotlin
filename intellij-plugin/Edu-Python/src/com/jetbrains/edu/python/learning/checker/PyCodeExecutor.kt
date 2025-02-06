@@ -5,5 +5,5 @@ import com.jetbrains.edu.learning.courseFormat.CheckResult
 
 class PyCodeExecutor : DefaultCodeExecutor() {
 
-  override fun tryToExtractCheckResultError(errorOutput: String): CheckResult? = PyStderrAnalyzer.tryToGetCheckResult(errorOutput)
+  override fun tryToExtractCheckResultError(errorOutput: String): CheckResult? = PyStderrAnalyzer().tryToGetCheckResult(errorOutput)
 }

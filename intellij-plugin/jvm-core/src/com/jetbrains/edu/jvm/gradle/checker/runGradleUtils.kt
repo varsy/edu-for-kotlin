@@ -85,7 +85,7 @@ class GradleCommandLine private constructor(
     }
 
     //gradle prints compilation failures to error stream
-    if (GradleStderrAnalyzer.tryToGetCheckResult(stderr) != null) {
+    if (GradleStderrAnalyzer().tryToGetCheckResult(stderr) != null) {
       return GradleOutput(false, listOf(COMPILATION_FAILED_MESSAGE, output.stderr))
     }
 
