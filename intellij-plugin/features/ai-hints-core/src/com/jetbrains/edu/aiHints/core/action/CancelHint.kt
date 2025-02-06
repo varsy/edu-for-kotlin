@@ -4,6 +4,7 @@ import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.project.DumbAware
 import com.jetbrains.edu.ai.translation.statistics.EduAIFeaturesCounterUsageCollector
+import com.jetbrains.edu.aiHints.core.log.Logger
 import com.jetbrains.edu.learning.EduUtilsKt.isStudentProject
 import com.jetbrains.edu.learning.actions.ActionWithButtonCustomComponent
 import com.jetbrains.edu.learning.actions.ApplyCodeAction.Companion.isGetHintDiff
@@ -25,6 +26,11 @@ class CancelHint : ActionWithButtonCustomComponent(), DumbAware {
     val task = project.getCurrentTask() ?: return
     TaskToolWindowView.getInstance(project).updateCheckPanel(task)
     EduAIFeaturesCounterUsageCollector.codeHintCancelled(task)
+    Logger.aiHintsLogger.info(
+      """|| Course id: ${task.course.id} | Lesson id: ${task.lesson.id} | Task id: ${task.id}
+         || Action: code hint is cancelled
+      """.trimMargin()
+    )
   }
 
   override fun getActionUpdateThread(): ActionUpdateThread = ActionUpdateThread.BGT

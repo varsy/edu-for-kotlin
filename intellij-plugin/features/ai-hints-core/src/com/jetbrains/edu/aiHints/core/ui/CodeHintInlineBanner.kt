@@ -9,6 +9,7 @@ import com.jetbrains.edu.aiHints.core.feedback.FeedbackLikenessSubmit
 import com.jetbrains.edu.aiHints.core.feedback.data.CodeHintFeedbackInfoData
 import com.jetbrains.edu.aiHints.core.feedback.data.CodeHintFeedbackSystemInfoData
 import com.jetbrains.edu.aiHints.core.feedback.dialog.CodeHintFeedbackDialog
+import com.jetbrains.edu.aiHints.core.log.Logger
 import com.jetbrains.edu.aiHints.core.messages.EduAIHintsCoreBundle
 import com.jetbrains.edu.learning.course
 import com.jetbrains.edu.learning.courseFormat.EduCourse
@@ -33,6 +34,11 @@ class CodeHintInlineBanner(
   fun addCodeHint(showInCodeAction: () -> Unit): CodeHintInlineBanner {
     addAction(EduAIHintsCoreBundle.message("action.Educational.Hints.GetHint.show.code.text")) {
       EduAIFeaturesCounterUsageCollector.hintShowInCodeClicked(task)
+      Logger.aiHintsLogger.info(
+        """|| Course id: ${task.course.id} | Lesson id: ${task.lesson.id} | Task id: ${task.id}
+           || Action: show code hint is clicked
+        """.trimMargin()
+      )
       showInCodeAction()
     }
     return this
@@ -47,6 +53,13 @@ class CodeHintInlineBanner(
         CommonFeedbackSystemData.getCurrentData(),
         CodeHintFeedbackInfoData.create(course, task, studentSolution, textHint, codeHint)
       ))
+      Logger.aiHintsLogger.info(
+        """|| Course id: ${task.course.id} | Lesson id: ${task.lesson.id} | Task id: ${task.id}
+           || Hint Score: ${getLikeness().result}
+           || Text hint: ${textHint.text}
+           || Code hint: ${codeHint.code}
+        """.trimMargin()
+      )
     }
     return this
   }

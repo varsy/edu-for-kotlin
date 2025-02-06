@@ -6,6 +6,7 @@ import com.intellij.platform.feedback.dialog.showFeedbackSystemInfoDialog
 import com.jetbrains.edu.ai.translation.ui.LikeBlock.FeedbackLikenessAnswer
 import com.jetbrains.edu.aiHints.core.feedback.data.TextHintFeedbackInfoData
 import com.jetbrains.edu.aiHints.core.feedback.data.TextHintFeedbackSystemInfoData
+import com.jetbrains.edu.aiHints.core.log.Logger
 import com.jetbrains.edu.aiHints.core.messages.EduAIHintsCoreBundle
 import com.jetbrains.edu.learning.courseFormat.Course
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
@@ -38,5 +39,15 @@ class TextHintFeedbackDialog(
 
   init {
     init()
+  }
+
+  override fun sendFeedbackData() {
+    super.sendFeedbackData()
+    Logger.aiHintsLogger.info(
+      """|| Course id: ${task.course.id} | Lesson id: ${task.lesson.id} | Task id: ${task.id}
+         || Feedback: ${collectDataToJsonObject()}
+         || Type: text hint
+      """.trimMargin()
+    )
   }
 }

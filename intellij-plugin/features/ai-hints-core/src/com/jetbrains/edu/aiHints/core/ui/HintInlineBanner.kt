@@ -15,6 +15,7 @@ import com.jetbrains.edu.EducationalCoreIcons
 import com.jetbrains.edu.ai.translation.statistics.EduAIFeaturesCounterUsageCollector
 import com.jetbrains.edu.ai.translation.statistics.EduAIFeaturesEventFields.HintBannerType
 import com.jetbrains.edu.ai.translation.ui.LikeBlock.FeedbackLikenessAnswer
+import com.jetbrains.edu.aiHints.core.log.Logger
 import com.jetbrains.edu.aiHints.core.messages.EduAIHintsCoreBundle
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
 import com.jetbrains.edu.learning.taskToolWindow.ui.TaskToolWindowView
@@ -89,6 +90,11 @@ open class HintInlineBanner(
     background = status.backgroundColor
     closeAction = Runnable {
       EduAIFeaturesCounterUsageCollector.hintBannerClosed(task)
+      Logger.aiHintsLogger.info(
+        """|| Course id: ${task.course.id} | Lesson id: ${task.lesson.id} | Task id: ${task.id}
+           || Action: hint banner is closed
+        """.trimMargin()
+      )
     }
   }
 
@@ -109,6 +115,12 @@ open class HintInlineBanner(
       else -> error("Unexpected hint banner type: ${javaClass.simpleName}")
     }
     EduAIFeaturesCounterUsageCollector.hintBannerShown(hintBannerType, task)
+    Logger.aiHintsLogger.info(
+      """|| Course id: ${task.course.id} | Lesson id: ${task.lesson.id} | Task id: ${task.id}
+         || Action: hint banner is shown
+         || Type: ${hintBannerType.name}
+      """.trimMargin()
+    )
     TaskToolWindowView.getInstance(project).addInlineBannerToCheckPanel(this@HintInlineBanner)
   }
 

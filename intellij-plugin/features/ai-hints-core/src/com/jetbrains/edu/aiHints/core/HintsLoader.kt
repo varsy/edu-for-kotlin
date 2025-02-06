@@ -22,6 +22,7 @@ import com.intellij.platform.ide.progress.withBackgroundProgress
 import com.intellij.util.concurrency.annotations.RequiresEdt
 import com.jetbrains.edu.aiHints.core.generator.AiCodeHintGenerator
 import com.jetbrains.edu.aiHints.core.generator.AiTextHintGenerator
+import com.jetbrains.edu.aiHints.core.log.Logger
 import com.jetbrains.edu.aiHints.core.messages.EduAIHintsCoreBundle
 import com.jetbrains.edu.aiHints.core.ui.CodeHintInlineBanner
 import com.jetbrains.edu.aiHints.core.ui.ErrorHintInlineBanner
@@ -58,6 +59,13 @@ class HintsLoader(private val project: Project, private val scope: CoroutineScop
         val taskVirtualFile = taskFile.getVirtualFile(project) ?: error("VirtualFile for ${taskFile.name} not found")
         val taskFileText = taskVirtualFile.getTextFromTaskTextFile() ?: error("TaskFile text for ${taskFile.name} not found")
 
+        Logger.aiHintsLogger.info(
+          """|| Course id: ${task.course.id} | Lesson id: ${task.lesson.id} | Task id: ${task.id}
+             || Hint is generated for the code: ${taskProcessor.getSubmissionTextRepresentation() ?: "not available"}
+             || Failed test info: ${taskProcessor.getTestFailureContext() ?: "not available"}
+          """.trimMargin()
+        )
+
         val hintsAssistant = AiHintsAssistant.getAssistant(taskProcessor, AiCodeHintGenerator(taskProcessor), AiTextHintGenerator())
         val hint = withBackgroundProgress(project, EduAIHintsCoreBundle.message("action.Educational.Hints.GetHint.progress.text"), cancellable = true) {
           withContext(Dispatchers.IO) {
@@ -70,11 +78,22 @@ class HintsLoader(private val project: Project, private val scope: CoroutineScop
               .addFeedbackLikenessButtons(task, taskFileText, errorMessage)
               .addFeedbackCommentButton(task, taskFileText, errorMessage)
               .display()
+            Logger.aiHintsLogger.error(
+              """|| Course id: ${task.course.id} | Lesson id: ${task.lesson.id} | Task id: ${task.id}
+                 || Error hint: $errorMessage
+              """.trimMargin()
+            )
           }
           return@launch
         }
 
         val codeHint = hint.codeHint
+        Logger.aiHintsLogger.info(
+          """|| Course id: ${task.course.id} | Lesson id: ${task.lesson.id} | Task id: ${task.id}
+             || Text hint: ${hint.textHint.text}
+             || Code hint: ${codeHint?.code ?: "not available"}
+          """.trimMargin()
+        )
         if (codeHint != null) {
           withContext(Dispatchers.EDT) {
             val highlighter = highlightFirstCodeDiffPositionOrNull(project, taskVirtualFile, taskFileText, codeHint.code)
