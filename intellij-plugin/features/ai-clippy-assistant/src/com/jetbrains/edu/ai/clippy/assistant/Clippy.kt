@@ -15,6 +15,7 @@ import com.intellij.ui.dsl.builder.panel
 import com.intellij.ui.scale.JBUIScale
 import com.intellij.util.concurrency.annotations.RequiresEdt
 import com.intellij.util.ui.JBUI
+import com.jetbrains.edu.ai.clippy.assistant.messages.EduAIClippyAssistantBundle
 import com.jetbrains.edu.ai.clippy.assistant.ui.EduAiClippyImages
 import com.jetbrains.edu.ai.clippy.assistant.ui.ScaledImageLabel
 import java.awt.Component
@@ -84,7 +85,7 @@ class Clippy {
       AllIcons.Actions.CloseHovered
     )
     val popup = JBPopupFactory.getInstance().createComponentPopupBuilder(content, content)
-      .setTitle("AI Clippy Assistant")
+      .setTitle(EduAIClippyAssistantBundle.message("settings.ai.clippy.assistant"))
       .setShowBorder(false)
       .setShowShadow(false)
       .setMovable(true)

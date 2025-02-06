@@ -1,8 +1,21 @@
 <idea-plugin package="com.jetbrains.edu.ai.clippy.assistant">
   <resource-bundle>messages.EduAIClippyAssistantBundle</resource-bundle>
 
+  <dependencies>
+    <!--suppress PluginXmlValidity -->
+    <module name="AI"/>
+  </dependencies>
+
   <actions>
     <action id="Educational.Student.ShowClippyAssistant"
             class="com.jetbrains.edu.ai.clippy.assistant.action.ShowClippyAssistant"/>
   </actions>
+
+  <extensions defaultExtensionNs="com.intellij">
+    <applicationService serviceImplementation="com.jetbrains.edu.ai.clippy.assistant.settings.AIClippySettings"/>
+  </extensions>
+
+  <extensions defaultExtensionNs="Educational">
+    <AIOptionsProvider instance="com.jetbrains.edu.ai.clippy.assistant.settings.EduAIClippyOptions"/>
+  </extensions>
 </idea-plugin>
