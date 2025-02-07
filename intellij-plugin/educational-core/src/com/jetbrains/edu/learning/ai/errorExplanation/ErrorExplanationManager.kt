@@ -7,7 +7,10 @@ import com.intellij.openapi.application.runInEdt
 import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
+import com.intellij.openapi.editor.ComponentInlayAlignment
 import com.intellij.openapi.editor.Document
+import com.intellij.openapi.editor.InlayProperties
+import com.intellij.openapi.editor.addComponentInlay
 import com.intellij.openapi.editor.markup.EffectType
 import com.intellij.openapi.editor.markup.RangeHighlighter
 import com.intellij.openapi.editor.markup.TextAttributes
@@ -18,6 +21,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.platform.ide.progress.withBackgroundProgress
+import com.intellij.ui.dsl.builder.panel
 import com.jetbrains.edu.learning.checker.StderrAnalyzer
 import com.jetbrains.edu.learning.computeUnderProgress
 import com.jetbrains.edu.learning.course
@@ -30,6 +34,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.css.GridAutoFlow.Companion.row
 import java.awt.Font
 import java.io.File
 
@@ -54,7 +59,7 @@ class ErrorExplanationManager(private val project: Project, private val scope: C
         val errorExplanation = objectMapper.readValue(result, ErrorExplanation::class.java)
         println("RESULT:\n$result\n")
         withContext(Dispatchers.EDT) {
-          openEditor(vfsFile, lineNumber)
+          openEditor(vfsFile, lineNumber, errorExplanation)
           showNotification(project, errorExplanation)
         }
       }
@@ -70,10 +75,17 @@ class ErrorExplanationManager(private val project: Project, private val scope: C
     return errorLine?.let { (fileName, lineNumber) -> Pair(fileName, lineNumber) }
   }
 
-  private fun openEditor(vfsFile: VirtualFile, lineNumber: Int) {
+  private fun openEditor(vfsFile: VirtualFile, lineNumber: Int, errorExplanation: ErrorExplanation) {
     removePrevHighlighter(project)
     val descriptor = OpenFileDescriptor(project, vfsFile, lineNumber, 0)
     val fileEditor = FileEditorManager.getInstance(project).openTextEditor(descriptor, true) ?: return
+    val document = FileDocumentManager.getInstance().getDocument(vfsFile) ?: return
+    fileEditor.addComponentInlay(
+      document.getLineEndOffset(lineNumber - 1),
+      InlayProperties().showAbove(false).disableSoftWrapping(false),
+      panel { row { text(errorExplanation.explanation) } },
+      ComponentInlayAlignment.FIT_VIEWPORT_WIDTH
+    )
     descriptor.navigateInEditor(project, true)
     fileEditor.markupModel.removeAllHighlighters()
     val attributes = TextAttributes(null, EduColors.aiGetHintHighlighterColor, null, EffectType.BOXED, Font.PLAIN)
