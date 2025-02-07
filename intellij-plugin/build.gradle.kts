@@ -626,7 +626,15 @@ project("Edu-Kotlin") {
 
     tasks.test {
       jvmArgumentProviders += CommandLineArgumentProvider {
-        listOf("-Didea.kotlin.plugin.use.k2=true")
+        listOf(
+          //TODO when 251 is supported, enable K2 in tests starting from 251 instead of 243
+          if (isAtLeast243) {
+            "-Didea.kotlin.plugin.use.k2=true"
+          }
+          else {
+            "-Didea.kotlin.plugin.use.k2=false"
+          }
+        )
       }
     }
 
